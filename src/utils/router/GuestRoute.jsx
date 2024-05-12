@@ -2,7 +2,7 @@ import React from 'react'
 import { useAuthProvider } from '../../context/AuthProvider';
 import { Navigate, Outlet } from 'react-router-dom';
 
-export default function GuestRoute() {
+export default function GuestRoute({ children }) {
   const { user } = useAuthProvider();
 
   // Redirect to notews if user authenticated
@@ -11,5 +11,5 @@ export default function GuestRoute() {
   }
 
   // Render children if user is authenticated
-  return <Outlet></Outlet>;
+  return <>{children}</>;
 }

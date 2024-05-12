@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
+import useLocalStorageHook from '../hooks/useLocalStorageHook';
 
 /**
  * Context for managing user authentication state and actions.
@@ -21,9 +22,13 @@ const AuthProviderContext = createContext({
 });
 
 
+export const AUTH_STORAGE_KEYS = {
+  USER: "USER",
+}
+
 /**
  * Custom hook to access authentication context and functions.
- * @returns {Object} Authentication context value.
+ * @returns {AuthContextType} Authentication context value.
  */
 export const useAuthProvider = () => {
   const authContext = useContext(AuthProviderContext);
@@ -43,14 +48,17 @@ export const useAuthProvider = () => {
  */
 // eslint-disable-next-line react/prop-types
 export default function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  const { storeValue, readValue } = useLocalStorageHook();
+
+  const [user, setUser] = useState(readValue(AUTH_STORAGE_KEYS.USER));
 
   /**
    * Simulates user login action.
    * In a real implementation, this function would handle authentication logic.
    */
-  const login = () => {
-    setUser({ username: 'exampleUser' }); // Example: Set authenticated user
+  const login = (userObject) => {
+    storeValue(AUTH_STORAGE_KEYS.USER, userObject);
+    setUser(userObject);
   };
 
   /**
@@ -58,6 +66,7 @@ export default function AuthProvider({ children }) {
    * In a real implementation, this function would handle logout logic.
    */
   const logout = () => {
+    storeValue(AUTH_STORAGE_KEYS.USER, null);
     setUser(null); // Example: Clear authenticated user
   };
 

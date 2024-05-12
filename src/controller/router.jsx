@@ -68,7 +68,7 @@ const router = createBrowserRouter([
                 ),
                 children: [
                     {
-                        path: "/auth/login",
+                        path: "/auth/verify",
                         element: <CollectListAuth />,
                     },
                 ],

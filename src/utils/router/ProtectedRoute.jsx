@@ -1,6 +1,6 @@
 import React from 'react'
 import { useAuthProvider } from '../../context/AuthProvider'
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 
 /**
@@ -11,14 +11,14 @@ import { Navigate, Outlet } from 'react-router-dom';
  * @returns {React.ReactNode} Rendered component or navigation redirect.
  */
 // eslint-disable-next-line react/prop-types
-export default function ProtectedRoute() {
+export default function ProtectedRoute({ children }) {
   const { user } = useAuthProvider();
 
   // Redirect to login if user is not authenticated
   if (user === null || (user && Object.keys(user).length === 0)) {
-    return <Navigate to="/auth/login" />;
+    return <Navigate to="/auth/verify" />;
   }
 
   // Render children if user is authenticated
-  return <Outlet></Outlet>;
+  return <>{children}</>;
 }
