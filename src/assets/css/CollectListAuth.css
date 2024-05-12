@@ -1,0 +1,36 @@
+.auth-vector {
+    background-color: #86BBD8;
+    clip-path: polygon(0% 40%, 8% 16%, 28% 0%, 57% 5%, 71% 11%, 100% 19%, 100% 37%, 94% 61%, 86% 77%, 71% 85%, 49% 83%, 34% 77%, 22% 64%, 13% 53%, 1% 46%);
+   
+    min-height: 478px;
+    min-width: 450px;
+    display: flex;
+    justify-content: center;
+}
+
+.auth-article {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    height: 100dvh;
+}
+
+.auth-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    margin-top: 25%;
+}
+
+
+.auth-content>h1 {
+    color: #2F4858;
+    font-size: 36px;
+    font-weight: 200;
+}
+
+.auth-content>button {
+    background-color: #33658A;
+    color: white;
+}

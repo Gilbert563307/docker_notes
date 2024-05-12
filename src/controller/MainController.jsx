@@ -1,0 +1,30 @@
+import React from 'react';
+import DefaultLayout from '../view/layout/DefaultLayout';
+import AuthProvider, { useAuthProvider } from '../context/AuthProvider';
+import GuestLayout from '../view/layout/GuestLayout';
+
+/**
+ * MainController component manages the main layout based on user authentication status.
+ * Renders either the DefaultLayout if user is authenticated, or the Outlet for unauthenticated users.
+ * @returns {React.ReactNode} Rendered component based on user authentication.
+ */
+export default function MainController() {
+  const { user } = useAuthProvider();
+
+  return (
+    <AuthProvider>
+      {/* Conditionally render DefaultLayout if user is authenticated, otherwise render Outlet */}
+      <></>
+      {user && Object.keys(user).length > 0 ? (
+        <DefaultLayout />
+      ) : (
+        <>
+          <GuestLayout />
+        </>
+
+      )}
+    </AuthProvider>
+  );
+}
+
+
