@@ -84,7 +84,6 @@ export default function AuthController() {
       if (login === false || Object.keys(response.user).length === 0) return;
       login(response.user);
 
-
     } catch (error) {
       setMessageToState(error);
     }
@@ -113,7 +112,6 @@ export default function AuthController() {
 
   return (
     <AuthControllerContext.Provider value={contextValue}>
-      <h1>AuthControllerContext</h1>
       <Outlet></Outlet>
     </AuthControllerContext.Provider>
   );

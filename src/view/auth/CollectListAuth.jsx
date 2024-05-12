@@ -4,15 +4,11 @@ import { AUTH_CONTROLLER_ACTIONS, useAuthControllerContext } from '../../control
 
 export default function CollectListAuth() {
 
-  const { state, dispatch } = useAuthControllerContext();
+  const { dispatch } = useAuthControllerContext();
 
   const signInWithGoogle = () => {
     dispatch({ type: AUTH_CONTROLLER_ACTIONS.LOGIN_WITH_GOOGLE });
   }
-
-  React.useEffect(() => {
-    console.log(`dispatch`, state)
-  }, [])
 
   return (
     <article className='auth-article'>

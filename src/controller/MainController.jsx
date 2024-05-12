@@ -1,6 +1,6 @@
 import React from 'react';
 import DefaultLayout from '../view/layout/DefaultLayout';
-import AuthProvider, { useAuthProvider } from '../context/AuthProvider';
+import { useAuthProvider } from '../context/AuthProvider';
 import GuestLayout from '../view/layout/GuestLayout';
 
 /**
@@ -10,20 +10,14 @@ import GuestLayout from '../view/layout/GuestLayout';
  */
 export default function MainController() {
   const { user } = useAuthProvider();
-
   return (
-    <AuthProvider>
-      {/* Conditionally render DefaultLayout if user is authenticated, otherwise render Outlet */}
-      <></>
-      {user && Object.keys(user).length > 0 ? (
+    <>
+      {user != null && Object.keys(user).length > 0 ? (
         <DefaultLayout />
       ) : (
-        <>
-          <GuestLayout />
-        </>
-
+        <GuestLayout />
       )}
-    </AuthProvider>
+    </>
   );
 }
 

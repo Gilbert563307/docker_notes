@@ -1,0 +1,16 @@
+.logout-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    right: 10px;
+}
+
+@media (max-width: 991px) {
+    .logout-btn {
+        display: block;
+        position: unset;
+        right: 0px !important;
+        /* left: 0; */
+    }
+}

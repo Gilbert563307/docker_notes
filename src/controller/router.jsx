@@ -16,12 +16,17 @@ import ErrorPage from '../view/error/ErrorPage';
 import ProtectedRoute from '../utils/router/ProtectedRoute';
 import GuestRoute from '../utils/router/GuestRoute';
 import LandingPage from '../view/pages/LandingPage';
+import AuthProvider from '../context/AuthProvider';
 
 
 const router = createBrowserRouter([
     {
         path: "/",
-        element: <MainController />,
+        element: (
+            <AuthProvider>
+                <MainController />
+            </AuthProvider>
+        ),
         children: [
             {
                 index: true,

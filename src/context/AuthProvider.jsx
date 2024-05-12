@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import useLocalStorageHook from '../hooks/useLocalStorageHook';
+import AuthLogic from '../model/AuthLogic';
+
 
 /**
  * Context for managing user authentication state and actions.
  * @typedef {Object} AuthContextType
- * @property {Object} user - The authenticated user object.
+ * @property {{ uid: string, displayName: string, email: string,  token: string, photoURL: string}} user - The authenticated user object.
  * @property {Function} login - Function to perform user login.
  * @property {Function} logout - Function to perform user logout.
  */
@@ -49,6 +51,7 @@ export const useAuthProvider = () => {
 // eslint-disable-next-line react/prop-types
 export default function AuthProvider({ children }) {
   const { storeValue, readValue } = useLocalStorageHook();
+  const { SignUserOut } = AuthLogic();
 
   const [user, setUser] = useState(readValue(AUTH_STORAGE_KEYS.USER));
 
@@ -67,7 +70,8 @@ export default function AuthProvider({ children }) {
    */
   const logout = () => {
     storeValue(AUTH_STORAGE_KEYS.USER, null);
-    setUser(null); // Example: Clear authenticated user
+    setUser(null); // Clear authenticated user
+    SignUserOut(); // Sign user out of firebase
   };
 
   /**

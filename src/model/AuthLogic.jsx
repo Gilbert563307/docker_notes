@@ -30,6 +30,7 @@ export default function AuthLogic() {
                         displayName: auth.currentUser.displayName || "",
                         email: auth.currentUser.email || "",
                         token: auth.currentUser.refreshToken || "",
+                        photoURL: auth.currentUser.photoURL || "",
                     },
                     type: ALERT_TYPES.SUCCESS,
                     message: "",
@@ -38,7 +39,7 @@ export default function AuthLogic() {
             return {
                 user: {},
                 login: false,
-                type: ALERT_TYPES.DANGER,
+                type: ALERT_TYPES.SUCCESS,
                 message: 'Failed to login with Google',
             };
         } catch (error) {
@@ -50,5 +51,17 @@ export default function AuthLogic() {
             };
         }
     }
-    return { LoginWithGoogle }
+
+    const SignUserOut = async () => {
+        try {
+            await signOut(auth);
+        } catch (error) {
+            console.error(error);
+            return {
+                type: ALERT_TYPES.DANGER,
+                message: error.message || 'Failed to sign out ',
+            };
+        }
+    };
+    return { LoginWithGoogle, SignUserOut }
 }
