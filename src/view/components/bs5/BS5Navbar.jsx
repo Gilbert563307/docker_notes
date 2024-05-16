@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { useAuthProvider } from '../../../../context/AuthProvider';
+import { useAuthProvider } from '../../../context/AuthProvider';
 import "../../../../assets/css/BS5Navbar.css"
 import { Link } from 'react-router-dom';
 

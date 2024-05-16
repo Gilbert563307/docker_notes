@@ -3,6 +3,11 @@ import DefaultLayout from '../view/layout/DefaultLayout';
 import { useAuthProvider } from '../context/AuthProvider';
 import GuestLayout from '../view/layout/GuestLayout';
 
+
+/**
+ * @typedef {{type: number, message: strinsg}} notificationObject
+ */
+
 /**
  * MainController component manages the main layout based on user authentication status.
  * Renders either the DefaultLayout if user is authenticated, or the Outlet for unauthenticated users.
