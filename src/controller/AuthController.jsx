@@ -3,9 +3,10 @@ import { Outlet } from 'react-router-dom';
 import { useAuthProvider } from '../context/AuthProvider';
 import AuthLogic from '../model/AuthLogic';
 
+
 /**
- * Actions that can be dispatched to the AuthController's reducer.
- * @type {Object}
+ * @typedef {Object} AuthControllerActions
+ * @property {string} LOGIN_WITH_GOOGLE - Action for the login
  */
 export const AUTH_CONTROLLER_ACTIONS = {
   LOGIN_WITH_GOOGLE: "LOGIN_WITH_GOOGLE",

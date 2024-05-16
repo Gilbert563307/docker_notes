@@ -5,7 +5,7 @@ import GuestLayout from '../view/layout/GuestLayout';
 
 
 /**
- * @typedef {{type: number, message: strinsg}} notificationObject
+ * @typedef {{type: number, message: string}} notificationObject
  */
 
 /**
