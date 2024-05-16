@@ -12,8 +12,13 @@ export const AUTH_CONTROLLER_ACTIONS = {
 };
 
 /**
+ * @typedef {Object} InitialState
+ * @property {{message: string, type: number}} notification
+ */
+
+/**
  * Initial state for the AuthController.
- * @type {Object}
+ * @type {InitialState}
  */
 const initialState = {
   notification: { message: "", type: 0 },
@@ -22,7 +27,17 @@ const initialState = {
 /**
  * Context for managing state and actions within the AuthController.
  */
-const AuthControllerContext = createContext(initialState);
+/**
+ * @typedef {React.Context} AuthControllerContext
+ * @property {InitialState} state
+ * @property {(object: {type: string, payload?: any} ) => void} dispatch
+ */
+const AuthControllerContext = createContext(
+   /** @type {AuthControllerContext} */ {
+    state: initialState,
+    dispatch: (action) => { },
+  }
+);
 
 /**
  * Custom hook to access the AuthController context.
@@ -108,6 +123,7 @@ export default function AuthController() {
     }
   };
 
+  /** @returns {AuthControllerContext} */
   const contextValue = useMemo(() => ({ state, dispatch }), [state, dispatch]);
 
   return (
