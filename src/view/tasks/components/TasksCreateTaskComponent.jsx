@@ -35,17 +35,17 @@ export default function TasksCreateTaskComponent({ closeModal }) {
                 <label htmlFor="title" className="form-label">Title</label>
                 <input
                     type="text"
-                    className={`form-control ${errors.name && errors.name.type ? "is-invalid" : ""
+                    className={`form-control ${errors.title && errors.title.type ? "is-invalid" : ""
                         }`}
                     id="title"
                     aria-describedby="Title name"
-                    placeholder="Text field for the title"
+                    placeholder="Lorem impsum....."
                     maxLength={255}
                     {...register("title", {
                         required: "The title cannot be empty",
                         minLength: {
                             value: 4,
-                            message: "The title must longer than 4 character",
+                            message: "The title must longer than 4 characters",
                         },
                         maxLength: {
                             value: 255,
@@ -59,21 +59,32 @@ export default function TasksCreateTaskComponent({ closeModal }) {
             </div>
             <div className="col-12">
                 <label htmlFor="description" className="form-label">Description</label>
-                <textarea className="form-control" id="description" rows="5"
+                <textarea 
+                className={`form-control ${errors.description && errors.description.type ? "is-invalid" : ""
+                    }`} id="description" 
+                    rows="5"
+                    placeholder="Lorem impsum....."
                     {...register("description", {
-                        required: false,
+                        required: "The description cannot be empty",
+                        minLength: {
+                            value: 4,
+                            message: "The title must longer than 4 characters",
+                        },
                     })}></textarea>
+                {errors.description && (
+                    <div className="invalid-feedback d-block">{errors.description.message}</div>
+                )}
             </div>
             <div className="col-md-6">
                 <label htmlFor="priority" className="form-label">Priority</label>
                 <select className="form-select" id="priority" aria-label="Priority select" {...register("priority", { required: false })}>
-                    <option defaultValue value={TASKS_PRIORITY.LOW}>Choose the priority</option>
+                    <option defaultValue value={TASKS_PRIORITY.LOW}>Choose the task priority</option>
                     <option value={TASKS_PRIORITY.LOW}>Low</option>
                     <option value={TASKS_PRIORITY.MEDIUM}>Medium</option>
                     <option value={TASKS_PRIORITY.HIGH}>High</option>
                 </select>
             </div>
-            <div className="col-12 ">
+            <div className="col-12 d-flex justify-content-center">
                 <input type="submit" name="submit" value="Create" className="btn btn-primary"></input>
             </div>
         </form>
