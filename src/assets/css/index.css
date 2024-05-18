@@ -110,6 +110,12 @@ body {
     font-style: italic;
 }
 
-.main-section{
-    height: 100dvh;
+.main-section {
+    /* height: 100dvh; */
+}
+
+body {
+    /* height: 100dvh; */
+    /* width: 100%; */
+    background-color: #f9f9f9;
 }

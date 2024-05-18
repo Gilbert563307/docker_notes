@@ -1,12 +1,37 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
-import BS5Navbar from '../components/alerts/bs5/BS5Navbar'
+import "../../assets/css/layouts/DefaultLayout.css";
+import { useAuthProvider } from '../../context/AuthProvider';
+import NavBar from "../components/nav/NavBar";
+import { useMainControllerContext } from '../../controller/MainController';
 
+/**
+ * 
+ * @returns {JSX.Element}
+ */
 export default function DefaultLayout() {
+  const { user } = useAuthProvider();
+  const { title } = useMainControllerContext();
+
   return (
-    <section className='main-section'>
-      <BS5Navbar />
-      <Outlet></Outlet>
+    <section className="default-layout">
+
+      <aside className="aside-navigation">
+        <article>
+          <h1 className="stats-tracker-h1">Notes - Tracker</h1>
+          <p><span className='text-body-secondary'>Welcome,</span> <b className="fw-medium">{user?.displayName}</b> </p>
+          <NavBar />
+        </article>
+      </aside>
+      <article className="layout-section">
+        <article className="mx-1">
+          <h2>{title}</h2>
+          <div className="layout-line"></div>
+          <article className="content border rounded">
+            <Outlet></Outlet>
+          </article>
+        </article>
+      </article>
     </section>
   )
 }
