@@ -1,12 +1,8 @@
-import React, { useEffect } from 'react'
-import { useMainControllerContext } from '../../controller/MainController';
+import React from 'react'
+import useSetPageTitleHook from '../../hooks/useSetPageTitleHook'
 
 export default function CollectListNotes() {
-
-  const { setTitle } = useMainControllerContext();
-  useEffect(() => {
-    setTitle("Notes");
-  }, []);
+  useSetPageTitleHook({ title: "Notes" });
 
   return (
     <div>CollectListNotes</div>
