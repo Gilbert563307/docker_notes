@@ -15,14 +15,14 @@ export const LAST_VISITED_PAGE_NUMBER_KEY = "LAST_VISITED";
 export const ALLOWED_ITEMS_PER_PAGE = [15, 25, 50];
 
 
-//NOTES
-export const NOTES_PRIORITY = {
+//TASKS
+export const TASKS_PRIORITY = {
     LOW: 1,
     MEDIUM: 2,
     HIGH: 3,
 }
 
-export const NOTES_STATUS = {
+export const TASKS_STATUS = {
     TODO: 0,
     IN_PROGRESS: 1,
     COMPLETED: 2,

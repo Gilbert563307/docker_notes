@@ -4,12 +4,12 @@ import {
 
 } from "react-router-dom";
 import MainController from './MainController';
-import NotesController from './NotesController';
+import TasksController from './TasksController';
 import AuthController from './AuthController';
-import CollectListNotes from '../view/notes/CollectListNotes';
-import CollectCreateNote from '../view/notes/CollectCreateNote';
-import CollectReadNote from '../view/notes/CollectReadNote';
-import CollectUpdateNote from '../view/notes/CollectUpdateNote';
+import CollectListTasks from '../view/tasks/CollectListTasks';
+import CollectCreateTask from '../view/tasks/CollectCreateTask';
+import CollectReadTask from '../view/tasks/CollectReadTask';
+import CollectUpdateTask from '../view/tasks/CollectUpdateTask';
 
 import CollectListAuth from '../view/auth/CollectListAuth';
 import ErrorPage from '../view/error/ErrorPage';
@@ -38,29 +38,29 @@ const router = createBrowserRouter([
                 )
             },
             {
-                path: "/notes",
+                path: "/tasks",
                 element: (
                     <ProtectedRoute>
-                        <NotesController />
+                        <TasksController />
                     </ProtectedRoute>
                 ),
                 children: [
                     {
                         index: true,
                         path: "",
-                        element: <CollectListNotes />,
+                        element: <CollectListTasks />,
                     },
                     {
-                        path: "notes/create",
-                        element: <CollectCreateNote />,
+                        path: "tasks/create",
+                        element: <CollectCreateTask />,
                     },
                     {
-                        path: "notes/read",
-                        element: <CollectReadNote />,
+                        path: "tasks/read",
+                        element: <CollectReadTask />,
                     },
                     {
-                        path: "notes/update",
-                        element: <CollectUpdateNote />,
+                        path: "tasks/update",
+                        element: <CollectUpdateTask />,
                     }
                 ],
             },

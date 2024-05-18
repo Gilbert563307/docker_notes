@@ -14,7 +14,7 @@ export default function CollectListAuth() {
     <article className='auth-article'>
       <article className='auth-vector'>
         <div className='auth-content'>
-          <h1>Your Note's</h1>
+          <h1>Your Tasks's</h1>
 
           <button type="button" className="btn" onClick={signInWithGoogle}>Sign in with google</button>
         </div>

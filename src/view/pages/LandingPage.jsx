@@ -4,5 +4,5 @@ import { Navigate } from 'react-router-dom'
 export default function LandingPage() {
     //TODO collect data or use for insights
 
-    return <Navigate to="/notes" />
+    return <Navigate to="/tasks" />
 }

@@ -25,10 +25,10 @@ export default function BS5Navbar() {
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav">
                         <li className="nav-item">
-                            <Link className='nav-link' to="/notes">Notes</Link>
+                            <Link className='nav-link' to="/tasks">Tasks</Link>
                         </li>
                         <li className="nav-item">
-                            <Link className='nav-link' to="/notes">Settings</Link>
+                            <Link className='nav-link' to="/settings">Settings</Link>
                         </li>
                         <li className="nav-item logout-btn">
                             <a className="nav-link" role='button' onClick={logout}>Logout</a>

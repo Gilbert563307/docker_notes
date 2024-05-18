@@ -1,8 +1,8 @@
-.notes-header, .notes-content{
+.tasks-header, .tasks-content{
     margin: 1em;
 }
 
-.add-note-button{
+.add-task-button{
     background-color: #605BFF;
     color: white;
     display: flex;
@@ -20,11 +20,11 @@
     border-radius: 5px;
     transition: ease-in 500ms;
 }
-.add-note-button > i {
+.add-task-button > i {
     color: white;
 }
 
-.add-note-button:hover{
+.add-task-button:hover{
     opacity: 0.8;
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }

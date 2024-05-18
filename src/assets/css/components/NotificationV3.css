@@ -1,11 +1,7 @@
-.bs5-alert-v3 > div {
-    z-index: 222;
-    position: fixed;
-    margin: 1rem;
-    min-width: 98%;
-  }
-  .bs5-alert-v3 {
-    display: flex;
-    justify-content: center;
-  }
-  
+.bs5-alert-v3{
+  width: 80%;
+  z-index: 222;
+  position: fixed;
+  top: 0;
+  margin: 1em;
+}

@@ -3,58 +3,56 @@ import { Outlet } from 'react-router-dom';
 import useBS5PreloaderHook from '../hooks/useBS5PreloaderHook';
 import { ALERT_ACTIONS, ALERT_TYPES } from '../view/components/bs5/BS5Alert';
 import NotificationV3 from '../view/components/notifications/NotificationV3';
-import NotesLogic from '../model/NotesLogic';
+import TasksLogic from '../model/TasksLogic';
 
 /**
- * @typedef {Object} Note
- * @property {number} id - The unique identifier for the note.
+ * @typedef {Object} Task
+ * @property {number} id - The unique identifier for the task.
  * @property {string} user_uid - The unique identifier for the user.
- * @property {string} title - The title of the note.
- * @property {string} description - The description of the note.
- * @property {integer} status - The status of the note.
- * @property {integer} priority - The priority level of the note.
- * @property {string} updated_at - The timestamp when the note was last updated.
- * @property {string} created_at - The timestamp when the note was created.
+ * @property {string} title - The title of the task.
+ * @property {string} description - The description of the task.
+ * @property {integer} status - The status of the task.
+ * @property {integer} priority - The priority level of the task.
  */
 
 /**
- * @typedef {Array<Note>} Notes - State for notes.
+ * @typedef {Array<Task>} Tasks - State for tasks.
  */
 
 /**
  * @typedef {Object} InitialState
- * @property {Note | Object} note - The current note.
- * @property {Notes | Array} notes - The list of notes.
+ * @property {Task | Object} task - The current task.
+ * @property {Tasks | Array} tasks - The list of tasks.
  * @property {Object} notification - The notification object.
  * @property {string} notification.message - The notification message.
  * @property {number} notification.type - The notification type.
  */
 
 /**
- * Initial state for the notes controller.
+ * Initial state for the tasks controller.
  * @type {InitialState}
  */
 const initialState = {
-  note: {},
-  notes: [],
+  task: {},
+  tasks: [],
   notification: { message: "", type: 0 },
 };
 
 /**
- * Enum representing different actions for the notes controller.
- * @typedef {Object} NotesControllerActions
- * @property {string} LIST - Action type for listing notes.
- * @property {string} CREATE - Action type for creating a note.
- * @property {string} READ - Action type for reading a note.
- * @property {string} UPDATE - Action type for updating a note.
- * @property {string} ARCHIVE - Action type for archiving a note.
+ * Enum representing different actions for the tasks controller.
+ * @typedef {Object} TasksControllerActions
+ * @property {string} LIST - Action type for listing tasks.
+ * @property {string} CREATE - Action type for creating a task.
+ * @property {string} READ - Action type for reading a task.
+ * @property {string} UPDATE - Action type for updating a task.
+ * @property {string} ARCHIVE - Action type for archiving a task.
  */
-export const NOTES_CONTROLLER_ACTIONS = {
-  LIST: "LIST_NOTES",
-  CREATE: "CREATE_NOTE",
-  READ: "READ_NOTE",
-  UPDATE: "UPDATE_NOTE",
-  ARCHIVE: "ARCHIVE_NOTE",
+export const TASKS_CONTROLLER_ACTIONS = {
+  LIST: "LIST_TASKS",
+  CREATE: "CREATE_TASK",
+  READ: "READ_TASK",
+  UPDATE: "UPDATE_TASK",
+  ARCHIVE: "ARCHIVE_TASK",
 };
 
 /**
@@ -64,7 +62,7 @@ export const NOTES_CONTROLLER_ACTIONS = {
  */
 
 // Create context with initial state and dispatch function
-const notesControllerContext = createContext(
+const tasksControllerContext = createContext(
   /** @type {ContextValue} */({
     state: initialState,
     dispatch: () => { },
@@ -72,26 +70,26 @@ const notesControllerContext = createContext(
 );
 
 /**
- * Custom hook to use the NotesController context.
- * Throws an error if used outside the NotesControllerProvider.
+ * Custom hook to use the TasksController context.
+ * Throws an error if used outside the TaksControllerProvider.
  * @returns {ContextValue} The context value.
  */
-export const useNotesControllerContext = () => {
-  const context = useContext(notesControllerContext);
+export const useTasksControllerContext = () => {
+  const context = useContext(tasksControllerContext);
   if (!context) {
     throw new Error(
-      "useNotesControllerContext must be used within a NotesControllerProvider"
+      "useTasksControllerContext must be used within a TasksControllerProvider"
     );
   }
   return context;
 };
 
 /**
- * NotesController component that provides an outlet for nested routes.
- * @returns {JSX.Element} The NotesController component.
+ * TasksController component that provides an outlet for nested routes.
+ * @returns {JSX.Element} The TasksController component.
  */
-export default function NotesController() {
-  const { createNote } = NotesLogic();
+export default function TasksController() {
+  const { createTask } = TasksLogic();
 
   //import the methods and loader component from our custom component
   const { showLoader, closeLoader, PreloaderComponent } = useBS5PreloaderHook();
@@ -126,14 +124,14 @@ export default function NotesController() {
    * 
    * @param {{title: string, description: string,  priority: number }} payload 
    */
-  const collectCreateNote = async (payload) => {
+  const collectCreateTask = async (payload) => {
     try {
-      const noteCreated = await createNote(payload);
+      const taskCreated = await createTask(payload);
 
-      // Update state with the created note response
+      // Update state with the created task response
       dispatchAction({
         type: REDUCER_ACTIONS.SET_NOTIFICATION,
-        payload: noteCreated,
+        payload: taskCreated,
       });
     } catch (error) {
       setErrorToState(error)
@@ -176,15 +174,15 @@ export default function NotesController() {
 
       // Handle different action types
       switch (action.type) {
-        case NOTES_CONTROLLER_ACTIONS.CREATE:
-          await collectCreateNote(action?.payload);
+        case TASKS_CONTROLLER_ACTIONS.CREATE:
+          await collectCreateTask(action?.payload);
           break;
         case ALERT_ACTIONS.CLOSE_ALERT:
           closeAlert();
           break;
         default:
           console.log(
-            `NotesController: No action type found ${action.type}`
+            `TasksController: No action type found ${action.type}`
           );
           break;
       }
@@ -192,7 +190,7 @@ export default function NotesController() {
       // Close loader in case of error
       closeLoader();
       setErrorToState(error);
-      console.log(`NotesController: error ${error}`);
+      console.log(`TasksController: error ${error}`);
     } finally {
       // Close loader after action processing
       closeLoader();
@@ -208,12 +206,12 @@ export default function NotesController() {
     [state, dispatch]
   );
   return (
-    <notesControllerContext.Provider value={contextValue}>
+    <tasksControllerContext.Provider value={contextValue}>
       {PreloaderComponent}
       <NotificationV3
-        controllerContext={useNotesControllerContext}
+        controllerContext={useTasksControllerContext}
       ></NotificationV3>
       <Outlet />
-    </notesControllerContext.Provider>
+    </tasksControllerContext.Provider>
   );
 }

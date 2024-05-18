@@ -1,20 +1,20 @@
 import React from 'react'
 import { useForm } from "react-hook-form";
-import { NOTES_PRIORITY } from '../../../config';
-import { NOTES_CONTROLLER_ACTIONS, useNotesControllerContext } from '../../../controller/NotesController';
+import { TASKS_PRIORITY } from '../../../config';
+import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../../controller/TasksController';
 
 /**
- * NotesCreateNoteComponent
+ * TasksCreateTaskComponent
  * 
- * This component provides a form for creating a new note. It uses react-hook-form for form handling
- * and validation, and dispatches actions to the NotesController context to manage the state of notes.
+ * This component provides a form for creating a new task. It uses react-hook-form for form handling
+ * and validation, and dispatches actions to the TasksController context to manage the state of tasks.
  *
  * @param {Object} props - The component props.
  * @param {Function} props.closeModal - A function to close the modal.
  * @returns {JSX.Element} The rendered component.
  */
-export default function NotesCreateNoteComponent({ closeModal }) {
-    const { dispatch } = useNotesControllerContext();
+export default function TasksCreateTaskComponent({ closeModal }) {
+    const { dispatch } = useTasksControllerContext();
 
     const {
         register,
@@ -26,7 +26,7 @@ export default function NotesCreateNoteComponent({ closeModal }) {
     const onSubmit = (data) => {
         closeModal();
         reset();
-        dispatch({ type: NOTES_CONTROLLER_ACTIONS.CREATE, payload: data });
+        dispatch({ type: TASKS_CONTROLLER_ACTIONS.CREATE, payload: data });
     };
 
     return (
@@ -67,10 +67,10 @@ export default function NotesCreateNoteComponent({ closeModal }) {
             <div className="col-md-6">
                 <label htmlFor="priority" className="form-label">Priority</label>
                 <select className="form-select" id="priority" aria-label="Priority select" {...register("priority", { required: false })}>
-                    <option defaultValue value={NOTES_PRIORITY.LOW}>Choose the priority</option>
-                    <option value={NOTES_PRIORITY.LOW}>Low</option>
-                    <option value={NOTES_PRIORITY.MEDIUM}>Medium</option>
-                    <option value={NOTES_PRIORITY.HIGH}>High</option>
+                    <option defaultValue value={TASKS_PRIORITY.LOW}>Choose the priority</option>
+                    <option value={TASKS_PRIORITY.LOW}>Low</option>
+                    <option value={TASKS_PRIORITY.MEDIUM}>Medium</option>
+                    <option value={TASKS_PRIORITY.HIGH}>High</option>
                 </select>
             </div>
             <div className="col-12 ">

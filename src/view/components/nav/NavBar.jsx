@@ -23,7 +23,7 @@ export default function NavBar() {
      * @returns {Array<{name: string, url: string, icon: string}>}
      */
     const items = [
-        { name: "Notes", url: "/notes", icon: "fa-regular fa-notebook" },
+        { name: "Tasks", url: "/tasks", icon: "fa-regular fa-notebook" },
         { name: "Settings", url: "settings", icon: "fa-regular fa-gear", },
     ];
 
