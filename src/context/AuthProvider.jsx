@@ -4,9 +4,18 @@ import AuthLogic from '../model/AuthLogic';
 
 
 /**
+ * @typedef {Object} User
+ * @property {string} uid
+ * @property {string} displayName
+ * @property {string} email
+ * @property {string} token
+ * @property {string} photoURL
+ */
+
+/**
  * Context for managing user authentication state and actions.
  * @typedef {Object} AuthContextType
- * @property {{ uid: string, displayName: string, email: string,  token: string, photoURL: string}} user - The authenticated user object.
+ * @property {User} user - The authenticated user object.
  * @property {Function} login - Function to perform user login.
  * @property {Function} logout - Function to perform user logout.
  */
@@ -58,6 +67,7 @@ export default function AuthProvider({ children }) {
   /**
    * Simulates user login action.
    * In a real implementation, this function would handle authentication logic.
+   * @param {User} userObject 
    */
   const login = (userObject) => {
     storeValue(AUTH_STORAGE_KEYS.USER, userObject);

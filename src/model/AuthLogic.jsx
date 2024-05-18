@@ -1,5 +1,5 @@
 import React from 'react'
-import { ALERT_TYPES } from '../view/components/alerts/BS5Alert';
+import { ALERT_TYPES } from '../view/components/bs5/BS5Alert';
 import { auth, googleProvider } from '../database/firebaseConfig';
 import {
     signInWithPopup,

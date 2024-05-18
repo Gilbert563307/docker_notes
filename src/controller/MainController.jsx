@@ -41,6 +41,11 @@ export const useMainControllerContext = () => {
   return mainControllerContext;
 };
 
+
+/**
+ * @typedef {{type: number, message: string}} notificationObject
+ */
+
 /**
  * MainController component manages the main layout based on user authentication status.
  * Renders either the DefaultLayout if user is authenticated, or the GuestLayout for unauthenticated users.
