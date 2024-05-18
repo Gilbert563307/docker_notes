@@ -58,7 +58,7 @@ export default function CollectListNotes() {
             modal_id="create_note_modal"
             modal_label="create_note_modal"
             modal_title="Add new note"
-            modal_content={<NotesCreateNoteComponent closeCreateModal={closeCreateModal}/>}
+            modal_content={<NotesCreateNoteComponent closeModal={closeCreateModal}/>}
             closeModal={closeCreateModal}
             modal_footer={false}
             headerCentre={true}

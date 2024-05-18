@@ -22,5 +22,11 @@ export const NOTES_PRIORITY = {
     HIGH: 3,
 }
 
+export const NOTES_STATUS = {
+    TODO: 0,
+    IN_PROGRESS: 1,
+    COMPLETED: 2,
+}
+
 
 

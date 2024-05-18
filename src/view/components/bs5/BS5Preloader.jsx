@@ -1,7 +1,8 @@
 import React from "react";
-import "../../../assets/css/BS5Preloader.css";
+import "../../../assets/css/components/BS5Preloader.css";
 
 export default function BS5Preloader() {
+
   return (
     <div className="preloader-wrapper">
       <div className="spinner-grow text-primary" role="status">

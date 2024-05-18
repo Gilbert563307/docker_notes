@@ -1,5 +1,5 @@
 import React from "react";
-import "../../../../assets/css/DiaNotificationV3.css";
+import "../../../assets/css/components/NotificationV3.css";
 import BS5Alert, { ALERT_ACTIONS } from "../bs5/BS5Alert";
 
 /**
@@ -12,7 +12,7 @@ import BS5Alert, { ALERT_ACTIONS } from "../bs5/BS5Alert";
  */
 export default function NotificationV3({ controllerContext }) {
   const { state, dispatch } = controllerContext();
-  
+
   const closeNotification = () => {
     dispatch({ type: ALERT_ACTIONS.CLOSE_ALERT });
   };

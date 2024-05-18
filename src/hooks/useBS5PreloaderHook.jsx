@@ -1,6 +1,5 @@
 import React from "react";
-import { Show } from "./Show";
-import BS5Preloader from "../BS5Components/BS5Preloader";
+import BS5Preloader from "../view/components/bs5/BS5Preloader";
 
 /**
  * Custom hook for managing Bootstrap 5 preloader state.
@@ -33,13 +32,7 @@ const useBS5PreloaderHook = () => {
    * JSX element representing the preloader component.
    * @returns {JSX.Element}
    */
-  const PreloaderComponent = (
-    <Show>
-      <Show.When isTrue={loader}>
-        <BS5Preloader />
-      </Show.When>
-    </Show>
-  );
+  const PreloaderComponent = loader === true && <BS5Preloader />;
 
   return { showLoader, closeLoader, PreloaderComponent };
 };

@@ -10,6 +10,7 @@ import {
     Timestamp,
 } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
+import { useAuthProvider } from "../context/AuthProvider";
 
 /**
  * 
@@ -18,9 +19,11 @@ import { ref, uploadBytes } from "firebase/storage";
  * @returns 
  */
 export default function DataHandler({ table }) {
+    const { user } = useAuthProvider();
     const collectionRef = collection(db, table);
-    const userId = auth.currentUser ? auth.currentUser.uid : null;
+    const userId = user ? user.uid : null;
     const currentServerTimestamp = serverTimestamp();
+
     /**
      * 
      * @param {{ seconds: number, nanoseconds: number } } object 
@@ -42,6 +45,6 @@ export default function DataHandler({ table }) {
         uploadBytes,
         userId,
         currentServerTimestamp,
-        convertTimeStampToDate
+        convertTimeStampToDate,
     };
 }
