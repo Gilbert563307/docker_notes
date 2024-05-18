@@ -15,4 +15,12 @@ export const LAST_VISITED_PAGE_NUMBER_KEY = "LAST_VISITED";
 export const ALLOWED_ITEMS_PER_PAGE = [15, 25, 50];
 
 
+//NOTES
+export const NOTES_PRIORITY = {
+    LOW: 1,
+    MEDIUM: 2,
+    HIGH: 3,
+}
+
+
 
