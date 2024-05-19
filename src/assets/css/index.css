@@ -110,8 +110,9 @@ body {
     font-style: italic;
 }
 
-.main-section {
-    /* height: 100dvh; */
+.linked-user-logo {
+    height: 24px;
+    width: 24px;
 }
 
 body {

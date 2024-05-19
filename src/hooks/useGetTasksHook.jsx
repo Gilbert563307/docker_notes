@@ -1,5 +1,8 @@
 import React, { useEffect } from 'react';
 import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../controller/TasksController';
+import usePaginationHook from './usePaginationHook';
+import useHelpers from '../helpers/useHelpers';
+import { DEFAULT_PAGE_NUMBER, PAGE_NUMBER } from '../config';
 
 /**
  * Custom hook for fetching and managing tasks.
@@ -11,6 +14,7 @@ import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../controll
  * @returns {Array} tasks - The array of tasks from the state.
  */
 export default function useGetTasksHook() {
+    const { getUrlParams } = useHelpers();
     const { state, dispatch } = useTasksControllerContext();
 
     /**
@@ -19,17 +23,21 @@ export default function useGetTasksHook() {
      * @returns {void}
      */
     const fetchTasks = () => {
-        dispatch({ type: TASKS_CONTROLLER_ACTIONS.LIST });
+        const currentPage = getUrlParams(PAGE_NUMBER) || DEFAULT_PAGE_NUMBER;
+        dispatch({ type: TASKS_CONTROLLER_ACTIONS.LIST, payload: { currentPage: currentPage, lastVisibleTask: state.tasks.lastVisibleTask } });
     };
 
     React.useEffect(() => {
         console.log(`state`, state);
     }, [state])
 
+    // Utilize pagination hook
+    usePaginationHook({ methodToCall: fetchTasks });
+
     // Fetch tasks when the component mounts.
     useEffect(() => {
         fetchTasks();
     }, []); // Empty dependency array ensures this runs only once on mount.
 
-    return { tasks: state.tasks.tasks };
+    return { tasks: state.tasks.tasks, totalTasks: state.tasks.total, totalPages: state.tasks.pages };
 }

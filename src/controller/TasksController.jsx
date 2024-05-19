@@ -22,7 +22,7 @@ import TasksLogic from '../model/TasksLogic';
 /**
  * @typedef {Object} InitialState
  * @property {Task | Object} task - The current task.
- * @property {{ tasks: Tasks, lastVisibleTask: {}}} tasks - The list of tasks.
+ * @property {{ tasks: Tasks, lastVisibleTask: {}, total: number}} tasks - The list of tasks.
  * @property {Object} notification - The notification object.
  * @property {string} notification.message - The notification message.
  * @property {number} notification.type - The notification type.
@@ -34,7 +34,7 @@ import TasksLogic from '../model/TasksLogic';
  */
 const initialState = {
   task: {},
-  tasks: { tasks: [], lastVisibleTask: {} },
+  tasks: { tasks: [], lastVisibleTask: {}, total: 0 },
   notification: { message: "", type: 0 },
 };
 
@@ -147,10 +147,13 @@ export default function TasksController() {
     }
   }
 
-
-  const collectListTasks = async () => {
+  /**
+   * 
+   * @param {{ currentPage: number, lastVisibleTask: Object }} payload 
+   */
+  const collectListTasks = async (payload) => {
     try {
-      const tasks = await listTasks();
+      const tasks = await listTasks(payload);
 
       // Update state with the created task response
       dispatchAction({
@@ -203,7 +206,7 @@ export default function TasksController() {
           await collectCreateTask(action?.payload);
           break;
         case TASKS_CONTROLLER_ACTIONS.LIST:
-          await collectListTasks();
+          await collectListTasks(action?.payload);
           break;
         case ALERT_ACTIONS.CLOSE_ALERT:
           closeAlert();

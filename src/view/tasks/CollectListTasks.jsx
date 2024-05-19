@@ -5,7 +5,6 @@ import { Show } from '../components/custom/Show';
 import BS5Modal, { MODAL_SIZES } from '../components/bs5/BS5Modal';
 import TasksCreateTaskComponent from './components/TasksCreateTaskComponent';
 import useGetTasksHook from '../../hooks/useGetTasksHook';
-import ListTasks from './components/ListTasks';
 import TasksTable from './components/TasksTable';
 
 
@@ -20,7 +19,7 @@ import TasksTable from './components/TasksTable';
  */
 export default function CollectListTasks() {
   useSetPageTitleHook({ title: "Tasks " });
-  const { tasks } = useGetTasksHook();
+  const { tasks, totalTasks, totalPages } = useGetTasksHook();
   const [createTaskModal, setCreateTaskModal] = useState(false);
 
   /**
@@ -49,12 +48,12 @@ export default function CollectListTasks() {
           searchbar...
         </div>
         <div>
-          <button aria-describedby='create task button' onClick={openCreateModal} className='add-task-button'><i className="fa-thin fa-plus"></i>Add Task</button>
+          <button aria-describedby='create task button' onClick={openCreateModal} className='add-task-button'>Create</button>
         </div>
       </div>
 
       <div className='tasks-content'>
-        <TasksTable tasks={tasks}/>
+        <TasksTable tasks={tasks} totalTasks={totalTasks} totalPages={totalPages} createOnclick={openCreateModal} />
       </div>
 
       <Show>

@@ -4,6 +4,7 @@
 
 .tasks-table {
     color: #626F86 !important;
+    margin-bottom: 0.5em;
 }
 
 .badge-own {
@@ -38,4 +39,17 @@
 .badge-high {
     background-color: #df4958 !important;
     color: #ffff !important;
+}
+
+.table-add-task-btn{
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: start;
+    height: 40px;
+}
+
+.table-add-task-div:hover{
+    margin-top: 0;
+    background-color: #ECECEC;
 }

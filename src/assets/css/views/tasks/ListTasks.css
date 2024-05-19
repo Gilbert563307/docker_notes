@@ -43,11 +43,6 @@
     display: inline-block;
 }
 
-.linked-user-logo {
-    height: 24px;
-    width: 24px;
-}
-
 .task-card-content-section {
     display: flex;
     justify-content: space-between;

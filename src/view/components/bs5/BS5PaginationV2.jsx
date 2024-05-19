@@ -71,7 +71,7 @@ export default function BS5PaginationV2({
         <Show.When isTrue={totalPages > 1}>
           <Show>
             <Show.When isTrue={totalItems != null}>
-              <span className="mx-1">Totale resultaten: {totalItems}</span>
+              <span className="mx-1">Total results: {totalItems}</span>
             </Show.When>
           </Show>
 
@@ -90,7 +90,7 @@ export default function BS5PaginationV2({
               breakLinkClassName="page-link"
               nextLabel={
                 !loadOptionsIcons ? (
-                  "Volgende"
+                  "Next"
                 ) : (
                   <span dangerouslySetInnerHTML={{ __html: nextLabelHtml }} />
                 )
@@ -99,7 +99,7 @@ export default function BS5PaginationV2({
               pageRangeDisplayed={4}
               previousLabel={
                 !loadOptionsIcons ? (
-                  "Vorige"
+                  "Previous"
                 ) : (
                   <span
                     dangerouslySetInnerHTML={{ __html: backLabelHtml }}
