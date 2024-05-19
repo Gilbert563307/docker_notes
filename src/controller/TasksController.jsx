@@ -22,7 +22,7 @@ import TasksLogic from '../model/TasksLogic';
 /**
  * @typedef {Object} InitialState
  * @property {Task | Object} task - The current task.
- * @property {Tasks | Array} tasks - The list of tasks.
+ * @property {{ tasks: Tasks, lastVisibleTask: {}}} tasks - The list of tasks.
  * @property {Object} notification - The notification object.
  * @property {string} notification.message - The notification message.
  * @property {number} notification.type - The notification type.
@@ -34,7 +34,7 @@ import TasksLogic from '../model/TasksLogic';
  */
 const initialState = {
   task: {},
-  tasks: [],
+  tasks: { tasks: [], lastVisibleTask: {} },
   notification: { message: "", type: 0 },
 };
 
@@ -89,7 +89,7 @@ export const useTasksControllerContext = () => {
  * @returns {JSX.Element} The TasksController component.
  */
 export default function TasksController() {
-  const { createTask } = TasksLogic();
+  const { createTask, listTasks } = TasksLogic();
 
   //import the methods and loader component from our custom component
   const { showLoader, closeLoader, PreloaderComponent } = useBS5PreloaderHook();
@@ -106,6 +106,12 @@ export default function TasksController() {
    */
   const reducer = (state, action) => {
     switch (action.type) {
+      case REDUCER_ACTIONS.SET_TASKS:
+        return {
+          ...state,
+          tasks: action.payload,
+        }
+
       case REDUCER_ACTIONS.SET_NOTIFICATION:
         return {
           ...state,
@@ -133,6 +139,25 @@ export default function TasksController() {
         type: REDUCER_ACTIONS.SET_NOTIFICATION,
         payload: taskCreated,
       });
+
+      //reftech tasks afte creating one
+      await collectListTasks();
+    } catch (error) {
+      setErrorToState(error);
+    }
+  }
+
+
+  const collectListTasks = async () => {
+    try {
+      const tasks = await listTasks();
+
+      // Update state with the created task response
+      dispatchAction({
+        type: REDUCER_ACTIONS.SET_TASKS,
+        payload: tasks.results,
+      });
+
     } catch (error) {
       setErrorToState(error)
     }
@@ -176,6 +201,9 @@ export default function TasksController() {
       switch (action.type) {
         case TASKS_CONTROLLER_ACTIONS.CREATE:
           await collectCreateTask(action?.payload);
+          break;
+        case TASKS_CONTROLLER_ACTIONS.LIST:
+          await collectListTasks();
           break;
         case ALERT_ACTIONS.CLOSE_ALERT:
           closeAlert();

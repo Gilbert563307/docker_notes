@@ -8,6 +8,9 @@ import {
     updateDoc,
     serverTimestamp,
     Timestamp,
+    query,
+    limit,
+    where,
 } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import { useAuthProvider } from "../context/AuthProvider";
@@ -21,7 +24,7 @@ import { useAuthProvider } from "../context/AuthProvider";
 export default function DataHandler({ table }) {
     const { user } = useAuthProvider();
     const collectionRef = collection(db, table);
-    const userId = user ? user.uid : null;
+    const userUid = user ? user.uid : null;
     const currentServerTimestamp = serverTimestamp();
 
     /**
@@ -43,8 +46,11 @@ export default function DataHandler({ table }) {
         storage,
         ref,
         uploadBytes,
-        userId,
+        userUid,
         currentServerTimestamp,
         convertTimeStampToDate,
+        query,
+        limit,
+        where,
     };
 }

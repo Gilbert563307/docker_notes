@@ -57,7 +57,7 @@ export default function MainController() {
   const { user } = useAuthProvider();
 
   useEffect(() => {
-    console.log(`MainController: Dev`, auth);
+    // console.log(`MainController: Dev`, auth);
   }, [auth]); // Log auth on component mount
 
   const contextValue = useMemo(() => ({ title, setTitle }), [title, setTitle]);

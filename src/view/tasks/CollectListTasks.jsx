@@ -4,6 +4,8 @@ import "../../assets/css/views/tasks/CollectListTasks.css";
 import { Show } from '../components/custom/Show';
 import BS5Modal, { MODAL_SIZES } from '../components/bs5/BS5Modal';
 import TasksCreateTaskComponent from './components/TasksCreateTaskComponent';
+import useGetTasksHook from '../../hooks/useGetTasksHook';
+import ListTasks from './components/ListTasks';
 
 
 /**
@@ -17,6 +19,7 @@ import TasksCreateTaskComponent from './components/TasksCreateTaskComponent';
  */
 export default function CollectListTasks() {
   useSetPageTitleHook({ title: "Tasks " });
+  const { tasks } = useGetTasksHook();
   const [createTaskModal, setCreateTaskModal] = useState(false);
 
   /**
@@ -50,7 +53,7 @@ export default function CollectListTasks() {
       </div>
 
       <div className='tasks-content'>
-        content....
+        <ListTasks tasks={tasks}/>
       </div>
 
       <Show>
@@ -59,7 +62,7 @@ export default function CollectListTasks() {
             modal_id="create_task_modal"
             modal_label="create_task_modal"
             modal_title="Add new task"
-            modal_content={<TasksCreateTaskComponent closeModal={closeCreateModal}/>}
+            modal_content={<TasksCreateTaskComponent closeModal={closeCreateModal} />}
             closeModal={closeCreateModal}
             modal_footer={false}
             headerCentre={true}

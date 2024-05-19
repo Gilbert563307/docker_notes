@@ -3,7 +3,7 @@
 }
 
 .add-task-button{
-    background-color: #605BFF;
+    background-color: #0C66E4;
     color: white;
     display: flex;
     justify-content: center;
@@ -28,3 +28,4 @@
     opacity: 0.8;
     box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
+

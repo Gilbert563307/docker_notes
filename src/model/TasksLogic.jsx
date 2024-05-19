@@ -1,7 +1,7 @@
 import React from 'react';
 import { ALERT_TYPES } from '../view/components/bs5/BS5Alert';
 import DataHandler from './DataHandler';
-import { TASKS_STATUS } from '../config';
+import { DEFAULT_ITEMS_PER_PAGE, TASKS_STATUS } from '../config';
 
 /**
  * Logic component for managing tasks.
@@ -10,8 +10,12 @@ import { TASKS_STATUS } from '../config';
 export default function TasksLogic() {
     const {
         collectionRef,
-        userId,
+        userUid,
         addDoc,
+        query,
+        where,
+        getDocs,
+        limit,
     } = DataHandler({ table: "tasks" });
 
     /**
@@ -25,7 +29,7 @@ export default function TasksLogic() {
      */
     const createTask = async (payload) => {
         try {
-            const newPayload = { ...payload, user_uid: userId, status: TASKS_STATUS.TODO };
+            const newPayload = { ...payload, user_uid: userUid, status: TASKS_STATUS.TODO };
             const created = await addDoc(collectionRef, newPayload);
             const isTaskCreated = created ? true : false;
 
@@ -43,5 +47,50 @@ export default function TasksLogic() {
         }
     }
 
-    return { createTask };
+
+    /**
+    * Fetches a list of tasks for the current user.
+    *
+    * This function queries the Firestore collection to retrieve tasks associated with the current user's UID,
+    * with a limit on the number of items per page. It includes the document ID in the task data and handles
+    * potential errors during the fetch process.
+    *
+    * @returns {Promise<{results: { tasks: import("../controller/TasksController").Tasks, lastVisibleTask: Object }, message: string, type: string }>} A promise that resolves to an object containing the fetched tasks, a message, and an alert type.
+     */
+    const listTasks = async () => {
+        try {
+            // Construct the query to get all tasks for the current user UID with a limit on the number of items per page.
+            const tasksQuery = query(
+                collectionRef,
+                where("user_uid", "==", userUid),
+                limit(DEFAULT_ITEMS_PER_PAGE)
+            );
+
+            // Execute the query to get the tasks.
+            const querySnapshot = await getDocs(tasksQuery);
+
+            // Get the last visible document from the query snapshot.
+            const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+            // Map through the query snapshot to add the document ID to each task.
+            const results = querySnapshot.docs.map((document) => ({
+                ...document.data(),
+                id: document.id,
+            }));
+
+            return {
+                results: { tasks: results, lastVisibleTask: lastVisible },
+                message: "",
+                type: ALERT_TYPES.SUCCESS
+            };
+        } catch (error) {
+            return {
+                results: {},
+                message: error.message,
+                type: ALERT_TYPES.DANGER
+            };
+        }
+    };
+
+    return { createTask, listTasks };
 }
