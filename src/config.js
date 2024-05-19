@@ -18,9 +18,9 @@ export const ALLOWED_ITEMS_PER_PAGE = [15, 25, 50];
 //TASKS
 export const SELECTED_TASK = "SELECTED_TASK";
 export const TASKS_PRIORITY = {
-    LOW: 1,
-    MEDIUM: 2,
-    HIGH: 3,
+    LOW: 0,
+    MEDIUM: 1,
+    HIGH: 2,
 }
 
 export const TASKS_STATUS = {

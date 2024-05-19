@@ -1,0 +1,41 @@
+.tasks-table-tr-headers>th {
+    font-weight: 400;
+}
+
+.tasks-table {
+    color: #626F86 !important;
+}
+
+.badge-own {
+    font-weight: 600 !important;
+}
+
+.badge-todo {
+    background-color: #E4E6EA !important;
+    color: #44546F !important;
+}
+
+.badge-inprogress {
+    background-color: #E9F2FF !important;
+    color: #0055CC !important;
+}
+
+.badge-completed {
+    background-color: #DCFFF1 !important;
+    color: #216E4E !important;
+}
+
+.badge-low {
+    background-color: #9ec5fe !important;
+    color: black !important;
+}
+
+.badge-medium {
+    background-color: #ffc720 !important;
+    color: black !important;
+}
+
+.badge-high {
+    background-color: #df4958 !important;
+    color: #ffff !important;
+}

@@ -6,6 +6,7 @@ import BS5Modal, { MODAL_SIZES } from '../components/bs5/BS5Modal';
 import TasksCreateTaskComponent from './components/TasksCreateTaskComponent';
 import useGetTasksHook from '../../hooks/useGetTasksHook';
 import ListTasks from './components/ListTasks';
+import TasksTable from './components/TasksTable';
 
 
 /**
@@ -53,7 +54,7 @@ export default function CollectListTasks() {
       </div>
 
       <div className='tasks-content'>
-        <ListTasks tasks={tasks}/>
+        <TasksTable tasks={tasks}/>
       </div>
 
       <Show>
