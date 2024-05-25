@@ -59,6 +59,8 @@ export default function BS5PaginationV2({
     }
     //when the total items change for the page back to zero index
     setForcePage(0);
+    //set the use back to page one
+    setPageNumberToSessionMemory(1);
   };
 
   useEffect(() => {

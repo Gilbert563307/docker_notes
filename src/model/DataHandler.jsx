@@ -13,6 +13,7 @@ import {
     where,
     getCountFromServer,
     startAfter,
+    orderBy,
 } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import { useAuthProvider } from "../context/AuthProvider";
@@ -33,7 +34,7 @@ export default function DataHandler({ table }) {
     const currentServerTimestamp = serverTimestamp();
 
     /**
-     * 
+     * //TODO to use the orderby with the created_at or updated_at, u must create an index in google firebase
      * @param {{ seconds: number, nanoseconds: number } } object 
      * @returns {{ string }}
      */
@@ -89,5 +90,6 @@ export default function DataHandler({ table }) {
         getTotalPages,
         getTheCurrentItemsPerPage,
         startAfter,
+        orderBy,
     };
 }

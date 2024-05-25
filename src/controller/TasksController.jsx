@@ -23,7 +23,7 @@ import useHelpers from '../helpers/useHelpers';
 /**
  * @typedef {Object} InitialState
  * @property {Task | Object} task - The current task.
- * @property {{ tasks: Tasks, lastVisibleTask: {}, total: number}} tasks - The list of tasks.
+ * @property {{ tasks: Tasks, total: number}} tasks - The list of tasks.
  * @property {Object} notification - The notification object.
  * @property {string} notification.message - The notification message.
  * @property {number} notification.type - The notification type.
@@ -35,7 +35,7 @@ import useHelpers from '../helpers/useHelpers';
  */
 const initialState = {
   task: {},
-  tasks: { tasks: [], lastVisibleTask: {}, total: 0 },
+  tasks: { tasks: [], total: 0 },
   notification: { message: "", type: 0 },
 };
 
@@ -127,48 +127,17 @@ export default function TasksController() {
   // Defining the state and the dispatchAction using the useReducer hook
   const [state, dispatchAction] = useReducer(reducer, initialState);
 
+  const setNotificationToState = (object) => {
+    //set the message
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_NOTIFICATION,
+      payload: object,
+    });
 
-  /**
-   * 
-   * @param {{title: string, description: string,  priority: number }} payload 
-   */
-  const collectCreateTask = async (payload) => {
-    try {
-      const taskCreated = await createTask(payload);
-
-      // Update state with the created task response
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_NOTIFICATION,
-        payload: taskCreated,
-      });
-
-      //reftech tasks afte creating one
-      const currentPage = getCurrentPageNumber();
-      const listPayload = { currentPage: currentPage, lastVisibleTask: state.tasks.lastVisibleTask }
-      await collectListTasks(listPayload);
-    } catch (error) {
-      setErrorToState(error);
-    }
-  }
-
-  /**
-   * 
-   * @param {{ currentPage: number, lastVisibleTask: Object }} payload 
-   */
-  const collectListTasks = async (payload) => {
-    try {
-      console.log(`collectListTasks`, payload)
-      const tasks = await listTasks(payload);
-
-      // Update state with the created task response
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_TASKS,
-        payload: tasks.results,
-      });
-
-    } catch (error) {
-      setErrorToState(error)
-    }
+    //remove message after 5 seconds
+    setInterval(() => {
+      closeAlert();
+    }, 5000);
   }
 
 
@@ -189,6 +158,48 @@ export default function TasksController() {
       payload: { message: "", type: 0 },
     });
   };
+
+
+
+
+  /**
+   * 
+   * @param {{title: string, description: string,  priority: number }} payload 
+   */
+  const collectCreateTask = async (payload) => {
+    try {
+      const taskCreated = await createTask(payload);
+
+      // Update state with the created task response
+      setNotificationToState(taskCreated)
+
+      //reftech tasks afte creating one
+      const currentPage = getCurrentPageNumber();
+      const listPayload = { currentPage: currentPage };
+      await collectListTasks(listPayload);
+    } catch (error) {
+      setErrorToState(error);
+    }
+  }
+
+  /**
+   * 
+   * @param {{ currentPage: number }} payload 
+   */
+  const collectListTasks = async (payload) => {
+    try {
+      const tasks = await listTasks(payload);
+
+      // Update state with the created task response
+      dispatchAction({
+        type: REDUCER_ACTIONS.SET_TASKS,
+        payload: tasks.results,
+      });
+
+    } catch (error) {
+      setErrorToState(error)
+    }
+  }
 
 
   /**

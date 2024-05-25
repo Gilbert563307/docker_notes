@@ -20,6 +20,8 @@ export default function TasksLogic() {
         getTotalPages,
         getTheCurrentItemsPerPage,
         startAfter,
+        currentServerTimestamp,
+        orderBy,
     } = DataHandler({ table: "tasks" });
 
     /**
@@ -29,11 +31,19 @@ export default function TasksLogic() {
      * @param {string} payload.title - The title of the task.
      * @param {string} payload.description - The description of the task.
      * @param {number} payload.priority - The priority level of the task.
+     * @param {number} payload.created_at - 
+     * @param {number} payload.updated_at -
      * @returns {Promise<{ created: boolean, message: string, type: string }>} A promise resolving to an object indicating whether the task was created successfully, along with a message and alert type.
      */
     const createTask = async (payload) => {
         try {
-            const newPayload = { ...payload, user_uid: userUid, status: TASKS_STATUS.TODO };
+            const newPayload = {
+                ...payload,
+                user_uid: userUid,
+                status: TASKS_STATUS.TODO,
+                created_at: currentServerTimestamp,
+                updated_at: currentServerTimestamp
+            };
             const created = await addDoc(collectionRef, newPayload);
             const isTaskCreated = created ? true : false;
 
@@ -73,37 +83,48 @@ export default function TasksLogic() {
         }
     };
 
-    /**
-     * Constructs a Firestore query to fetch tasks based on the page number and last visible document.
-     * 
-     * @param {number} pageNumber - The current page number.
-     * @param {DocumentSnapshot} lastVisible - The last visible document from the previous query.
-     * @returns {Query} The Firestore query to fetch tasks.
-     */
-    const getTasksQuery = (pageNumber, lastVisible) => {
-        // Get the total items per page.
+
+    const getTasksQuery = async (currentPage) => {
         const itemsPerPage = getTheCurrentItemsPerPage();
 
-        // If the page number is greater than 1, construct the query with startAfter.
-        if (pageNumber && pageNumber > 1) {
+        if (currentPage === 1) {
             const tasksQuery = query(
                 collectionRef,
                 where("user_uid", "==", userUid),
-                startAfter(lastVisible),
-                //limit on the number of items per page.
+                orderBy("created_at", "asc"),
                 limit(itemsPerPage)
             );
             return tasksQuery;
         }
 
-        // If the page number is 1 or not set when the component is mounted, construct the query without startAfter.
-        const tasksQuery = query(
+        //get the page limti
+        const newPageLimit = currentPage * itemsPerPage;
+
+        //fetch tasks limit by the newPageLimit
+        const allDocsLimitedByThePageNumber = query(collectionRef, where("user_uid", "==", userUid), orderBy("created_at", "asc"), limit(newPageLimit));
+
+        const documentSnapshots = await getDocs(allDocsLimitedByThePageNumber);
+
+        //get the current page * items per page - items per page and remove 1 index because its an array
+        //so the value can be like
+        //map  = {
+        //  2: 14   
+        //  3: 29   
+        //  4: 44,   
+        //}
+        const offset = ((currentPage * itemsPerPage) - itemsPerPage) -1;
+
+        //Get the last visible document
+        const startFromDocument = documentSnapshots.docs[offset];
+
+        return query(
             collectionRef,
             where("user_uid", "==", userUid),
-            //limit on the number of items per page.
+            orderBy("created_at", "asc"),
+            startAfter(startFromDocument),
             limit(itemsPerPage)
-        );
-        return tasksQuery;
+        )
+
     }
 
 
@@ -113,26 +134,23 @@ export default function TasksLogic() {
     * This function queries the Firestore collection to retrieve tasks associated with the current user's UID,
     * with a limit on the number of items per page. It includes the document ID in the task data and handles
     * potential errors during the fetch process.
-    * @param {{  currentPage: number, lastVisibleTask: Object}} payload
-    * @returns {Promise<{results: { tasks: import("../controller/TasksController").Tasks, lastVisibleTask: Object }, message: string, type: string }>} A promise that resolves to an object containing the fetched tasks, a message, and an alert type.
+    * @param {{ currentPage: number}} payload
+    * @returns {Promise<{results: { tasks: import("../controller/TasksController").Tasks}, message: string, type: string }>} A promise that resolves to an object containing the fetched tasks, a message, and an alert type.
      */
     const listTasks = async (payload) => {
         try {
             // Construct the query to get all tasks for the current user UID with a 
-            const tasksQuery = getTasksQuery(payload.currentPage, payload.lastVisibleTask)
+            const tasksQuery = await getTasksQuery(payload?.currentPage);
 
             // Execute the query to get the tasks.
-            const querySnapshot = await getDocs(tasksQuery);
-
-            // Get the last visible document from the query snapshot.
-            const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+            const querySnapshot = await getDocs(tasksQuery);    
 
             // Map through the query snapshot to add the document ID to each task.
             const results = querySnapshot.docs.map((document) => ({
                 ...document.data(),
                 id: document.id,
             }));
-            
+
             //get total records for pagination
             const totalRecords = await getTotalTasks();
             //get total pages for paginartion
@@ -140,7 +158,7 @@ export default function TasksLogic() {
 
             //retutn results
             return {
-                results: { tasks: results, lastVisibleTask: lastVisible, total: totalRecords, pages: totalPages },
+                results: { tasks: results, total: totalRecords, pages: totalPages },
                 message: "",
                 type: ALERT_TYPES.SUCCESS
             };

@@ -24,7 +24,7 @@ export default function useGetTasksHook() {
      */
     const fetchTasks = () => {
         const currentPage = getUrlParams(PAGE_NUMBER) || DEFAULT_PAGE_NUMBER;
-        dispatch({ type: TASKS_CONTROLLER_ACTIONS.LIST, payload: { currentPage: currentPage, lastVisibleTask: state.tasks.lastVisibleTask } });
+        dispatch({ type: TASKS_CONTROLLER_ACTIONS.LIST, payload: { currentPage: parseInt(currentPage) } });
     };
 
     React.useEffect(() => {
