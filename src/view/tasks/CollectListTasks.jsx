@@ -61,7 +61,7 @@ export default function CollectListTasks() {
           <BS5Modal
             modal_id="create_task_modal"
             modal_label="create_task_modal"
-            modal_title="Add new task"
+            modal_title="Create issue"
             modal_content={<TasksCreateTaskComponent closeModal={closeCreateModal} />}
             closeModal={closeCreateModal}
             modal_footer={false}

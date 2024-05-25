@@ -120,3 +120,7 @@ body {
     /* width: 100%; */
     background-color: #f9f9f9;
 }
+
+.dialogic-pagination{
+    height: auto !important;
+}

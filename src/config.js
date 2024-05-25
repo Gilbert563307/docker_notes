@@ -17,6 +17,7 @@ export const ALLOWED_ITEMS_PER_PAGE = [15, 25, 50];
 
 //TASKS
 export const SELECTED_TASK = "SELECTED_TASK";
+export const LAST_TASK_OBJECT = "LAST_TASK_OBJECT";
 export const TASKS_PRIORITY = {
     LOW: 0,
     MEDIUM: 1,

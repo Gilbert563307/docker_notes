@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  DEFAULT_PAGE_NUMBER,
   LAST_VISITED_PAGE_NUMBER_KEY,
   PAGE_NUMBER,
   SESSION_FILTERS_ARRAY_CONFIG_NAME,
@@ -110,6 +111,12 @@ export default function useHelpers() {
   function getUrlParams(paramName) {
     const paramValue = searchParams.get(paramName);
     return paramValue !== null ? paramValue : null;
+  }
+
+  function getCurrentPageNumber() {
+    const paramValue = getUrlParams(PAGE_NUMBER) || DEFAULT_PAGE_NUMBER;
+    return parseInt(paramValue) ? parseInt(paramValue) : DEFAULT_PAGE_NUMBER;
+
   }
 
   /**
@@ -225,7 +232,8 @@ export default function useHelpers() {
     setPageNumberToSessionMemory,
     removePageNumberSessionParam,
     wait,
-    setCustomSearchParamToSessionMemory
+    setCustomSearchParamToSessionMemory,
+    getCurrentPageNumber,
   };
 }
 

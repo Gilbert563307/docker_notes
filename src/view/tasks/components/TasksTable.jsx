@@ -37,7 +37,7 @@ export default function TasksTable({ tasks, totalTasks, totalPages, createOnclic
 
     return (
         <div>
-            <table className="table table-sm table-hover tasks-table">
+            <table className="table table-sm table-hover tasks-table table-bordered ">
                 <thead>
                     <tr className='tasks-table-tr-headers'>
                         {headers.map((header) => {

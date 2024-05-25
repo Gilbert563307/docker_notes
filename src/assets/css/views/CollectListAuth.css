@@ -28,6 +28,7 @@
     color: #2F4858;
     font-size: 36px;
     font-weight: 200;
+    pointer-events: none;
 }
 
 .auth-content>button {

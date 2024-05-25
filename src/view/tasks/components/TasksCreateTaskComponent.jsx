@@ -1,7 +1,8 @@
 import React from 'react'
 import { useForm } from "react-hook-form";
-import { TASKS_PRIORITY } from '../../../config';
+import { TASKS_PRIORITY, TASKS_STATUS } from '../../../config';
 import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../../controller/TasksController';
+import "../../../assets/css/components/TasksCreateTaskComponent.css"
 
 /**
  * TasksCreateTaskComponent
@@ -21,7 +22,11 @@ export default function TasksCreateTaskComponent({ closeModal }) {
         handleSubmit,
         reset,
         formState: { errors },
-    } = useForm();
+    } = useForm({
+        defaultValues: {
+            project: "PROJECT-1",
+        },
+    });
 
     const onSubmit = (data) => {
         closeModal();
@@ -31,6 +36,27 @@ export default function TasksCreateTaskComponent({ closeModal }) {
 
     return (
         <form className="row g-3" onSubmit={handleSubmit(onSubmit)}>
+            <div className='col-4'>
+                <label htmlFor="project" className="form-label">Project*</label>
+                <input
+                    className={`form-control ${errors.project && errors.project.type ? "is-invalid" : ""
+                        }`}
+                    id="title"
+                    readOnly={true}
+                    type="text"{...register("project")} />
+            </div>
+
+            <hr className='create-form-hr' />
+
+            <div className='col-4'>
+                <label htmlFor="status" className="form-label">Status</label>
+                <select className="form-select" id="priority" aria-label="Priority select" {...register("status", { required: false })}>
+                    <option defaultValue={TASKS_STATUS.TODO}  value={TASKS_STATUS.TODO}>To do</option>
+                    <option value={TASKS_STATUS.IN_PROGRESS}>In progress</option>
+                    <option value={TASKS_STATUS.COMPLETED}>Completed</option>
+                </select>
+            </div>
+
             <div className="col-12">
                 <label htmlFor="title" className="form-label">Title</label>
                 <input
@@ -59,9 +85,9 @@ export default function TasksCreateTaskComponent({ closeModal }) {
             </div>
             <div className="col-12">
                 <label htmlFor="description" className="form-label">Description</label>
-                <textarea 
-                className={`form-control ${errors.description && errors.description.type ? "is-invalid" : ""
-                    }`} id="description" 
+                <textarea
+                    className={`form-control ${errors.description && errors.description.type ? "is-invalid" : ""
+                        }`} id="description"
                     rows="5"
                     placeholder="Lorem impsum....."
                     {...register("description", {

@@ -4,6 +4,7 @@ import useBS5PreloaderHook from '../hooks/useBS5PreloaderHook';
 import { ALERT_ACTIONS, ALERT_TYPES } from '../view/components/bs5/BS5Alert';
 import NotificationV3 from '../view/components/notifications/NotificationV3';
 import TasksLogic from '../model/TasksLogic';
+import useHelpers from '../helpers/useHelpers';
 
 /**
  * @typedef {Object} Task
@@ -90,6 +91,7 @@ export const useTasksControllerContext = () => {
  */
 export default function TasksController() {
   const { createTask, listTasks } = TasksLogic();
+  const { getCurrentPageNumber } = useHelpers();
 
   //import the methods and loader component from our custom component
   const { showLoader, closeLoader, PreloaderComponent } = useBS5PreloaderHook();
@@ -141,7 +143,9 @@ export default function TasksController() {
       });
 
       //reftech tasks afte creating one
-      await collectListTasks();
+      const currentPage = getCurrentPageNumber();
+      const listPayload = { currentPage: currentPage, lastVisibleTask: state.tasks.lastVisibleTask }
+      await collectListTasks(listPayload);
     } catch (error) {
       setErrorToState(error);
     }
@@ -153,6 +157,7 @@ export default function TasksController() {
    */
   const collectListTasks = async (payload) => {
     try {
+      console.log(`collectListTasks`, payload)
       const tasks = await listTasks(payload);
 
       // Update state with the created task response
