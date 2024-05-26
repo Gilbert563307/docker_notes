@@ -1,11 +1,9 @@
-import React, { useState } from 'react'
+import React from 'react'
 import useSetPageTitleHook from '../../hooks/useSetPageTitleHook'
 import "../../assets/css/views/tasks/CollectListTasks.css";
-import { Show } from '../components/custom/Show';
-import BS5Modal, { MODAL_SIZES } from '../components/bs5/BS5Modal';
-import TasksCreateTaskComponent from './components/TasksCreateTaskComponent';
 import useGetTasksHook from '../../hooks/useGetTasksHook';
 import TasksTable from './components/TasksTable';
+import { Link } from 'react-router-dom';
 
 
 /**
@@ -20,26 +18,6 @@ import TasksTable from './components/TasksTable';
 export default function CollectListTasks() {
   useSetPageTitleHook({ title: "Tasks " });
   const { tasks, totalTasks, totalPages } = useGetTasksHook();
-  const [createTaskModal, setCreateTaskModal] = useState(false);
-
-  /**
-   * Opens the create tas modal.
-   * If the modal is already open, it does nothing.
-   */
-  const openCreateModal = () => {
-    if (createTaskModal) return;
-    setCreateTaskModal(true);
-  }
-
-  /**
-   * Closes the create task modal.
-   * If the modal is already closed, it does nothing.
-   */
-  const closeCreateModal = () => {
-    if (createTaskModal === false) return;
-    setCreateTaskModal(false);
-  }
-
 
   return (
     <article className='tasks-article d-flex flex-column gap-1'>
@@ -48,29 +26,13 @@ export default function CollectListTasks() {
           searchbar...
         </div>
         <div>
-          <button aria-describedby='create task button' onClick={openCreateModal} className='add-task-button'>Create</button>
+          <Link aria-describedby='create task button' className='add-task-button' to="/tasks/create">Create</Link>
         </div>
       </div>
 
       <div className='tasks-content'>
-        <TasksTable tasks={tasks} totalTasks={totalTasks} totalPages={totalPages} createOnclick={openCreateModal} />
+        <TasksTable tasks={tasks} totalTasks={totalTasks} totalPages={totalPages} createOnclick={null} />
       </div>
-
-      <Show>
-        <Show.When isTrue={createTaskModal}>
-          <BS5Modal
-            modal_id="create_task_modal"
-            modal_label="create_task_modal"
-            modal_title="Create issue"
-            modal_content={<TasksCreateTaskComponent closeModal={closeCreateModal} />}
-            closeModal={closeCreateModal}
-            modal_footer={false}
-            headerCentre={true}
-            modalSize={MODAL_SIZES.LARGE}
-          />
-        </Show.When>
-      </Show>
-
     </article>
   )
 }

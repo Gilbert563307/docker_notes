@@ -51,15 +51,15 @@ const router = createBrowserRouter([
                         element: <CollectListTasks />,
                     },
                     {
-                        path: "tasks/create",
+                        path: "/tasks/create",
                         element: <CollectCreateTask />,
                     },
                     {
-                        path: "tasks/read",
+                        path: "/tasks/read",
                         element: <CollectReadTask />,
                     },
                     {
-                        path: "tasks/update",
+                        path: "/tasks/update",
                         element: <CollectUpdateTask />,
                     }
                 ],

@@ -3,6 +3,7 @@ import React from 'react'
 import TasksTableRow from './TasksTableRow'
 import "../../../assets/css/views/tasks/TasksTable.css";
 import BS5PaginationV2 from '../../components/bs5/BS5PaginationV2';
+import { Link } from 'react-router-dom';
 
 /**
  * Component representing a table of tasks.
@@ -11,10 +12,9 @@ import BS5PaginationV2 from '../../components/bs5/BS5PaginationV2';
  * @param {import("../../../controller/TasksController").Task[]} props.tasks - The array of tasks to display.
  * @param {number} props.totalTasks - The total number of tasks.
  * @param {number} props.totalPages - The total number of pages.
- * @param {Function} props.createOnclick - The function to handle the create button click event.
  * @returns {JSX.Element} The rendered TasksTable component.
  */
-export default function TasksTable({ tasks, totalTasks, totalPages, createOnclick }) {
+export default function TasksTable({ tasks, totalTasks, totalPages }) {
 
     /**
      * Represents the headers for a table.
@@ -55,7 +55,7 @@ export default function TasksTable({ tasks, totalTasks, totalPages, createOnclic
                 </tbody>
             </table>
             <div className='table-add-task-div'>
-                <button onClick={createOnclick} className='table-add-task-btn'><i className="fa-thin fa-plus" style={{ color: "black" }}></i> Create</button>
+                <Link className='table-add-task-btn' to="/tasks/create"><i className="fa-thin fa-plus" style={{ color: "black" }}></i> Create</Link>
             </div>
             <BS5PaginationV2 totalItems={totalTasks} totalPages={totalPages} />
         </div>

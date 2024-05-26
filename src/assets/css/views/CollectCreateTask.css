@@ -1,0 +1,48 @@
+.create-task-article>form {
+    margin: 1em;
+}
+
+.todo-option {
+    margin: 1em;
+    background-color: #E4E6EA !important;
+    color: #44546F !important;
+}
+
+.in-progress-option {
+    background-color: #E9F2FF !important;
+    color: #0055CC !important;
+}
+
+.done-option {
+    background-color: #DCFFF1 !important;
+    color: #216E4E !important;
+}
+
+.btn-status-dropdown {
+    border: none;
+    /* padding: 5px 8px; */
+    padding: 2px 5px 2px 5px;
+    border-radius: 5px;
+}
+
+.selected-status-item-0 {
+    background-color: #E4E6EA;
+}
+
+.selected-status-item-1 {
+    background-color: #E9F2FF;
+}
+
+.selected-status-item-2 {
+    background-color: #DCFFF1;
+}
+
+.selected-priority-item-0{
+    background-color: #9ec5fe ;
+}
+.selected-priority-item-1{
+    background-color: #ffc720 ;
+}
+.selected-priority-item-2{
+    background-color: #df4958 ;
+}

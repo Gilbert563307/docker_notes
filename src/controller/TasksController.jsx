@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo, useReducer } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import useBS5PreloaderHook from '../hooks/useBS5PreloaderHook';
 import { ALERT_ACTIONS, ALERT_TYPES } from '../view/components/bs5/BS5Alert';
 import NotificationV3 from '../view/components/notifications/NotificationV3';
@@ -97,6 +97,7 @@ export const useTasksControllerContext = () => {
 export default function TasksController() {
   const { createTask, listTasks } = TasksLogic();
   const { getCurrentPageNumber } = useHelpers();
+  const navigate = useNavigate();
 
   //import the methods and loader component from our custom component
   const { showLoader, closeLoader, PreloaderComponent } = useBS5PreloaderHook();
@@ -182,6 +183,9 @@ export default function TasksController() {
       const currentPage = getCurrentPageNumber();
       const listPayload = { currentPage: currentPage };
       await collectListTasks(listPayload);
+
+      //navugate to tasks page
+      navigate("/tasks");
     } catch (error) {
       setErrorToState(error);
     }
