@@ -33,6 +33,7 @@ export default function TasksTable({ tasks, totalTasks, totalPages }) {
         { name: "Created", icon: <i className="fa-light fa-calendar-day"></i> },
         { name: "Updated", icon: <i className="fa-light fa-calendar-day"></i> },
         { name: "Reporter", icon: <i className="fa-light fa-user"></i> },
+        { name: "Actions", icon: <i className="fa-light fa-gears"></i> },
     ];
 
     return (

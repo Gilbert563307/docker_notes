@@ -55,7 +55,7 @@ const router = createBrowserRouter([
                         element: <CollectCreateTask />,
                     },
                     {
-                        path: "/tasks/read",
+                        path: "/tasks/read/:documentId",
                         element: <CollectReadTask />,
                     },
                     {

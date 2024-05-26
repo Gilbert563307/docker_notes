@@ -58,3 +58,8 @@
     margin-top: 0;
     background-color: #ECECEC;
 }
+
+.read-link{
+    text-decoration: none !important;
+    color: black;
+}
