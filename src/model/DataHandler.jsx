@@ -33,6 +33,7 @@ export default function DataHandler({ table }) {
     const userUid = user ? user.uid : null;
     const currentServerTimestamp = serverTimestamp();
 
+
     /**
      * //TODO to use the orderby with the created_at or updated_at, u must create an index in google firebase
      * @param {{ seconds: number, nanoseconds: number } } object 

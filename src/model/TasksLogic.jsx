@@ -21,6 +21,7 @@ export default function TasksLogic() {
         getTheCurrentItemsPerPage,
         startAfter,
         currentServerTimestamp,
+        convertTimeStampToDate,
         orderBy,
     } = DataHandler({ table: "tasks" });
 
@@ -84,9 +85,17 @@ export default function TasksLogic() {
     };
 
 
+    /**
+     * Generates a Firestore query to fetch tasks for the current page.
+     * 
+     * @param {number} currentPage - The current page number for pagination.
+     * @returns {Promise<Query>} The Firestore query to fetch tasks for the specified page.
+     */
     const getTasksQuery = async (currentPage) => {
+        // Get the number of items to be displayed per page
         const itemsPerPage = getTheCurrentItemsPerPage();
 
+        // If the current page is the first page, create a query limited by the items per page
         if (currentPage === 1) {
             const tasksQuery = query(
                 collectionRef,
@@ -97,12 +106,18 @@ export default function TasksLogic() {
             return tasksQuery;
         }
 
-        //get the page limti
+        // Calculate the limit for fetching documents up to the current page
         const newPageLimit = currentPage * itemsPerPage;
 
-        //fetch tasks limit by the newPageLimit
-        const allDocsLimitedByThePageNumber = query(collectionRef, where("user_uid", "==", userUid), orderBy("created_at", "asc"), limit(newPageLimit));
+        // Fetch tasks limited by the new page limit
+        const allDocsLimitedByThePageNumber = query(
+            collectionRef,
+            where("user_uid", "==", userUid),
+            orderBy("created_at", "asc"),
+            limit(newPageLimit)
+        );
 
+        // Get document snapshots for the calculated limit
         const documentSnapshots = await getDocs(allDocsLimitedByThePageNumber);
 
         //get the current page * items per page - items per page and remove 1 index because its an array
@@ -112,11 +127,14 @@ export default function TasksLogic() {
         //  3: 29   
         //  4: 44,   
         //}
-        const offset = ((currentPage * itemsPerPage) - itemsPerPage) -1;
+        // Calculate the offset to determine the starting point for the current page
+        const offset = ((currentPage * itemsPerPage) - itemsPerPage) - 1;
 
-        //Get the last visible document
+        // Get the document to start after, based on the offset
         const startFromDocument = documentSnapshots.docs[offset];
 
+
+        // Return a query that starts after the last visible document of the previous page
         return query(
             collectionRef,
             where("user_uid", "==", userUid),
@@ -143,13 +161,26 @@ export default function TasksLogic() {
             const tasksQuery = await getTasksQuery(payload?.currentPage);
 
             // Execute the query to get the tasks.
-            const querySnapshot = await getDocs(tasksQuery);    
+            const querySnapshot = await getDocs(tasksQuery);
 
             // Map through the query snapshot to add the document ID to each task.
-            const results = querySnapshot.docs.map((document) => ({
-                ...document.data(),
-                id: document.id,
-            }));
+            const results = querySnapshot.docs.map((document) => {
+                const convertedCreatedAt = convertTimeStampToDate({
+                    seconds: document.data().created_at.seconds,
+                    nanoseconds: document.data().created_at.nanoseconds,
+                });
+
+                const convertedUpdatedAt = convertTimeStampToDate({
+                    seconds: document.data().updated_at.seconds,
+                    nanoseconds: document.data().updated_at.nanoseconds,
+                });
+                return {
+                    ...document.data(),
+                    id: document.id,
+                    created_at: convertedCreatedAt,
+                    updated_at: convertedUpdatedAt,
+                }
+            })
 
             //get total records for pagination
             const totalRecords = await getTotalTasks();

@@ -27,9 +27,9 @@ export default function TasksTable({ tasks, totalTasks, totalPages, createOnclic
         { name: "Title", icon: <i className="fa-light fa-subtitles"></i> },
         { name: "Status", icon: <i className="fa-sharp fa-light fa-circle-arrow-right"></i> },
         { name: "Priority", icon: <i className="fa-sharp fa-light fa-list-timeline"></i> },
-        { name: "Assignee", icon: <i className="fa-light fa-user"></i> },
-        { name: "Due date", icon: <i className="fa-light fa-calendar-day"></i> },
-        { name: "Labels", icon: <i className="fa-light fa-tags"></i> },
+        // { name: "Assignee", icon: <i className="fa-light fa-user"></i> },
+        // { name: "Due date", icon: <i className="fa-light fa-calendar-day"></i> },
+        // { name: "Labels", icon: <i className="fa-light fa-tags"></i> },
         { name: "Created", icon: <i className="fa-light fa-calendar-day"></i> },
         { name: "Updated", icon: <i className="fa-light fa-calendar-day"></i> },
         { name: "Reporter", icon: <i className="fa-light fa-user"></i> },
@@ -37,11 +37,11 @@ export default function TasksTable({ tasks, totalTasks, totalPages, createOnclic
 
     return (
         <div>
-            <table className="table table-sm table-hover tasks-table table-bordered ">
+            <table className='table table-sm table-hover tasks-table'>
                 <thead>
                     <tr className='tasks-table-tr-headers'>
                         {headers.map((header) => {
-                            return <th scope="col" key={header.name}><span>{header.icon}</span> {header.name}</th>
+                            return <th scope="col" className="px-6 py-3" key={header.name}><span>{header.icon}</span> {header.name}</th>
                         })}
                     </tr>
                 </thead>
@@ -59,6 +59,5 @@ export default function TasksTable({ tasks, totalTasks, totalPages, createOnclic
             </div>
             <BS5PaginationV2 totalItems={totalTasks} totalPages={totalPages} />
         </div>
-
     )
 }

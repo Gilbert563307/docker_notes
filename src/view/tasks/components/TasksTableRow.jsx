@@ -44,12 +44,12 @@ export default function TasksTableRow({ task }) {
             <td>{task.title}</td>
             <td>{Status}</td>
             <td>{Priority}</td>
+            {/* <td>{Assignee}</td> */}
+            {/* <td>...</td> */}
+            {/* <td>...</td> */}
+            <td>{task.created_at.toLocaleString()}</td>
+            <td>{task.updated_at.toLocaleString()}</td>
             <td>{Assignee}</td>
-            <td>...</td>
-            <td>...</td>
-            <td>...</td>
-            <td>...</td>
-            <td>...</td>
         </tr>
     )
 }
