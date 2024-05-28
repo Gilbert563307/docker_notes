@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 
 
 import '@mdxeditor/editor/style.css'
-import { MDXEditor, headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, UndoRedo, BoldItalicUnderlineToggles, toolbarPlugin, BlockTypeSelect, CodeToggle, ListsToggle, markdownShortcutPlugin, CreateLink, linkDialogPlugin  } from '@mdxeditor/editor'
+import { MDXEditor, headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, UndoRedo, BoldItalicUnderlineToggles, toolbarPlugin, BlockTypeSelect, CodeToggle, ListsToggle, markdownShortcutPlugin, CreateLink, linkDialogPlugin } from '@mdxeditor/editor'
 import { TASKS_PRIORITY, TASKS_STATUS } from '../../config';
 import "../../assets/css/views/CollectCreateTask.css";
 import useHtmlCssHelpers from '../../helpers/useHtmlCssHelpers';
@@ -122,7 +122,7 @@ export default function CollectCreateTask() {
             onChange={(value) => setDescription(value)}
             plugins={[
               headingsPlugin(), listsPlugin(), quotePlugin(), thematicBreakPlugin(), markdownShortcutPlugin(),
-              linkDialogPlugin(), 
+              linkDialogPlugin(),
               toolbarPlugin({
                 toolbarContents: () => (
                   <>

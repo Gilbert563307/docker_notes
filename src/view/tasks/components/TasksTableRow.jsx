@@ -43,7 +43,7 @@ export default function TasksTableRow({ task }) {
                     <input className="form-check-input" type="checkbox" id={`task-${task.id}}`} />
                 </div>
             </th>
-            <td><Link to={readProfileUrl} className='read-link'>{task.title}</Link> </td>
+            <td><Link to={readProfileUrl} state={{ task: task }} className='read-link'>{task.title}</Link> </td>
             <td>{Status}</td>
             <td>{Priority}</td>
             {/* <td>{Assignee}</td> */}
@@ -52,9 +52,9 @@ export default function TasksTableRow({ task }) {
             <td>{task.created_at.toLocaleString()}</td>
             <td>{task.updated_at.toLocaleString()}</td>
             <td>{Assignee}</td>
-            <td className=''>
-                <button><i className="fa-light fa-magnifying-glass"></i></button>
-                <button><i className="fa-sharp fa-light fa-pencil"></i></button>
+            <td className='tasks-table-actions'>
+                <button><Link to={readProfileUrl} state={{ task: task }}><i className="fa-light fa-magnifying-glass"></i></Link></button>
+                <button><Link to={`/tasks/update/${task.id}`}><i className="fa-sharp fa-light fa-pencil"></i></Link></button>
                 <button><i className="fa-light fa-box-archive"></i></button>
             </td>
         </tr>
