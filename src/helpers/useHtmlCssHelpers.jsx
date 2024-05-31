@@ -23,6 +23,17 @@ export default function useHtmlCssHelpers() {
         return statusBadgeMap[status];
     }
 
+    function getStatusButton(status) {
+        const statusBadgeMap = {
+            [TASKS_STATUS.TODO]: <span className="btn badge-todo">To do</span>,
+            [TASKS_STATUS.IN_PROGRESS]: <span className="btn badge-inprogress">In progress</span>,
+            [TASKS_STATUS.COMPLETED]: <span className="btn badge-completed ">Completed</span>,
+        };
+
+        return statusBadgeMap[status];
+    }
+
+
     /**
      * Returns a badge component based on the task priority.
      *
@@ -39,5 +50,5 @@ export default function useHtmlCssHelpers() {
         return priorityBadgeMap[parseInt(priority)];
     }
 
-    return { getStatusBadge, getPriorityBadge };
+    return { getStatusBadge, getPriorityBadge, getStatusButton };
 }

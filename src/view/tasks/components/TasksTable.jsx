@@ -38,7 +38,7 @@ export default function TasksTable({ tasks, totalTasks, totalPages }) {
 
     return (
         <div>
-            <table className='table table-sm table-hover tasks-table'>
+            <table className='table table-sm  tasks-table table-striped'>
                 <thead>
                     <tr className='tasks-table-tr-headers'>
                         {headers.map((header) => {

@@ -124,3 +124,8 @@ body {
 .dialogic-pagination {
     height: auto !important;
 }
+
+.q-a-pre-tag {
+    white-space: pre-wrap;
+    font-family: Poppins, sans-serif;
+}

@@ -1,7 +1,35 @@
-.read-task-div{
+.read-task-div {
     margin: 1em;
 }
 
-.task-title{
+.task-title {
     color: #172B4D;
+}
+
+.read-task-title-div {
+    margin: 1em 0em 0em 1em;
+}
+
+.read-task-div {
+    display: grid;
+    grid-template-columns: auto 30%;
+}
+
+.tasks-deatils-div{
+   
+    margin-top: 1em;
+}
+
+.details-table{
+   margin: 1em;
+}
+
+.details-div{
+    display: flex;
+    justify-content: space-between;
+}
+
+.tasks-deatils-div-details-header > h6 {
+    margin: 1em;
+    margin-bottom: 0;
 }
