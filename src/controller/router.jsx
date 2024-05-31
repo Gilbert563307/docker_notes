@@ -59,7 +59,7 @@ const router = createBrowserRouter([
                         element: <CollectReadTask />,
                     },
                     {
-                        path: "/tasks/update",
+                        path: "/tasks/update/:documentId",
                         element: <CollectUpdateTask />,
                     }
                 ],

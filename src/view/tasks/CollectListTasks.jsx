@@ -40,7 +40,7 @@ export default function CollectListTasks() {
         </div>
       </div>
 
-      <div className="tasks-content">
+      <div className="tasks-content table-responsive">
         <TasksTable
           tasks={tasks}
           totalTasks={totalTasks}

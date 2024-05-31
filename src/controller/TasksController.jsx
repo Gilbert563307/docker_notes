@@ -198,20 +198,20 @@ export default function TasksController() {
    */
   const collectListTasks = async (payload) => {
     try {
-      // const tasks = await listTasks(payload);
+      const tasks = await listTasks(payload);
 
-      // // Update state with the created task response
-      // dispatchAction({
-      //   type: REDUCER_ACTIONS.SET_TASKS,
-      //   payload: tasks.results,
-      // });
-
-      //TODO REMOVE THIS IS FOR TESTING ONLY
-      const res = { tasks: tasks, total: 3, pages: 1 };
+      // Update state with the created task response
       dispatchAction({
         type: REDUCER_ACTIONS.SET_TASKS,
-        payload: res,
+        payload: tasks.results,
       });
+
+      // //TODO REMOVE THIS IS FOR TESTING ONLY
+      // const res = { tasks: tasks, total: 3, pages: 1 };
+      // dispatchAction({
+      //   type: REDUCER_ACTIONS.SET_TASKS,
+      //   payload: res,
+      // });
 
     } catch (error) {
       setErrorToState(error)
