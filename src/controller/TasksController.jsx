@@ -5,6 +5,7 @@ import { ALERT_ACTIONS, ALERT_TYPES } from '../view/components/bs5/BS5Alert';
 import NotificationV3 from '../view/components/notifications/NotificationV3';
 import TasksLogic from '../model/TasksLogic';
 import useHelpers from '../helpers/useHelpers';
+import { tasks } from "../tests/test.js";
 
 /**
  * @typedef {Object} Task
@@ -197,12 +198,19 @@ export default function TasksController() {
    */
   const collectListTasks = async (payload) => {
     try {
-      const tasks = await listTasks(payload);
+      // const tasks = await listTasks(payload);
 
-      // Update state with the created task response
+      // // Update state with the created task response
+      // dispatchAction({
+      //   type: REDUCER_ACTIONS.SET_TASKS,
+      //   payload: tasks.results,
+      // });
+
+      //TODO REMOVE THIS IS FOR TESTING ONLY
+      const res = { tasks: tasks, total: 3, pages: 1 };
       dispatchAction({
         type: REDUCER_ACTIONS.SET_TASKS,
-        payload: tasks.results,
+        payload: res,
       });
 
     } catch (error) {
