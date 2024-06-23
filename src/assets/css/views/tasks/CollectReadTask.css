@@ -33,7 +33,7 @@
   justify-content: space-between;
 }
 
-.tasks-deatils-div-details-header > h6 {
+.tasks-deatils-div-details-header>h6 {
   margin: 1em;
   margin-bottom: 0;
 }
@@ -48,6 +48,60 @@
   margin-top: 2em;
 }
 
-.fa-floppy{
-    color: black !important;
+.fa-floppy {
+  color: black !important;
+}
+
+.mdx-editor-pre-tag {
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  color: #333;
+  /* Dark text color */
+  background-color: #f5f5f5;
+  /* Light background color */
+  padding: 15px;
+  /* Padding around the text */
+  margin: 10px;
+  /* Margin around the element */
+  border: 1px solid #ccc;
+  /* Border around the element */
+  border-radius: 5px;
+  /* Rounded corners */
+  line-height: 1.5;
+  /* Line height for better readability */
+  overflow: auto;
+  /* Scroll if content overflows */
+  white-space: pre-wrap;
+  /* Handle long lines by wrapping */
+  word-wrap: break-word;
+  /* Break words to prevent overflow */
+  max-height: 1000px;
+}
+
+.dialogic-badge {
+  display: flex;
+  gap: 0.5em;
+  background-color: #f1f2f4 !important;
+  color: #4e5d77;
+  font-weight: 500;
+  
+  background: none;
+  border: none;
+}
+
+.dialogic-badge:hover {
+  background-color: #e9f2ff !important;
+  color: #0c68e4;
+}
+
+.activity-header{
+  display: flex;
+  gap: 1em;
+  margin: 0.25em 0em 0.5em 0.5em;
+  /* align-content: center; */
+}
+
+.show-header{
+  font-size: 14px;
+  color: #4D4D4D;
 }

@@ -1,12 +1,14 @@
-import { MDXEditor } from "@mdxeditor/editor";
 import React from "react";
+import { MDXEditor, headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, BoldItalicUnderlineToggles, markdownShortcutPlugin, linkDialogPlugin } from '@mdxeditor/editor'
 import { useLocation } from "react-router-dom";
 import "../../assets/css/views/tasks/CollectReadTask.css";
 import useHtmlCssHelpers from "../../helpers/useHtmlCssHelpers";
-// import '@mdxeditor/editor/style.css'
+
 
 export default function CollectReadTask() {
   let { state } = useLocation();
+
+  const { getStatusButton } = useHtmlCssHelpers();
 
   if (state === null || state === undefined) {
     return (
@@ -15,8 +17,6 @@ export default function CollectReadTask() {
       </>
     );
   }
-
-  const { getStatusButton } = useHtmlCssHelpers();
 
   /**
    * @type {import("../../controller/TasksController").Task}
@@ -31,10 +31,12 @@ export default function CollectReadTask() {
       <div className="read-task-div">
         <div>
           <div>
-            <label htmlFor="description" className="form-label">
+            <label htmlFor="description" className="form-label ms-2">
               Description
             </label>
-            <MDXEditor readOnly={true} markdown={task.description}></MDXEditor>
+            <MDXEditor className="mdx-editor-pre-tag" readOnly={true} markdown={task.description} plugins={[headingsPlugin(), listsPlugin(), quotePlugin(), thematicBreakPlugin(),
+            markdownShortcutPlugin(),
+            linkDialogPlugin(),]} />
           </div>
         </div>
         <div>
@@ -59,6 +61,17 @@ export default function CollectReadTask() {
                 <p className="fw-medium">Reporter</p>
                 <p>{task.reporter.name}</p>
               </div>
+            </div>
+          </div>
+
+          <div className="d-flex mt-2 border rounded">
+            <div className="activity-header">
+              <span className="show-header">Show:</span>
+              <span className="badge dialogic-badge">History</span>
+              <span className="badge dialogic-badge">Comments</span>
+            </div>
+            <div>
+
             </div>
           </div>
         </div>
