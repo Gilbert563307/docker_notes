@@ -108,5 +108,6 @@
 
 .mdx-editor-editor,
 .mdx-editor-pre-tag {
-  max-height: 1000px;
+  max-height: 1000px !important;
+  overflow: auto;
 }

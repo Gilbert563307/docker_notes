@@ -241,6 +241,9 @@ export default function TasksController() {
         case TASKS_CONTROLLER_ACTIONS.LIST:
           await collectListTasks(action?.payload);
           break;
+        case TASKS_CONTROLLER_ACTIONS.UPDATE:
+          await collectUpdateTask(action?.payload);
+          break;
         case ALERT_ACTIONS.CLOSE_ALERT:
           closeAlert();
           break;

@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import "../../assets/css/views/tasks/CollectReadTask.css";
-import useHtmlCssHelpers from "../../helpers/useHtmlCssHelpers";
 import {
   MDXEditor,
   headingsPlugin,
@@ -18,69 +17,88 @@ import {
   CreateLink,
   linkDialogPlugin,
 } from "@mdxeditor/editor";
-import "@mdxeditor/editor/style.css";
 import { useForm } from "react-hook-form";
+import TaskDetails from "./components/TaskDetails";
+import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from "../../controller/TasksController";
 
 export default function CollectUpdateTask() {
-  let { state } = useLocation();
-  const { getStatusButton } = useHtmlCssHelpers();
+  const { state } = useLocation();
+  const { dispatch } = useTasksControllerContext();
 
-  //custom fields
-  const [description, setDescription] = useState(task.description);
+  if (!state) {
+    return <p>No task found</p>;
+  }
 
-  if (state === null || state === undefined) {
-    return (
-      <>
-        <p>No task found</p>
-      </>
-    );
+  const task = state?.task;
+
+  const [customFields, setCustomFields] = useState({
+    status: task?.status,
+    priority: task?.priority,
+    description: task?.description,
+  });
+
+  /**
+   * 
+   * @param {string} field 
+   * @param {any} value 
+   */
+  const handleCustomFieldChange = (field, value) => {
+    setCustomFields((prevFields) => ({ ...prevFields, [field]: value }));
+  };
+
+  /**
+   * 
+   * @param {string} value 
+   */
+  const setStatus = (value) => {
+    setCustomFields((prevFields) => ({ ...prevFields, status: value }));
   }
 
   /**
-   * @type {import("../../controller/TasksController").Task}
+   * 
+   * @param {string} value 
    */
-  const task = state?.task;
+  const setPriority = (value) => {
+    setCustomFields((prevFields) => ({ ...prevFields, priority: value }));
+  }
 
   const {
     register,
     handleSubmit,
-    reset,
-    setError,
-    formState: { errors },
-  } = useForm({
-    defaultValues: {
-      title: task.title,
-      // project_id: 0,
-      // assignee: { name: user.displayName, assignee_id: user.uid },
-      // reporter: { name: user.displayName, reporter_id: user.uid },
-    },
-  });
+    setError, formState: { errors } } = useForm({
+      defaultValues: {
+        title: task?.title,
+      },
+    });
 
   const onSubmit = (data) => {
-    const newPayload = { ...task, ...data, description: description };
-    console.log(newPayload);
+    if (customFields.description.length === 0) {
+      setError('description', { type: 'custom', message: 'The description cannot be empty' });
+      return;
+    }
+    const newPayload = { ...task, ...data, ...customFields };
+    dispatch({ type: TASKS_CONTROLLER_ACTIONS.UPDATE, payload: newPayload });
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <article className="read-task">
-        <div className="read-task-title-div update-task-title-div ">
+        <div className="read-task-title-div update-task-title-div">
           <input
-            className={`form-control fs-1 task-title update-task-title ${errors.title && errors.title.type ? "is-invalid" : ""
-              }`}
+            className={`form-control fs-1 task-title update-task-title ${errors.title ? "is-invalid" : ""}`}
             maxLength={255}
             {...register("title", {
               required: "The title cannot be empty",
               minLength: {
                 value: 4,
-                message: "The title must longer than 4 characters",
+                message: "The title must be longer than 4 characters",
               },
               maxLength: {
                 value: 255,
                 message: "The title cannot be longer than 255 characters",
               },
             })}
-          ></input>
+          />
           {errors.title && (
             <div className="invalid-feedback d-block">
               {errors.title.message}
@@ -89,74 +107,43 @@ export default function CollectUpdateTask() {
         </div>
         <div className="read-task-div">
           <div>
-            <div>
-              <label htmlFor="description" className="form-label">
-                Description
-              </label>
-              <MDXEditor
-                className="mdx-editor-editor"
-                markdown={description}
-                onChange={(value) => setDescription(value)}
-                plugins={[
-                  headingsPlugin(),
-                  listsPlugin(),
-                  quotePlugin(),
-                  thematicBreakPlugin(),
-                  markdownShortcutPlugin(),
-                  linkDialogPlugin(),
-                  toolbarPlugin({
-                    toolbarContents: () => (
-                      <>
-                        <UndoRedo />
-                        <BlockTypeSelect />
-                        <BoldItalicUnderlineToggles />
-                        <CodeToggle />
-                        <ListsToggle />
-                        <CreateLink />
-                        {/* <InsertImage /> */}
-                      </>
-                    ),
-                  }),
-                ]}
-              />
-            </div>
+            <label htmlFor="description" className="form-label">
+              Description
+            </label>
+            <MDXEditor
+              className="mdx-editor-editor"
+              markdown={customFields.description}
+              onChange={(value) => handleCustomFieldChange('description', value)}
+              plugins={[
+                headingsPlugin(),
+                listsPlugin(),
+                quotePlugin(),
+                thematicBreakPlugin(),
+                markdownShortcutPlugin(),
+                linkDialogPlugin(),
+                toolbarPlugin({
+                  toolbarContents: () => (
+                    <>
+                      <UndoRedo />
+                      <BlockTypeSelect />
+                      <BoldItalicUnderlineToggles />
+                      <CodeToggle />
+                      <ListsToggle />
+                      <CreateLink />
+                    </>
+                  ),
+                }),
+              ]}
+            />
+            {errors.description && (
+              <div className="invalid-feedback d-block">{errors.description.message}</div>
+            )}
           </div>
           <div className="update-task-grid-2">
-            <div>
-              <button type="submit" className="add-task-button" name="save">
-                Save changes
-              </button>
-            </div>
-
-            <div className="tasks-deatils-div border rounded">
-              <div className="tasks-deatils-div-details-header">
-                <h6>Details</h6>
-              </div>
-              <hr className="bg-body-secondary"></hr>
-
-              <div className="details-table">
-                <div className="details-div">
-                  <p className="fw-medium">Project</p>
-                  <p>{task.project_id}</p>
-                </div>
-                <div className="details-div">
-                  <p className="fw-medium">Assignee</p>
-                  <p>{task.assignee.name}</p>
-                </div>
-                <div className="details-div">
-                  <p className="fw-medium">Reporter</p>
-                  <p>{task.reporter.name}</p>
-                </div>
-                <div className="details-div">
-                  <p className="fw-medium">Status</p>
-                  <p>todo...</p>
-                </div>
-                <div className="details-div">
-                  <p className="fw-medium">Priority</p>
-                  <p>todo...</p>
-                </div>
-              </div>
-            </div>
+            <button type="submit" className="add-task-button" name="save" onClick={handleSubmit(onSubmit)}>
+              Save changes
+            </button>
+            <TaskDetails task={task} customFields={customFields} setStatus={setStatus} setPriority={setPriority} />
           </div>
         </div>
       </article>
