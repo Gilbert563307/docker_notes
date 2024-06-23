@@ -23,6 +23,10 @@ import { useForm } from "react-hook-form";
 
 export default function CollectUpdateTask() {
   let { state } = useLocation();
+  const { getStatusButton } = useHtmlCssHelpers();
+
+  //custom fields
+  const [description, setDescription] = useState(task.description);
 
   if (state === null || state === undefined) {
     return (
@@ -32,15 +36,10 @@ export default function CollectUpdateTask() {
     );
   }
 
-  const { getStatusButton } = useHtmlCssHelpers();
-
   /**
    * @type {import("../../controller/TasksController").Task}
    */
   const task = state?.task;
-
-  //custom fields
-  const [description, setDescription] = useState(task.description);
 
   const {
     register,
@@ -58,7 +57,7 @@ export default function CollectUpdateTask() {
   });
 
   const onSubmit = (data) => {
-    const newPayload = {...task, ...data, description: description};
+    const newPayload = { ...task, ...data, description: description };
     console.log(newPayload);
   };
 
@@ -67,9 +66,8 @@ export default function CollectUpdateTask() {
       <article className="read-task">
         <div className="read-task-title-div update-task-title-div ">
           <input
-            className={`form-control fs-1 task-title update-task-title ${
-              errors.title && errors.title.type ? "is-invalid" : ""
-            }`}
+            className={`form-control fs-1 task-title update-task-title ${errors.title && errors.title.type ? "is-invalid" : ""
+              }`}
             maxLength={255}
             {...register("title", {
               required: "The title cannot be empty",
@@ -96,6 +94,7 @@ export default function CollectUpdateTask() {
                 Description
               </label>
               <MDXEditor
+                className="mdx-editor-editor"
                 markdown={description}
                 onChange={(value) => setDescription(value)}
                 plugins={[
