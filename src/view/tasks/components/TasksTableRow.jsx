@@ -67,7 +67,7 @@ export default function TasksTableRow({ task }) {
           </Link>
         </button>
         <button>
-          <Link to={`/tasks/update/${task.id}`} state={{ task: task }}>
+          <Link to={`/tasks/update/${task.id}`}>
             <i className="fa-sharp fa-light fa-pencil"></i>
           </Link>
         </button>

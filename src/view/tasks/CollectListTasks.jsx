@@ -4,6 +4,7 @@ import "../../assets/css/views/tasks/CollectListTasks.css";
 import useGetTasksHook from "../../hooks/useGetTasksHook";
 import TasksTable from "./components/TasksTable";
 import { Link } from "react-router-dom";
+import BS5PaginationV2 from "../components/bs5/BS5PaginationV2";
 
 /**
  * CollectListTasks component
@@ -41,11 +42,8 @@ export default function CollectListTasks() {
       </div>
 
       <div className="tasks-content table-responsive">
-        <TasksTable
-          tasks={tasks}
-          totalTasks={totalTasks}
-          totalPages={totalPages}
-        />
+        <TasksTable tasks={tasks} />
+        <BS5PaginationV2 totalItems={totalTasks} totalPages={totalPages} />
       </div>
     </article>
   );

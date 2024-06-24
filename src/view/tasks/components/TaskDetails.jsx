@@ -23,23 +23,23 @@ export default function TaskDetails({ task, customFields, setStatus, setPriority
             <div className="details-table">
                 <div className="details-div">
                     <p className="fw-medium">Project</p>
-                    <p>{task.project_id}</p>
+                    <p>{task?.project_id}</p>
                 </div>
                 <div className="details-div">
                     <p className="fw-medium">Assignee</p>
-                    <p>{task.assignee.name}</p>
+                    <p>{task?.assignee.name}</p>
                 </div>
                 <div className="details-div">
                     <p className="fw-medium">Reporter</p>
-                    <p>{task.reporter.name}</p>
+                    <p>{task?.reporter.name}</p>
                 </div>
                 <div className="details-div">
                     <p className="fw-medium">Status</p>
-                    <StatusButtonComponent taskStatus={customFields.status} callBackFn={setStatus} />
+                    <StatusButtonComponent taskStatus={customFields?.status} callBackFn={setStatus} />
                 </div>
                 <div className="details-div">
                     <p className="fw-medium">Priority</p>
-                    <PriorityButtonComponent priorityStatus={customFields.priority} callBackFn={setPriority} />
+                    <PriorityButtonComponent priorityStatus={customFields?.priority} callBackFn={setPriority} />
                 </div>
             </div>
         </div>

@@ -55,11 +55,11 @@ const router = createBrowserRouter([
                         element: <CollectCreateTask />,
                     },
                     {
-                        path: "/tasks/read/:documentId",
+                        path: "/tasks/read/:taskId",
                         element: <CollectReadTask />,
                     },
                     {
-                        path: "/tasks/update/:documentId",
+                        path: "/tasks/update/:taskId",
                         element: <CollectUpdateTask />,
                     }
                 ],

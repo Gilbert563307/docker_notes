@@ -2,7 +2,6 @@
 import React from 'react'
 import TasksTableRow from './TasksTableRow'
 import "../../../assets/css/views/tasks/TasksTable.css";
-import BS5PaginationV2 from '../../components/bs5/BS5PaginationV2';
 import { Link } from 'react-router-dom';
 
 /**
@@ -10,11 +9,9 @@ import { Link } from 'react-router-dom';
  * 
  * @param {Object} props - The properties object.
  * @param {import("../../../controller/TasksController").Task[]} props.tasks - The array of tasks to display.
- * @param {number} props.totalTasks - The total number of tasks.
- * @param {number} props.totalPages - The total number of pages.
  * @returns {JSX.Element} The rendered TasksTable component.
  */
-export default function TasksTable({ tasks, totalTasks, totalPages }) {
+export default function TasksTable({ tasks }) {
 
     /**
      * Represents the headers for a table.
@@ -58,7 +55,6 @@ export default function TasksTable({ tasks, totalTasks, totalPages }) {
             <div className='table-add-task-div'>
                 <Link className='table-add-task-btn' to="/tasks/create"><i className="fa-thin fa-plus" style={{ color: "black" }}></i> Create</Link>
             </div>
-            <BS5PaginationV2 totalItems={totalTasks} totalPages={totalPages} />
         </div>
     )
 }

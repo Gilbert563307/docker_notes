@@ -56,16 +56,17 @@ export default function MainController() {
 
   const { user } = useAuthProvider();
 
-  useEffect(() => {
-    // console.log(`MainController: Dev`, auth);
-  }, [auth]); // Log auth on component mount
+  //TODO REMOVE 
+  // useEffect(() => {
+  //   // console.log(`MainController: Dev`, auth);
+  // }, [auth]); // Log auth on component mount
 
   const contextValue = useMemo(() => ({ title, setTitle }), [title, setTitle]);
 
   return (
     <MainControllerContext.Provider value={contextValue}>
       {user != null && Object.keys(user).length > 0 ? (
-        <DefaultLayout  />
+        <DefaultLayout />
       ) : (
         <GuestLayout />
       )}

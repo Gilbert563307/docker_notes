@@ -23,6 +23,11 @@ export default function TasksLogic() {
         currentServerTimestamp,
         convertTimeStampToDate,
         orderBy,
+        doc,
+        db,
+        table,
+        updateDoc,
+        getDoc,
     } = DataHandler({ table: "tasks" });
 
     /**
@@ -202,5 +207,65 @@ export default function TasksLogic() {
         }
     };
 
-    return { createTask, listTasks };
+    /**
+     * 
+     * @param {import("../controller/TasksController").Task} payload 
+     * @returns @returns {Promise<{ updated: boolean, message: string, type: string }>}
+     */
+    const updateTask = async (payload) => {
+        try {
+            //manualy updated the updated_at
+            const updatedPayload = { ...payload, updated_at: currentServerTimestamp };
+
+            //get document
+            const task = doc(db, table, payload.id);
+
+            //update document
+            const updatedTask = updateDoc(task, updatedPayload);
+            if (!updatedTask) return { updated: false, message: "Something went wrong while updating your task", type: ALERT_TYPES.DANGER };
+
+            return {
+                updated: true,
+                message: "Your task has been succesfully been updated",
+                type: ALERT_TYPES.SUCCESS,
+            }
+
+        } catch (error) {
+            return {
+                updated: false,
+                message: error.message,
+                type: ALERT_TYPES.DANGER
+            };
+        }
+    }
+
+    /**
+     * Fetches a task from the database by its ID.
+     * @param {string} taskId 
+     * @returns {Promise<{task: import("../controller/TasksController").Task, message: string, type: number}>}
+     */
+    const getTask = async (taskId) => {
+        try {
+            //get task ref
+            const taskRef = doc(db, table, taskId);
+            const taskSnap = await getDoc(taskRef);
+
+            if (!taskSnap.exists()) return { message: 'An error occurred while fetching the task.', type: ALERT_TYPES.DANGER };
+
+            return {
+                task: taskSnap.data(),
+                message: "",
+                type: ALERT_TYPES.SUCCESS,
+            }
+
+        } catch (error) {
+            return {
+                task: {},
+                message: error.message,
+                type: ALERT_TYPES.DANGER
+            };
+        }
+    }
+
+    return { createTask, listTasks, updateTask, getTask };
 }

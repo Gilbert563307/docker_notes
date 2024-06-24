@@ -53,6 +53,7 @@ const initialState = {
  * @property {string} READ - Action type for reading a task.
  * @property {string} UPDATE - Action type for updating a task.
  * @property {string} ARCHIVE - Action type for archiving a task.
+ * @property {string} SET_NOTIFICATION - Action type for setting a message.
  */
 export const TASKS_CONTROLLER_ACTIONS = {
   LIST: "LIST_TASKS",
@@ -60,6 +61,7 @@ export const TASKS_CONTROLLER_ACTIONS = {
   READ: "READ_TASK",
   UPDATE: "UPDATE_TASK",
   ARCHIVE: "ARCHIVE_TASK",
+  SET_NOTIFICATION: "SET_NOTIFICATION,"
 };
 
 /**
@@ -96,7 +98,7 @@ export const useTasksControllerContext = () => {
  * @returns {JSX.Element} The TasksController component.
  */
 export default function TasksController() {
-  const { createTask, listTasks } = TasksLogic();
+  const { createTask, listTasks, updateTask, getTask } = TasksLogic();
   const { getCurrentPageNumber } = useHelpers();
   const navigate = useNavigate();
 
@@ -104,6 +106,8 @@ export default function TasksController() {
   const { showLoader, closeLoader, PreloaderComponent } = useBS5PreloaderHook();
 
   const REDUCER_ACTIONS = {
+    SET_TASKS: "SET_TASKS",
+    SET_TASK: "SET_TASK",
     SET_NOTIFICATION: "SET_NOTIFICATION", //Action type for setting a notification.
   };
 
@@ -119,6 +123,12 @@ export default function TasksController() {
         return {
           ...state,
           tasks: action.payload,
+        }
+
+      case REDUCER_ACTIONS.SET_TASK:
+        return {
+          ...state,
+          task: action.payload,
         }
 
       case REDUCER_ACTIONS.SET_NOTIFICATION:
@@ -166,8 +176,13 @@ export default function TasksController() {
     });
   };
 
-
-
+  /**
+   * 
+   * @param {{ message: string, type: number }} notification 
+   */
+  const collectSetNotification = (notification) => {
+    setNotificationToState(notification);
+  }
 
   /**
    * 
@@ -206,6 +221,11 @@ export default function TasksController() {
         payload: tasks.results,
       });
 
+      dispatchAction({
+        type: REDUCER_ACTIONS.SET_TASK,
+        payload: {},
+      });
+
       // //TODO REMOVE THIS IS FOR TESTING ONLY
       // const res = { tasks: tasks, total: 3, pages: 1 };
       // dispatchAction({
@@ -220,6 +240,56 @@ export default function TasksController() {
 
 
   /**
+   * 
+   * @param {Task} payload 
+   */
+  const collectUpdateTask = async (payload) => {
+    try {
+      const tbuTask = await updateTask(payload);
+
+      // Update state with the created task response
+      setNotificationToState(tbuTask);
+
+      //get the updated task content
+      const results = await getTask(payload.id);
+
+      //set taskt to state;
+      dispatchAction({
+        type: REDUCER_ACTIONS.SET_TASK,
+        payload: results.task,
+      });
+    } catch (error) {
+      setErrorToState(error);
+    }
+  }
+
+
+  /**
+   * 
+   * @param {string} taskId 
+   */
+  const collectReadTask = async (taskId) => {
+    try {
+      console.log(`collectReadTask`, taskId);
+      // try to find the task in the current state;
+      const results = await getTask(taskId);
+
+      // Update state with the created task response
+      setNotificationToState(results);
+
+      console.log(`collectReadTask`, results);
+      // set taskt to state;
+      dispatchAction({
+        type: REDUCER_ACTIONS.SET_TASK,
+        payload: results.task,
+      });
+    } catch (error) {
+      setErrorToState(error);
+
+    }
+  }
+
+  /**
   * Dispatches actions based on the specified type and payload.
   * @param {{ type: string; payload?: any; }} action - The action object containing type and payload.
   * @returns {Promise<void>} - A Promise that resolves when the operation is completed.
@@ -229,7 +299,6 @@ export default function TasksController() {
     /** @type {{ type: string; payload?: any; }} */ action
   ) => {
     try {
-
       // Show loader while processing action
       showLoader();
 
@@ -243,6 +312,12 @@ export default function TasksController() {
           break;
         case TASKS_CONTROLLER_ACTIONS.UPDATE:
           await collectUpdateTask(action?.payload);
+          break;
+        case TASKS_CONTROLLER_ACTIONS.READ:
+          await collectReadTask(action?.payload);
+          break;
+        case TASKS_CONTROLLER_ACTIONS.SET_NOTIFICATION:
+          collectSetNotification(action?.payload);
           break;
         case ALERT_ACTIONS.CLOSE_ALERT:
           closeAlert();
