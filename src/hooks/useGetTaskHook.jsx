@@ -21,7 +21,7 @@ export default function useGetTaskHook() {
     };
 
     fetchTaskById(taskId);
-  }, []);
+  }, [taskId]);
 
   return { task: state?.task, dispatch };
 }

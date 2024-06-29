@@ -219,7 +219,7 @@ export default function TasksLogic() {
 
             //get document
             const task = doc(db, table, payload.id);
-
+           
             //update document
             const updatedTask = updateDoc(task, updatedPayload);
             if (!updatedTask) return { updated: false, message: "Something went wrong while updating your task", type: ALERT_TYPES.DANGER };
@@ -244,7 +244,7 @@ export default function TasksLogic() {
      * @param {string} taskId 
      * @returns {Promise<{task: import("../controller/TasksController").Task, message: string, type: number}>}
      */
-    const getTask = async (taskId) => {
+    const readTask = async (taskId) => {
         try {
             //get task ref
             const taskRef = doc(db, table, taskId);
@@ -252,8 +252,12 @@ export default function TasksLogic() {
 
             if (!taskSnap.exists()) return { message: 'An error occurred while fetching the task.', type: ALERT_TYPES.DANGER };
 
+            //get the document
+            const taskDocData = taskSnap.data()
+            //manualy assign the id to it because firebase doesnt return the id
+            const task = {...taskDocData, id: taskId}
             return {
-                task: taskSnap.data(),
+                task: task,
                 message: "",
                 type: ALERT_TYPES.SUCCESS,
             }
@@ -267,5 +271,5 @@ export default function TasksLogic() {
         }
     }
 
-    return { createTask, listTasks, updateTask, getTask };
+    return { createTask, listTasks, updateTask, readTask };
 }

@@ -17,27 +17,23 @@ export default function useGetTasksHook() {
     const { getUrlParams } = useHelpers();
     const { state, dispatch } = useTasksControllerContext();
 
-    /**
-     * Fetches the list of tasks by dispatching the LIST action.
-     *
-     * @returns {void}
-     */
     const fetchTasks = () => {
         const currentPage = getUrlParams(PAGE_NUMBER) || DEFAULT_PAGE_NUMBER;
+        console.log('Dispatching LIST action with currentPage:', currentPage);
         dispatch({ type: TASKS_CONTROLLER_ACTIONS.LIST, payload: { currentPage: parseInt(currentPage) } });
     };
 
     React.useEffect(() => {
-        console.log(`state`, state);
-    }, [state])
+        console.log('State has changed:', state);
+    }, [state]);
 
-    // Utilize pagination hook
     usePaginationHook({ methodToCall: fetchTasks });
 
-    // Fetch tasks when the component mounts.
     useEffect(() => {
+        console.log('Component mounted, fetching tasks...');
         fetchTasks();
-    }, []); // Empty dependency array ensures this runs only once on mount.
+    }, []);
 
     return { tasks: state.tasks.tasks, totalTasks: state.tasks.total, totalPages: state.tasks.pages };
 }
+
