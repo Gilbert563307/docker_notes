@@ -98,7 +98,7 @@ export const useTasksControllerContext = () => {
  * @returns {JSX.Element} The TasksController component.
  */
 export default function TasksController() {
-  const { createTask, listTasks, updateTask, getTask } = TasksLogic();
+  const { createTask, listTasks, updateTask, readTask } = TasksLogic();
   const { getCurrentPageNumber } = useHelpers();
   const navigate = useNavigate();
 
@@ -120,18 +120,19 @@ export default function TasksController() {
   const reducer = (state, action) => {
     switch (action.type) {
       case REDUCER_ACTIONS.SET_TASKS:
+        // console.log('Setting tasks:', action.payload);
         return {
           ...state,
           tasks: action.payload,
-        }
-
+        };
       case REDUCER_ACTIONS.SET_TASK:
+        // console.log('Setting task:', action.payload);
         return {
           ...state,
           task: action.payload,
-        }
-
+        };
       case REDUCER_ACTIONS.SET_NOTIFICATION:
+        // console.log('Setting notification:', action.payload);
         return {
           ...state,
           notification: action.payload,
@@ -145,17 +146,20 @@ export default function TasksController() {
   const [state, dispatchAction] = useReducer(reducer, initialState);
 
   const setNotificationToState = (object) => {
-    //set the message
+    // Set the message
     dispatchAction({
       type: REDUCER_ACTIONS.SET_NOTIFICATION,
       payload: object,
     });
 
-    //remove message after 5 seconds
-    setInterval(() => {
+    // Remove message after 5 seconds
+    const timeoutId = setTimeout(() => {
       closeAlert();
     }, 5000);
-  }
+
+    // Clear timeout if needed
+    return () => clearTimeout(timeoutId);
+  };
 
 
   /**
@@ -250,10 +254,10 @@ export default function TasksController() {
       // Update state with the created task response
       setNotificationToState(tbuTask);
 
-      //get the updated task content
-      const results = await getTask(payload.id);
+      // get the updated task content
+      const results = await readTask(payload.id);
 
-      //set taskt to state;
+      // set taskt to state;
       dispatchAction({
         type: REDUCER_ACTIONS.SET_TASK,
         payload: results.task,
@@ -272,7 +276,7 @@ export default function TasksController() {
     try {
       console.log(`collectReadTask`, taskId);
       // try to find the task in the current state;
-      const results = await getTask(taskId);
+      const results = await readTask(taskId);
 
       // Update state with the created task response
       setNotificationToState(results);
