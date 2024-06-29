@@ -9,7 +9,7 @@ import { tasks } from "../tests/test.js";
 
 /**
  * @typedef {Object} Task
- * @property {number} id - The unique identifier for the task.
+ * @property {number} [id] - The unique identifier for the task.
  * @property {number} project_id - The unique identifier for the project.
  * @property {string} user_uid - The unique identifier for the user.
  * @property {string} title - The title of the task.
@@ -18,6 +18,7 @@ import { tasks } from "../tests/test.js";
  * @property {number} priority - The priority level of the task.
  * @property {{ name: string, assignee_id: string }} assignee - The assignee of the task with name and unique identifier.
  * @property {{ name: string, reporter_id: string }} reporter - The reporter of the task with name and unique identifier.
+ * @property {Boolean} archived - The archived status.
  * @property {number} created_at - The timestamp when the task was created.
  * @property {number} updated_at - The timestamp when the task was last updated.
  */
@@ -106,8 +107,8 @@ export default function TasksController() {
   const { showLoader, closeLoader, PreloaderComponent } = useBS5PreloaderHook();
 
   const REDUCER_ACTIONS = {
-    SET_TASKS: "SET_TASKS",
-    SET_TASK: "SET_TASK",
+    SET_TASKS: "SET_TASKS", //Action type for setting multiple task's.
+    SET_TASK: "SET_TASK", //Action type for setting a task.
     SET_NOTIFICATION: "SET_NOTIFICATION", //Action type for setting a notification.
   };
 

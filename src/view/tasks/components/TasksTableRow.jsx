@@ -3,6 +3,7 @@ import React from "react";
 import { useAuthProvider } from "../../../context/AuthProvider";
 import useHtmlCssHelpers from "../../../helpers/useHtmlCssHelpers";
 import { Link } from "react-router-dom";
+import ArchiveTaskButton from "./buttons/ArchiveTaskButton";
 
 /**
  * Renders a single row in the tasks table.
@@ -71,9 +72,7 @@ export default function TasksTableRow({ task }) {
             <i className="fa-sharp fa-light fa-pencil"></i>
           </Link>
         </button>
-        <button>
-          <i className="fa-light fa-box-archive"></i>
-        </button>
+        <ArchiveTaskButton taskTitle={task.title} />
       </td>
     </tr>
   );

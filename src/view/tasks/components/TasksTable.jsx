@@ -3,6 +3,7 @@ import React from 'react'
 import TasksTableRow from './TasksTableRow'
 import "../../../assets/css/views/tasks/TasksTable.css";
 import { Link } from 'react-router-dom';
+import { Show } from '../../components/custom/Show';
 
 /**
  * Component representing a table of tasks.
@@ -35,26 +36,37 @@ export default function TasksTable({ tasks }) {
 
     return (
         <div>
-            <table className='table table-sm  tasks-table table-striped'>
-                <thead>
-                    <tr className='tasks-table-tr-headers'>
-                        {headers.map((header) => {
-                            return <th scope="col" className="px-6 py-3" key={header.name}><span>{header.icon}</span> {header.name}</th>
-                        })}
-                    </tr>
-                </thead>
-                <tbody>
-                    {tasks && tasks.length > 0 && tasks.map((task, index) => (
-                        <TasksTableRow key={task.id || index} task={task} />
-                    ))}
-                    {tasks && tasks.length === 0 && (
-                        <tr><td>No tasks available</td></tr>
-                    )}
-                </tbody>
-            </table>
-            <div className='table-add-task-div'>
-                <Link className='table-add-task-btn' to="/tasks/create"><i className="fa-thin fa-plus" style={{ color: "black" }}></i> Create</Link>
-            </div>
+            <Show>
+                <Show.When isTrue={tasks && tasks.length === 0}>
+                    <div>No tasks available</div>
+                </Show.When>
+                <Show.When isTrue={tasks && tasks.length > 0}>
+                    <table className="table table-sm tasks-table table-striped">
+                        <thead>
+                            <tr className="tasks-table-tr-headers">
+                                {headers.map((header) => (
+                                    <th scope="col" className="px-6 py-3" key={header.name}>
+                                        <span>{header.icon}</span> {header.name}
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {tasks && tasks.length > 0 && tasks.map((task, index) => (
+                                <TasksTableRow key={task.id || index} task={task} />
+                            ))}
+                        </tbody>
+                    </table>
+                    <div className="table-add-task-div">
+                        <Link className="table-add-task-btn" to="/tasks/create">
+                            <i className="fa-thin fa-plus" style={{ color: "black" }}></i> Create
+                        </Link>
+                    </div>
+                </Show.When>
+                <Show.Else>
+                    <div>Somethinh went wrong!</div>
+                </Show.Else>
+            </Show>
         </div>
-    )
+    );
 }

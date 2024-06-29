@@ -48,7 +48,8 @@ export default function TasksLogic() {
                 user_uid: userUid,
                 status: TASKS_STATUS.TODO,
                 created_at: currentServerTimestamp,
-                updated_at: currentServerTimestamp
+                updated_at: currentServerTimestamp,
+                archived: false,
             };
             const created = await addDoc(collectionRef, newPayload);
             const isTaskCreated = created ? true : false;
