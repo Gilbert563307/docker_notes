@@ -64,7 +64,7 @@ export default function TasksTable({ tasks }) {
                     </div>
                 </Show.When>
                 <Show.Else>
-                    <div>Somethinh went wrong!</div>
+                    <div>Something went wrong!</div>
                 </Show.Else>
             </Show>
         </div>

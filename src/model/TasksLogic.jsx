@@ -106,6 +106,7 @@ export default function TasksLogic() {
             const tasksQuery = query(
                 collectionRef,
                 where("user_uid", "==", userUid),
+                where("archived", "==", false),
                 orderBy("created_at", "asc"),
                 limit(itemsPerPage)
             );
@@ -119,6 +120,7 @@ export default function TasksLogic() {
         const allDocsLimitedByThePageNumber = query(
             collectionRef,
             where("user_uid", "==", userUid),
+            where("archived", "==", false),
             orderBy("created_at", "asc"),
             limit(newPageLimit)
         );
@@ -211,7 +213,7 @@ export default function TasksLogic() {
     /**
      * 
      * @param {import("../controller/TasksController").Task} payload 
-     * @returns @returns {Promise<{ updated: boolean, message: string, type: string }>}
+     * @returns {Promise<{ updated: boolean, message: string, type: string }>}
      */
     const updateTask = async (payload) => {
         try {
@@ -220,7 +222,7 @@ export default function TasksLogic() {
 
             //get document
             const task = doc(db, table, payload.id);
-           
+
             //update document
             const updatedTask = updateDoc(task, updatedPayload);
             if (!updatedTask) return { updated: false, message: "Something went wrong while updating your task", type: ALERT_TYPES.DANGER };
@@ -247,23 +249,34 @@ export default function TasksLogic() {
      */
     const readTask = async (taskId) => {
         try {
-            //get task ref
+            // Get a reference to the task document in the database
             const taskRef = doc(db, table, taskId);
+
+            // Fetch the document snapshot
             const taskSnap = await getDoc(taskRef);
 
-            if (!taskSnap.exists()) return { message: 'An error occurred while fetching the task.', type: ALERT_TYPES.DANGER };
+            // Check if the task document exists
+            if (!taskSnap.exists()) {
+                return {
+                    message: 'An error occurred while fetching the task.',
+                    type: ALERT_TYPES.DANGER
+                };
+            }
 
-            //get the document
-            const taskDocData = taskSnap.data()
-            //manualy assign the id to it because firebase doesnt return the id
-            const task = {...taskDocData, id: taskId}
+            // Get the document data
+            const taskDocData = taskSnap.data();
+
+            // Manually assign the ID to the task because Firebase doesn't return the ID
+            const task = { ...taskDocData, id: taskId };
+
+            // Return the task with a success message
             return {
                 task: task,
                 message: "",
-                type: ALERT_TYPES.SUCCESS,
-            }
-
+                type: ALERT_TYPES.SUCCESS
+            };
         } catch (error) {
+            // Return an error response if the fetch operation fails
             return {
                 task: {},
                 message: error.message,
@@ -272,5 +285,29 @@ export default function TasksLogic() {
         }
     }
 
-    return { createTask, listTasks, updateTask, readTask };
+    /**
+     * Archives a task by its ID.
+     * 
+     * @param {string} taskId - The ID of the task to be archived.
+     * @returns {Promise<{ updated: boolean, message: string, type: string }>} - A promise that resolves to an object indicating the result of the archiving process.
+     */
+    const archiveTask = async (taskId) => {
+        try {
+            // Create a mock task with the given ID and mark it as archived
+            const task = { id: taskId, archived: true };
+
+            const archived = await updateTask(task);
+
+            // Return the result of the update operation
+            return archived;
+        } catch (error) {
+            // Return an error response if the update operation fails
+            return {
+                updated: false,
+                message: error.message,
+                type: ALERT_TYPES.DANGER
+            };
+        }
+    };
+    return { createTask, listTasks, updateTask, readTask, archiveTask };
 }

@@ -72,7 +72,7 @@ export default function TasksTableRow({ task }) {
             <i className="fa-sharp fa-light fa-pencil"></i>
           </Link>
         </button>
-        <ArchiveTaskButton taskTitle={task.title} />
+        <ArchiveTaskButton taskId={task.id} />
       </td>
     </tr>
   );

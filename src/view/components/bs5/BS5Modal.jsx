@@ -32,7 +32,7 @@ export default function BS5Modal({
   modal_content,
   modal_footer = true,
   showSaveChanges = false,
-  saveChangesTitle = "Oplsaan",
+  saveChangesTitle = "Save changes",
   closeModal,
   headerCentre = false,
   modalSize = MODAL_SIZES.NONE,
@@ -92,17 +92,17 @@ export default function BS5Modal({
                 <button
                   type="button"
                   tabIndex={0}
-                  className="dialogic-button dialogic-dismiss-button"
+                  className="btn btn-secondary"
                   data-bs-dismiss="modal"
                   onClick={closeModal}
                 >
-                  Annuleren
+                  Close
                 </button>
                 {showSaveChanges && saveChangesFunction && (
                   <button
                     type="button"
                     tabIndex={0}
-                    className="dialogic-button dialogic-primary-button"
+                    className="btn btn-primary"
                     onClick={saveChangesFunction}
                   >
                     {saveChangesTitle}

@@ -99,7 +99,7 @@ export const useTasksControllerContext = () => {
  * @returns {JSX.Element} The TasksController component.
  */
 export default function TasksController() {
-  const { createTask, listTasks, updateTask, readTask } = TasksLogic();
+  const { createTask, listTasks, updateTask, readTask, archiveTask } = TasksLogic();
   const { getCurrentPageNumber } = useHelpers();
   const navigate = useNavigate();
 
@@ -189,6 +189,17 @@ export default function TasksController() {
     setNotificationToState(notification);
   }
 
+
+
+  /**
+   * When a user creates a task, refetch the tasks;
+   */
+  const refreshTasksList = async () => {
+    const currentPage = getCurrentPageNumber();
+    const listPayload = { currentPage: currentPage };
+    await collectListTasks(listPayload);
+  }
+
   /**
    * 
    * @param {{title: string, description: string,  priority: number }} payload 
@@ -201,9 +212,7 @@ export default function TasksController() {
       setNotificationToState(taskCreated)
 
       //reftech tasks afte creating one
-      const currentPage = getCurrentPageNumber();
-      const listPayload = { currentPage: currentPage };
-      await collectListTasks(listPayload);
+      await refreshTasksList();
 
       //navugate to tasks page
       navigate("/tasks");
@@ -275,19 +284,33 @@ export default function TasksController() {
    */
   const collectReadTask = async (taskId) => {
     try {
-      console.log(`collectReadTask`, taskId);
       // try to find the task in the current state;
       const results = await readTask(taskId);
 
       // Update state with the created task response
       setNotificationToState(results);
 
-      console.log(`collectReadTask`, results);
       // set taskt to state;
       dispatchAction({
         type: REDUCER_ACTIONS.SET_TASK,
         payload: results.task,
       });
+    } catch (error) {
+      setErrorToState(error);
+
+    }
+  }
+
+
+  const collectArchiveTask = async (taskId) => {
+    try {
+      const tbuArchived = await archiveTask(taskId);
+
+      setNotificationToState(tbuArchived);
+
+      //reftech tasks after archive this one 
+      await refreshTasksList();
+
     } catch (error) {
       setErrorToState(error);
 
@@ -323,6 +346,9 @@ export default function TasksController() {
           break;
         case TASKS_CONTROLLER_ACTIONS.SET_NOTIFICATION:
           collectSetNotification(action?.payload);
+          break;
+        case TASKS_CONTROLLER_ACTIONS.ARCHIVE:
+          await collectArchiveTask(action?.payload);
           break;
         case ALERT_ACTIONS.CLOSE_ALERT:
           closeAlert();
