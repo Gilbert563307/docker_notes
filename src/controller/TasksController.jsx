@@ -190,7 +190,6 @@ export default function TasksController() {
   }
 
 
-
   /**
    * When a user creates a task, refetch the tasks;
    */
@@ -301,7 +300,10 @@ export default function TasksController() {
     }
   }
 
-
+   /**
+   * 
+   * @param {string} taskId 
+   */
   const collectArchiveTask = async (taskId) => {
     try {
       const tbuArchived = await archiveTask(taskId);

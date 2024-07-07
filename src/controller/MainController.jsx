@@ -1,4 +1,4 @@
-import React, { createContext, useMemo, useState, useEffect, useContext } from 'react';
+import React, { createContext, useMemo, useState, useContext } from 'react';
 import DefaultLayout from '../view/layout/DefaultLayout';
 import { useAuthProvider } from '../context/AuthProvider';
 import GuestLayout from '../view/layout/GuestLayout';

@@ -17,6 +17,8 @@ import ProtectedRoute from '../utils/router/ProtectedRoute';
 import GuestRoute from '../utils/router/GuestRoute';
 import LandingPage from '../view/pages/LandingPage';
 import AuthProvider from '../context/AuthProvider';
+import SettingsController from './SettingsController';
+import CollectListSettings from '../view/settings/CollectListSettings';
 
 
 const router = createBrowserRouter([
@@ -80,7 +82,18 @@ const router = createBrowserRouter([
             },
             {
                 path: "/settings",
-                element: <div>settings</div>
+                element: (
+                    <ProtectedRoute>
+                        <SettingsController />
+                    </ProtectedRoute>
+                ),
+                children: [
+                    {
+                        index: true,
+                        path: "",
+                        element: <CollectListSettings />,
+                    }
+                ]
             }
         ],
         errorElement: <ErrorPage />,
