@@ -65,3 +65,31 @@
   justify-content: center;
 
 }
+
+/* dark mode css  */
+
+html.dark .aside-navigation {
+  background-color: #1D2125;
+  border-right: 2px solid #282E34;
+}
+
+html.dark .stats-tracker-h1 {
+  color: #B6C2CF;
+}
+
+html.dark .user-welcome,
+.user-name {
+  color: #B6C2CF !important;
+}
+
+html.dark .layout-section {
+  background-color: #1D2125;
+}
+
+html.dark .layout-title {
+  color: #B6C2CF;
+}
+
+html.dark .content {
+  background-color: #282E33;
+}

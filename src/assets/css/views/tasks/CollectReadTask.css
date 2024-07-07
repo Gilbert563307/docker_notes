@@ -108,6 +108,27 @@
 
 .mdx-editor-editor,
 .mdx-editor-pre-tag {
-  max-height: 1000px !important;
+  max-height: 500px !important;
   overflow: auto;
+}
+
+.mdxeditor-popup-container{
+  display: none;
+}
+
+html.dark .task-title {
+  color: #B6C2CF;
+}
+
+.mdx-editor-col{
+  max-height: 550px !important;
+  overflow: auto;
+}
+
+html.dark ._contentEditable_yms4a_379{
+  /* color: white; */
+}
+
+html.dark .mdx_editor_create > div:nth-child(2) > ._contentEditable_yms4a_379 {
+  color: white !important;
 }

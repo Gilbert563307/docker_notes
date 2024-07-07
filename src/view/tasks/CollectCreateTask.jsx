@@ -115,9 +115,10 @@ export default function CollectCreateTask() {
         {/* end title  */}
 
         {/* start description  */}
-        <div className="col-12 mb-2">
+        <div className="col-12 mb-2 mdx-editor-col">
           <label htmlFor="description" className="form-label">Description</label>
           <MDXEditor
+            className='mdx_editor_create'
             markdown={description}
             onChange={(value) => setDescription(value)}
             plugins={[
@@ -181,7 +182,7 @@ export default function CollectCreateTask() {
 
         </div>
         <div className="col-12 mt-3">
-          <input type="submit" name="submit" value="Create" className="btn btn-primary"></input>
+          <input type="submit" name="submit" value="Create" className=" add-task-button"></input>
         </div>
       </form>
     </article>

@@ -30,6 +30,7 @@ export const TASKS_STATUS = {
     COMPLETED: 2,
 }
 
+export const SESSION_THEME_MODE = "SESSION_THEME_MODE";
 
 
 

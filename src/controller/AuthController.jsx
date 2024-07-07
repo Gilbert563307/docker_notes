@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useMemo, useReducer } from 'react';
+import React, { useMemo, useReducer } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAuthProvider } from '../context/AuthProvider';
 import AuthLogic from '../model/AuthLogic';
-
+import AuthControllerContext, { initialState } from '../context/AuthControllerContext';
 
 /**
  * @typedef {Object} AuthControllerActions
@@ -10,48 +10,6 @@ import AuthLogic from '../model/AuthLogic';
  */
 export const AUTH_CONTROLLER_ACTIONS = {
   LOGIN_WITH_GOOGLE: "LOGIN_WITH_GOOGLE",
-};
-
-/**
- * @typedef {Object} InitialState
- * @property {{message: string, type: number}} notification
- */
-
-/**
- * Initial state for the AuthController.
- * @type {InitialState}
- */
-const initialState = {
-  notification: { message: "", type: 0 },
-};
-
-/**
- * Context for managing state and actions within the AuthController.
- */
-/**
- * @typedef {React.Context} AuthControllerContext
- * @property {InitialState} state
- * @property {(object: {type: string, payload?: any} ) => void} dispatch
- */
-const AuthControllerContext = createContext(
-   /** @type {AuthControllerContext} */ {
-    state: initialState,
-    dispatch: (action) => { },
-  }
-);
-
-/**
- * Custom hook to access the AuthController context.
- * @returns {Object} AuthController context value.
- */
-export const useAuthControllerContext = () => {
-  const authControllerContext = useContext(AuthControllerContext);
-
-  if (!authControllerContext) {
-    throw new Error('useAuthControllerContext must be used within an AuthController');
-  }
-
-  return authControllerContext;
 };
 
 /**
@@ -124,7 +82,7 @@ export default function AuthController() {
     }
   };
 
-  /** @returns {AuthControllerContext} */
+  /** @returns {import("../context/AuthControllerContext").AuthControllerContext} */
   const contextValue = useMemo(() => ({ state, dispatch }), [state, dispatch]);
 
   return (

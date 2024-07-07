@@ -1,6 +1,7 @@
 import React from 'react'
 import "../../assets/css/views/CollectListAuth.css";
-import { AUTH_CONTROLLER_ACTIONS, useAuthControllerContext } from '../../controller/AuthController';
+import { useAuthControllerContext } from '../../context/AuthControllerContext';
+import { AUTH_CONTROLLER_ACTIONS } from '../../controller/AuthController';
 
 export default function CollectListAuth() {
 

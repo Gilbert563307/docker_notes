@@ -1,8 +1,10 @@
-import React, { createContext, useMemo, useState, useContext } from 'react';
+import React, { createContext, useMemo, useState, useContext, useEffect } from 'react';
 import DefaultLayout from '../view/layout/DefaultLayout';
 import { useAuthProvider } from '../context/AuthProvider';
 import GuestLayout from '../view/layout/GuestLayout';
 import { auth } from '../database/firebaseConfig';
+import { ThemeContext } from '../context/ThemeContext';
+import ThemeLogic from '../model/ThemeLogic';
 
 /**
  * Initial state for the MainController.
@@ -52,9 +54,11 @@ export const useMainControllerContext = () => {
  * @returns {React.ReactNode} Rendered component based on user authentication.
  */
 export default function MainController() {
+  const { user } = useAuthProvider();
+  const { darkTheme, lightTheme } = ThemeLogic();
+
   const [title, setTitle] = useState("");
 
-  const { user } = useAuthProvider();
 
   //TODO REMOVE 
   // useEffect(() => {
@@ -66,7 +70,9 @@ export default function MainController() {
   return (
     <MainControllerContext.Provider value={contextValue}>
       {user != null && Object.keys(user).length > 0 ? (
-        <DefaultLayout />
+        <ThemeContext.Provider value={{ darkTheme, lightTheme }}>
+          <DefaultLayout />
+        </ThemeContext.Provider>
       ) : (
         <GuestLayout />
       )}
