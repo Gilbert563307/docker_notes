@@ -85,7 +85,7 @@ export default function useHelpers() {
    * - Checks if there any active filters in the session tab
    * @returns {Array<{name: string, value: boolean, pathname: string }>}
    */
-  function getAllActiveSessionFilters() {
+  function getAllSessionFilters() {
     const value = sessionStorage.getItem(SESSION_FILTERS_ARRAY_CONFIG_NAME);
     if (value != null) {
       return JSON.parse(value);
@@ -165,7 +165,7 @@ export default function useHelpers() {
    */
   function isTheCurrentFilterActive(filterToCheck) {
     const currentFilterToCheckName = filterToCheck;
-    const allFilters = getAllActiveSessionFilters();
+    const allFilters = getAllSessionFilters();
     const matchingFilter = allFilters.find(
       (element) => currentFilterToCheckName === element.name
     );
@@ -223,7 +223,7 @@ export default function useHelpers() {
     formatToDutchStringDate,
     checkForInvalidFields,
     getNotificationObject,
-    getAllActiveSessionFilters,
+    getAllSessionFilters,
     getCurrentPathName,
     getUrlParams,
     setLastVisitedPageNumber,

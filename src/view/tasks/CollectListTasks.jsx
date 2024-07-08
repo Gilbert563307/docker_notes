@@ -5,6 +5,7 @@ import useGetTasksHook from "../../hooks/useGetTasksHook";
 import TasksTable from "./components/TasksTable";
 import { Link } from "react-router-dom";
 import BS5PaginationV2 from "../components/bs5/BS5PaginationV2";
+import FilterTasksButton from "./components/buttons/FilterTasksButton";
 
 /**
  * CollectListTasks component
@@ -32,9 +33,7 @@ export default function CollectListTasks() {
         </div>
         <div className="tasks-article-buttons">
           <div>
-            <button className="btn btn-filter task-btn-plain ">
-              Filters
-            </button>
+            <FilterTasksButton />
           </div>
           <div>
             <Link

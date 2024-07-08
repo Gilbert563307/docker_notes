@@ -27,7 +27,7 @@ export default function SessionMemoryFilter({
 }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const {
-    getAllActiveSessionFilters,
+    getAllSessionFilters,
     getCurrentPathName,
     isTheCurrentFilterActive,
   } = useHelpers();
@@ -103,7 +103,7 @@ export default function SessionMemoryFilter({
       value: changedBoolean,
       pathname: getCurrentPathName(),
     };
-    const allActiveFilters = getAllActiveSessionFilters();
+    const allActiveFilters = getAllSessionFilters();
 
     const newFiltersToSave = getFiltersToSave(filter, allActiveFilters);
 

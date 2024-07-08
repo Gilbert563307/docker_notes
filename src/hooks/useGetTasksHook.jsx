@@ -19,13 +19,13 @@ export default function useGetTasksHook() {
     };
 
     React.useEffect(() => {
-        console.log('State has changed:', state);
+        // console.log('State has changed:', state);
     }, [state]);
 
     usePaginationHook({ methodToCall: fetchTasks });
 
     useEffect(() => {
-        console.log('Component mounted, fetching tasks...');
+        // console.log('Component mounted, fetching tasks...');
         fetchTasks();
     }, []);
 

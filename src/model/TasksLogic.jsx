@@ -2,6 +2,7 @@ import React from 'react';
 import { ALERT_TYPES } from '../view/components/bs5/BS5Alert';
 import DataHandler from './DataHandler';
 import { TASKS_STATUS } from '../config';
+import useHelpers from '../helpers/useHelpers';
 
 /**
  * Logic component for managing tasks.
@@ -29,6 +30,8 @@ export default function TasksLogic() {
         updateDoc,
         getDoc,
     } = DataHandler({ table: "tasks" });
+
+    const { getAllSessionFilters } = useHelpers();
 
     /**
      * Creates a new task.
@@ -90,6 +93,72 @@ export default function TasksLogic() {
         }
     };
 
+    //     import { getFirestore, collection, query, where, orderBy } from "firebase/firestore";
+
+    // const db = getFirestore();  // Initialize Firestore instance
+    // const collectionRef = collection(db, "tasks");
+
+    // /**
+    //  * Get filtered tasks from Firestore.
+    //  * 
+    //  * @returns {Promise<QuerySnapshot>} A promise that resolves to the filtered tasks.
+    //  */
+    // const getTasksFilters = async () => {
+    //     try {
+    //         const filters = [
+    //             { fieldPath: "status", opStr: "==", value: 1 },
+    //             // Add other filters here if needed
+    //         ];
+
+    //         // Construct Firestore query
+    //         let tasksQuery = query(collectionRef);
+
+    //         // Apply filters
+    //         filters.forEach(filter => {
+    //             tasksQuery = query(tasksQuery, where(filter.fieldPath, filter.opStr, filter.value));
+    //         });
+
+    //         // Apply ordering
+    //         tasksQuery = query(tasksQuery, orderBy("created_at", "asc"));
+
+    //         console.log(`tasksQuery`, tasksQuery);
+
+    //         // Fetch data
+    //         const querySnapshot = await getDocs(tasksQuery);
+    //         const tasks = querySnapshot.docs.map(doc => doc.data());
+
+    //         return tasks;
+
+    //     } catch (error) {
+    //         console.error("Error getting filtered tasks: ", error);
+    //         return [];
+    //     }
+    // };
+
+
+    const getTasksFilters = () => {
+        try {
+            const data = [];
+            // const filters = getAllSessionFilters();
+            console.log(`filters`, data);
+            const data2 = [...data, ...{ fieldPath: "status", opStr: "==", value: 1 }];
+
+            const tasksQuery = query(
+                collectionRef,
+                data2.map((obj) => {
+                    return where(obj.fieldPath, obj.opStr, obj.value)
+                }),
+                orderBy("created_at", "asc"),
+            );
+            console.log(`tasksQuery`, tasksQuery);
+
+        } catch (error) {
+            return [];
+        }
+    }
+
+
+
 
     /**
      * Generates a Firestore query to fetch tasks for the current page.
@@ -100,6 +169,9 @@ export default function TasksLogic() {
     const getTasksQuery = async (currentPage) => {
         // Get the number of items to be displayed per page
         const itemsPerPage = getTheCurrentItemsPerPage();
+
+        //Get the filters is there applied
+        const filters = getTasksFilters();
 
         // If the current page is the first page, create a query limited by the items per page
         if (currentPage === 1) {
