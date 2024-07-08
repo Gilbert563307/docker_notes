@@ -59,3 +59,15 @@
     color: #0143a3;
 
 }
+
+html.dark .selected-status-item-0{
+    background-color: #282D33;
+}
+
+html.dark .selected-status-item-1{
+    background-color: #1C2B41;
+}
+
+html.dark .selected-status-item-2{
+    background-color: #1C3329;
+}

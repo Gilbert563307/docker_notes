@@ -130,7 +130,7 @@ export default function UpdateTaskComponent({ task, dispatch }) {
                         )}
                     </div>
                     <div className="update-task-grid-2">
-                        <button type="submit" className="add-task-button" name="save" onClick={handleSubmit(onSubmit)}>
+                        <button type="submit" className="add-task-button task-btn-plain " name="save" onClick={handleSubmit(onSubmit)}>
                             Save changes
                         </button>
                         <TaskDetails task={task} customFields={customFields} setStatus={setStatus} setPriority={setPriority} />

@@ -38,7 +38,7 @@ export default function TasksTableRow({ task }) {
 
   const readProfileUrl = `/tasks/read/${task.id}`;
   return (
-    <tr>
+    <tr className="tasks-table-row">
       <th scope="row">
         <div className="form-check">
           <input

@@ -30,15 +30,23 @@ export default function CollectListTasks() {
             placeholder="Search tasks...."
           />
         </div>
-        <div>
-          <Link
-            aria-describedby="create task button"
-            className="add-task-button"
-            to="/tasks/create"
-          >
-            Create
-          </Link>
+        <div className="tasks-article-buttons">
+          <div>
+            <button className="btn btn-filter task-btn-plain ">
+              Filters
+            </button>
+          </div>
+          <div>
+            <Link
+              aria-describedby="create task button"
+              className="add-task-button task-btn-plain "
+              to="/tasks/create"
+            >
+              Create
+            </Link>
+          </div>
         </div>
+
       </div>
 
       <div className="tasks-content table-responsive">

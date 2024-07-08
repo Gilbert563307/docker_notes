@@ -222,10 +222,14 @@ export default function TasksController() {
 
   /**
    * 
-   * @param {{ currentPage: number }} payload 
    */
-  const collectListTasks = async (payload) => {
+  const collectListTasks = async () => {
     try {
+      //get currentPageNumber
+      const currentPage = getCurrentPageNumber();
+      //create Payload
+      const payload = { currentPage: currentPage };
+
       const tasks = await listTasks(payload);
 
       // Update state with the created task response

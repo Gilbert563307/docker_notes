@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
 import { PAGE_NUMBER } from "../../../config";
@@ -121,5 +122,3 @@ export default function BS5PaginationV2({
     </div>
   );
 }
-
-
