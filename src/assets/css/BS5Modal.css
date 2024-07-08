@@ -34,6 +34,11 @@
     width: 100%;
 }
 
+
 .modal-content {
     /* min-width: 700px !important; */
+}
+
+html.dark .modal-title{
+    color: #B6C2CF;
 }

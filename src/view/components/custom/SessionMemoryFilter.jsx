@@ -1,5 +1,6 @@
+/* eslint-disable react/prop-types */
 import React from "react";
-import BS5Switch from "../BS5Components/BS5Switch";
+
 import { useSearchParams } from "react-router-dom";
 import {
   DEFAULT_PAGE_NUMBER,
@@ -7,6 +8,7 @@ import {
   SESSION_FILTERS_ARRAY_CONFIG_NAME,
 } from "../../../config";
 import useHelpers from "../../../helpers/useHelpers";
+import BS5Switch from "../bs5/BS5Switch";
 
 /**
  * This Hook can be used with the Pagination hook, because it resets a page number to 1 when a filter is applied.
@@ -75,7 +77,7 @@ export default function SessionMemoryFilter({
     const updatedFilters = allFilters.map((oldFiltersObj) => {
       const results =
         oldFiltersObj.name === currentFilterObj.name &&
-        oldFiltersObj.value != currentFilterObj.value
+          oldFiltersObj.value != currentFilterObj.value
           ? currentFilterObj
           : oldFiltersObj;
       return results;
