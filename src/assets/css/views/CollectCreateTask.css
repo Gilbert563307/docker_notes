@@ -53,21 +53,28 @@
     color: #0143a3;
 }
 
-.tasks-table-actions> button {
+.tasks-table-actions>button {
     border: none;
     background: none;
     color: #0143a3;
 
 }
 
-html.dark .selected-status-item-0{
+html.dark .selected-status-item-0 {
     background-color: #282D33;
 }
 
-html.dark .selected-status-item-1{
+html.dark .selected-status-item-1 {
     background-color: #1C2B41;
 }
 
-html.dark .selected-status-item-2{
+html.dark .selected-status-item-2 {
     background-color: #1C3329;
+}
+
+@media only screen and (max-width: 768px) {
+    .bottoom-options {
+        display: flex;
+        gap: 1em;
+    }
 }

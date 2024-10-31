@@ -132,3 +132,7 @@ html.dark ._contentEditable_yms4a_379{
 html.dark .mdx_editor_create > div:nth-child(2) > ._contentEditable_yms4a_379 {
   color: white !important;
 }
+
+.mdx_editor_create{
+  min-height: 250px;
+}

@@ -107,4 +107,7 @@ html.dark .content {
     border-right: none;
     border-bottom: 2px solid #dee2e6;
   }
+  .layout-title{
+    margin-left: 1em;
+  }
 }

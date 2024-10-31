@@ -195,8 +195,8 @@ export default function TasksController() {
    */
   const refreshTasksList = async () => {
     const currentPage = getCurrentPageNumber();
-    const listPayload = { currentPage: currentPage };
-    await collectListTasks(listPayload);
+    const payload = { currentPage: currentPage };
+    await collectListTasks();
   }
 
   /**
@@ -242,13 +242,6 @@ export default function TasksController() {
         type: REDUCER_ACTIONS.SET_TASK,
         payload: {},
       });
-
-      // //TODO REMOVE THIS IS FOR TESTING ONLY
-      // const res = { tasks: tasks, total: 3, pages: 1 };
-      // dispatchAction({
-      //   type: REDUCER_ACTIONS.SET_TASKS,
-      //   payload: res,
-      // });
 
     } catch (error) {
       setErrorToState(error)
@@ -304,10 +297,10 @@ export default function TasksController() {
     }
   }
 
-   /**
-   * 
-   * @param {string} taskId 
-   */
+  /**
+  * 
+  * @param {string} taskId 
+  */
   const collectArchiveTask = async (taskId) => {
     try {
       const tbuArchived = await archiveTask(taskId);

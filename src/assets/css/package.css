@@ -121,6 +121,10 @@ body {
     background-color: #f9f9f9;
 }
 
+html.dark body{
+    background-color: #1D2125;
+}
+
 .dialogic-pagination {
     height: auto !important;
 }

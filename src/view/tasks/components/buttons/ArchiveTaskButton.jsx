@@ -34,6 +34,7 @@ export default function ArchiveTaskButton({ taskId }) {
 
     const archiveTask = () => {
         dispatch({ type: TASKS_CONTROLLER_ACTIONS.ARCHIVE, payload: taskId })
+        hideArchiveModal();
     }
 
     const modalContent = <p> Archiving will move the task to the archive and it will no longer be visible in your active task list. You can restore it from the archive later if needed.

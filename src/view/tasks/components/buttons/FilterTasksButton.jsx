@@ -31,7 +31,7 @@ export default function FilterTasksButton() {
      * Function to handle the filtering of tasks.
      */
     const getFilteredTasks = () => {
-        dispatch({ type: TASKS_CONTROLLER_ACTIONS.LIST });
+        //TODO finish dispatch({ type: TASKS_CONTROLLER_ACTIONS.LIST });
         hideFilterModal();
     };
 

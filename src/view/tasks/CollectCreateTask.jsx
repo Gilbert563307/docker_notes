@@ -145,7 +145,7 @@ export default function CollectCreateTask() {
         </div>
         {/* end description  */}
 
-        <div>
+        <div className='bottoom-options'>
           {/* start status  */}
           <div className='col-md-2 d-flex flex-column  mb-2'>
             <label htmlFor="status" className="form-label">Status</label>
