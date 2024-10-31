@@ -1,7 +1,6 @@
 import React, { useMemo, useReducer } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAuthProvider } from '../context/AuthProvider';
-import AuthLogic from '../model/AuthLogic';
 import AuthControllerContext, { initialState } from '../context/AuthControllerContext';
 
 /**
@@ -18,7 +17,6 @@ export const AUTH_CONTROLLER_ACTIONS = {
  */
 export default function AuthController() {
   const { login } = useAuthProvider();
-  const { LoginWithGoogle } = AuthLogic();
 
   /**
    * Reducer function for handling state updates in AuthController.
@@ -54,9 +52,6 @@ export default function AuthController() {
    */
   const collectLoginWithGoogle = async () => {
     try {
-      const response = await LoginWithGoogle();
-      if (login === false || Object.keys(response.user).length === 0) return;
-      login(response.user);
 
     } catch (error) {
       setMessageToState(error);

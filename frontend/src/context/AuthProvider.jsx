@@ -60,7 +60,6 @@ export const useAuthProvider = () => {
 // eslint-disable-next-line react/prop-types
 export default function AuthProvider({ children }) {
   const { storeValue, readValue } = useLocalStorageHook();
-  const { SignUserOut } = AuthLogic();
 
   const [user, setUser] = useState(readValue(AUTH_STORAGE_KEYS.USER));
 
@@ -81,7 +80,6 @@ export default function AuthProvider({ children }) {
   const logout = () => {
     storeValue(AUTH_STORAGE_KEYS.USER, null);
     setUser(null); // Clear authenticated user
-    SignUserOut(); // Sign user out of firebase
   };
 
   /**
