@@ -81,9 +81,7 @@ html.dark .active-url>a>div>div:first-of-type>i {
     color: #2B7EFF !important;
 }
 
-/* .nav-item-group > div:last-of-type > a {
-    color: #4D4D4D;
-} */
+
 
 @keyframes fadeInAnimation {
     0% {
@@ -92,5 +90,21 @@ html.dark .active-url>a>div>div:first-of-type>i {
 
     100% {
         opacity: 1;
+    }
+}
+
+
+@media only screen and (max-width: 768px) {
+    .main-navigation {
+        flex-direction: row;
+        height: 100px;
+    }
+
+    .navbar{
+        overflow: scroll;
+    }
+
+    .sign-out {
+        display: none;
     }
 }

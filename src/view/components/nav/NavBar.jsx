@@ -24,11 +24,11 @@ export default function NavBar() {
      */
     const items = [
         { name: "Tasks", url: "/tasks", icon: "fa-regular fa-notebook" },
-        { name: "Settings", url: "settings", icon: "fa-regular fa-gear", },
+        { name: "Settings", url: "settings", icon: "fa-regular fa-gear", }, 
     ];
 
     return (
-        <nav>
+        <nav className="main-navigation">
             <ul className="navbar">
                 {items.map((item, key) => {
                     const isActiveUrl = key === activeItem;

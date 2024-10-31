@@ -93,3 +93,18 @@ html.dark .layout-title {
 html.dark .content {
   background-color: #282E33;
 }
+
+
+@media only screen and (max-width: 768px) {
+  .default-layout {
+    flex-direction: column;
+  }
+
+  .aside-navigation {
+    justify-content: start;
+    height: 200px;
+    width: 100%;
+    border-right: none;
+    border-bottom: 2px solid #dee2e6;
+  }
+}

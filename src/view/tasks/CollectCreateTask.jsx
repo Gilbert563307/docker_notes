@@ -182,7 +182,7 @@ export default function CollectCreateTask() {
 
         </div>
         <div className="col-12 mt-3">
-          <input type="submit" name="submit" value="Create" className=" add-task-button"></input>
+          <input type="submit" name="submit" value="Create" className="add-task-button task-btn-plain"></input>
         </div>
       </form>
     </article>
