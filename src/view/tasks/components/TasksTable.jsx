@@ -18,20 +18,20 @@ export default function TasksTable({ tasks }) {
      * Represents the headers for a table.
      * Each header object contains the name of the column and an optional icon.
      * 
-     * @type {Array<{ name: string, icon: JSX.Element }>}
+     * @type {Array<{ name: string, icon: JSX.Element, className: string }>}
      */
     const headers = [
         { name: "#", icon: "" },
-        { name: "Title", icon: <i className="fa-light fa-subtitles"></i> },
-        { name: "Status", icon: <i className="fa-sharp fa-light fa-circle-arrow-right"></i> },
-        { name: "Priority", icon: <i className="fa-sharp fa-light fa-list-timeline"></i> },
+        { name: "Title", icon: <i className="fa-light fa-subtitles"></i>, className: "" },
+        { name: "Status", icon: <i className="fa-sharp fa-light fa-circle-arrow-right"></i>, className: "" },
+        { name: "Priority", icon: <i className="fa-sharp fa-light fa-list-timeline"></i>, className: "" },
         // { name: "Assignee", icon: <i className="fa-light fa-user"></i> },
         // { name: "Due date", icon: <i className="fa-light fa-calendar-day"></i> },
         // { name: "Labels", icon: <i className="fa-light fa-tags"></i> },
-        { name: "Created", icon: <i className="fa-light fa-calendar-day"></i> },
-        { name: "Updated", icon: <i className="fa-light fa-calendar-day"></i> },
-        { name: "Reporter", icon: <i className="fa-light fa-user"></i> },
-        { name: "Actions", icon: <i className="fa-light fa-gears"></i> },
+        { name: "Created", icon: <i className="fa-light fa-calendar-day"></i>, className: "created-at" },
+        { name: "Updated", icon: <i className="fa-light fa-calendar-day"></i>, className: "updated-at" },
+        { name: "Reporter", icon: <i className="fa-light fa-user"></i>, className: "" },
+        { name: "Actions", icon: <i className="fa-light fa-gears"></i>, className: "" },
     ];
 
     return (
@@ -45,7 +45,7 @@ export default function TasksTable({ tasks }) {
                         <thead>
                             <tr className="tasks-table-tr-headers">
                                 {headers.map((header) => (
-                                    <th scope="col" className="px-6 py-3" key={header.name}>
+                                    <th scope="col" className={`${header.className} px-6 py-3`} key={header.name}>
                                         <span>{header.icon}</span> {header.name}
                                     </th>
                                 ))}

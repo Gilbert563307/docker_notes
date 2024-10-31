@@ -4,6 +4,7 @@ import { useAuthProvider } from "../../../context/AuthProvider";
 import useHtmlCssHelpers from "../../../helpers/useHtmlCssHelpers";
 import { Link } from "react-router-dom";
 import ArchiveTaskButton from "./buttons/ArchiveTaskButton";
+import BS5TruncateSpan from "../../components/bs5/BS5TruncateSpan";
 
 /**
  * Renders a single row in the tasks table.
@@ -49,9 +50,12 @@ export default function TasksTableRow({ task }) {
         </div>
       </th>
       <td>
-        <Link to={readProfileUrl} state={{ task: task }} className="read-link">
-          {task.title}
-        </Link>{" "}
+        <BS5TruncateSpan
+          content={<Link to={readProfileUrl} state={{ task: task }} className="read-link">
+            {task.title}
+          </Link>}
+          maxWidthToSet="100px"
+        />
       </td>
       <td>{Status}</td>
       <td>{Priority}</td>
