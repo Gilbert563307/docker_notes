@@ -19,6 +19,8 @@ import LandingPage from '../view/pages/LandingPage';
 import AuthProvider from '../context/AuthProvider';
 import SettingsController from './SettingsController';
 import CollectListSettings from '../view/settings/CollectListSettings';
+import CollectListBoard from '../view/board/CollectListBoard';
+import BoardsController from './BoardsController';
 
 
 const router = createBrowserRouter([
@@ -38,6 +40,21 @@ const router = createBrowserRouter([
                         <LandingPage />
                     </ProtectedRoute>
                 )
+            },
+            {
+                path: "/board",
+                element: (
+                    <ProtectedRoute>
+                        <BoardsController />
+                    </ProtectedRoute>
+                ),
+                children: [
+                    {
+                        index: true,
+                        path: "",
+                        element: <CollectListBoard />,
+                    },
+                ]
             },
             {
                 path: "/tasks",

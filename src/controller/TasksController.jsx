@@ -5,7 +5,6 @@ import { ALERT_ACTIONS, ALERT_TYPES } from '../view/components/bs5/BS5Alert';
 import NotificationV3 from '../view/components/notifications/NotificationV3';
 import TasksLogic from '../model/TasksLogic';
 import useHelpers from '../helpers/useHelpers';
-import { tasks } from "../tests/test.js";
 
 /**
  * @typedef {Object} Task
@@ -15,6 +14,7 @@ import { tasks } from "../tests/test.js";
  * @property {string} title - The title of the task.
  * @property {string} description - The description of the task.
  * @property {number} status - The status of the task.
+ * @property {number} board_status - The status of the task on the board.
  * @property {number} priority - The priority level of the task.
  * @property {{ name: string, assignee_id: string }} assignee - The assignee of the task with name and unique identifier.
  * @property {{ name: string, reporter_id: string }} reporter - The reporter of the task with name and unique identifier.
@@ -81,7 +81,7 @@ const tasksControllerContext = createContext(
 
 /**
  * Custom hook to use the TasksController context.
- * Throws an error if used outside the TaksControllerProvider.
+ * Throws an error if used outside the TasksControllerProvider.
  * @returns {ContextValue} The context value.
  */
 export const useTasksControllerContext = () => {
@@ -211,6 +211,7 @@ export default function TasksController() {
       setNotificationToState(taskCreated)
 
       //reftech tasks afte creating one
+      //TODO get state and remogve that task with that uuid no need to refesh or make all to api
       await refreshTasksList();
 
       //navugate to tasks page

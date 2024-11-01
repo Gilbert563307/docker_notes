@@ -37,7 +37,7 @@ export default function TasksTableRow({ task }) {
   const Status = getStatusBadge(task.status);
   const Priority = getPriorityBadge(task.priority);
 
-  const readProfileUrl = `/tasks/read/${task.id}`;
+  const readTaskUrl = `/tasks/read/${task.id}`;
   return (
     <tr className="tasks-table-row">
       <th scope="row">
@@ -51,7 +51,7 @@ export default function TasksTableRow({ task }) {
       </th>
       <td>
         <BS5TruncateSpan
-          content={<Link to={readProfileUrl} state={{ task: task }} className="read-link">
+          content={<Link to={readTaskUrl} state={{ task: task }} className="read-link">
             {task.title}
           </Link>}
           maxWidthToSet="100px"
@@ -67,7 +67,7 @@ export default function TasksTableRow({ task }) {
       <td>{Assignee}</td>
       <td className="tasks-table-actions">
         <button>
-          <Link to={readProfileUrl} state={{ task: task }}>
+          <Link to={readTaskUrl} state={{ task: task }}>
             <i className="fa-light fa-magnifying-glass"></i>
           </Link>
         </button>

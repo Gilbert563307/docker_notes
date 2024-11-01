@@ -1,7 +1,7 @@
 import React from 'react';
 import { ALERT_TYPES } from '../view/components/bs5/BS5Alert';
 import DataHandler from './DataHandler';
-import { TASKS_STATUS } from '../config';
+import { TASKS_BOARD_STATUS, TASKS_STATUS } from '../config';
 import useHelpers from '../helpers/useHelpers';
 
 /**
@@ -50,6 +50,7 @@ export default function TasksLogic() {
                 ...payload,
                 user_uid: userUid,
                 status: TASKS_STATUS.TODO,
+                board_status: TASKS_BOARD_STATUS.TODO, 
                 created_at: currentServerTimestamp,
                 updated_at: currentServerTimestamp,
                 archived: false,
@@ -93,71 +94,13 @@ export default function TasksLogic() {
         }
     };
 
-    //     import { getFirestore, collection, query, where, orderBy } from "firebase/firestore";
-
-    // const db = getFirestore();  // Initialize Firestore instance
-    // const collectionRef = collection(db, "tasks");
-
-    // /**
-    //  * Get filtered tasks from Firestore.
-    //  * 
-    //  * @returns {Promise<QuerySnapshot>} A promise that resolves to the filtered tasks.
-    //  */
-    // const getTasksFilters = async () => {
-    //     try {
-    //         const filters = [
-    //             { fieldPath: "status", opStr: "==", value: 1 },
-    //             // Add other filters here if needed
-    //         ];
-
-    //         // Construct Firestore query
-    //         let tasksQuery = query(collectionRef);
-
-    //         // Apply filters
-    //         filters.forEach(filter => {
-    //             tasksQuery = query(tasksQuery, where(filter.fieldPath, filter.opStr, filter.value));
-    //         });
-
-    //         // Apply ordering
-    //         tasksQuery = query(tasksQuery, orderBy("created_at", "asc"));
-
-    //         console.log(`tasksQuery`, tasksQuery);
-
-    //         // Fetch data
-    //         const querySnapshot = await getDocs(tasksQuery);
-    //         const tasks = querySnapshot.docs.map(doc => doc.data());
-
-    //         return tasks;
-
-    //     } catch (error) {
-    //         console.error("Error getting filtered tasks: ", error);
-    //         return [];
-    //     }
-    // };
-
-
     const getTasksFilters = () => {
         try {
-            const data = [];
-            // const filters = getAllSessionFilters();
-            console.log(`filters`, data);
-            const data2 = [...data, ...{ fieldPath: "status", opStr: "==", value: 1 }];
-
-            const tasksQuery = query(
-                collectionRef,
-                data2.map((obj) => {
-                    return where(obj.fieldPath, obj.opStr, obj.value)
-                }),
-                orderBy("created_at", "asc"),
-            );
-            console.log(`tasksQuery`, tasksQuery);
-
+            return []
         } catch (error) {
             return [];
         }
     }
-
-
 
 
     /**

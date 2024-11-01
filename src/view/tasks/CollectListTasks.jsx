@@ -26,9 +26,10 @@ export default function CollectListTasks() {
         <div className="">
           <input
             type="text"
-            className="form-control"
+            className="form-control disabled"
             id="search_bar"
             placeholder="Search tasks...."
+            disabled={true}
           />
         </div>
         <div className="tasks-article-buttons">

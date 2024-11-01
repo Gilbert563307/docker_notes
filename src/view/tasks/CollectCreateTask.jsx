@@ -40,10 +40,10 @@ export default function CollectCreateTask() {
 
   const onSubmit = (data) => {
     //check if the description is empty
-    if (description.length === 0) {
-      setError('description', { type: 'custom', message: 'The description cannot be empty' });
-      return;
-    }
+    // if (description.length === 0) {
+    //   setError('description', { type: 'custom', message: 'The description cannot be empty' });
+    //   return;
+    // }
     reset();
     //add the custom description, status fields to the payload
     const payload = { ...data, description: description, status: status, priority: priority };

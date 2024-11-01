@@ -18,10 +18,7 @@ export default function useGetTasksHook() {
         dispatch({ type: TASKS_CONTROLLER_ACTIONS.LIST });
     };
 
-    React.useEffect(() => {
-        // console.log('State has changed:', state);
-    }, [state]);
-
+ 
     usePaginationHook({ methodToCall: fetchTasks });
 
     useEffect(() => {
