@@ -4,6 +4,7 @@ import NotificationV3 from '../view/components/notifications/NotificationV3';
 import useBS5PreloaderHook from '../hooks/useBS5PreloaderHook';
 import { Outlet } from 'react-router-dom';
 import useHelpers from '../helpers/useHelpers';
+import { ALERT_TYPES } from '../view/components/bs5/BS5Alert';
 
 
 /**
@@ -184,21 +185,36 @@ export default function BoardsController() {
         }
     }
 
-      /**
-   * 
-   * @param {Task} payload 
-   */
-  const collectUpdateBoardTask = async (payload) => {
-    try {
-      const tbuTask = await updateTask(payload);
+    /**
+ * 
+ * @param {Task} payload 
+ */
+    const collectUpdateBoardTask = async (payload) => {
+        try {
+            const tbuTask = await updateTask(payload);
 
-      // Update state with the created task response
-      //TODO LOG message
-      console.log(tbuTask.message);    
-    } catch (error) {
-      setErrorToState(error);
+            if (tbuTask.type != ALERT_TYPES.SUCCESS) {
+                // Update state with the created task response
+                setNotificationToState(tbuTask);
+            }
+
+        } catch (error) {
+            setErrorToState(error);
+        }
     }
-  }
+
+
+    const collectCretaBoardTask = async (payload) => {
+        try {
+            const taskCreated = await createTask(payload);
+
+            // Update state with the created task response
+            setNotificationToState(taskCreated);
+        } catch (error) {
+            setErrorToState(error);
+        }
+
+    }
 
     /**
 * Dispatches actions based on the specified type and payload.
@@ -219,6 +235,8 @@ export default function BoardsController() {
                     await collectListBoardTasks();
                 case BOARD_CONTROLLER_ACTIONS.UPDATE:
                     await collectUpdateBoardTask(action?.payload);
+                case BOARD_CONTROLLER_ACTIONS.CREATE:
+                    await collectCretaBoardTask(action?.payload);
                 case ALERT_ACTIONS.CLOSE_ALERT:
                     closeAlert();
                     break;

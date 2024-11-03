@@ -136,3 +136,11 @@ html.dark .mdx_editor_create > div:nth-child(2) > ._contentEditable_yms4a_379 {
 .mdx_editor_create{
   min-height: 250px;
 }
+
+@media only screen and (max-width: 768px) {
+  .read-task-div{
+    display: flex;
+    flex-direction: column;
+   
+  }
+}

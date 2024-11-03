@@ -73,3 +73,10 @@
 .add-card-btn:hover{
     background-color: #D0D4DB;
 }
+
+
+@media only screen and (max-width: 768px) {
+    .main-board{
+        overflow: scroll;
+    }
+}

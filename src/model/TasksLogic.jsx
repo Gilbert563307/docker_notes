@@ -40,17 +40,19 @@ export default function TasksLogic() {
      * @param {string} payload.title - The title of the task.
      * @param {string} payload.description - The description of the task.
      * @param {number} payload.priority - The priority level of the task.
-     * @param {number} payload.created_at - 
-     * @param {number} payload.updated_at -
      * @returns {Promise<{ created: boolean, message: string, type: string }>} A promise resolving to an object indicating whether the task was created successfully, along with a message and alert type.
      */
     const createTask = async (payload) => {
         try {
+            // Check if board_status is valid; if not, set to default
+            const boardStatus = payload?.board_status
+                ? (payload.board_status === TASKS_BOARD_STATUS.TODO ? payload.board_status : TASKS_BOARD_STATUS.TODO)
+                : TASKS_BOARD_STATUS.TODO;
+
             const newPayload = {
                 ...payload,
                 user_uid: userUid,
-                status: TASKS_STATUS.TODO,
-                board_status: TASKS_BOARD_STATUS.TODO, 
+                board_status: boardStatus,
                 created_at: currentServerTimestamp,
                 updated_at: currentServerTimestamp,
                 archived: false,

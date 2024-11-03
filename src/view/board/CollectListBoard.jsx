@@ -70,8 +70,9 @@ export default function CollectListBoard() {
     const task = items.find((item) => item.id === draggingId);
     if (task === undefined) return;
     // Call updateTask with the updated item
-
-    updateTask(task)
+    setTimeout(function () {
+      updateTask(task);
+    }, 2000);
 
   };
 
@@ -91,7 +92,7 @@ export default function CollectListBoard() {
         {TASKS_BOARD_HEADERS.map((header) => {
           return <Column
             key={header.id}
-            header={header.name}
+            header={header}
             content={items}
             onDragEnter={() => handleDragEnter(header.status)}
             handleDragStart={handleDragStart}
