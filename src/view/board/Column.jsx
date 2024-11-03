@@ -33,7 +33,7 @@ export default function Column({
                 className="board-card-item shadow-sm rounded"
               >
                 <BS5TruncateSpan
-                  content={<Link to={readTaskUrl} state={{ task: task }} className="read-link">
+                  content={<Link to={readTaskUrl} title={task.title} state={{ task: task }} className="read-link board-card-title">
                     {task.title}
                   </Link>}
                   maxWidthToSet="240px"

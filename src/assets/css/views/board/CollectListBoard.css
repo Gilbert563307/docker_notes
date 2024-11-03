@@ -46,6 +46,7 @@
 .main-board{
     display: flex;
     background-image: url("../../../images/land_scape.png");
+    min-height: 60dvh;
 }
 
 /* add border so that the items do not bounce when hover */
@@ -74,6 +75,9 @@
     background-color: #D0D4DB;
 }
 
+html.dark .board-card-title {
+    color:  black !important;
+}
 
 @media only screen and (max-width: 768px) {
     .main-board{
