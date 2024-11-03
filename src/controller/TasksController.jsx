@@ -6,30 +6,14 @@ import NotificationV3 from '../view/components/notifications/NotificationV3';
 import TasksLogic from '../model/TasksLogic';
 import useHelpers from '../helpers/useHelpers';
 
-/**
- * @typedef {Object} Task
- * @property {number} [id] - The unique identifier for the task.
- * @property {number} project_id - The unique identifier for the project.
- * @property {string} user_uid - The unique identifier for the user.
- * @property {string} title - The title of the task.
- * @property {string} description - The description of the task.
- * @property {number} status - The status of the task.
- * @property {number} board_status - The status of the task on the board.
- * @property {number} priority - The priority level of the task.
- * @property {{ name: string, assignee_id: string }} assignee - The assignee of the task with name and unique identifier.
- * @property {{ name: string, reporter_id: string }} reporter - The reporter of the task with name and unique identifier.
- * @property {Boolean} archived - The archived status.
- * @property {number} created_at - The timestamp when the task was created.
- * @property {number} updated_at - The timestamp when the task was last updated.
- */
 
 /**
- * @typedef {Array<Task>} Tasks - State for tasks.
+ * @typedef {Array<import("../types/types").Task>} Tasks - State for tasks.
  */
 
 /**
  * @typedef {Object} InitialState
- * @property {Task | Object} task - The current task.
+ * @property {import("../types/types").Task | Object} task - The current task.
  * @property {{ tasks: Tasks, total: number}} tasks - The list of tasks.
  * @property {Object} notification - The notification object.
  * @property {string} notification.message - The notification message.
@@ -194,8 +178,8 @@ export default function TasksController() {
    * When a user creates a task, refetch the tasks;
    */
   const refreshTasksList = async () => {
-    const currentPage = getCurrentPageNumber();
-    const payload = { currentPage: currentPage };
+    // const currentPage = getCurrentPageNumber();
+    // const payload = { currentPage: currentPage };
     await collectListTasks();
   }
 
@@ -252,7 +236,7 @@ export default function TasksController() {
 
   /**
    * 
-   * @param {Task} payload 
+   * @param {import("../types/types").Task} payload 
    */
   const collectUpdateTask = async (payload) => {
     try {

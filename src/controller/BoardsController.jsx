@@ -4,13 +4,13 @@ import NotificationV3 from '../view/components/notifications/NotificationV3';
 import useBS5PreloaderHook from '../hooks/useBS5PreloaderHook';
 import { Outlet } from 'react-router-dom';
 import useHelpers from '../helpers/useHelpers';
-import { ALERT_TYPES } from '../view/components/bs5/BS5Alert';
+import { ALERT_ACTIONS, ALERT_TYPES } from '../view/components/bs5/BS5Alert';
 
 
 /**
  * @typedef {Object} InitialState
- * @property {import("./TasksController").Tasks> | Object} task - The current task.
- * @property {{ tasks: Tasks, total: number}} tasks - The list of tasks.
+ * @property {import("../types/types").Task | Object} task - The current task.
+ * @property {{ tasks: import("../types/types").Tasks, total: number}} tasks - The list of tasks.
  * @property {Object} notification - The notification object.
  * @property {string} notification.message - The notification message.
  * @property {number} notification.type - The notification type.
@@ -187,7 +187,7 @@ export default function BoardsController() {
 
     /**
  * 
- * @param {Task} payload 
+ * @param {import("../types/types").Task} payload 
  */
     const collectUpdateBoardTask = async (payload) => {
         try {
@@ -217,10 +217,10 @@ export default function BoardsController() {
     }
 
     /**
-* Dispatches actions based on the specified type and payload.
-* @param {{ type: string; payload?: any; }} action - The action object containing type and payload.
-* @returns {Promise<void>} - A Promise that resolves when the operation is completed.
-*/
+    * Dispatches actions based on the specified type and payload.
+    * @param {{ type: string; payload?: any; }} action - The action object containing type and payload.
+    * @returns {Promise<void>} - A Promise that resolves when the operation is completed.
+    */
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const dispatch = async (
     /** @type {{ type: string; payload?: any; }} */ action
@@ -233,10 +233,15 @@ export default function BoardsController() {
             switch (action.type) {
                 case BOARD_CONTROLLER_ACTIONS.LIST:
                     await collectListBoardTasks();
+                    break;
                 case BOARD_CONTROLLER_ACTIONS.UPDATE:
                     await collectUpdateBoardTask(action?.payload);
+                    break;
+
                 case BOARD_CONTROLLER_ACTIONS.CREATE:
                     await collectCretaBoardTask(action?.payload);
+                    break;
+
                 case ALERT_ACTIONS.CLOSE_ALERT:
                     closeAlert();
                     break;
@@ -256,8 +261,6 @@ export default function BoardsController() {
             closeLoader();
         }
     };
-
-
 
     /** @returns {ContextValue} */
     const contextValue = useMemo(

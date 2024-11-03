@@ -6,7 +6,7 @@ import { SELECTED_TASK } from '../../../config';
 /**
  * 
  * @param {Object} props 
- * @param {import("../../../controller/TasksController").Tasks} props.tasks
+ * @param {import("../../../types/types").Tasks} props.tasks
  * @returns {JSX.Element}  
  */
 export default function ListTasks({ tasks }) {

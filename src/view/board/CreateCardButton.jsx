@@ -30,13 +30,6 @@ export default function CreateCardButton({ header }) {
         if (title === "") return;
         const payload = {
             title: title,
-            description: "",
-            project_id: 0,
-            status: TASKS_STATUS.TODO,
-            priority: TASKS_PRIORITY.LOW,
-            board_status: header.status,
-            assignee: { name: user.displayName, assignee_id: user.uid },
-            reporter: { name: user.displayName, reporter_id: user.uid },
         }
         if (payload === undefined) return;
         dispatch({ type: BOARD_CONTROLLER_ACTIONS.CREATE, payload: payload });

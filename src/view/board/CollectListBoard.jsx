@@ -25,7 +25,7 @@ export default function CollectListBoard() {
   const [draggingId, setDraggingId] = useState();
 
   /**
-  * @type {import("../../controller/TasksController").Tasks}
+  * @type {import("../../types/types").Tasks}
   * Contains the list of task items. Each task has an `id`, `title`, and `board_status`.
   */
   const [items, setItems] = useState([]);
@@ -80,7 +80,7 @@ export default function CollectListBoard() {
   /**
    * Updates a task in the board state.
    *
-   * @param {import('../../controller/TasksController').Task} payload - The task object to update.
+   * @param {import("../../types/types").Task} payload - The task object to update.
    */
   const updateTask = (payload) => {
     dispatch({ type: BOARD_CONTROLLER_ACTIONS.UPDATE, payload: payload });

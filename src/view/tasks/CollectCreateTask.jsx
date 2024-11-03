@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react'
-import { useAuthProvider } from '../../context/AuthProvider';
 import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../controller/TasksController';
 import { useForm } from 'react-hook-form';
 
@@ -11,7 +10,6 @@ import "../../assets/css/views/CollectCreateTask.css";
 import useHtmlCssHelpers from '../../helpers/useHtmlCssHelpers';
 
 export default function CollectCreateTask() {
-  const { user } = useAuthProvider();
   const { dispatch } = useTasksControllerContext();
   const { getStatusBadge, getPriorityBadge } = useHtmlCssHelpers();
 
@@ -28,22 +26,12 @@ export default function CollectCreateTask() {
     register,
     handleSubmit,
     reset,
-    setError,
+    // setError,
     formState: { errors },
   } = useForm({
-    defaultValues: {
-      project_id: 0,
-      assignee: { name: user.displayName, assignee_id: user.uid },
-      reporter: { name: user.displayName, reporter_id: user.uid },
-    },
   });
 
   const onSubmit = (data) => {
-    //check if the description is empty
-    // if (description.length === 0) {
-    //   setError('description', { type: 'custom', message: 'The description cannot be empty' });
-    //   return;
-    // }
     reset();
     //add the custom description, status fields to the payload
     const payload = { ...data, description: description, status: status, priority: priority };
@@ -51,12 +39,14 @@ export default function CollectCreateTask() {
   };
 
   const toggleSelectedStatusDropDownItem = (status) => {
+    if (statusDropDownRef === undefined) return;
     setStatus(status);
     //click the button because otherwise bs5 doest close the button dropdown
     statusDropDownRef.current.click();
   }
 
   const toggleSelectedPriorityDropDownItem = (priority) => {
+    if (priorityDropDownRef === undefined) return;
     setPriority(priority);
     //click the button because otherwise bs5 doest close the button dropdown
     priorityDropDownRef.current.click();

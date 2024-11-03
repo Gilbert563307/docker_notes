@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 /**
  * Custom hook to fetch and access task data by ID from the TasksController context.
  *
- * @returns {{ task: import("../controller/TasksController").Task,  dispatch: Function }}
+ * @returns {{ task: import("../types/types").Task,  dispatch: Function }}
  *   - An object containing the fetched task data or undefined if the task ID is missing or not found.
  *   - The dispatch function from the TasksController context.
  */

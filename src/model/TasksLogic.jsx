@@ -1,14 +1,18 @@
 import React from 'react';
 import { ALERT_TYPES } from '../view/components/bs5/BS5Alert';
 import DataHandler from './DataHandler';
-import { TASKS_BOARD_STATUS, TASKS_STATUS } from '../config';
-import useHelpers from '../helpers/useHelpers';
+import { DEFAULT_PROJECT_ID, TASKS_BOARD_STATUS, TASKS_PRIORITY, TASKS_STATUS } from '../config';
+// import useHelpers from '../helpers/useHelpers';
+import { useAuthProvider } from '../context/AuthProvider';
 
 /**
  * Logic component for managing tasks.
  *
  */
 export default function TasksLogic() {
+
+    const { user } = useAuthProvider();
+
     const {
         collectionRef,
         userUid,
@@ -31,48 +35,53 @@ export default function TasksLogic() {
         getDoc,
     } = DataHandler({ table: "tasks" });
 
-    const { getAllSessionFilters } = useHelpers();
+    // const { getAllSessionFilters } = useHelpers();
 
     /**
-     * Creates a new task.
-     *
-     * @param {Object} payload - The data for the new task.
-     * @param {string} payload.title - The title of the task.
-     * @param {string} payload.description - The description of the task.
-     * @param {number} payload.priority - The priority level of the task.
-     * @returns {Promise<{ created: boolean, message: string, type: string }>} A promise resolving to an object indicating whether the task was created successfully, along with a message and alert type.
-     */
+ * Creates a new task with default values if not provided in the payload.
+ *
+ * @param {import("../types/types").Task} payload - Task details provided by the user.
+ * @returns {Promise<{created: boolean, message: string, type: number}>} - The result of task creation.
+ */
     const createTask = async (payload) => {
         try {
-            // Check if board_status is valid; if not, set to default
-            const boardStatus = payload?.board_status
-                ? (payload.board_status === TASKS_BOARD_STATUS.TODO ? payload.board_status : TASKS_BOARD_STATUS.TODO)
-                : TASKS_BOARD_STATUS.TODO;
-
-            const newPayload = {
-                ...payload,
+            // Define default values for the task
+            const defaultValues = {
+                project_id: payload.project_id || DEFAULT_PROJECT_ID,
                 user_uid: userUid,
-                board_status: boardStatus,
+                status: payload.status || TASKS_STATUS,
+                board_status: payload.board_status || TASKS_BOARD_STATUS.TODO,
+                priority: payload.priority || TASKS_PRIORITY.LOW,
+                assignee: payload.assignee || { name: user.displayName, assignee_id: user.uid },
+                reporter: payload.reporter || { name: user.displayName, assignee_id: user.uid },
+                archived: false,
                 created_at: currentServerTimestamp,
                 updated_at: currentServerTimestamp,
-                archived: false,
             };
-            const created = await addDoc(collectionRef, newPayload);
-            const isTaskCreated = created ? true : false;
 
+            // Merge payload with defaults, giving precedence to user-provided values
+            const payloadToSave = { ...defaultValues, ...payload };
+
+            // Attempt to add the document to the collection
+            const created = await addDoc(collectionRef, payloadToSave);
+
+            // Return success message if task creation was successful
             return {
-                created: isTaskCreated,
+                created: Boolean(created),
                 message: "Your task has been created",
                 type: ALERT_TYPES.SUCCESS,
-            }
+            };
         } catch (error) {
+            // Return error message in case of failure
             return {
                 created: false,
                 message: error.message,
-                type: ALERT_TYPES.DANGER
-            }
+                type: ALERT_TYPES.DANGER,
+            };
         }
-    }
+    };
+
+
 
     /**
      * Retrieves the total number of tasks from the server.
@@ -98,25 +107,28 @@ export default function TasksLogic() {
 
     const getTasksFilters = () => {
         try {
-            return []
+            // Future filtering logic here
+            return [];
+        // eslint-disable-next-line no-unreachable
         } catch (error) {
+            console.error("Error in getTasksFilters:", error);
             return [];
         }
-    }
+    };
 
 
     /**
      * Generates a Firestore query to fetch tasks for the current page.
      * 
      * @param {number} currentPage - The current page number for pagination.
-     * @returns {Promise<Query>} The Firestore query to fetch tasks for the specified page.
+     * @returns {Promise<import('firebase/database').Query>} The Firestore query to fetch tasks for the specified page.
      */
     const getTasksQuery = async (currentPage) => {
         // Get the number of items to be displayed per page
         const itemsPerPage = getTheCurrentItemsPerPage();
 
         //Get the filters is there applied
-        const filters = getTasksFilters();
+        // const filters = getTasksFilters();
 
         // If the current page is the first page, create a query limited by the items per page
         if (currentPage === 1) {
@@ -178,7 +190,7 @@ export default function TasksLogic() {
     * with a limit on the number of items per page. It includes the document ID in the task data and handles
     * potential errors during the fetch process.
     * @param {{ currentPage: number}} payload
-    * @returns {Promise<{results: { tasks: import("../controller/TasksController").Tasks}, message: string, type: string }>} A promise that resolves to an object containing the fetched tasks, a message, and an alert type.
+    * @returns {Promise<{results: import("../types/types").ListTasks | {},  message: string, type: number }>} A promise that resolves to an object containing the fetched tasks, a message, and an alert type.
      */
     const listTasks = async (payload) => {
         try {
@@ -220,7 +232,7 @@ export default function TasksLogic() {
             };
         } catch (error) {
             return {
-                results: {},
+                results: { tasks: [], total: 0, pages: 0 },
                 message: error.message,
                 type: ALERT_TYPES.DANGER
             };
@@ -229,8 +241,8 @@ export default function TasksLogic() {
 
     /**
      * 
-     * @param {import("../controller/TasksController").Task} payload 
-     * @returns {Promise<{ updated: boolean, message: string, type: string }>}
+     * @param {import("../types/types").Task} payload 
+     * @returns {Promise<{ updated: boolean, message: string, type: number }>}
      */
     const updateTask = async (payload) => {
         try {
@@ -262,7 +274,7 @@ export default function TasksLogic() {
     /**
      * Fetches a task from the database by its ID.
      * @param {string} taskId 
-     * @returns {Promise<{task: import("../controller/TasksController").Task, message: string, type: number}>}
+     * @returns {Promise<{task: import("../types/types").Task | {}, message: string, type: number}>}
      */
     const readTask = async (taskId) => {
         try {
@@ -275,6 +287,7 @@ export default function TasksLogic() {
             // Check if the task document exists
             if (!taskSnap.exists()) {
                 return {
+                    task: {},
                     message: 'An error occurred while fetching the task.',
                     type: ALERT_TYPES.DANGER
                 };
@@ -306,7 +319,7 @@ export default function TasksLogic() {
      * Archives a task by its ID.
      * 
      * @param {string} taskId - The ID of the task to be archived.
-     * @returns {Promise<{ updated: boolean, message: string, type: string }>} - A promise that resolves to an object indicating the result of the archiving process.
+     * @returns {Promise<{ archived: boolean, message: string, type: number }>} - A promise that resolves to an object indicating the result of the archiving process.
      */
     const archiveTask = async (taskId) => {
         try {
@@ -316,11 +329,15 @@ export default function TasksLogic() {
             const archived = await updateTask(task);
 
             // Return the result of the update operation
-            return archived;
+            return {
+                archived: Boolean(archived),
+                message: "",
+                type: ALERT_TYPES.SUCCESSU
+            };
         } catch (error) {
             // Return an error response if the update operation fails
             return {
-                updated: false,
+                archived: false,
                 message: error.message,
                 type: ALERT_TYPES.DANGER
             };

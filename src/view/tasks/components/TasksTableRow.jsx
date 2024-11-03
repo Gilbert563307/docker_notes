@@ -10,7 +10,7 @@ import BS5TruncateSpan from "../../components/bs5/BS5TruncateSpan";
  * Renders a single row in the tasks table.
  *
  * @param {Object} props - The props object.
- * @param {import("../../../controller/TasksController").Task} props.task - The task object.
+ * @param {import("../../../types/types").Task} props.task - The task object.
  * @returns {JSX.Element} A JSX element representing a single row in the tasks table.
  */
 export default function TasksTableRow({ task }) {

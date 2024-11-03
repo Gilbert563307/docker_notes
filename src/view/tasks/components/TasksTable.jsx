@@ -9,7 +9,7 @@ import { Show } from '../../components/custom/Show';
  * Component representing a table of tasks.
  * 
  * @param {Object} props - The properties object.
- * @param {import("../../../controller/TasksController").Task[]} props.tasks - The array of tasks to display.
+ * @param {import("../../../types/types").Task[]} props.tasks - The array of tasks to display.
  * @returns {JSX.Element} The rendered TasksTable component.
  */
 export default function TasksTable({ tasks }) {

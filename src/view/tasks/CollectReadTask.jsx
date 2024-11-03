@@ -19,7 +19,7 @@ export default function CollectReadTask() {
   }
 
   /**
-   * @type {import("../../controller/TasksController").Task}
+   * @type {import("../../types/types").Task}
    */
   const task = state?.task;
 

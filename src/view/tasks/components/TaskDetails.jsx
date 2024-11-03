@@ -7,8 +7,8 @@ import PriorityButtonComponent from '../../components/custom/PriorityButtonCompo
  * TaskDetails component displays detailed information about a task.
  * 
  * @param {Object} props - The component props.
- * @param {import("../../../controller/TasksController").Task} props.task - The task object containing task details.
- * @param {import("../../../controller/TasksController").Task} props.customFields - The task object containing task details.
+ * @param {import("../../../types/types").Task} props.task - The task object containing task details.
+ * @param {import("../../../types/types").Task} props.customFields - The task object containing task details.
  * @param {function} props.setStatus - Callback function to update the task status.
  * @param {function} props.setPriority - Callback function to update the task priority.
  * @returns {React.Component} A component displaying task details.
