@@ -72,7 +72,7 @@ export default function CollectListBoard() {
     // Call updateTask with the updated item
     setTimeout(function () {
       updateTask(task);
-    }, 2000);
+    }, 1000);
 
   };
 

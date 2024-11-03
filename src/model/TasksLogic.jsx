@@ -49,7 +49,8 @@ export default function TasksLogic() {
             const defaultValues = {
                 project_id: payload.project_id || DEFAULT_PROJECT_ID,
                 user_uid: userUid,
-                status: payload.status || TASKS_STATUS,
+                status: payload.status || TASKS_STATUS.TODO,
+                description: payload.description || "",
                 board_status: payload.board_status || TASKS_BOARD_STATUS.TODO,
                 priority: payload.priority || TASKS_PRIORITY.LOW,
                 assignee: payload.assignee || { name: user.displayName, assignee_id: user.uid },
@@ -109,7 +110,7 @@ export default function TasksLogic() {
         try {
             // Future filtering logic here
             return [];
-        // eslint-disable-next-line no-unreachable
+            // eslint-disable-next-line no-unreachable
         } catch (error) {
             console.error("Error in getTasksFilters:", error);
             return [];
@@ -120,12 +121,13 @@ export default function TasksLogic() {
     /**
      * Generates a Firestore query to fetch tasks for the current page.
      * 
-     * @param {number} currentPage - The current page number for pagination.
+     * @param {{currentPage: number, itemsPerPage?: number }} payload - The current page number for pagination.
      * @returns {Promise<import('firebase/database').Query>} The Firestore query to fetch tasks for the specified page.
      */
-    const getTasksQuery = async (currentPage) => {
+    const getTasksQuery = async (payload) => {
         // Get the number of items to be displayed per page
         const itemsPerPage = getTheCurrentItemsPerPage();
+        const { currentPage } = payload;
 
         //Get the filters is there applied
         // const filters = getTasksFilters();
@@ -137,13 +139,16 @@ export default function TasksLogic() {
                 where("user_uid", "==", userUid),
                 where("archived", "==", false),
                 orderBy("created_at", "asc"),
-                limit(itemsPerPage)
+                limit(payload?.itemsPerPage || itemsPerPage),
             );
             return tasksQuery;
         }
 
         // Calculate the limit for fetching documents up to the current page
-        const newPageLimit = currentPage * itemsPerPage;
+        let newPageLimit = currentPage * itemsPerPage;
+        if (payload.itemsPerPage != undefined) {
+            newPageLimit = currentPage * payload.itemsPerPage;
+        }
 
         // Fetch tasks limited by the new page limit
         const allDocsLimitedByThePageNumber = query(
@@ -189,13 +194,13 @@ export default function TasksLogic() {
     * This function queries the Firestore collection to retrieve tasks associated with the current user's UID,
     * with a limit on the number of items per page. It includes the document ID in the task data and handles
     * potential errors during the fetch process.
-    * @param {{ currentPage: number}} payload
+    * @param {{ currentPage: number, itemsPerPage?: number}} payload
     * @returns {Promise<{results: import("../types/types").ListTasks | {},  message: string, type: number }>} A promise that resolves to an object containing the fetched tasks, a message, and an alert type.
      */
     const listTasks = async (payload) => {
         try {
             // Construct the query to get all tasks for the current user UID with a 
-            const tasksQuery = await getTasksQuery(payload?.currentPage);
+            const tasksQuery = await getTasksQuery(payload);
 
             // Execute the query to get the tasks.
             const querySnapshot = await getDocs(tasksQuery);

@@ -203,13 +203,29 @@ export default function BoardsController() {
         }
     }
 
-
-    const collectCretaBoardTask = async (payload) => {
+    /**
+     * 
+     * @param {{title: string}} payload 
+     */
+    const collectCreateBoardTask = async (payload) => {
         try {
             const taskCreated = await createTask(payload);
 
+            if (taskCreated.type === ALERT_TYPES.DANGER) {
+                // Update state with the created task response
+                setNotificationToState(taskCreated);
+            }
+
+            //get currentPageNumber
+            const currentPage = getCurrentPageNumber();
+            const tasks = await listTasks({ currentPage: currentPage, itemsPerPage: 50 });
+
             // Update state with the created task response
-            setNotificationToState(taskCreated);
+            dispatchAction({
+                type: REDUCER_ACTIONS.SET_TASKS,
+                payload: tasks.results,
+            });
+
         } catch (error) {
             setErrorToState(error);
         }
@@ -239,7 +255,7 @@ export default function BoardsController() {
                     break;
 
                 case BOARD_CONTROLLER_ACTIONS.CREATE:
-                    await collectCretaBoardTask(action?.payload);
+                    await collectCreateBoardTask(action?.payload);
                     break;
 
                 case ALERT_ACTIONS.CLOSE_ALERT:
