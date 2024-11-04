@@ -259,6 +259,10 @@ export default function BoardsController() {
                     await collectCreateBoardTask(action?.payload);
                     return;
 
+                case BOARD_CONTROLLER_ACTIONS.SET_NOTIFICATION:
+                    collectSetNotification(action?.payload);
+                    return;
+
                 case ALERT_ACTIONS.CLOSE_ALERT:
                     closeAlert();
                     return;

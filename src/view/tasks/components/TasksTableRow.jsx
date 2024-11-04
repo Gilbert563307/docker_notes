@@ -51,7 +51,7 @@ export default function TasksTableRow({ task }) {
       </th>
       <td>
         <BS5TruncateSpan
-          content={<Link to={readTaskUrl} state={{ task: task }} className="read-link">
+          content={<Link to={readTaskUrl} state={{ task: task }}  title={task.title} className="read-link">
             {task.title}
           </Link>}
           maxWidthToSet="100px"

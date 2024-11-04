@@ -4,6 +4,7 @@ import BS5Modal, { MODAL_SIZES } from '../components/bs5/BS5Modal';
 import { BOARD_CONTROLLER_ACTIONS, useBoardsControllerContext } from '../../controller/BoardsController';
 import { TASKS_BOARD_STATUS, TASKS_PRIORITY, TASKS_STATUS } from '../../config';
 import { useAuthProvider } from '../../context/AuthProvider';
+import { ALERT_TYPES } from '../components/bs5/BS5Alert';
 
 export default function CreateCardButton({ header }) {
     const { user } = useAuthProvider();
@@ -27,7 +28,10 @@ export default function CreateCardButton({ header }) {
     };
 
     const createTask = () => {
-        if (title === "") return;
+        if (title === "") {
+            dispatch({ type: BOARD_CONTROLLER_ACTIONS.SET_NOTIFICATION, payload: { message: "The title cannot be empty", type: ALERT_TYPES.DANGER } });
+            return
+        }
         const payload = {
             title: title,
             description: "",
