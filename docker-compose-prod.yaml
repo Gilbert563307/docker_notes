@@ -1,10 +1,10 @@
-#version: "3"
+version: "3"
 
 services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.prod.example
+      dockerfile: Dockerfile.prod
       args:
           NODE_ENV: ${NODE_ENV}
           VITE_APP_FIREBASE_API_KEY: ${VITE_APP_FIREBASE_API_KEY}
@@ -16,3 +16,4 @@ services:
           VITE_APP_FIREBASE_MEASUREMENT_ID: ${VITE_APP_FIREBASE_MEASUREMENT_ID}
     ports:
       - "5173:5173"
+

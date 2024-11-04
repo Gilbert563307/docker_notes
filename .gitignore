@@ -25,6 +25,3 @@ dist-ssr
 
 #files
 .env
-Dockerfile
-docker-compose-prod.yaml
-Dockerfile.prod
