@@ -1,6 +1,4 @@
 import React from 'react'
-
-
 /**
  * @typedef {Object} Notification
  * @property {string} message 
@@ -14,7 +12,6 @@ import React from 'react'
  * @property {string} assignee 
  * 
  */
-
 
 /**
  * @typedef {Object} Reporter
@@ -56,12 +53,10 @@ import React from 'react'
  * @property {number} [updated_at] - The timestamp when the task was last updated.
  */
 
-
 /**
  * 
  * @typedef {Array<Task>} Tasks
  */
-
 
 /**
  * 
@@ -70,9 +65,6 @@ import React from 'react'
  * @property {number} total
  * @property {number} pages
  */
-
-
-
 
 
 export default function types() {
