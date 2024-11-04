@@ -284,11 +284,11 @@ export default function TasksController() {
 
   /**
   * 
-  * @param {string} taskId 
+  * @param {{id: string, archived: boolean}} payload 
   */
-  const collectArchiveTask = async (taskId) => {
+  const collectArchiveTask = async (payload) => {
     try {
-      const tbuArchived = await archiveTask(taskId);
+      const tbuArchived = await archiveTask(payload);
 
       setNotificationToState(tbuArchived);
 
@@ -320,7 +320,7 @@ export default function TasksController() {
           await collectCreateTask(action?.payload);
           break;
         case TASKS_CONTROLLER_ACTIONS.LIST:
-          await collectListTasks(action?.payload);
+          await collectListTasks();
           break;
         case TASKS_CONTROLLER_ACTIONS.UPDATE:
           await collectUpdateTask(action?.payload);

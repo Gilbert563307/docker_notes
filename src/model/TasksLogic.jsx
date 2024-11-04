@@ -1,17 +1,16 @@
 import React from 'react';
 import { ALERT_TYPES } from '../view/components/bs5/BS5Alert';
-import DataHandler from './DataHandler';
-import { DEFAULT_PROJECT_ID, TASKS_BOARD_STATUS, TASKS_PRIORITY, TASKS_STATUS } from '../config';
+import { DEFAULT_PROJECT_ID, DEFAULT_TASKS_ARCHIVE, TASKS_ARCHIVED_SESSION_FILTER, TASKS_BOARD_STATUS, TASKS_PRIORITY, TASKS_STATUS } from '../config';
 // import useHelpers from '../helpers/useHelpers';
 import { useAuthProvider } from '../context/AuthProvider';
+import useHelpers from '../helpers/useHelpers';
+import DataHandler from './DataHandler';
 
-/**
- * Logic component for managing tasks.
- *
- */
+
 export default function TasksLogic() {
 
     const { user } = useAuthProvider();
+    const { getSessionFilter } = useHelpers();
 
     const {
         collectionRef,
@@ -128,6 +127,7 @@ export default function TasksLogic() {
         // Get the number of items to be displayed per page
         const itemsPerPage = getTheCurrentItemsPerPage();
         const { currentPage } = payload;
+        const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
 
         //Get the filters is there applied
         // const filters = getTasksFilters();
@@ -137,7 +137,7 @@ export default function TasksLogic() {
             const tasksQuery = query(
                 collectionRef,
                 where("user_uid", "==", userUid),
-                where("archived", "==", false),
+                where("archived", "==", tasksArchived),
                 orderBy("created_at", "asc"),
                 limit(payload?.itemsPerPage || itemsPerPage),
             );
@@ -154,7 +154,7 @@ export default function TasksLogic() {
         const allDocsLimitedByThePageNumber = query(
             collectionRef,
             where("user_uid", "==", userUid),
-            where("archived", "==", false),
+            where("archived", "==", tasksArchived),
             orderBy("created_at", "asc"),
             limit(newPageLimit)
         );
@@ -323,18 +323,12 @@ export default function TasksLogic() {
     /**
      * Archives a task by its ID.
      * 
-     * @param {string} taskId - The ID of the task to be archived.
+     * @param {{id: string, archived: boolean}} payload - The ID of the task to be archived.
      * @returns {Promise<{ archived: boolean, message: string, type: number }>} - A promise that resolves to an object indicating the result of the archiving process.
      */
-    const archiveTask = async (taskId) => {
+    const archiveTask = async (payload) => {
         try {
-            // Create a mock task with the given ID and mark it as archived
-            /**
-             * @type {{id: string, archived: boolean}}
-             */
-            const task = { id: taskId, archived: true };
-
-            const archived = await updateTask(task);
+            const archived = await updateTask(payload);
 
             // Return the result of the update operation
             return {

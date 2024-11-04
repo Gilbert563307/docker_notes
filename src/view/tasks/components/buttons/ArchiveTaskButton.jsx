@@ -11,10 +11,11 @@ import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../../..
  *
  * @param {Object} props - The props object.
  * @param {string} props.taskId - The task id to be archived.
+ * @param {boolean} props.isArchived - The task id to be archived.
  * 
  * @returns {JSX.Element} The rendered component.
  */
-export default function ArchiveTaskButton({ taskId }) {
+export default function ArchiveTaskButton({ taskId, isArchived }) {
     const { dispatch } = useTasksControllerContext();
     const [archiveModal, setArchiveModal] = useState(false);
 
@@ -33,7 +34,9 @@ export default function ArchiveTaskButton({ taskId }) {
     };
 
     const archiveTask = () => {
-        dispatch({ type: TASKS_CONTROLLER_ACTIONS.ARCHIVE, payload: taskId })
+        const archived = isArchived === true ? false : true;
+        const payload = { id: taskId, archived: archived }
+        dispatch({ type: TASKS_CONTROLLER_ACTIONS.ARCHIVE, payload: payload })
         hideArchiveModal();
     }
 

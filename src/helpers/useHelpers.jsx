@@ -1,6 +1,9 @@
 import React from "react";
 import {
+  ALLOWED_ITEMS_PER_PAGE,
+  DEFAULT_ITEMS_PER_PAGE,
   DEFAULT_PAGE_NUMBER,
+  ITEMS_PER_PAGE,
   LAST_VISITED_PAGE_NUMBER_KEY,
   PAGE_NUMBER,
   SESSION_FILTERS_ARRAY_CONFIG_NAME,
@@ -10,6 +13,52 @@ import { useLocation, useSearchParams } from "react-router-dom";
 export default function useHelpers() {
   const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+
+  function getItemsPerPage() {
+    const itemsPerPage = getUrlParams(ITEMS_PER_PAGE);
+    if (!itemsPerPage) return DEFAULT_ITEMS_PER_PAGE;
+
+    if (ALLOWED_ITEMS_PER_PAGE.includes(parseInt(itemsPerPage))) {
+      return itemsPerPage;
+    }
+    return DEFAULT_ITEMS_PER_PAGE;
+  }
+
+  /**
+  * - Checks if there any active filters in the session tab
+  * @returns {Array<{name: string, value: boolean, pathname: string }>}
+  */
+  function getAllActiveSessionFilters() {
+    const value = sessionStorage.getItem(SESSION_FILTERS_ARRAY_CONFIG_NAME);
+    if (value != null) {
+      return JSON.parse(value);
+    }
+    return [];
+  }
+
+
+
+  /**
+  * This function returns the boolean that is stored, the session storage given by the param name
+  * @param {string} paramName - This is a constant from .config file
+  * @returns {boolean | null} - When the given param filter is active or not
+  */
+  function getSessionFilter(paramName) {
+    const allActiveFilters = getAllActiveSessionFilters();
+
+    //If there no active filters return null
+    if (allActiveFilters.length === 0) {
+      return null;
+    }
+
+    //If there filters check if the given param name is the filters session array
+    const matchingFilter = allActiveFilters.find(
+      (obj) => obj.name === paramName
+    );
+
+    //If the matching filter.value is true return true | null  will be turned into false by person who is calling this function is.
+    return matchingFilter ? matchingFilter.value : null;
+  }
 
   /**  Converts a timestamp to the Dutch date format.
    * @param {string} created_at - The input timestamp in the format 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'.
@@ -234,6 +283,9 @@ export default function useHelpers() {
     wait,
     setCustomSearchParamToSessionMemory,
     getCurrentPageNumber,
+    getSessionFilter,
+    getAllActiveSessionFilters,
+    getItemsPerPage,
   };
 }
 
