@@ -44,8 +44,8 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Uncomment if using SSL
-COPY /etc/letsencrypt/live/tasks-tracker.online/fullchain.pem /etc/nginx/ssl/fullchain.pem
-COPY /etc/letsencrypt/live/tasks-tracker.online/privkey.pem /etc/nginx/ssl/privkey.pem
+#COPY /etc/letsencrypt/live/tasks-tracker.online/fullchain.pem /etc/nginx/ssl/fullchain.pem
+#COPY /etc/letsencrypt/live/tasks-tracker.online/privkey.pem /etc/nginx/ssl/privkey.pem
 
 # Expose HTTP and HTTPS ports
 EXPOSE 80 443
