@@ -11,7 +11,7 @@ export default function AuthLogic() {
 
     /**
      * Logs in a user using Google OAuth sign-in.
-     * @returns {Promise<{ login: boolean, user: Object, type: string, message: string }>}
+     * @returns {Promise<{ login: boolean, user: Object, type: number, message: string }>}
      * A Promise that resolves with an object representing the login result:
      * - `login`: A boolean indicating if the login was successful.
      * - `user`: An object containing user details if logged in successfully (uid, displayName, email, token).
@@ -22,26 +22,26 @@ export default function AuthLogic() {
         try {
             const response = await signInWithPopup(auth, googleProvider);
 
-            if (response && auth.currentUser) {
-                return {
-                    login: true,
-                    user: {
-                        uid: auth.currentUser.uid,
-                        displayName: auth.currentUser.displayName || "",
-                        email: auth.currentUser.email || "",
-                        token: auth.currentUser.refreshToken || "",
-                        photoURL: auth.currentUser.photoURL || "",
-                    },
-                    type: ALERT_TYPES.SUCCESS,
-                    message: "",
-                };
-            }
-            return {
+            if (!response && !auth) return {
                 user: {},
                 login: false,
                 type: ALERT_TYPES.SUCCESS,
                 message: 'Failed to login with Google',
             };
+                
+            return {
+                login: true,
+                user: {
+                    uid: auth.currentUser.uid,
+                    displayName: auth.currentUser.displayName || "",
+                    email: auth.currentUser.email || "",
+                    token: auth.currentUser.refreshToken || "",
+                    photoURL: auth.currentUser.photoURL || "",
+                },
+                type: ALERT_TYPES.SUCCESS,
+                message: "",
+            };
+
         } catch (error) {
             return {
                 user: {},

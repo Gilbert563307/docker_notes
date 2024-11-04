@@ -5,6 +5,7 @@ import useBS5PreloaderHook from '../hooks/useBS5PreloaderHook';
 import { Outlet } from 'react-router-dom';
 import useHelpers from '../helpers/useHelpers';
 import { ALERT_ACTIONS, ALERT_TYPES } from '../view/components/bs5/BS5Alert';
+import { MAX_BOARD_ITEMS } from '../config';
 
 
 /**
@@ -205,7 +206,7 @@ export default function BoardsController() {
 
     /**
      * 
-     * @param {{title: string}} payload 
+     * @param {import("../types/types").createTaskPayload} payload 
      */
     const collectCreateBoardTask = async (payload) => {
         try {
@@ -218,12 +219,12 @@ export default function BoardsController() {
 
             //get currentPageNumber
             const currentPage = getCurrentPageNumber();
-            const tasks = await listTasks({ currentPage: currentPage, itemsPerPage: 50 });
+            const response = await listTasks({ currentPage: currentPage, itemsPerPage: MAX_BOARD_ITEMS });
 
             // Update state with the created task response
             dispatchAction({
                 type: REDUCER_ACTIONS.SET_TASKS,
-                payload: tasks.results,
+                payload: response.results,
             });
 
         } catch (error) {
@@ -249,23 +250,23 @@ export default function BoardsController() {
             switch (action.type) {
                 case BOARD_CONTROLLER_ACTIONS.LIST:
                     await collectListBoardTasks();
-                    break;
+                    return;
                 case BOARD_CONTROLLER_ACTIONS.UPDATE:
                     await collectUpdateBoardTask(action?.payload);
-                    break;
+                    return;
 
                 case BOARD_CONTROLLER_ACTIONS.CREATE:
                     await collectCreateBoardTask(action?.payload);
-                    break;
+                    return;
 
                 case ALERT_ACTIONS.CLOSE_ALERT:
                     closeAlert();
-                    break;
+                    return;
                 default:
                     console.log(
                         `TasksController: No action type found ${action.type}`
                     );
-                    break;
+                    return;
             }
         } catch (error) {
             // Close loader in case of error

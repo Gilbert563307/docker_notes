@@ -40,7 +40,7 @@ export default function TasksLogic() {
     /**
  * Creates a new task with default values if not provided in the payload.
  *
- * @param {import("../types/types").Task} payload - Task details provided by the user.
+ * @param {import("../types/types").createTaskPayload} payload - Task details provided by the user.
  * @returns {Promise<{created: boolean, message: string, type: number}>} - The result of task creation.
  */
     const createTask = async (payload) => {
@@ -329,6 +329,9 @@ export default function TasksLogic() {
     const archiveTask = async (taskId) => {
         try {
             // Create a mock task with the given ID and mark it as archived
+            /**
+             * @type {{id: string, archived: boolean}}
+             */
             const task = { id: taskId, archived: true };
 
             const archived = await updateTask(task);

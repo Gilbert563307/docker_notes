@@ -39,7 +39,7 @@ export default function AuthController() {
 
   /**
    * Sets error notification to state.
-   * @param {{ notification: string, message: string} } notificationObject - Object containing error message and type.
+   * @param {import("../types/types").Notification} notificationObject - Object containing error message and type.
    */
   const setMessageToState = (notificationObject) => {
     if (Object.keys(notificationObject).length === 0 || notificationObject.message === "") return;
@@ -55,7 +55,7 @@ export default function AuthController() {
   const collectLoginWithGoogle = async () => {
     try {
       const response = await LoginWithGoogle();
-      if (login === false || Object.keys(response.user).length === 0) return;
+      if (response.login === false || Object.keys(response.user).length === 0) return;
       login(response.user);
 
     } catch (error) {
@@ -73,9 +73,9 @@ export default function AuthController() {
       switch (action.type) {
         case AUTH_CONTROLLER_ACTIONS.LOGIN_WITH_GOOGLE:
           await collectLoginWithGoogle();
-          break;
+          return;
         default:
-          break;
+          return;
       }
     } catch (error) {
       console.log(`AuthController Error: `, error);
