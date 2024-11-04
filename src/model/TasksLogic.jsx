@@ -32,6 +32,7 @@ export default function TasksLogic() {
         table,
         updateDoc,
         getDoc,
+        deleteDoc,
     } = DataHandler({ table: "tasks" });
 
     // const { getAllSessionFilters } = useHelpers();
@@ -345,5 +346,27 @@ export default function TasksLogic() {
             };
         }
     };
-    return { createTask, listTasks, updateTask, readTask, archiveTask };
+
+    /**
+     * 
+     * @param {import("../types/types").Task} task 
+     * @returns {Promise<{ deleted: boolean, message: string, type: number }>}  
+     */
+    const deleteTask = async (task) => {
+        try {
+            const deleted = await deleteDoc(doc(db, table, task));
+            return {
+                deleted: Boolean(deleted),
+                message: "Your task has been deleted",
+                type: ALERT_TYPES.DANGER
+            }
+        } catch (error) {
+            return {
+                deleted: false,
+                message: error.message,
+                type: ALERT_TYPES.DANGER
+            }
+        }
+    }
+    return { createTask, listTasks, updateTask, readTask, archiveTask, deleteTask };
 }

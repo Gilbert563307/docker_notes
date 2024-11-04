@@ -38,6 +38,7 @@ const initialState = {
  * @property {string} READ - Action type for reading a task.
  * @property {string} UPDATE - Action type for updating a task.
  * @property {string} ARCHIVE - Action type for archiving a task.
+ * @property {string} DELETE - Action type for deleting a task.
  * @property {string} SET_NOTIFICATION - Action type for setting a message.
  */
 export const TASKS_CONTROLLER_ACTIONS = {
@@ -46,6 +47,7 @@ export const TASKS_CONTROLLER_ACTIONS = {
   READ: "READ_TASK",
   UPDATE: "UPDATE_TASK",
   ARCHIVE: "ARCHIVE_TASK",
+  DELETE: "DELETE",
   SET_NOTIFICATION: "SET_NOTIFICATION,"
 };
 
@@ -83,7 +85,7 @@ export const useTasksControllerContext = () => {
  * @returns {JSX.Element} The TasksController component.
  */
 export default function TasksController() {
-  const { createTask, listTasks, updateTask, readTask, archiveTask } = TasksLogic();
+  const { createTask, listTasks, updateTask, readTask, archiveTask, deleteTask } = TasksLogic();
   const { getCurrentPageNumber } = useHelpers();
   const navigate = useNavigate();
 
@@ -302,6 +304,24 @@ export default function TasksController() {
   }
 
   /**
+   * 
+   * @param {import("../types/types").Task} payload 
+   */
+  const collectDeleteTask = async (payload) => {
+    try {
+      const tbuDeleted = await deleteTask(payload);
+
+      setNotificationToState(tbuDeleted);
+
+      //reftech tasks after archive this one 
+      await refreshTasksList();
+    } catch (error) {
+      setErrorToState(error);
+
+    }
+  }
+
+  /**
   * Dispatches actions based on the specified type and payload.
   * @param {{ type: string; payload?: any; }} action - The action object containing type and payload.
   * @returns {Promise<void>} - A Promise that resolves when the operation is completed.
@@ -333,6 +353,9 @@ export default function TasksController() {
           break;
         case TASKS_CONTROLLER_ACTIONS.ARCHIVE:
           await collectArchiveTask(action?.payload);
+          break;
+        case TASKS_CONTROLLER_ACTIONS.DELETE:
+          await collectDeleteTask(action?.payload);
           break;
         case ALERT_ACTIONS.CLOSE_ALERT:
           closeAlert();

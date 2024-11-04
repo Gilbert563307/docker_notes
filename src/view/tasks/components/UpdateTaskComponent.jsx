@@ -78,7 +78,7 @@ export default function UpdateTaskComponent({ task, dispatch }) {
                         maxLength={255}
                         {...register("title", {
                             required: "The title cannot be empty",
-                            
+
                             minLength: {
                                 value: 4,
                                 message: "The title must be longer than 4 characters",
@@ -133,6 +133,7 @@ export default function UpdateTaskComponent({ task, dispatch }) {
                         <button type="submit" className="add-task-button task-btn-plain " name="save" onClick={handleSubmit(onSubmit)}>
                             Save changes
                         </button>
+                      
                         <TaskDetails task={task} customFields={customFields} setStatus={setStatus} setPriority={setPriority} />
                     </div>
                 </div>
