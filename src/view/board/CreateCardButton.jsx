@@ -18,6 +18,9 @@ export default function CreateCardButton({ header }) {
       */
     const showCreateModal = () => {
         setcreateModal(true);
+        if (title != "") {
+            setTitle("");
+        }
     };
 
     /**
