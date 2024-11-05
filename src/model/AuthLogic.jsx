@@ -35,7 +35,6 @@ export default function AuthLogic() {
                     uid: auth.currentUser.uid,
                     displayName: auth.currentUser.displayName || "",
                     email: auth.currentUser.email || "",
-                    token: auth.currentUser.refreshToken || "",
                     photoURL: auth.currentUser.photoURL || "",
                 },
                 type: ALERT_TYPES.SUCCESS,
