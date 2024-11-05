@@ -121,7 +121,7 @@ body {
     background-color: #f9f9f9;
 }
 
-html.dark body{
+html.dark body {
     background-color: #1D2125;
 }
 
@@ -139,4 +139,56 @@ html.dark body{
     cursor: pointer;
     border: none;
     background: none;
-  }
+}
+
+
+.dialogic-filters-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.dialogic-domain-filter-btn {
+    background-color: #f2f2f2;
+    color: #212529;
+    border: none;
+    font-weight: 400;
+}
+
+.dialogic-domain-dropdown>li a {
+    padding-left: 0;
+}
+
+.dialogic-domain-dropdown>li {
+    border-left: 2px solid #388bff;
+    margin-bottom: 0.4em;
+    background-color: #f1f2f4;
+}
+
+.dialogic-domain-dropdown>li>a:hover {
+    background-color: none;
+}
+
+.dialogic-domain-tag-li {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    gap: 0.5em;
+    align-items: center;
+}
+
+.dialogic-domain-tag-li>.form-check {
+    padding: 0 !important;
+    margin-left: 0.5em;
+}
+
+.dialogic-domain-tag-li>.form-check>input {
+    cursor: pointer !important;
+}
+
+.dialogic-domain-tag-li>.form-check>.form-check-input {
+    margin-left: 0 !important;
+}
+
+.dialogic-domain-tag-button {
+    pointer-events: none;
+}

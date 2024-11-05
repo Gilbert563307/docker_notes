@@ -64,6 +64,11 @@
     color: black;
 }
 
+.th-filter-buttons {
+    color: #000; 
+    text-decoration: none;
+}
+
 html.dark .read-link {
     color: #B6C2CF;
 }
@@ -81,6 +86,7 @@ html.dark .tasks-table-tr-headers>th,
 html.dark .tasks-table-row>td {
     color: #B6C2CF !important;
 }
+
 html.dark .badge-completed {
     background-color: #1C3329 !important;
     color: #72CCA7 !important;
@@ -91,7 +97,7 @@ html.dark .badge-inprogress {
     color: #81B3F8 !important;
 }
 
-html.dark .badge-todo{
+html.dark .badge-todo {
     background-color: #282D33 !important;
     color: #9FADBC !important;
 }

@@ -1,0 +1,9 @@
+.tasks-filters{
+    display: flex;
+    gap: 1em;
+    flex-direction: column;
+}
+
+.tasks-filters > .btn-group{
+    display: block;;
+}
