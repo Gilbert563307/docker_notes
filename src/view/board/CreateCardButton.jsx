@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Show } from '../components/custom/Show';
 import BS5Modal, { MODAL_SIZES } from '../components/bs5/BS5Modal';
 import { BOARD_CONTROLLER_ACTIONS, useBoardsControllerContext } from '../../controller/BoardsController';
-import { TASKS_BOARD_STATUS, TASKS_PRIORITY, TASKS_STATUS } from '../../config';
 import { useAuthProvider } from '../../context/AuthProvider';
 import { ALERT_TYPES } from '../components/bs5/BS5Alert';
 

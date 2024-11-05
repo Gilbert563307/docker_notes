@@ -1,6 +1,6 @@
 import React from 'react';
 import { ALERT_TYPES } from '../view/components/bs5/BS5Alert';
-import { DEFAULT_PROJECT_ID, DEFAULT_TASKS_ARCHIVE, TASKS_ARCHIVED_SESSION_FILTER, TASKS_BOARD_STATUS, TASKS_PRIORITY, TASKS_STATUS } from '../config';
+import { DEFAULT_PROJECT_ID, DEFAULT_TASKS_ARCHIVE, TASKS_ARCHIVED_SESSION_FILTER, TASKS_PRIORITY, TASKS_STATUS } from '../config';
 // import useHelpers from '../helpers/useHelpers';
 import { useAuthProvider } from '../context/AuthProvider';
 import useHelpers from '../helpers/useHelpers';
@@ -51,7 +51,6 @@ export default function TasksLogic() {
                 user_uid: userUid,
                 status: payload.status || TASKS_STATUS.TODO,
                 description: payload.description || "",
-                board_status: payload.board_status || TASKS_BOARD_STATUS.TODO,
                 priority: payload.priority || TASKS_PRIORITY.LOW,
                 assignee: payload.assignee || { name: user.displayName, assignee_id: user.uid },
                 reporter: payload.reporter || { name: user.displayName, assignee_id: user.uid },

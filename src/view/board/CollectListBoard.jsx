@@ -15,7 +15,7 @@ import { BOARD_CONTROLLER_ACTIONS } from '../../controller/BoardsController';
  * @returns {JSX.Element}
  */
 export default function CollectListBoard() {
-  useSetPageTitleHook({ title: "Board " });
+  useSetPageTitleHook({ title: "Board" });
   const { tasks, dispatch } = useGetBoardTasksHook();
 
   /**
@@ -26,7 +26,7 @@ export default function CollectListBoard() {
 
   /**
   * @type {import("../../types/types").Tasks}
-  * Contains the list of task items. Each task has an `id`, `title`, and `board_status`.
+  * Contains the list of task items. Each task has an `id`, `title`, and `status`.
   */
   const [items, setItems] = useState([]);
 
@@ -58,7 +58,7 @@ export default function CollectListBoard() {
         // Check if the current item is the one being dragged
         if (item.id === draggingId) {
           // Create a new item with the updated status
-          const updatedItem = { ...item, board_status: newStatus };
+          const updatedItem = { ...item, status: newStatus };
 
           // Return the updated item
           return updatedItem;

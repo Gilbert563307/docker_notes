@@ -28,7 +28,6 @@ import React from 'react'
  * @property {string} title - The title of the task.
  * @property {string} description - The description of the task.
  * @property {number} status - The status of the task.
- * @property {number} board_status - The status of the task on the board.
  * @property {number} priority - The priority level of the task.
  * @property {Assignee} assignee - The assignee of the task with name and unique identifier.
  * @property {Reporter} reporter - The reporter of the task with name and unique identifier.
@@ -44,7 +43,6 @@ import React from 'react'
  * @property {number} [project_id] - The unique identifier for the project.
  * @property {string} [description] - The description of the task.
  * @property {number} [status] - The status of the task.
- * @property {number} [board_status] - The status of the task on the board.
  * @property {number} [priority] - The priority level of the task.
  * @property {Assignee} [assignee] - The assignee of the task with name and unique identifier.
  * @property {Reporter} [reporter] - The reporter of the task with name and unique identifier.

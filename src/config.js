@@ -30,16 +30,10 @@ export const TASKS_STATUS = {
     COMPLETED: 2,
 }
 
-export const TASKS_BOARD_STATUS = {
-    TODO: 0,
-    DOING: 1,
-    DONE: 2,
-}
-
 export const TASKS_BOARD_HEADERS = [
-    { id: 1, name: "Todo", status: TASKS_BOARD_STATUS.TODO, },
-    { id: 2, name: "Doing", status: TASKS_BOARD_STATUS.DOING },
-    { id: 3, name: "Done", status: TASKS_BOARD_STATUS.DONE }
+    { id: 1, name: "Todo", status: TASKS_STATUS.TODO, },
+    { id: 2, name: "Doing", status: TASKS_STATUS.IN_PROGRESS },
+    { id: 3, name: "Done", status: TASKS_STATUS.COMPLETED }
 ]
 //filters session
 export const SESSION_THEME_MODE = "SESSION_THEME_MODE";

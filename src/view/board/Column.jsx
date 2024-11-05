@@ -14,7 +14,7 @@ export default function Column({
 
 
   // Filter items based on `filter_on_status` for display
-  const filteredContent = content.filter((item) => item.board_status === filter_on_status);
+  const filteredContent = content.filter((item) => item.status === filter_on_status);
 
   return (
     <div className="card-own" onDragEnter={onDragEnter}>
