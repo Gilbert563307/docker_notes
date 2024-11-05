@@ -54,7 +54,7 @@ export default function TasksTableRow({ task }) {
           content={<Link to={readTaskUrl} state={{ task: task }}  title={task.title} className="read-link">
             {task.title}
           </Link>}
-          maxWidthToSet="100px"
+          maxWidthToSet="350px"
         />
       </td>
       <td>{Status}</td>

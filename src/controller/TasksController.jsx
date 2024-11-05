@@ -305,16 +305,19 @@ export default function TasksController() {
 
   /**
    * 
-   * @param {import("../types/types").Task} payload 
+   * @param {string} taskId 
    */
-  const collectDeleteTask = async (payload) => {
+  const collectDeleteTask = async (taskId) => {
     try {
-      const tbuDeleted = await deleteTask(payload);
+      const tbuDeleted = await deleteTask(taskId);
 
       setNotificationToState(tbuDeleted);
 
       //reftech tasks after archive this one 
       await refreshTasksList();
+
+      //navugate to tasks page
+      navigate("/tasks");
     } catch (error) {
       setErrorToState(error);
 

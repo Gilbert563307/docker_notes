@@ -361,12 +361,13 @@ export default function TasksLogic() {
 
     /**
      * 
-     * @param {import("../types/types").Task} task 
+     * @param {string} taskId 
      * @returns {Promise<{ deleted: boolean, message: string, type: number }>}  
      */
-    const deleteTask = async (task) => {
-        try {
-            const deleted = await deleteDoc(doc(db, table, task));
+    const deleteTask = async (taskId) => {
+        try {  
+            const taskRef = doc(db, table, taskId);
+            const deleted = await deleteDoc(taskRef);
             return {
                 deleted: Boolean(deleted),
                 message: "Your task has been deleted",

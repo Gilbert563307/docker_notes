@@ -19,6 +19,9 @@ import {
 import { useForm } from "react-hook-form";
 import TaskDetails from "./TaskDetails";
 import { TASKS_CONTROLLER_ACTIONS } from "../../../controller/TasksController";
+import DeleteTaskButton from "./buttons/DeleteTaskButton";
+import "../../../assets/css/components/UpdateTaskComponent.css";
+
 
 export default function UpdateTaskComponent({ task, dispatch }) {
     const [customFields, setCustomFields] = useState({
@@ -62,10 +65,11 @@ export default function UpdateTaskComponent({ task, dispatch }) {
         });
 
     const onSubmit = (data) => {
-        if (customFields.description.length === 0) {
-            setError('description', { type: 'custom', message: 'The description cannot be empty' });
-            return;
-        }
+        //TODO NOT NECESSARY
+        // if (customFields.description.length === 0) {
+        //     setError('description', { type: 'custom', message: 'The description cannot be empty' });
+        //     return;
+        // }
         const newPayload = { ...task, ...data, ...customFields };
         dispatch({ type: TASKS_CONTROLLER_ACTIONS.UPDATE, payload: newPayload });
     };
@@ -130,10 +134,14 @@ export default function UpdateTaskComponent({ task, dispatch }) {
                         )}
                     </div>
                     <div className="update-task-grid-2">
-                        <button type="submit" className="add-task-button task-btn-plain " name="save" onClick={handleSubmit(onSubmit)}>
-                            Save changes
-                        </button>
-                      
+                        <div className="update-task-grid-buttons">
+                            <button type="submit" className="add-task-button task-btn-plain" name="save" onClick={handleSubmit(onSubmit)}>
+                                Save changes
+                            </button>
+                            <DeleteTaskButton taskId={task.id} />
+                        </div>
+
+
                         <TaskDetails task={task} customFields={customFields} setStatus={setStatus} setPriority={setPriority} />
                     </div>
                 </div>

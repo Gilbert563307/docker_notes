@@ -20,6 +20,22 @@
     transition: ease-in 500ms;
 }
 
+.delete-btn-plain{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5em;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: ease-in 500ms;
+}
+
 .add-task-button {
     background-color: #0C66E4;
     color: white;

@@ -10,7 +10,7 @@ export default function Column({
   onDragEnter,
   handleDragStart
 }) {
-  
+
 
 
   // Filter items based on `filter_on_status` for display
@@ -32,12 +32,9 @@ export default function Column({
                 draggable
                 className="board-card-item shadow-sm rounded"
               >
-                <BS5TruncateSpan
-                  content={<Link to={readTaskUrl} title={task.title} state={{ task: task }} className="read-link board-card-title">
-                    {task.title}
-                  </Link>}
-                  maxWidthToSet="240px"
-                />
+                <Link to={readTaskUrl} title={task.title} state={{ task: task }} className="read-link board-card-title">
+                  {task.title}
+                </Link>
               </div>
             })
           ) : (
@@ -46,7 +43,7 @@ export default function Column({
         </div>
       </div>
 
-     <CreateCardButton header={header}/>
+      <CreateCardButton header={header} />
     </div>
   );
 }

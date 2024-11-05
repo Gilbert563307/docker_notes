@@ -1,0 +1,4 @@
+.update-task-grid-buttons{
+    display: flex;
+    justify-content: space-between;
+}
