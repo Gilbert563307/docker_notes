@@ -68,7 +68,7 @@ export default function CreateCardButton({ header }) {
                         headerCentre={true}
                         closeModal={hideCreateModal}
                         saveChangesFunction={createTask}
-                        modalSize={MODAL_SIZES.SMALL}
+                        modalSize={MODAL_SIZES.NONE}
                         saveChangesTitle="Save"
                     />
                 </Show.When>
