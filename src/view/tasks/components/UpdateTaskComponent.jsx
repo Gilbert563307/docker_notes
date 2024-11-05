@@ -15,6 +15,7 @@ import {
     markdownShortcutPlugin,
     CreateLink,
     linkDialogPlugin,
+    tablePlugin,
 } from "@mdxeditor/editor";
 import { useForm } from "react-hook-form";
 import TaskDetails from "./TaskDetails";
@@ -127,7 +128,7 @@ export default function UpdateTaskComponent({ task, dispatch }) {
                                 quotePlugin(),
                                 thematicBreakPlugin(),
                                 markdownShortcutPlugin(),
-                                linkDialogPlugin(),
+                                tablePlugin(),
                                 toolbarPlugin({
                                     toolbarContents: () => (
                                         <>

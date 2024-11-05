@@ -1,5 +1,5 @@
 import React from "react";
-import { MDXEditor, headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, BoldItalicUnderlineToggles, markdownShortcutPlugin, linkDialogPlugin } from '@mdxeditor/editor'
+import { MDXEditor, headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, BoldItalicUnderlineToggles, markdownShortcutPlugin, linkDialogPlugin, tablePlugin } from '@mdxeditor/editor'
 import { useLocation } from "react-router-dom";
 import "../../assets/css/views/tasks/CollectReadTask.css";
 import useHtmlCssHelpers from "../../helpers/useHtmlCssHelpers";
@@ -34,9 +34,16 @@ export default function CollectReadTask() {
             <label htmlFor="description" className="form-label ms-2">
               Description
             </label>
-            <MDXEditor className="mdx-editor-pre-tag" readOnly={true} markdown={task.description} plugins={[headingsPlugin(), listsPlugin(), quotePlugin(), thematicBreakPlugin(),
-            markdownShortcutPlugin(),
-            linkDialogPlugin(),]} />
+            <MDXEditor className="mdx-editor-pre-tag" readOnly={true} markdown={task.description}
+              plugins={[
+                headingsPlugin(),
+                listsPlugin(),
+                quotePlugin(),
+                thematicBreakPlugin(),
+                markdownShortcutPlugin(),
+                tablePlugin(),
+                linkDialogPlugin(),
+              ]} />
           </div>
         </div>
         <div>

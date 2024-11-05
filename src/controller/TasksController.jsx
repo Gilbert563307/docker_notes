@@ -39,6 +39,7 @@ const initialState = {
  * @property {string} UPDATE - Action type for updating a task.
  * @property {string} ARCHIVE - Action type for archiving a task.
  * @property {string} DELETE - Action type for deleting a task.
+ * @property {string} UPLOAD_TEMP_IMAGE - Action type for uploading a temp image
  * @property {string} SET_NOTIFICATION - Action type for setting a message.
  */
 export const TASKS_CONTROLLER_ACTIONS = {
@@ -48,6 +49,7 @@ export const TASKS_CONTROLLER_ACTIONS = {
   UPDATE: "UPDATE_TASK",
   ARCHIVE: "ARCHIVE_TASK",
   DELETE: "DELETE",
+  UPLOAD_TEMP_IMAGE: "UPLOAD_TEMP_IMAGE",
   SET_NOTIFICATION: "SET_NOTIFICATION,"
 };
 
@@ -323,6 +325,7 @@ export default function TasksController() {
 
     }
   }
+
 
   /**
   * Dispatches actions based on the specified type and payload.

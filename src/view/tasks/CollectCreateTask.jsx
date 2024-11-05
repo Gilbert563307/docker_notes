@@ -1,17 +1,13 @@
 import React, { useRef, useState } from 'react'
 import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../controller/TasksController';
 import { useForm } from 'react-hook-form';
-
-
-import '@mdxeditor/editor/style.css'
-import { MDXEditor, headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, UndoRedo, BoldItalicUnderlineToggles, toolbarPlugin, BlockTypeSelect, CodeToggle, ListsToggle, markdownShortcutPlugin, CreateLink, linkDialogPlugin } from '@mdxeditor/editor'
 import { TASKS_PRIORITY, TASKS_STATUS } from '../../config';
 import "../../assets/css/views/CollectCreateTask.css";
-import useHtmlCssHelpers from '../../helpers/useHtmlCssHelpers';
+import TaskMDXEditor from './components/TaskMDXEditor';
+import DrodownOptions from './components/DrodownOptions';
 
 export default function CollectCreateTask() {
   const { dispatch } = useTasksControllerContext();
-  const { getStatusBadge, getPriorityBadge } = useHtmlCssHelpers();
 
   //custom fields
   const [status, setStatus] = useState(TASKS_STATUS.TODO);
@@ -37,40 +33,6 @@ export default function CollectCreateTask() {
     const payload = { ...data, description: description, status: status, priority: priority };
     dispatch({ type: TASKS_CONTROLLER_ACTIONS.CREATE, payload: payload });
   };
-
-  const toggleSelectedStatusDropDownItem = (status) => {
-    if (statusDropDownRef === undefined) return;
-    setStatus(status);
-    //click the button because otherwise bs5 doest close the button dropdown
-    statusDropDownRef.current.click();
-  }
-
-  const toggleSelectedPriorityDropDownItem = (priority) => {
-    if (priorityDropDownRef === undefined) return;
-    setPriority(priority);
-    //click the button because otherwise bs5 doest close the button dropdown
-    priorityDropDownRef.current.click();
-  }
-
-
-  /**
-   * Dropdown items for status selection.
-   * @type {Array<{content: number, onclick: Function}>}
-   */
-  const statusDropDownItems = [
-    { content: TASKS_STATUS.TODO, onclick: () => toggleSelectedStatusDropDownItem(TASKS_STATUS.TODO) },
-    { content: TASKS_STATUS.IN_PROGRESS, onclick: () => toggleSelectedStatusDropDownItem(TASKS_STATUS.IN_PROGRESS) },
-    { content: TASKS_STATUS.COMPLETED, onclick: () => toggleSelectedStatusDropDownItem(TASKS_STATUS.COMPLETED) },
-  ];
-
-  const priorityDropDownItems = [
-    { content: TASKS_PRIORITY.LOW, onclick: () => toggleSelectedPriorityDropDownItem(TASKS_PRIORITY.LOW) },
-    { content: TASKS_PRIORITY.MEDIUM, onclick: () => toggleSelectedPriorityDropDownItem(TASKS_PRIORITY.MEDIUM) },
-    { content: TASKS_PRIORITY.HIGH, onclick: () => toggleSelectedPriorityDropDownItem(TASKS_PRIORITY.HIGH) },
-  ]
-
-  const statusParentBtnStatus = `selected-status-item-${status}`;
-  const priorityParentBtnStatus = `selected-priority-item-${priority}`;
 
   return (
     <article className='create-task-article'>
@@ -107,28 +69,7 @@ export default function CollectCreateTask() {
         {/* start description  */}
         <div className="col-12 mb-2 mdx-editor-col">
           <label htmlFor="description" className="form-label">Description</label>
-          <MDXEditor
-            className='mdx_editor_create'
-            markdown={description}
-            onChange={(value) => setDescription(value)}
-            plugins={[
-              headingsPlugin(), listsPlugin(), quotePlugin(), thematicBreakPlugin(), markdownShortcutPlugin(),
-              linkDialogPlugin(),
-              toolbarPlugin({
-                toolbarContents: () => (
-                  <>
-                    <UndoRedo />
-                    <BlockTypeSelect />
-                    <BoldItalicUnderlineToggles />
-                    <CodeToggle />
-                    <ListsToggle />
-                    <CreateLink />
-                    {/* <InsertImage /> */}
-                  </>
-                )
-              })
-            ]}
-          />
+          <TaskMDXEditor description={description} id="desctription" setDescription={setDescription} dispatch={dispatch} />
           {errors.description && (
             <div className="invalid-feedback d-block">{errors.description.message}</div>
           )}
@@ -136,40 +77,7 @@ export default function CollectCreateTask() {
         {/* end description  */}
 
         <div className='bottoom-options'>
-          {/* start status  */}
-          <div className='col-md-2 d-flex flex-column  mb-2'>
-            <label htmlFor="status" className="form-label">Status</label>
-
-            <div className="dropdown">
-              <button className={`btn-status-dropdown dropdown-toggle ${statusParentBtnStatus} `} type="button" data-bs-toggle="dropdown" aria-expanded="false" ref={statusDropDownRef}>
-                {getStatusBadge(status)}
-              </button>
-              <ul className="dropdown-menu">
-                {statusDropDownItems.map((statusItem, index) => {
-                  return <li key={index}><a className="dropdown-item" href="#" onClick={statusItem.onclick}>{getStatusBadge(statusItem.content)}</a></li>
-                })}
-              </ul>
-            </div>
-          </div>
-          {/* end status  */}
-
-          {/* start priority  */}
-          <div className="col-md-2 mb-2">
-            <label htmlFor="priority" className="form-label">Priority</label>
-            {/* TASKS_PRIORITY.LOW */}
-            <div className="dropdown">
-              <button className={`btn-status-dropdown dropdown-toggle ${priorityParentBtnStatus} `} type="button" data-bs-toggle="dropdown" aria-expanded="false" ref={priorityDropDownRef}>
-                {getPriorityBadge(priority)}
-              </button>
-              <ul className="dropdown-menu">
-                {priorityDropDownItems.map((priorityItem, index) => {
-                  return <li key={index}><a className="dropdown-item" href="#" onClick={priorityItem.onclick}>{getPriorityBadge(priorityItem.content)}</a></li>
-                })}
-              </ul>
-            </div>
-          </div>
-          {/* end priority  */}
-
+          <DrodownOptions statusDropDownRef={statusDropDownRef} priorityDropDownRef={priorityDropDownRef} status={status} setStatus={setStatus} priority={priority} setPriority={setPriority} />
         </div>
         <div className="col-12 mt-3">
           <input type="submit" name="submit" value="Create" className="add-task-button task-btn-plain"></input>

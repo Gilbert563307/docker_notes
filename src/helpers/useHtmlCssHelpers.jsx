@@ -33,7 +33,6 @@ export default function useHtmlCssHelpers() {
         return statusBadgeMap[status];
     }
 
-
     /**
      * Returns a badge component based on the task priority.
      *

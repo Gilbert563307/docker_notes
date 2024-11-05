@@ -31,9 +31,12 @@ export default function TasksLogic() {
         doc,
         db,
         table,
+        ref,
+        storage,
         updateDoc,
         getDoc,
         deleteDoc,
+        uploadBytes,
     } = DataHandler({ table: "tasks" });
 
 
@@ -364,7 +367,7 @@ export default function TasksLogic() {
      * @returns {Promise<{ deleted: boolean, message: string, type: number }>}  
      */
     const deleteTask = async (taskId) => {
-        try {  
+        try {
             const taskRef = doc(db, table, taskId);
             const deleted = await deleteDoc(taskRef);
             return {
@@ -381,5 +384,31 @@ export default function TasksLogic() {
             }
         }
     }
-    return { createTask, listTasks, updateTask, readTask, archiveTask, deleteTask };
+
+    //WE CANNOT UPLOAD IMAGES BECAUSE THEN YOU NEED TO PAY FOR GOOGLE FIREBASE
+    /**
+     * 
+     * @param {File} payload 
+     *@returns {Promise<{ uploaded: boolean, message: string, type: number }>}  
+     */
+    const uploadTemporaryImageToServer = async (payload) => {
+        try {
+            const location = `temp_images/${userUid}`;
+            const temporaryImageFolderRef = ref(storage, location);
+
+            const uploaded = await uploadBytes(temporaryImageFolderRef, payload);
+            return {
+                uploaded: Boolean(uploaded),
+                message: "Your image has been successfully uploaded temporarily.",
+                type: ALERT_TYPES.SUCCESS
+            }
+        } catch (error) {
+            return {
+                uploaded: false,
+                message: error.message,
+                type: ALERT_TYPES.DANGER
+            }
+        }
+    }
+    return { createTask, listTasks, updateTask, readTask, archiveTask, deleteTask, uploadTemporaryImageToServer };
 }
