@@ -56,6 +56,16 @@ import React from 'react'
  * @typedef {Array<Task>} Tasks
  */
 
+
+/**
+ * 
+ * @typedef {Object} customFieldsPayload
+ * @property {number} status
+ * @property {number} priority
+ * @property {string} description
+ * 
+ */
+
 /**
  * 
  * @typedef {Object} ListTasks

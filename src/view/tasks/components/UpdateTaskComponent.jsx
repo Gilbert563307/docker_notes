@@ -22,14 +22,27 @@ import { TASKS_CONTROLLER_ACTIONS } from "../../../controller/TasksController";
 import DeleteTaskButton from "./buttons/DeleteTaskButton";
 import "../../../assets/css/components/UpdateTaskComponent.css";
 
-
+/**
+ * 
+ * @param {object} props 
+ * @param {import("../../../types/types").Task} props.task 
+ * @param {Function} props.dispatch 
+ * @returns {JSX.Element}
+ */
 export default function UpdateTaskComponent({ task, dispatch }) {
-    const [customFields, setCustomFields] = useState({
-        status: task?.status,
-        priority: task?.priority,
-        description: task?.description,
-    });
 
+    /**
+     * @typedef {import("../../../types/types").customFieldsPayload} customFieldsPayload
+     */
+
+    /** 
+     * @type {[customFieldsPayload, React.Dispatch<React.SetStateAction<customFieldsPayload>>]} 
+     */
+    const [customFields, setCustomFields] = useState({
+        status: task?.status ?? 0,         // Provide default values based on your type
+        priority: task?.priority ?? 0,     // Adjust to fit your type constraints
+        description: task?.description ?? "",
+    });
     /**
      * 
      * @param {string} field 

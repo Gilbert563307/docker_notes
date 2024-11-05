@@ -8,10 +8,10 @@ import PriorityButtonComponent from '../../components/custom/PriorityButtonCompo
  * 
  * @param {Object} props - The component props.
  * @param {import("../../../types/types").Task} props.task - The task object containing task details.
- * @param {import("../../../types/types").Task} props.customFields - The task object containing task details.
+ * @param {import("../../../types/types").customFieldsPayload} props.customFields - The task object containing task details.
  * @param {function} props.setStatus - Callback function to update the task status.
  * @param {function} props.setPriority - Callback function to update the task priority.
- * @returns {React.Component} A component displaying task details.
+ * @returns {JSX.Element} A component displaying task details.
  */
 export default function TaskDetails({ task, customFields, setStatus, setPriority }) {
     return (
