@@ -16,4 +16,21 @@ services:
           VITE_APP_FIREBASE_MEASUREMENT_ID: ${VITE_APP_FIREBASE_MEASUREMENT_ID}
     ports:
       - "5173:5173"
+  caddy:
+    image: caddy:latest
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - /root/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
 
