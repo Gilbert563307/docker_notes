@@ -134,3 +134,9 @@ html.dark body{
     font-family: Poppins, sans-serif;
 }
 
+
+.filter-div {
+    cursor: pointer;
+    border: none;
+    background: none;
+  }

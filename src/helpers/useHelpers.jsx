@@ -266,6 +266,13 @@ export default function useHelpers() {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
+  const getHowManyFiltersAreActiveByCurrentPath = () => {
+    const currentPathName = getCurrentPathName();
+    return getAllActiveSessionFilters().filter(
+      (obj) => obj.value === true && obj.pathname === currentPathName
+    );
+  };
+
 
   return {
     convertToDutchDateFormat,
@@ -286,6 +293,7 @@ export default function useHelpers() {
     getSessionFilter,
     getAllActiveSessionFilters,
     getItemsPerPage,
+    getHowManyFiltersAreActiveByCurrentPath,
   };
 }
 

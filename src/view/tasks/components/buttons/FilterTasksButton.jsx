@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Show } from '../../../components/custom/Show';
 import BS5Modal, { MODAL_SIZES } from '../../../components/bs5/BS5Modal';
 import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../../../controller/TasksController';
 import TasksFilters from '../TasksFilters';
+import useHelpers from '../../../../helpers/useHelpers';
+import "../../../../assets/css/components/DialogicFilterButton.css";
 
 /**
  * A button component that opens a modal for filtering tasks.
@@ -11,6 +13,7 @@ import TasksFilters from '../TasksFilters';
  */
 export default function FilterTasksButton() {
     const { dispatch } = useTasksControllerContext();
+    const { getHowManyFiltersAreActiveByCurrentPath } = useHelpers();
     const [filterModal, setFilterModal] = useState(false);
 
     /**
@@ -35,10 +38,36 @@ export default function FilterTasksButton() {
         hideFilterModal();
     };
 
+    //added the use memo for react to remember the active filters and only do this calculate when the modal state changes, otherwise when the
+    //the list of active user session filters change this will become an expensive calculation.
+    const activeFilters = useMemo(() => {
+        return getHowManyFiltersAreActiveByCurrentPath();
+    }, [filterModal]);
+
+
     return (
         <React.Fragment>
-            <button className="btn btn-filter task-btn-plain" onClick={showFilterModal}>
-                Filters
+            <button
+                className="filter-div"
+                tabIndex={0}
+                role="button"
+                onClick={showFilterModal}
+            >
+                <div className="dialogic-filter active-filters">
+                    <div className="dialogic-filter-info ">
+                        <p>Filters</p>
+                        <Show>
+                            <Show.When isTrue={activeFilters && activeFilters.length > 0}>
+                                <div className="total-active-filters">{activeFilters.length}</div>
+                            </Show.When>
+                        </Show>
+                    </div>
+                    <div className="filter-icons">
+                        <div>
+                            <i className="fa-solid fa-angle-down"></i>
+                        </div>
+                    </div>
+                </div>
             </button>
             <Show>
                 <Show.When isTrue={filterModal}>
