@@ -8,8 +8,7 @@ import usePaginationHook from './usePaginationHook';
  * This hook interacts with the TasksController context to fetch and manage the list of tasks.
  * It automatically fetches tasks when the component mounts and provides the current list of tasks.
  *
- * @returns {Object} The current state of tasks.
- * @returns {Array} tasks - The array of tasks from the state.
+ * @returns {{tasks: import("../types/types").Tasks, totalTasks: number, totalPages: number}} tasks - The array of tasks from the state.
  */
 export default function useGetTasksHook() {
     const { state, dispatch } = useTasksControllerContext();
@@ -18,7 +17,7 @@ export default function useGetTasksHook() {
         dispatch({ type: TASKS_CONTROLLER_ACTIONS.LIST });
     };
 
- 
+
     usePaginationHook({ methodToCall: fetchTasks });
 
     useEffect(() => {

@@ -172,7 +172,7 @@ export default function BoardsController() {
             //get currentPageNumber
             const currentPage = getCurrentPageNumber();
             //create Payload
-            const payload = { currentPage: currentPage };
+            const payload = { currentPage: currentPage, itemsPerPage: MAX_BOARD_ITEMS };
 
             const response = await listTasks(payload);
 

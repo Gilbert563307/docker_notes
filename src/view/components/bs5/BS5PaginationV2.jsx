@@ -27,6 +27,8 @@ export default function BS5PaginationV2({
     //You must remove one otherwise : The forcePage prop provided is greater than the maximum page index from pageCount prop
     return pageNumberParam ? parseInt(pageNumberParam) - 1 : 0;
   };
+
+  
   const [forcePage, setForcePage] = useState(getInitialForcePage());
   const nextLabelHtml =
     '<i class="fa-regular fa-chevrons-right" style="color: #0143a3;"></i>';

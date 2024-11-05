@@ -5,6 +5,7 @@ import { DEFAULT_PROJECT_ID, DEFAULT_TASKS_ARCHIVE, TASKS_ARCHIVED_SESSION_FILTE
 import { useAuthProvider } from '../context/AuthProvider';
 import useHelpers from '../helpers/useHelpers';
 import DataHandler from './DataHandler';
+import { Query } from 'firebase/firestore';
 
 
 export default function TasksLogic() {
@@ -35,7 +36,6 @@ export default function TasksLogic() {
         deleteDoc,
     } = DataHandler({ table: "tasks" });
 
-    // const { getAllSessionFilters } = useHelpers();
 
     /**
  * Creates a new task with default values if not provided in the payload.
@@ -73,6 +73,7 @@ export default function TasksLogic() {
                 type: ALERT_TYPES.SUCCESS,
             };
         } catch (error) {
+            console.log(`[createTask]: ${error.message}`);
             // Return error message in case of failure
             return {
                 created: false,
@@ -94,14 +95,18 @@ export default function TasksLogic() {
      * @returns {Promise<number>} A promise that resolves to the total count of tasks.
      * @throws {Error} If there's an error while retrieving the total count of tasks.
      */
-    const getTotalTasks = async () => {
+    const getTotalTasksInDatabaseByUserAndFilters = async () => {
         try {
-            // Get total records from server
-            const totalRecordsSnapShot = await getCountFromServer(collectionRef);
+            const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
+
+            // Get total records from server according to where clause set by the user
+            const totalQuery = query(collectionRef, where("archived", "==", tasksArchived), where("user_uid", "==", userUid))
+            const totalRecordsSnapShot = await getCountFromServer(totalQuery);
             const totalRecords = totalRecordsSnapShot.data().count;
+
             return totalRecords;
         } catch (error) {
-            console.error('Error getting total tasks count:', error);
+            console.log(`[getTotalTasksInDatabaseByUserAndFilters]: ${error.message}`);
             return 0;
         }
     };
@@ -112,7 +117,7 @@ export default function TasksLogic() {
             return [];
             // eslint-disable-next-line no-unreachable
         } catch (error) {
-            console.error("Error in getTasksFilters:", error);
+            console.log(`[getTasksFilters]: ${error.message}`);
             return [];
         }
     };
@@ -122,70 +127,73 @@ export default function TasksLogic() {
      * Generates a Firestore query to fetch tasks for the current page.
      * 
      * @param {{currentPage: number, itemsPerPage?: number }} payload - The current page number for pagination.
-     * @returns {Promise<import('firebase/database').Query>} The Firestore query to fetch tasks for the specified page.
+     * @returns {Promise<{tasksQuery: Query | null, message: string, type: number}>} The Firestore query to fetch tasks for the specified page.
      */
     const getTasksQuery = async (payload) => {
-        // Get the number of items to be displayed per page
-        const itemsPerPage = getTheCurrentItemsPerPage();
-        const { currentPage } = payload;
-        const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
+        try {
+            //destruct the vars
+            const { currentPage } = payload;
 
-        //Get the filters is there applied
-        // const filters = getTasksFilters();
+            // Get the number of items to be displayed per page
+            const itemsPerPage = getTheCurrentItemsPerPage();
 
-        // If the current page is the first page, create a query limited by the items per page
-        if (currentPage === 1) {
-            const tasksQuery = query(
+            //get the session arhived filter
+            const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
+
+            // If the current page is the first page, create a query limited by the items per page
+            if (currentPage === 1) {
+
+                const tasksQuery = query(
+                    collectionRef,
+                    where("user_uid", "==", userUid),
+                    where("archived", "==", tasksArchived),
+                    orderBy("created_at", "asc"),
+                    limit(payload?.itemsPerPage || itemsPerPage),
+                );
+                return { tasksQuery: tasksQuery, message: "", type: ALERT_TYPES.SUCCESS }
+            }
+
+            // Calculate the limit for fetching documents up to the current page
+            const newPageLimit = currentPage * payload?.itemsPerPage || itemsPerPage;
+
+            // Fetch tasks limited by the new page limit
+            const allDocsLimitedByThePageNumber = query(
                 collectionRef,
                 where("user_uid", "==", userUid),
                 where("archived", "==", tasksArchived),
                 orderBy("created_at", "asc"),
-                limit(payload?.itemsPerPage || itemsPerPage),
+                limit(newPageLimit)
             );
-            return tasksQuery;
+
+            // Get document snapshots for the calculated limit clause
+            const documentSnapshots = await getDocs(allDocsLimitedByThePageNumber);
+
+
+            // Calculate the offset to start from the last doc in the arr
+            //so the value can be like
+            //map  = {
+            //  2: 14   
+            //  3: 29   
+            //  4: 44,   
+            //}
+            const offset = ((currentPage * itemsPerPage) - itemsPerPage) - 1;
+
+            // Get the document to start after, based on the offset
+            const startFromDocument = documentSnapshots.docs[offset];
+
+            // Return a query that starts after the last visible document of the previous page
+            const tasksQuery = query(
+                collectionRef,
+                where("user_uid", "==", userUid),
+                orderBy("created_at", "asc"),
+                startAfter(startFromDocument),
+                limit(itemsPerPage)
+            )
+            return { tasksQuery: tasksQuery, message: "", type: ALERT_TYPES.SUCCESS }
+        } catch (error) {
+            console.log(`[getTasksQuery]: ${error.message}`);
+            return { tasksQuery: null, message: error.message, type: ALERT_TYPES.DANGER }
         }
-
-        // Calculate the limit for fetching documents up to the current page
-        let newPageLimit = currentPage * itemsPerPage;
-        if (payload.itemsPerPage != undefined) {
-            newPageLimit = currentPage * payload.itemsPerPage;
-        }
-
-        // Fetch tasks limited by the new page limit
-        const allDocsLimitedByThePageNumber = query(
-            collectionRef,
-            where("user_uid", "==", userUid),
-            where("archived", "==", tasksArchived),
-            orderBy("created_at", "asc"),
-            limit(newPageLimit)
-        );
-
-        // Get document snapshots for the calculated limit
-        const documentSnapshots = await getDocs(allDocsLimitedByThePageNumber);
-
-        //get the current page * items per page - items per page and remove 1 index because its an array
-        //so the value can be like
-        //map  = {
-        //  2: 14   
-        //  3: 29   
-        //  4: 44,   
-        //}
-        // Calculate the offset to determine the starting point for the current page
-        const offset = ((currentPage * itemsPerPage) - itemsPerPage) - 1;
-
-        // Get the document to start after, based on the offset
-        const startFromDocument = documentSnapshots.docs[offset];
-
-
-        // Return a query that starts after the last visible document of the previous page
-        return query(
-            collectionRef,
-            where("user_uid", "==", userUid),
-            orderBy("created_at", "asc"),
-            startAfter(startFromDocument),
-            limit(itemsPerPage)
-        )
-
     }
 
 
@@ -201,7 +209,7 @@ export default function TasksLogic() {
     const listTasks = async (payload) => {
         try {
             // Construct the query to get all tasks for the current user UID with a 
-            const tasksQuery = await getTasksQuery(payload);
+            const { tasksQuery } = await getTasksQuery(payload);
 
             // Execute the query to get the tasks.
             const querySnapshot = await getDocs(tasksQuery);
@@ -226,17 +234,18 @@ export default function TasksLogic() {
             })
 
             //get total records for pagination
-            const totalRecords = await getTotalTasks();
+            const totalRecords = await getTotalTasksInDatabaseByUserAndFilters();
             //get total pages for paginartion
             const totalPages = getTotalPages(totalRecords);
-
             //retutn results
             return {
                 results: { tasks: results, total: totalRecords, pages: totalPages },
                 message: "",
                 type: ALERT_TYPES.SUCCESS
             };
+
         } catch (error) {
+            console.log(`[listTasks]: ${error.message}`);
             return {
                 results: { tasks: [], total: 0, pages: 0 },
                 message: error.message,
@@ -269,6 +278,7 @@ export default function TasksLogic() {
             }
 
         } catch (error) {
+            console.log(`[updateTask]: ${error.message}`);
             return {
                 updated: false,
                 message: error.message,
@@ -313,6 +323,7 @@ export default function TasksLogic() {
             };
         } catch (error) {
             // Return an error response if the fetch operation fails
+            console.log(`[readTask]: ${error.message}`);
             return {
                 task: {},
                 message: error.message,
@@ -339,6 +350,7 @@ export default function TasksLogic() {
             };
         } catch (error) {
             // Return an error response if the update operation fails
+            console.log(`[archiveTask]: ${error.message}`);
             return {
                 archived: false,
                 message: error.message,
@@ -361,6 +373,7 @@ export default function TasksLogic() {
                 type: ALERT_TYPES.DANGER
             }
         } catch (error) {
+            console.log(`[deleteTask]: ${error.message}`);
             return {
                 deleted: false,
                 message: error.message,
