@@ -36,9 +36,17 @@
     transition: ease-in 500ms;
 }
 
+.options-buttons{
+    display: flex;
+}
+
 .add-task-button {
     background-color: #0C66E4;
     color: white;
+}
+
+.download-task-button{
+    background-color: #198754;
 }
 
 .add-task-button>i {

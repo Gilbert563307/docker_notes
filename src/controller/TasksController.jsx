@@ -5,6 +5,7 @@ import { ALERT_ACTIONS, ALERT_TYPES } from '../view/components/bs5/BS5Alert';
 import NotificationV3 from '../view/components/notifications/NotificationV3';
 import TasksLogic from '../model/TasksLogic';
 import useHelpers from '../helpers/useHelpers';
+import FileLogic from '../model/FileLogic';
 
 
 /**
@@ -50,6 +51,7 @@ export const TASKS_CONTROLLER_ACTIONS = {
   ARCHIVE: "ARCHIVE_TASK",
   DELETE: "DELETE",
   UPLOAD_TEMP_IMAGE: "UPLOAD_TEMP_IMAGE",
+  DOWNLOAD_TASK: "DOWNLOAD_TASK",
   SET_NOTIFICATION: "SET_NOTIFICATION,"
 };
 
@@ -88,6 +90,7 @@ export const useTasksControllerContext = () => {
  */
 export default function TasksController() {
   const { createTask, listTasks, updateTask, readTask, archiveTask, deleteTask } = TasksLogic();
+  const { downloadFileContent } = FileLogic();
   const { getCurrentPageNumber } = useHelpers();
   const navigate = useNavigate();
 
@@ -327,6 +330,18 @@ export default function TasksController() {
   }
 
 
+  const collectDownloadTask = (payload) => {
+    try {
+      const filename = "Task File";
+      const downloaded = downloadFileContent(filename, payload);
+      setNotificationToState(downloaded);
+    } catch (error) {
+      setErrorToState(error);
+
+    }
+  }
+
+
   /**
   * Dispatches actions based on the specified type and payload.
   * @param {{ type: string; payload?: any; }} action - The action object containing type and payload.
@@ -362,6 +377,9 @@ export default function TasksController() {
           break;
         case TASKS_CONTROLLER_ACTIONS.DELETE:
           await collectDeleteTask(action?.payload);
+          break;
+        case TASKS_CONTROLLER_ACTIONS.DOWNLOAD_TASK:
+          await collectDownloadTask(action?.payload);
           break;
         case ALERT_ACTIONS.CLOSE_ALERT:
           closeAlert();

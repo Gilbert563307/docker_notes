@@ -87,6 +87,10 @@ export default function UpdateTaskComponent({ task, dispatch }) {
         const newPayload = { ...task, ...data, ...customFields };
         dispatch({ type: TASKS_CONTROLLER_ACTIONS.UPDATE, payload: newPayload });
     };
+
+    const downloadTask = () => {
+        dispatch({ type: TASKS_CONTROLLER_ACTIONS.DOWNLOAD_TASK, payload: customFields.description });
+    }
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <article className="read-task">
@@ -149,12 +153,15 @@ export default function UpdateTaskComponent({ task, dispatch }) {
                     </div>
                     <div className="update-task-grid-2">
                         <div className="update-task-grid-buttons">
-                            <button type="submit" className="add-task-button task-btn-plain" name="save" onClick={handleSubmit(onSubmit)}>
-                                Save changes
-                            </button>
+                            <div className="options-buttons">
+                                <button type="submit" className="add-task-button task-btn-plain" name="save" onClick={handleSubmit(onSubmit)}>
+                                    <i className="fa-regular fa-floppy-disk"></i> Save
+                                </button>
+
+                            </div>
+
                             <DeleteTaskButton taskId={task.id} />
                         </div>
-
 
                         <TaskDetails task={task} customFields={customFields} setStatus={setStatus} setPriority={setPriority} />
                     </div>
