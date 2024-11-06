@@ -18,6 +18,7 @@ export const ALLOWED_ITEMS_PER_PAGE = [15, 25, 50];
 //TASKS
 export const SELECTED_TASK = "SELECTED_TASK";
 export const LAST_TASK_OBJECT = "LAST_TASK_OBJECT";
+export const TASKS_PATH = "tasks";
 export const TASKS_PRIORITY = {
     LOW: 0,
     MEDIUM: 1,
@@ -58,14 +59,16 @@ export const DEFAULT_TASKS_ARCHIVE = false;
 
 const TASKS_TYPES_TODO = "TASKS_TYPES_TODO";
 const TASKS_TYPES_IN_PROGRESS = "TASKS_TYPES_IN_PROGRESS";
-const TASKS_TYPES_IN_COMPLETED = "TASKS_TYPES_IN_COMPLETED";
+const TASKS_TYPES_COMPLETED = "TASKS_TYPES_COMPLETED";
 
 //status filters
 export const STATUS_FILTER_TYPE_TAGS = [
     { id: TASKS_STATUS.TODO, name: "Todo", config: TASKS_TYPES_TODO },
     { id: TASKS_STATUS.IN_PROGRESS, name: "In progress", config: TASKS_TYPES_IN_PROGRESS },
-    { id: TASKS_STATUS.COMPLETED, name: "Completed", config: TASKS_TYPES_IN_COMPLETED },
+    { id: TASKS_STATUS.COMPLETED, name: "Completed", config: TASKS_TYPES_COMPLETED },
 ];
+
+export const STATUS_TYPE_KEY = "TASKS_TYPES";
 
 //prio filters
 const TASKS_PRIORITY_TYPES_LOW = "TASKS_PRIORITY_TYPES_LOW";

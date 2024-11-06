@@ -1,6 +1,6 @@
 import React from 'react';
 import { ALERT_TYPES } from '../view/components/bs5/BS5Alert';
-import { DEFAULT_PROJECT_ID, DEFAULT_TASKS_ARCHIVE, TASKS_ARCHIVED_SESSION_FILTER, TASKS_PRIORITY, TASKS_STATUS } from '../config';
+import { DEFAULT_PROJECT_ID, DEFAULT_TASKS_ARCHIVE, STATUS_TYPE_KEY, TASKS_ARCHIVED_SESSION_FILTER, TASKS_PATH, TASKS_PRIORITY, TASKS_STATUS } from '../config';
 // import useHelpers from '../helpers/useHelpers';
 import { useAuthProvider } from '../context/AuthProvider';
 import useHelpers from '../helpers/useHelpers';
@@ -11,7 +11,7 @@ import { Query } from 'firebase/firestore';
 export default function TasksLogic() {
 
     const { user } = useAuthProvider();
-    const { getSessionFilter } = useHelpers();
+    const { getSessionFilter, getHowManyFiltersAreActiveByCurrentPath } = useHelpers();
 
     const {
         collectionRef,
@@ -99,10 +99,11 @@ export default function TasksLogic() {
      */
     const getTotalTasksInDatabaseByUserAndFilters = async () => {
         try {
-            const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
+
+            const queryItems = getTasksQueryClauses();
 
             // Get total records from server according to where clause set by the user
-            const totalQuery = query(collectionRef, where("archived", "==", tasksArchived), where("user_uid", "==", userUid))
+            const totalQuery = query(collectionRef, ...queryItems)
             const totalRecordsSnapShot = await getCountFromServer(totalQuery);
             const totalRecords = totalRecordsSnapShot.data().count;
 
@@ -113,90 +114,99 @@ export default function TasksLogic() {
         }
     };
 
-    const getTasksFilters = () => {
+    const getTasksQueryClauses = () => {
         try {
-            // Future filtering logic here
-            return [];
-            // eslint-disable-next-line no-unreachable
+            // Get the session archived filter
+            const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
+
+            let queryItems = [
+                where("user_uid", "==", userUid),
+                where("archived", "==", tasksArchived),
+                orderBy("created_at", "asc"),
+            ];
+
+            const activeFilters = getHowManyFiltersAreActiveByCurrentPath(TASKS_PATH);
+            const activeStatusTasks = activeFilters.filter((task) => task.name.includes(STATUS_TYPE_KEY) && task.value === true);
+            if (activeStatusTasks.length > 0) {
+                const { name, value } = activeStatusTasks[0];
+                console.log(name)
+                const statusToSearch = 
+                // queryItems = [...queryItems, where("status", "==", 0)]
+            }
+
+            return queryItems;
         } catch (error) {
-            console.log(`[getTasksFilters]: ${error.message}`);
+            console.log(`[getTasksQueryClauses]: ${error.message}`);
             return [];
         }
     };
 
 
+
+
+
     /**
-     * Generates a Firestore query to fetch tasks for the current page.
-     * 
-     * @param {{currentPage: number, itemsPerPage?: number }} payload - The current page number for pagination.
-     * @returns {Promise<{tasksQuery: Query | null, message: string, type: number}>} The Firestore query to fetch tasks for the specified page.
-     */
+ * Generates a Firestore query to fetch tasks for the current page.
+ * 
+ * @param {{currentPage: number, itemsPerPage?: number }} payload - The current page number for pagination.
+ * @returns {Promise<{tasksQuery: Query | null, message: string, type: number}>} The Firestore query to fetch tasks for the specified page.
+ */
     const getTasksQuery = async (payload) => {
         try {
-            //destruct the vars
+            // Destructure the vars
             const { currentPage } = payload;
 
             // Get the number of items to be displayed per page
             const itemsPerPage = getTheCurrentItemsPerPage();
 
-            //get the session arhived filter
-            const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
+            const queryItems = getTasksQueryClauses();
 
             // If the current page is the first page, create a query limited by the items per page
             if (currentPage === 1) {
-
                 const tasksQuery = query(
                     collectionRef,
-                    where("user_uid", "==", userUid),
-                    where("archived", "==", tasksArchived),
-                    orderBy("created_at", "asc"),
-                    limit(payload?.itemsPerPage || itemsPerPage),
+                    ...queryItems,
+                    limit(payload?.itemsPerPage || itemsPerPage)
                 );
                 return { tasksQuery: tasksQuery, message: "", type: ALERT_TYPES.SUCCESS }
             }
 
             // Calculate the limit for fetching documents up to the current page
-            const newPageLimit = currentPage * payload?.itemsPerPage || itemsPerPage;
+            const newPageLimit = currentPage * (payload?.itemsPerPage || itemsPerPage);
 
             // Fetch tasks limited by the new page limit
             const allDocsLimitedByThePageNumber = query(
                 collectionRef,
-                where("user_uid", "==", userUid),
-                where("archived", "==", tasksArchived),
-                orderBy("created_at", "asc"),
+                ...queryItems,
                 limit(newPageLimit)
             );
 
             // Get document snapshots for the calculated limit clause
             const documentSnapshots = await getDocs(allDocsLimitedByThePageNumber);
 
-
-            // Calculate the offset to start from the last doc in the arr
-            //so the value can be like
-            //map  = {
-            //  2: 14   
-            //  3: 29   
-            //  4: 44,   
-            //}
-            const offset = ((currentPage * itemsPerPage) - itemsPerPage) - 1;
+            // Calculate the offset to start from the last doc in the array
+            const offset = (currentPage - 1) * itemsPerPage;
 
             // Get the document to start after, based on the offset
             const startFromDocument = documentSnapshots.docs[offset];
+            if (!startFromDocument) {
+                throw new Error("No document found to start after for the given page.");
+            }
 
             // Return a query that starts after the last visible document of the previous page
             const tasksQuery = query(
                 collectionRef,
-                where("user_uid", "==", userUid),
-                orderBy("created_at", "asc"),
+                ...queryItems,
                 startAfter(startFromDocument),
                 limit(itemsPerPage)
-            )
+            );
             return { tasksQuery: tasksQuery, message: "", type: ALERT_TYPES.SUCCESS }
         } catch (error) {
             console.log(`[getTasksQuery]: ${error.message}`);
             return { tasksQuery: null, message: error.message, type: ALERT_TYPES.DANGER }
         }
     }
+
 
 
     /**

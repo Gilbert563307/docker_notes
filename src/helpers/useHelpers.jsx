@@ -266,8 +266,13 @@ export default function useHelpers() {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  const getHowManyFiltersAreActiveByCurrentPath = () => {
-    const currentPathName = getCurrentPathName();
+  /**
+   * 
+   * @param {string} [pathName] 
+   * @returns 
+   */
+  const getHowManyFiltersAreActiveByCurrentPath = (pathName = "") => {
+    const currentPathName = pathName != "" ? pathName : getCurrentPathName();
     return getAllActiveSessionFilters().filter(
       (obj) => obj.value === true && obj.pathname === currentPathName
     );
