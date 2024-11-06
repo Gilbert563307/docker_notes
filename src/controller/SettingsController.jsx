@@ -7,6 +7,7 @@ import useBS5PreloaderHook from '../hooks/useBS5PreloaderHook';
 
 /**
  * @typedef {Object} InitialState
+ * @property {Object} notification - The notification object.
  * @property {string} notification.message - The notification message.
  * @property {number} notification.type - The notification type.
  */

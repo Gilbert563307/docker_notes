@@ -14,7 +14,7 @@ import useHelpers from '../helpers/useHelpers';
 /**
  * @typedef {Object} InitialState
  * @property {import("../types/types").Task | Object} task - The current task.
- * @property {{ tasks: Tasks, total: number}} tasks - The list of tasks.
+ * @property {import("../types/types").ListTasks} tasks - The list of tasks.
  * @property {Object} notification - The notification object.
  * @property {string} notification.message - The notification message.
  * @property {number} notification.type - The notification type.
@@ -26,7 +26,7 @@ import useHelpers from '../helpers/useHelpers';
  */
 const initialState = {
   task: {},
-  tasks: { tasks: [], total: 0 },
+  tasks: { tasks: [], total: 0, pages: 0 },
   notification: { message: "", type: 0 },
 };
 

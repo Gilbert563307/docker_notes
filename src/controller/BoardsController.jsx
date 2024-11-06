@@ -11,7 +11,7 @@ import { MAX_BOARD_ITEMS } from '../config';
 /**
  * @typedef {Object} InitialState
  * @property {import("../types/types").Task | Object} task - The current task.
- * @property {{ tasks: import("../types/types").Tasks, total: number}} tasks - The list of tasks.
+ * @property {import("../types/types").Tasks | []} tasks - The list of tasks.
  * @property {Object} notification - The notification object.
  * @property {string} notification.message - The notification message.
  * @property {number} notification.type - The notification type.
@@ -23,7 +23,7 @@ import { MAX_BOARD_ITEMS } from '../config';
  */
 const initialState = {
     task: {},
-    tasks: { tasks: [], total: 0 },
+    tasks: [],
     notification: { message: "", type: 0 },
 };
 
@@ -78,7 +78,7 @@ export const useBoardsControllerContext = () => {
 };
 
 export default function BoardsController() {
-    const { createTask, listTasks, updateTask, readTask, archiveTask } = TasksLogic();
+    const { createTask, listBoardTasks, updateTask, } = TasksLogic();
     const { getCurrentPageNumber } = useHelpers();
 
 
@@ -169,17 +169,12 @@ export default function BoardsController() {
 
     const collectListBoardTasks = async () => {
         try {
-            //get currentPageNumber
-            const currentPage = getCurrentPageNumber();
-            //create Payload
-            const payload = { currentPage: currentPage, itemsPerPage: MAX_BOARD_ITEMS };
-
-            const response = await listTasks(payload);
+            const response = await listBoardTasks();
 
             // Update state with the created task response
             dispatchAction({
                 type: REDUCER_ACTIONS.SET_TASKS,
-                payload: response.results,
+                payload: response.tasks,
             });
         } catch (error) {
             setErrorToState(error)
@@ -217,14 +212,12 @@ export default function BoardsController() {
                 setNotificationToState(taskCreated);
             }
 
-            //get currentPageNumber
-            const currentPage = getCurrentPageNumber();
-            const response = await listTasks({ currentPage: currentPage, itemsPerPage: MAX_BOARD_ITEMS });
+            const { tasks } = await listBoardTasks();
 
             // Update state with the created task response
             dispatchAction({
                 type: REDUCER_ACTIONS.SET_TASKS,
-                payload: response.results,
+                payload: tasks,
             });
 
         } catch (error) {

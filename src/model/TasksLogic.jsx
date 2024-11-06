@@ -1,11 +1,12 @@
 import React from 'react';
 import { ALERT_TYPES } from '../view/components/bs5/BS5Alert';
-import { DEFAULT_PROJECT_ID, DEFAULT_TASKS_ARCHIVE, STATUS_TYPE_KEY, TASKS_ARCHIVED_SESSION_FILTER, TASKS_PATH, TASKS_PRIORITY, TASKS_STATUS } from '../config';
+import { DEFAULT_PROJECT_ID, DEFAULT_TASKS_ARCHIVE, MAX_BOARD_ITEMS, PRIORITY_FILTER_TYPE_TAGS, STATUS_FILTER_TYPE_TAGS, TASKS_ARCHIVED_SESSION_FILTER, TASKS_PATH, TASKS_PRIORITY, TASKS_STATUS } from '../config';
 // import useHelpers from '../helpers/useHelpers';
 import { useAuthProvider } from '../context/AuthProvider';
 import useHelpers from '../helpers/useHelpers';
 import DataHandler from './DataHandler';
 import { Query } from 'firebase/firestore';
+import { tasks } from '../tests/test';
 
 
 export default function TasksLogic() {
@@ -100,7 +101,7 @@ export default function TasksLogic() {
     const getTotalTasksInDatabaseByUserAndFilters = async () => {
         try {
 
-            const queryItems = getTasksQueryClauses();
+            const { queryItems } = getTasksQueryClauses();
 
             // Get total records from server according to where clause set by the user
             const totalQuery = query(collectionRef, ...queryItems)
@@ -114,30 +115,143 @@ export default function TasksLogic() {
         }
     };
 
+    /**
+     * 
+     * @returns {{filters: Array<number>, message: string, type: number}}
+     */
+    const getActiveStatusFilters = () => {
+        try {
+            const { names } = getActiveFiltersNamesOnTaskPath();
+
+            // Filter and retrieve active status tags based on task names.
+            const results = STATUS_FILTER_TYPE_TAGS
+                .filter((tag) => names.includes(tag.config))
+                .map((tag) => tag.value);
+
+            // Return successful response with active status filters.
+            return {
+                filters: results,
+                message: "",
+                type: ALERT_TYPES.SUCCESS,
+            };
+        } catch (error) {
+            console.log(`[getActiveStatusFilters]: ${error.message}`);
+            // On error, return a response with error message and danger alert type.
+            return {
+                filters: [],
+                message: error.message,
+                type: ALERT_TYPES.DANGER,
+            };
+        }
+    };
+
+    /**
+    * 
+    * @returns {{names: Array<string>, message: string, type: number}}
+    */
+    const getActiveFiltersNamesOnTaskPath = () => {
+        try {
+            // Retrieve all active filters by the current task path.
+            const allActiveFilters = getHowManyFiltersAreActiveByCurrentPath(TASKS_PATH);
+
+            // If no active filters, return default success response with empty filters.
+            if (allActiveFilters.length === 0) {
+                return {
+                    names: [],
+                    message: "",
+                    type: ALERT_TYPES.SUCCESS,
+                };
+            }
+
+            // Map active filters to their task names.
+            const activeStatusTasksNames = allActiveFilters.map((task) => task.name);
+
+            return {
+                names: activeStatusTasksNames,
+                message: "",
+                type: ALERT_TYPES.SUCCESS,
+            };
+        } catch (error) {
+            // On error, return a response with error message and danger alert type.
+            return {
+                names: [],
+                message: error.message,
+                type: ALERT_TYPES.DANGER,
+            };
+        }
+    }
+
+
+    /**
+   * 
+   * @returns {{filters: Array<number>, message: string, type: number}}
+   */
+    const getActivePriorityFilters = () => {
+        try {
+
+            const { names } = getActiveFiltersNamesOnTaskPath();
+
+            // Filter and retrieve active status tags based on task names.
+            const results = PRIORITY_FILTER_TYPE_TAGS
+                .filter((tag) => names.includes(tag.config))
+                .map((tag) => tag.value);
+
+            // Return successful response with active status filters.
+            return {
+                filters: results,
+                message: "",
+                type: ALERT_TYPES.SUCCESS,
+            };
+
+        } catch (error) {
+            console.log(`[getActivePriorityFilters]: ${error.message}`);
+            // On error, return a response with error message and danger alert type.
+            return {
+                filters: [],
+                message: error.message,
+                type: ALERT_TYPES.DANGER,
+            };
+        }
+    }
+
+    /**
+     * 
+     * @returns {{queryItems: Array<Query> | Array, message: string, type: number}}
+     */
     const getTasksQueryClauses = () => {
         try {
             // Get the session archived filter
             const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
 
+            const statusFilters = getActiveStatusFilters();
+            const priorityFilters = getActivePriorityFilters();
+
+
             let queryItems = [
                 where("user_uid", "==", userUid),
                 where("archived", "==", tasksArchived),
-                orderBy("created_at", "asc"),
+                orderBy("created_at", "desc"),
             ];
-
-            const activeFilters = getHowManyFiltersAreActiveByCurrentPath(TASKS_PATH);
-            const activeStatusTasks = activeFilters.filter((task) => task.name.includes(STATUS_TYPE_KEY) && task.value === true);
-            if (activeStatusTasks.length > 0) {
-                const { name, value } = activeStatusTasks[0];
-                console.log(name)
-                const statusToSearch = 
-                // queryItems = [...queryItems, where("status", "==", 0)]
+            if (statusFilters.filters.length > 0) {
+                queryItems = [...queryItems, where("status", "in", statusFilters.filters)];
             }
 
-            return queryItems;
+            if (priorityFilters.filters.length > 0) {
+                queryItems = [...queryItems, where("priority", "in", priorityFilters.filters)];
+            }
+
+            return {
+                queryItems: queryItems,
+                message: "",
+                type: ALERT_TYPES.SUCCESS,
+            };
         } catch (error) {
             console.log(`[getTasksQueryClauses]: ${error.message}`);
-            return [];
+            return {
+                queryItems: [],
+                message: error.message,
+                type: ALERT_TYPES.DANGER,
+            };
         }
     };
 
@@ -159,14 +273,14 @@ export default function TasksLogic() {
             // Get the number of items to be displayed per page
             const itemsPerPage = getTheCurrentItemsPerPage();
 
-            const queryItems = getTasksQueryClauses();
+            const { queryItems } = getTasksQueryClauses();
 
             // If the current page is the first page, create a query limited by the items per page
             if (currentPage === 1) {
                 const tasksQuery = query(
                     collectionRef,
                     ...queryItems,
-                    limit(payload?.itemsPerPage || itemsPerPage)
+                    limit(itemsPerPage)
                 );
                 return { tasksQuery: tasksQuery, message: "", type: ALERT_TYPES.SUCCESS }
             }
@@ -207,6 +321,41 @@ export default function TasksLogic() {
         }
     }
 
+    const convertQuerySnapShotDocs = (querySnapshot) => {
+        try {
+            // Map through the query snapshot to add the document ID to each task.
+            const results = querySnapshot.docs.map((document) => {
+                const convertedCreatedAt = convertTimeStampToDate({
+                    seconds: document.data().created_at.seconds,
+                    nanoseconds: document.data().created_at.nanoseconds,
+                });
+
+                const convertedUpdatedAt = convertTimeStampToDate({
+                    seconds: document.data().updated_at.seconds,
+                    nanoseconds: document.data().updated_at.nanoseconds,
+                });
+                return {
+                    ...document.data(),
+                    id: document.id,
+                    created_at: convertedCreatedAt,
+                    updated_at: convertedUpdatedAt,
+                }
+            });
+            return {
+                results: results,
+                message: "",
+                type: ALERT_TYPES.SUCCESS
+            };
+        } catch (error) {
+            console.log(`[convertQuerySnapShotDocs]: ${error.message}`);
+            return {
+                results: [],
+                message: error.message,
+                type: ALERT_TYPES.DANGER
+            };
+        }
+    }
+
 
 
     /**
@@ -226,24 +375,7 @@ export default function TasksLogic() {
             // Execute the query to get the tasks.
             const querySnapshot = await getDocs(tasksQuery);
 
-            // Map through the query snapshot to add the document ID to each task.
-            const results = querySnapshot.docs.map((document) => {
-                const convertedCreatedAt = convertTimeStampToDate({
-                    seconds: document.data().created_at.seconds,
-                    nanoseconds: document.data().created_at.nanoseconds,
-                });
-
-                const convertedUpdatedAt = convertTimeStampToDate({
-                    seconds: document.data().updated_at.seconds,
-                    nanoseconds: document.data().updated_at.nanoseconds,
-                });
-                return {
-                    ...document.data(),
-                    id: document.id,
-                    created_at: convertedCreatedAt,
-                    updated_at: convertedUpdatedAt,
-                }
-            })
+            const { results } = convertQuerySnapShotDocs(querySnapshot);
 
             //get total records for pagination
             const totalRecords = await getTotalTasksInDatabaseByUserAndFilters();
@@ -265,6 +397,41 @@ export default function TasksLogic() {
             };
         }
     };
+
+    /**
+  * @returns {Promise<{tasks: import("../types/types").Tasks, message: string, type: number}>}
+   */
+    const listBoardTasks = async () => {
+        try {
+            // Get the session archived filter
+            const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
+
+            const tasksQuery = query(
+                collectionRef,
+                where("user_uid", "==", userUid),
+                where("archived", "==", tasksArchived),
+                orderBy("created_at", "desc"),
+                limit(MAX_BOARD_ITEMS)
+            );
+
+            // Execute the query to get the tasks.
+            const querySnapshot = await getDocs(tasksQuery);
+
+            const { results } = convertQuerySnapShotDocs(querySnapshot);
+            return {
+                tasks: results,
+                message: "",
+                type: ALERT_TYPES.SUCCESS
+            }
+        } catch (error) {
+            console.log(`[listBoardTasks]: ${error.message}`);
+            return {
+                tasks: [],
+                message: "",
+                type: ALERT_TYPES.SUCCESS
+            }
+        }
+    }
 
     /**
      * 
@@ -420,5 +587,5 @@ export default function TasksLogic() {
             }
         }
     }
-    return { createTask, listTasks, updateTask, readTask, archiveTask, deleteTask, uploadTemporaryImageToServer };
+    return { createTask, listTasks, updateTask, readTask, archiveTask, deleteTask, listBoardTasks };
 }

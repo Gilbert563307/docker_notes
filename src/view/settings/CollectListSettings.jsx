@@ -10,7 +10,13 @@ export default function CollectListSettings() {
   return (
     <article className='settings-options'>
       <ThemeModeComponent />
-      <button type="button" className="btn btn-link" onClick={logout}>Logout</button>
+
+      <div className=''>
+        <ul>
+          <li><button type="button" className="btn btn-link log-out-settings" onClick={logout} >Force Logout</button></li>
+        </ul>
+      </div>
+
 
     </article>
   )

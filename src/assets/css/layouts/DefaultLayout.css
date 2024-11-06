@@ -94,6 +94,9 @@ html.dark .content {
   background-color: #282E33;
 }
 
+.app-version {
+  margin-left: 1em;
+}
 
 @media only screen and (max-width: 768px) {
   .default-layout {
@@ -107,7 +110,8 @@ html.dark .content {
     border-right: none;
     border-bottom: 2px solid #dee2e6;
   }
-  .layout-title{
+
+  .layout-title {
     margin-left: 1em;
   }
 }

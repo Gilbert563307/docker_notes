@@ -44,6 +44,7 @@ export default function NavBar() {
                         </li>
                     );
                 })}
+                
             </ul>
             <ul className="sign-out">
                 <li>

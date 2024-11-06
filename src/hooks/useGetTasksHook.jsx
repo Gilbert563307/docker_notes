@@ -17,11 +17,9 @@ export default function useGetTasksHook() {
         dispatch({ type: TASKS_CONTROLLER_ACTIONS.LIST });
     };
 
-
     usePaginationHook({ methodToCall: fetchTasks });
 
     useEffect(() => {
-        // console.log('Component mounted, fetching tasks...');
         fetchTasks();
     }, []);
 

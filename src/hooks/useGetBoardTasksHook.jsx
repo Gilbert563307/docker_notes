@@ -12,5 +12,5 @@ export default function useGetBoardTasksHook() {
         fetchTasks();
     }, []);
 
-    return { tasks: state.tasks.tasks, dispatch: dispatch }
+    return { tasks: state.tasks, dispatch: dispatch }
 }
