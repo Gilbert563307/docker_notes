@@ -22,6 +22,7 @@ import TaskDetails from "./TaskDetails";
 import { TASKS_CONTROLLER_ACTIONS } from "../../../controller/TasksController";
 import DeleteTaskButton from "./buttons/DeleteTaskButton";
 import "../../../assets/css/components/UpdateTaskComponent.css";
+import QuilTextEditor from "../../components/texteditor/QuilTextEditor";
 
 /**
  * 
@@ -122,7 +123,9 @@ export default function UpdateTaskComponent({ task, dispatch }) {
                         <label htmlFor="description" className="form-label">
                             Description
                         </label>
-                        <MDXEditor
+                        <QuilTextEditor content={customFields.description}></QuilTextEditor>
+
+                        {/* <MDXEditor
                             className="mdx-editor-editor"
                             markdown={customFields.description}
                             onChange={(value) => handleCustomFieldChange('description', value)}
@@ -146,7 +149,7 @@ export default function UpdateTaskComponent({ task, dispatch }) {
                                     ),
                                 }),
                             ]}
-                        />
+                        /> */}
                         {errors.description && (
                             <div className="invalid-feedback d-block">{errors.description.message}</div>
                         )}
