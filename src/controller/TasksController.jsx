@@ -90,7 +90,7 @@ export const useTasksControllerContext = () => {
  */
 export default function TasksController() {
   const { createTask, listTasks, updateTask, readTask, archiveTask, deleteTask } = TasksLogic();
-  const { downloadFileContent } = FileLogic();
+  const { convertHtmlToDocx } = FileLogic();
   const { getCurrentPageNumber } = useHelpers();
   const navigate = useNavigate();
 
@@ -332,8 +332,7 @@ export default function TasksController() {
 
   const collectDownloadTask = (payload) => {
     try {
-      const filename = "Task File";
-      const downloaded = downloadFileContent(filename, payload);
+      const downloaded = convertHtmlToDocx(payload);
       setNotificationToState(downloaded);
     } catch (error) {
       setErrorToState(error);

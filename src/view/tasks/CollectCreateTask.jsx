@@ -3,7 +3,6 @@ import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../contr
 import { useForm } from 'react-hook-form';
 import { TASKS_PRIORITY, TASKS_STATUS } from '../../config';
 import "../../assets/css/views/CollectCreateTask.css";
-import TaskMDXEditor from './components/TaskMDXEditor';
 import DrodownOptions from './components/DrodownOptions';
 import QuilTextEditor from '../components/texteditor/QuilTextEditor';
 
@@ -68,10 +67,9 @@ export default function CollectCreateTask() {
         {/* end title  */}
 
         {/* start description  */}
-        <div className="col-12 mb-2 mdx-editor-col">
+        <div className="col-12 mb-2">
           <label htmlFor="description" className="form-label">Description</label>
-          {/* <TaskMDXEditor description={description} id="desctription" setDescription={setDescription} dispatch={dispatch} /> */}
-          <QuilTextEditor content={description}></QuilTextEditor>
+          <QuilTextEditor content={description} saveText={setDescription}></QuilTextEditor>
           {errors.description && (
             <div className="invalid-feedback d-block">{errors.description.message}</div>
           )}

@@ -81,6 +81,9 @@ html.dark .active-url>a>div>div:first-of-type>i {
     color: #2B7EFF !important;
 }
 
+html.dark .sign-out > li > a{
+    color: #9FADBC 
+}
 
 
 @keyframes fadeInAnimation {

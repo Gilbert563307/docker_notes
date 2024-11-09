@@ -1,28 +1,12 @@
 /* eslint-disable react/prop-types */
 import React, { useState } from "react";
-import {
-    MDXEditor,
-    headingsPlugin,
-    listsPlugin,
-    quotePlugin,
-    thematicBreakPlugin,
-    UndoRedo,
-    BoldItalicUnderlineToggles,
-    toolbarPlugin,
-    BlockTypeSelect,
-    CodeToggle,
-    ListsToggle,
-    markdownShortcutPlugin,
-    CreateLink,
-    linkDialogPlugin,
-    tablePlugin,
-} from "@mdxeditor/editor";
 import { useForm } from "react-hook-form";
 import TaskDetails from "./TaskDetails";
 import { TASKS_CONTROLLER_ACTIONS } from "../../../controller/TasksController";
 import DeleteTaskButton from "./buttons/DeleteTaskButton";
 import "../../../assets/css/components/UpdateTaskComponent.css";
 import QuilTextEditor from "../../components/texteditor/QuilTextEditor";
+import { ALERT_TYPES } from "../../components/bs5/BS5Alert";
 
 /**
  * 
@@ -85,11 +69,15 @@ export default function UpdateTaskComponent({ task, dispatch }) {
         //     setError('description', { type: 'custom', message: 'The description cannot be empty' });
         //     return;
         // }
+
         const newPayload = { ...task, ...data, ...customFields };
         dispatch({ type: TASKS_CONTROLLER_ACTIONS.UPDATE, payload: newPayload });
     };
 
     const downloadTask = () => {
+        if (customFields.description === "") {
+            return dispatch({ type: TASKS_CONTROLLER_ACTIONS.SET_NOTIFICATION, payload: { message: "Download failed: The file is empty", type: ALERT_TYPES.INFO } })
+        }
         dispatch({ type: TASKS_CONTROLLER_ACTIONS.DOWNLOAD_TASK, payload: customFields.description });
     }
     return (
@@ -123,33 +111,7 @@ export default function UpdateTaskComponent({ task, dispatch }) {
                         <label htmlFor="description" className="form-label">
                             Description
                         </label>
-                        <QuilTextEditor content={customFields.description}></QuilTextEditor>
-
-                        {/* <MDXEditor
-                            className="mdx-editor-editor"
-                            markdown={customFields.description}
-                            onChange={(value) => handleCustomFieldChange('description', value)}
-                            plugins={[
-                                headingsPlugin(),
-                                listsPlugin(),
-                                quotePlugin(),
-                                thematicBreakPlugin(),
-                                markdownShortcutPlugin(),
-                                tablePlugin(),
-                                toolbarPlugin({
-                                    toolbarContents: () => (
-                                        <>
-                                            <UndoRedo />
-                                            <BlockTypeSelect />
-                                            <BoldItalicUnderlineToggles />
-                                            <CodeToggle />
-                                            <ListsToggle />
-                                            <CreateLink />
-                                        </>
-                                    ),
-                                }),
-                            ]}
-                        /> */}
+                        <QuilTextEditor content={customFields.description} saveText={(value) => handleCustomFieldChange('description', value)}  />
                         {errors.description && (
                             <div className="invalid-feedback d-block">{errors.description.message}</div>
                         )}
@@ -160,6 +122,11 @@ export default function UpdateTaskComponent({ task, dispatch }) {
                                 <button type="submit" className="add-task-button task-btn-plain" name="save" onClick={handleSubmit(onSubmit)}>
                                     <i className="fa-regular fa-floppy-disk"></i> Save
                                 </button>
+
+                                <button type="button" className="download-task-button task-btn-plain" name="save" onClick={downloadTask}>
+                                    <i className="fa-solid fa-download"></i> Download
+                                </button>
+
 
                             </div>
 

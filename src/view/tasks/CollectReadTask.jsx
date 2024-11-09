@@ -1,8 +1,8 @@
 import React from "react";
-import { MDXEditor, headingsPlugin, listsPlugin, quotePlugin, thematicBreakPlugin, BoldItalicUnderlineToggles, markdownShortcutPlugin, linkDialogPlugin, tablePlugin } from '@mdxeditor/editor'
 import { useLocation } from "react-router-dom";
 import "../../assets/css/views/tasks/CollectReadTask.css";
 import useHtmlCssHelpers from "../../helpers/useHtmlCssHelpers";
+import QuilTextEditor from "../components/texteditor/QuilTextEditor";
 
 
 export default function CollectReadTask() {
@@ -34,16 +34,7 @@ export default function CollectReadTask() {
             <label htmlFor="description" className="form-label ms-2">
               Description
             </label>
-            <MDXEditor className="mdx-editor-pre-tag" readOnly={true} markdown={task.description}
-              plugins={[
-                headingsPlugin(),
-                listsPlugin(),
-                quotePlugin(),
-                thematicBreakPlugin(),
-                markdownShortcutPlugin(),
-                tablePlugin(),
-                linkDialogPlugin(),
-              ]} />
+            <QuilTextEditor content={task.description} readOnly={true} />
           </div>
         </div>
         <div>
