@@ -18,6 +18,7 @@ export default function ThemeLogic() {
      */
     function removeExistingThemeClasses() {
         const htmlElement = document.querySelector('html');
+        if (htmlElement === null) return;
         htmlElement.classList.remove('light', 'dark');
         htmlElement.removeAttribute('data-bs-theme');
     }
@@ -28,6 +29,7 @@ export default function ThemeLogic() {
      */
     function setTheModeToHtml(mode) {
         const htmlElement = document.querySelector('html');
+        if (htmlElement === null) return;
         htmlElement.classList.add(mode);
         if (mode === THEME_MODES.DARK) {
             htmlElement.setAttribute('data-bs-theme', 'dark');

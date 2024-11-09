@@ -1,21 +1,11 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
-import useLocalStorageHook from '../hooks/useLocalStorageHook';
 import AuthLogic from '../model/AuthLogic';
-
-
-/**
- * @typedef {Object} User
- * @property {string} uid
- * @property {string} displayName
- * @property {string} email
- * @property {string} token
- * @property {string} photoURL
- */
+import useCookieStorageHook from '../hooks/useCookieStorageHook';
 
 /**
  * Context for managing user authentication state and actions.
  * @typedef {Object} AuthContextType
- * @property {User} user - The authenticated user object.
+ * @property {import("../types/types").User | {}} user - The authenticated user object.
  * @property {Function} login - Function to perform user login.
  * @property {Function} logout - Function to perform user logout.
  */
@@ -59,18 +49,29 @@ export const useAuthProvider = () => {
  */
 // eslint-disable-next-line react/prop-types
 export default function AuthProvider({ children }) {
-  const { storeValue, readValue } = useLocalStorageHook();
   const { SignUserOut } = AuthLogic();
 
-  const [user, setUser] = useState(readValue(AUTH_STORAGE_KEYS.USER));
+  const { createCookie, readCookie, deleteCookie } = useCookieStorageHook();
+  const getUserFromCookie = () => {
+    try {
+      const cookieData = readCookie(AUTH_STORAGE_KEYS.USER);
+      return cookieData ? JSON.parse(cookieData) : null;
+    } catch (error) {
+      console.error("Failed to parse user data:", error);
+      return null;
+    }
+  }
+
+  const [user, setUser] = useState(getUserFromCookie());
 
   /**
    * Simulates user login action.
    * In a real implementation, this function would handle authentication logic.
-   * @param {User} userObject 
+   * @param {import("../types/types").User} userObject 
    */
   const login = (userObject) => {
-    storeValue(AUTH_STORAGE_KEYS.USER, userObject);
+    //save the state token so that we can later check for it;
+    createCookie(AUTH_STORAGE_KEYS.USER, JSON.stringify(userObject), 1, "/");
     setUser(userObject);
   };
 
@@ -79,7 +80,7 @@ export default function AuthProvider({ children }) {
    * In a real implementation, this function would handle logout logic.
    */
   const logout = () => {
-    storeValue(AUTH_STORAGE_KEYS.USER, null);
+    deleteCookie(AUTH_STORAGE_KEYS.USER)
     setUser(null); // Clear authenticated user
     SignUserOut(); // Sign user out of firebase
   };

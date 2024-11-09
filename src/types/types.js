@@ -7,6 +7,15 @@ import React from 'react'
  */
 
 /**
+ * @typedef {Object} User
+ * @property {string} displayName 
+ * @property {string} photoURL 
+ * @property {string} [uid] 
+ * @property {string} [email] 
+ * 
+ */
+
+/**
  * @typedef {Object} Assignee
  * @property {string} name - 
  * @property {string} assignee 
@@ -55,8 +64,6 @@ import React from 'react'
  * 
  * @typedef {Array<Task>} Tasks
  */
-
-
 /**
  * 
  * @typedef {Object} customFieldsPayload

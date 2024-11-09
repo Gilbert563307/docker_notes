@@ -12,8 +12,10 @@ export default function Column({
 }) {
 
 
-
   // Filter items based on `filter_on_status` for display
+  /**
+   * @type {import("../../types/types").Tasks}
+   */
   const filteredContent = content.filter((item) => item.status === filter_on_status);
 
   return (

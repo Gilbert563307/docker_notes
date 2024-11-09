@@ -1,12 +1,10 @@
 import React from 'react';
 import { ALERT_TYPES } from '../view/components/bs5/BS5Alert';
 import { DEFAULT_PROJECT_ID, DEFAULT_TASKS_ARCHIVE, MAX_BOARD_ITEMS, PRIORITY_FILTER_TYPE_TAGS, STATUS_FILTER_TYPE_TAGS, TASKS_ARCHIVED_SESSION_FILTER, TASKS_PATH, TASKS_PRIORITY, TASKS_STATUS } from '../config';
-// import useHelpers from '../helpers/useHelpers';
 import { useAuthProvider } from '../context/AuthProvider';
 import useHelpers from '../helpers/useHelpers';
 import DataHandler from './DataHandler';
 import { Query } from 'firebase/firestore';
-import { tasks } from '../tests/test';
 
 
 export default function TasksLogic() {
@@ -39,7 +37,6 @@ export default function TasksLogic() {
         deleteDoc,
         uploadBytes,
     } = DataHandler({ table: "tasks" });
-
 
     /**
  * Creates a new task with default values if not provided in the payload.
@@ -225,7 +222,6 @@ export default function TasksLogic() {
 
             const statusFilters = getActiveStatusFilters();
             const priorityFilters = getActivePriorityFilters();
-
 
             let queryItems = [
                 where("user_uid", "==", userUid),

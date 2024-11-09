@@ -70,10 +70,12 @@ export default function CollectListBoard() {
     const task = items.find((item) => item.id === draggingId);
     if (task === undefined) return;
     // Call updateTask with the updated item
-    setTimeout(function () {
+    const timeOutId = setTimeout(function () {
       updateTask(task);
     }, 1000);
 
+    // Clear timeout if needed
+    return () => clearTimeout(timeOutId);
   };
 
 

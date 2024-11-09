@@ -3,9 +3,7 @@ import TasksLogic from '../model/TasksLogic';
 import NotificationV3 from '../view/components/notifications/NotificationV3';
 import useBS5PreloaderHook from '../hooks/useBS5PreloaderHook';
 import { Outlet } from 'react-router-dom';
-import useHelpers from '../helpers/useHelpers';
 import { ALERT_ACTIONS, ALERT_TYPES } from '../view/components/bs5/BS5Alert';
-import { MAX_BOARD_ITEMS } from '../config';
 
 
 /**
@@ -46,7 +44,6 @@ export const BOARD_CONTROLLER_ACTIONS = {
     SET_NOTIFICATION: "SET_NOTIFICATION,"
 };
 
-
 /**
  * @typedef {Object} ContextValue
  * @property {InitialState} state - Current state.
@@ -60,7 +57,6 @@ const boardsControllerContext = createContext(
         dispatch: () => { },
     })
 );
-
 
 /**
  * Custom hook to use the BoardsController context.
@@ -79,8 +75,6 @@ export const useBoardsControllerContext = () => {
 
 export default function BoardsController() {
     const { createTask, listBoardTasks, updateTask, } = TasksLogic();
-    const { getCurrentPageNumber } = useHelpers();
-
 
     //import the methods and loader component from our custom component
     const { showLoader, closeLoader, PreloaderComponent } = useBS5PreloaderHook();
@@ -119,8 +113,6 @@ export default function BoardsController() {
         }
     };
 
-
-
     // Defining the state and the dispatchAction using the useReducer hook
     const [state, dispatchAction] = useReducer(reducer, initialState);
 
@@ -139,7 +131,6 @@ export default function BoardsController() {
         // Clear timeout if needed
         return () => clearTimeout(timeoutId);
     };
-
 
     /**
      * Sets error to the state and dispatches notification.
@@ -182,9 +173,9 @@ export default function BoardsController() {
     }
 
     /**
- * 
- * @param {import("../types/types").Task} payload 
- */
+     * 
+     * @param {import("../types/types").Task} payload 
+     */
     const collectUpdateBoardTask = async (payload) => {
         try {
             const tbuTask = await updateTask(payload);

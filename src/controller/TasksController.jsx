@@ -137,11 +137,21 @@ export default function TasksController() {
   // Defining the state and the dispatchAction using the useReducer hook
   const [state, dispatchAction] = useReducer(reducer, initialState);
 
+  /**
+   * 
+   * @param {import("../types/types").Notification} object 
+   * @returns 
+   */
   const setNotificationToState = (object) => {
+    if (object.message === "") return;
+
     // Set the message
     dispatchAction({
       type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: object,
+      payload: {
+        message: object.message,
+        type: object.type
+      },
     });
 
     // Remove message after 5 seconds
@@ -199,7 +209,7 @@ export default function TasksController() {
       const taskCreated = await createTask(payload);
 
       // Update state with the created task response
-      setNotificationToState(taskCreated)
+      setNotificationToState(taskCreated);
 
       //reftech tasks afte creating one
       //TODO get state and remogve that task with that uuid no need to refesh or make all to api
@@ -329,17 +339,15 @@ export default function TasksController() {
     }
   }
 
-
-  const collectDownloadTask = (payload) => {
+  const collectDownloadTask = async (payload) => {
     try {
-      const downloaded = convertHtmlToDocx(payload);
+      const downloaded = await convertHtmlToDocx(payload);
       setNotificationToState(downloaded);
     } catch (error) {
       setErrorToState(error);
 
     }
   }
-
 
   /**
   * Dispatches actions based on the specified type and payload.

@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { Show } from '../components/custom/Show';
 import BS5Modal, { MODAL_SIZES } from '../components/bs5/BS5Modal';
 import { BOARD_CONTROLLER_ACTIONS, useBoardsControllerContext } from '../../controller/BoardsController';
-import { useAuthProvider } from '../../context/AuthProvider';
 import { ALERT_TYPES } from '../components/bs5/BS5Alert';
 
+
 export default function CreateCardButton({ header }) {
-    const { user } = useAuthProvider();
     const { dispatch } = useBoardsControllerContext();
     const [createModal, setcreateModal] = useState(false);
 

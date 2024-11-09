@@ -5,6 +5,7 @@ import {
     signInWithPopup,
     signOut,
 } from "firebase/auth";
+import { SHA256 } from 'crypto-js';
 
 export default function AuthLogic() {
 
@@ -28,11 +29,12 @@ export default function AuthLogic() {
                 type: ALERT_TYPES.SUCCESS,
                 message: 'Failed to login with Google',
             };
-                
+
+            const hashed_uid = SHA256(auth.currentUser.uid).toString();    
             return {
                 login: true,
                 user: {
-                    uid: auth.currentUser.uid,
+                    uid: hashed_uid,
                     displayName: auth.currentUser.displayName || "",
                     email: auth.currentUser.email || "",
                     photoURL: auth.currentUser.photoURL || "",

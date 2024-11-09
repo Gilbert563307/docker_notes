@@ -3,7 +3,6 @@ import Quill from 'quill';
 import "quill/dist/quill.snow.css";
 import "../../../assets/css/components/texteditor/QuilTextEditor.css";
 
-
 // Register 'Poppins' font with Quill
 const Font = Quill.import('formats/font');
 Font.whitelist = ['sans-serif', 'serif', 'monospace', 'Poppins'];

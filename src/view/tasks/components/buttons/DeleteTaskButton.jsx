@@ -37,7 +37,7 @@ export default function DeleteTaskButton({ taskId }) {
                     <BS5Modal
                         modal_id="archive_tasks_modal"
                         modal_label="archive_tasks_modal"
-                        modal_title="Are you sure you want to archive this task ?"
+                        modal_title="Are you sure you want to delete this task ?"
                         modal_content={modalContent}
                         showSaveChanges={true}
                         modal_footer={true}
@@ -45,7 +45,7 @@ export default function DeleteTaskButton({ taskId }) {
                         closeModal={hideModal}
                         saveChangesFunction={deleteTask}
                         modalSize={MODAL_SIZES.NONE}
-                        saveChangesTitle="Archive"
+                        saveChangesTitle="Delete"
                     />
                 </Show.When>
             </Show>

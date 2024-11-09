@@ -78,3 +78,5 @@ export const PRIORITY_FILTER_TYPE_TAGS = [
 ];
 
 
+//LANDING PAGE router
+export const LANDING_PAGE_ROUTE = "/board";
