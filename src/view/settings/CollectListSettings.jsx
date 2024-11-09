@@ -25,6 +25,21 @@ export default function CollectListSettings() {
             </div>
           </div>
         </div>
+
+        <div className="card" >
+          <div className="card-body">
+            <h5 className="card-title">Report a Bug or Suggest an Improvement</h5>
+
+            <p className="card-text">
+              Found a bug or have a suggestion to make our app even better?
+              Feel free to send an email to:
+            </p>
+
+            <a href="mailto:app.development759@gmail.com" className="card-link">
+              app.development759@gmail.com
+            </a>
+          </div>
+        </div>
       </div>
     </article>
   )

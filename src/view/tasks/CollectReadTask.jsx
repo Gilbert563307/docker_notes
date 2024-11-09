@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "../../assets/css/views/tasks/CollectReadTask.css";
 import useHtmlCssHelpers from "../../helpers/useHtmlCssHelpers";
 import QuilTextEditor from "../components/texteditor/QuilTextEditor";
@@ -38,7 +38,15 @@ export default function CollectReadTask() {
           </div>
         </div>
         <div>
-          <div>{getStatusButton(task.status)}</div>
+          <div className="read-task-actions">
+            <div>{getStatusButton(task.status)}</div>
+            <div>
+              <Link to={`/tasks/update/${task.id}`}>
+                <i className="fa-sharp fa-light fa-pencil"></i> Change
+              </Link>
+            </div>
+          </div>
+
 
           <div className="tasks-deatils-div border rounded">
             <div className="tasks-deatils-div-details-header">

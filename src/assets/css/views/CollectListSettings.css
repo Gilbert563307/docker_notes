@@ -7,6 +7,6 @@
     padding-left: 0;
 }
 
-.notification{
+.notification, .card{
     margin: 1em;
 }
