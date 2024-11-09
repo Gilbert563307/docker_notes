@@ -2,7 +2,6 @@ import React, { createContext, useContext  } from 'react';
 
 /**
  * @typedef {Object} InitialState
- * @property {string} themeMode - The current theme mode, either 'LIGHT' or 'DARK'.
  * @property {Function} darkTheme - Function to set the theme mode to dark.
  * @property {Function} lightTheme - Function to set the theme mode to light.
  */
@@ -17,13 +16,11 @@ export const THEME_MODES = {
     DARK: "dark",
   };
   
-
 /**
  * Initial state for the ThemeContext.
  * @type {InitialState}
  */
 export const initialState = {
-    themeMode: THEME_MODES.LIGHT,
     darkTheme: () => {},
     lightTheme: () => {},
 };

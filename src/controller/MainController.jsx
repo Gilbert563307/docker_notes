@@ -1,8 +1,7 @@
-import React, { createContext, useMemo, useState, useContext, useEffect } from 'react';
+import React, { createContext, useMemo, useState, useContext } from 'react';
 import DefaultLayout from '../view/layout/DefaultLayout';
 import { useAuthProvider } from '../context/AuthProvider';
 import GuestLayout from '../view/layout/GuestLayout';
-import { auth } from '../database/firebaseConfig';
 import { ThemeContext } from '../context/ThemeContext';
 import ThemeLogic from '../model/ThemeLogic';
 
@@ -58,12 +57,6 @@ export default function MainController() {
   const { darkTheme, lightTheme } = ThemeLogic();
 
   const [title, setTitle] = useState("");
-
-
-  //TODO REMOVE 
-  // useEffect(() => {
-  //   // console.log(`MainController: Dev`, auth);
-  // }, [auth]); // Log auth on component mount
 
   const contextValue = useMemo(() => ({ title, setTitle }), [title, setTitle]);
 

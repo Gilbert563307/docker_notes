@@ -42,7 +42,7 @@ export default function ThemeLogic() {
     /**
      * Sets the theme to dark mode.
      */
-    const darkTheme = () => {
+    function darkTheme() {
         const mode = THEME_MODES.DARK;
         removeExistingThemeClasses();
         setTheModeToHtml(mode);
@@ -51,7 +51,7 @@ export default function ThemeLogic() {
     /**
      * Sets the theme to light mode.
      */
-    const lightTheme = () => {
+    function lightTheme() {
         const mode = THEME_MODES.LIGHT;
         removeExistingThemeClasses();
         setTheModeToHtml(mode);
