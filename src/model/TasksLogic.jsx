@@ -30,12 +30,9 @@ export default function TasksLogic() {
         doc,
         db,
         table,
-        ref,
-        storage,
         updateDoc,
         getDoc,
         deleteDoc,
-        uploadBytes,
     } = DataHandler({ table: "tasks" });
 
     /**
@@ -213,9 +210,30 @@ export default function TasksLogic() {
 
     /**
      * 
+     * @param {string} fieldName 
+     * @param {string} searchText 
+     * @returns {Array}
+     */
+    const getSearchQueryByFieldName = (fieldName, searchText) => {
+        try {
+            if (!searchText) return [];
+
+            const startText = searchText;
+            const endText = startText + '\uf8ff';
+
+            return [where(fieldName, '>=', startText), where(fieldName, '<=', endText)]
+
+        } catch (error) {
+            console.log(`[getSearchQuery]: ${error.message}`);
+            return []
+        }
+    }
+
+    /**
+     * @param {{searchTearm?: string}} payload
      * @returns {{queryItems: Array<Query> | Array, message: string, type: number}}
      */
-    const getTasksQueryClauses = () => {
+    const getTasksQueryClauses = (payload = {}) => {
         try {
             // Get the session archived filter
             const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
@@ -234,6 +252,11 @@ export default function TasksLogic() {
 
             if (priorityFilters.filters.length > 0) {
                 queryItems = [...queryItems, where("priority", "in", priorityFilters.filters)];
+            }
+
+            if (payload.searchTearm && payload.searchTearm != "") {
+                const { searchTearm } = payload;
+                queryItems = [...queryItems, ...getSearchQueryByFieldName("title", searchTearm)];
             }
 
             return {
@@ -256,11 +279,11 @@ export default function TasksLogic() {
 
 
     /**
- * Generates a Firestore query to fetch tasks for the current page.
- * 
- * @param {{currentPage: number, itemsPerPage?: number }} payload - The current page number for pagination.
- * @returns {Promise<{tasksQuery: Query | null, message: string, type: number}>} The Firestore query to fetch tasks for the specified page.
- */
+    * Generates a Firestore query to fetch tasks for the current page.
+    * 
+    * @param {{currentPage: number, itemsPerPage?: number, searchTearm?: string }} payload - The current page number for pagination.
+    * @returns {Promise<{tasksQuery: Query | null, message: string, type: number}>} The Firestore query to fetch tasks for the specified page.
+    */
     const getTasksQuery = async (payload) => {
         try {
             // Destructure the vars
@@ -268,8 +291,7 @@ export default function TasksLogic() {
 
             // Get the number of items to be displayed per page
             const itemsPerPage = getTheCurrentItemsPerPage();
-
-            const { queryItems } = getTasksQueryClauses();
+            const { queryItems } = getTasksQueryClauses(payload);
 
             // If the current page is the first page, create a query limited by the items per page
             if (currentPage === 1) {
@@ -355,12 +377,31 @@ export default function TasksLogic() {
 
 
     /**
+     * 
+     * @param {{currentPage: number, searchTearm: string}} payload 
+     * @returns {Promise<{results: import("../types/types").ListTasks | {},  message: string, type: number }>} 
+     */
+    const listTasksBySearchTerm = async (payload) => {
+        try {
+            return await listTasks(payload);
+        } catch (error) {
+            console.log(`[listTasksBySearchTerm]: ${error.message}`);
+            return {
+                results: { tasks: [], total: 0, pages: 0 },
+                message: error.message,
+                type: ALERT_TYPES.DANGER
+            };
+        }
+    }
+
+
+    /**
     * Fetches a list of tasks for the current user.
     *
     * This function queries the Firestore collection to retrieve tasks associated with the current user's UID,
     * with a limit on the number of items per page. It includes the document ID in the task data and handles
     * potential errors during the fetch process.
-    * @param {{ currentPage: number, itemsPerPage?: number}} payload
+    * @param {{ currentPage: number, itemsPerPage?: number, searchTearm?: string}} payload
     * @returns {Promise<{results: import("../types/types").ListTasks | {},  message: string, type: number }>} A promise that resolves to an object containing the fetched tasks, a message, and an alert type.
      */
     const listTasks = async (payload) => {
@@ -558,30 +599,5 @@ export default function TasksLogic() {
         }
     }
 
-    //WE CANNOT UPLOAD IMAGES BECAUSE THEN YOU NEED TO PAY FOR GOOGLE FIREBASE
-    /**
-     * 
-     * @param {File} payload 
-     *@returns {Promise<{ uploaded: boolean, message: string, type: number }>}  
-     */
-    const uploadTemporaryImageToServer = async (payload) => {
-        try {
-            const location = `temp_images/${userUid}`;
-            const temporaryImageFolderRef = ref(storage, location);
-
-            const uploaded = await uploadBytes(temporaryImageFolderRef, payload);
-            return {
-                uploaded: Boolean(uploaded),
-                message: "Your image has been successfully uploaded temporarily.",
-                type: ALERT_TYPES.SUCCESS
-            }
-        } catch (error) {
-            return {
-                uploaded: false,
-                message: error.message,
-                type: ALERT_TYPES.DANGER
-            }
-        }
-    }
-    return { createTask, listTasks, updateTask, readTask, archiveTask, deleteTask, listBoardTasks };
+    return { createTask, listTasks, updateTask, readTask, archiveTask, deleteTask, listBoardTasks, listTasksBySearchTerm };
 }

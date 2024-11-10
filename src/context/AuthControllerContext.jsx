@@ -14,23 +14,20 @@ export const initialState = {
 };
 
 /**
- * Context for managing state and actions within the AuthController.
+ * @typedef {Object} AuthControllerContext
+ * @property {InitialState} state - The current state of the auth controller.
+ * @property {(action: { type: string, payload?: any }) => void} dispatch - Function to dispatch actions.
  */
-/**
- * @typedef {React.Context} AuthControllerContext
- * @property {InitialState} state
- * @property {(object: {type: string, payload?: any} ) => void} dispatch
- */
-const AuthControllerContext = createContext(
-     /** @type {AuthControllerContext} */ {
-        state: initialState,
-        dispatch: (action) => { },
-    }
-);
+
+/** @type {React.Context<AuthControllerContext>} */
+const AuthControllerContext = createContext({
+    state: initialState,
+    dispatch: (action) => { },
+});
 
 /**
  * Custom hook to access the AuthController context.
- * @returns {Object} AuthController context value.
+ * @returns {AuthControllerContext} AuthController context value.
  */
 export const useAuthControllerContext = () => {
     const authControllerContext = useContext(AuthControllerContext);

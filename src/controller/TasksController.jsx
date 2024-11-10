@@ -52,7 +52,8 @@ export const TASKS_CONTROLLER_ACTIONS = {
   DELETE: "DELETE",
   UPLOAD_TEMP_IMAGE: "UPLOAD_TEMP_IMAGE",
   DOWNLOAD_TASK: "DOWNLOAD_TASK",
-  SET_NOTIFICATION: "SET_NOTIFICATION,"
+  SET_NOTIFICATION: "SET_NOTIFICATION",
+  SEARCH_TASKS_BY_SEARCH_TERM: "SEARCH_TASKS_BY_SEARCH_TERM",
 };
 
 /**
@@ -89,7 +90,7 @@ export const useTasksControllerContext = () => {
  * @returns {JSX.Element} The TasksController component.
  */
 export default function TasksController() {
-  const { createTask, listTasks, updateTask, readTask, archiveTask, deleteTask } = TasksLogic();
+  const { createTask, listTasks, updateTask, readTask, archiveTask, deleteTask, listTasksBySearchTerm } = TasksLogic();
   const { convertHtmlToDocx } = FileLogic();
   const { getCurrentPageNumber } = useHelpers();
   const navigate = useNavigate();
@@ -345,7 +346,32 @@ export default function TasksController() {
       setNotificationToState(downloaded);
     } catch (error) {
       setErrorToState(error);
+    }
+  }
 
+  /**
+   * 
+   * @param {string} searchTearm 
+   */
+  const collectListTasksBySearchTerm = async (searchTearm) => {
+    try {
+      //get currentPageNumber
+      const currentPage = getCurrentPageNumber();
+      //create Payload
+      const payload = { currentPage: currentPage, searchTearm: searchTearm };
+
+      const tasks = await listTasksBySearchTerm(payload);
+      setNotificationToState(tasks);
+
+      // Update state with the created task response
+      dispatchAction({
+        type: REDUCER_ACTIONS.SET_TASKS,
+        payload: tasks.results,
+      });
+
+      // setNotificationToState(tasks);
+    } catch (error) {
+      setErrorToState(error);
     }
   }
 
@@ -387,6 +413,9 @@ export default function TasksController() {
           break;
         case TASKS_CONTROLLER_ACTIONS.DOWNLOAD_TASK:
           await collectDownloadTask(action?.payload);
+          break;
+        case TASKS_CONTROLLER_ACTIONS.SEARCH_TASKS_BY_SEARCH_TERM:
+          await collectListTasksBySearchTerm(action?.payload);
           break;
         case ALERT_ACTIONS.CLOSE_ALERT:
           closeAlert();

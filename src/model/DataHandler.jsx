@@ -15,6 +15,8 @@ import {
     startAfter,
     orderBy,
     getDoc,
+    startAt,
+    endAt,
 } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import { useAuthProvider } from "../context/AuthProvider";
@@ -96,5 +98,7 @@ export default function DataHandler({ table }) {
         db,
         table,
         getDoc,
+        startAt,
+        endAt,
     };
 }

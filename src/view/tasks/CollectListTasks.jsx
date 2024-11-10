@@ -6,6 +6,8 @@ import TasksTable from "./components/TasksTable";
 import { Link } from "react-router-dom";
 import BS5PaginationV2 from "../components/bs5/BS5PaginationV2";
 import FilterTasksButton from "./components/buttons/FilterTasksButton";
+import TasksSearchBar from "./components/TasksSearchBar";
+
 
 /**
  * CollectListTasks component
@@ -24,13 +26,7 @@ export default function CollectListTasks() {
     <article className="tasks-article d-flex flex-column gap-1">
       <div className="tasks-header d-flex justify-content-between">
         <div className="">
-          <input
-            type="text"
-            className="form-control disabled"
-            id="search_bar"
-            placeholder="Search tasks...."
-            disabled={true}
-          />
+         <TasksSearchBar></TasksSearchBar>
         </div>
         <div className="tasks-article-buttons">
           <div>

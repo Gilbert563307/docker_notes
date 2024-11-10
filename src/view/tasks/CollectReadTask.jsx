@@ -72,9 +72,10 @@ export default function CollectReadTask() {
 
           <div className="d-flex mt-2 border rounded">
             <div className="activity-header">
-              <span className="show-header">Show:</span>
+              <span className="show-header">Show</span>
               <span className="badge dialogic-badge">History</span>
-              <span className="badge dialogic-badge">Comments</span>
+              {/* think bout what to show of the tasks */}
+              {/* <span className="badge dialogic-badge">Comments</span> */}
             </div>
             <div>
 
