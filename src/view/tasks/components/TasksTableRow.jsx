@@ -45,7 +45,8 @@ export default function TasksTableRow({ task }) {
           <input
             className="form-check-input"
             type="checkbox"
-            id={`task-${task.id}}`}
+            // id={`task-${task.id}}`}
+            disabled={true}
           />
         </div>
       </th>

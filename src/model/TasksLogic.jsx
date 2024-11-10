@@ -441,12 +441,12 @@ export default function TasksLogic() {
     const listBoardTasks = async () => {
         try {
             // Get the session archived filter
-            const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
+            // const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
 
             const tasksQuery = query(
                 collectionRef,
                 where("user_uid", "==", userUid),
-                where("archived", "==", tasksArchived),
+                // where("archived", "==", tasksArchived),
                 orderBy("created_at", "desc"),
                 limit(MAX_BOARD_ITEMS)
             );
