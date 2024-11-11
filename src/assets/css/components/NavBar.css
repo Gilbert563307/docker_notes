@@ -40,6 +40,11 @@
     color: #4D4D4D;
 }
 
+.sign-out{
+    position: fixed;
+    bottom: 0;
+}
+
 
 .sign-out>li>a {
     color: #4D4D4D;
@@ -49,7 +54,6 @@
 nav {
     display: flex;
     flex-direction: column;
-    height: 90dvh;
     justify-content: space-between;
 }
 

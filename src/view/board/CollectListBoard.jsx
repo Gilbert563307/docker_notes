@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import "../../assets/css/views/board/CollectListBoard.css"
-import Column from './Column'
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import "../../assets/css/views/board/CollectListBoard.css";
+import Column from './Column';
 import useSetPageTitleHook from '../../hooks/useSetPageTitleHook';
 import useGetBoardTasksHook from '../../hooks/useGetBoardTasksHook';
 import { TASKS_BOARD_HEADERS } from '../../config';
 import { BOARD_CONTROLLER_ACTIONS } from '../../controller/BoardsController';
-
 
 /**
  * CollectListBoard component displays a board with columns to organize tasks.
@@ -19,6 +18,15 @@ export default function CollectListBoard() {
   const { tasks, dispatch } = useGetBoardTasksHook();
 
   /**
+ * Updates a task in the board state.
+ *
+ * @param {import("../../types/types").Task} payload - The task object to update.
+ */
+  const updateTask = useCallback((payload) => {
+    dispatch({ type: BOARD_CONTROLLER_ACTIONS.UPDATE, payload });
+  }, [dispatch]);
+
+  /**
   * @type {string}
   * Stores the ID of the currently dragged item.
   */
@@ -30,13 +38,15 @@ export default function CollectListBoard() {
   */
   const [items, setItems] = useState([]);
 
+  // Ref to store the timeout ID for cleanup
+  const timeoutRef = useRef(null);
+
   // Sync `items` with `tasks` when `tasks` is updated
   useEffect(() => {
     if (Array.isArray(tasks) && tasks.length > 0) {
       setItems(tasks);
     }
   }, [tasks]);
-
 
   /**
   * Handles the start of a drag operation and stores the dragged item's ID.
@@ -48,51 +58,51 @@ export default function CollectListBoard() {
   };
 
   /**
- * Updates the status of the dragged item when dropped into a new column.
- *
- * @param {number} newStatus - The new status of the dragged item.
- */
-  const handleDragEnter = (newStatus) => {
+   * Updates the status of the dragged item when dropped into a new column.
+   *
+   * @param {number} newStatus - The new status of the dragged item.
+   */
+  const handleDragEnter = useCallback((newStatus) => {
     setItems((prevItems) =>
       prevItems.map((item) => {
         // Check if the current item is the one being dragged
         if (item.id === draggingId) {
-          // Create a new item with the updated status
-          const updatedItem = { ...item, status: newStatus };
-
-          // Return the updated item
-          return updatedItem;
+          // Return the updated item with new status
+          return { ...item, status: newStatus };
         }
         // Return the unchanged item
         return item;
       })
     );
-    const task = items.find((item) => item.id === draggingId);
-    if (task === undefined) return;
-    // Call updateTask with the updated item
-    const timeOutId = setTimeout(function () {
-      updateTask(task);
+
+    // Clear any existing timeout to prevent duplicate calls
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Create a task update payload with the dragged item and new status
+    const updatedTask = { id: draggingId, status: newStatus };
+
+    // Set a new timeout to call updateTask with the updated task
+    timeoutRef.current = setTimeout(() => {
+      updateTask(updatedTask);
     }, 1000);
 
-    // Clear timeout if needed
-    return () => clearTimeout(timeOutId);
-  };
+    // Cleanup timeout on unmount
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [draggingId, updateTask]); // Dependencies needed for handleDragEnter
 
 
-  /**
-   * Updates a task in the board state.
-   *
-   * @param {import("../../types/types").Task} payload - The task object to update.
-   */
-  const updateTask = (payload) => {
-    dispatch({ type: BOARD_CONTROLLER_ACTIONS.UPDATE, payload: payload });
-  };
 
   return (
     <div className="main-board">
       <div className="main-columns">
-        {TASKS_BOARD_HEADERS.map((header) => {
-          return <Column
+        {TASKS_BOARD_HEADERS.map((header) => (
+          <Column
             key={header.id}
             header={header}
             content={items}
@@ -100,9 +110,8 @@ export default function CollectListBoard() {
             handleDragStart={handleDragStart}
             filter_on_status={header.status}
           />
-        })}
+        ))}
       </div>
     </div>
   );
-
 }

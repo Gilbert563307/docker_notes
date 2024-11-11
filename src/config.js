@@ -31,6 +31,9 @@ export const TASKS_STATUS = {
     COMPLETED: 2,
 }
 
+/**
+ * @type {import("./types/types").TaskBoardHeaders}
+ */
 export const TASKS_BOARD_HEADERS = [
     { id: 1, name: "Todo", status: TASKS_STATUS.TODO, },
     { id: 2, name: "Doing", status: TASKS_STATUS.IN_PROGRESS },

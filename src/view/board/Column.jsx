@@ -1,8 +1,17 @@
 import React from 'react';
-import BS5TruncateSpan from '../components/bs5/BS5TruncateSpan';
 import { Link } from 'react-router-dom';
 import CreateCardButton from './CreateCardButton';
 
+/**
+ * 
+ * @param {Object} props 
+ * @param {import("../../types/types").TaskBoardHeader} props.header
+ * @param {import("../../types/types").Tasks | []} props.content
+ * @param {number} props.filter_on_status
+ * @param {import('react').DragEventHandler<HTMLDivElement>} props.onDragEnter
+ * @param {Function} props.handleDragStart
+ * @returns {JSX.Element}
+ */
 export default function Column({
   header,
   content = [],

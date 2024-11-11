@@ -16,8 +16,11 @@ const TOOLBAR_OPTIONS = [
     ["bold", "italic", "underline", "strike"],
     [{ color: [] }, { background: [] }],
     [{ script: "sub" }, { script: "super" }],
+    [{ 'indent': '-1' }, { 'indent': '+1' }],          // outdent/indent
+    [{ 'direction': 'rtl' }],
+    [{ 'size': [] }],
     [{ align: [] }],
-    ["image", "blockquote", "code-block"],
+    ["image", "blockquote", "code-block", 'link', 'video'],
     ["clean"],
 ];
 

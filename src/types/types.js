@@ -82,6 +82,19 @@ import React from 'react'
  */
 
 
+/**
+ * @typedef {Object} TaskBoardHeader
+ * @property {number} id
+ * @property {string} name
+ * @property {number} status
+ */
+
+/**
+ * 
+ * @typedef {Array<TaskBoardHeader>} TaskBoardHeaders 
+ */
+
+
 export default function types() {
     return null;
 }
