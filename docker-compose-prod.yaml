@@ -1,9 +1,9 @@
 version: "3"
 
 services:
-  app:
+  react-vite-app:
     build:
-      context: .
+      context: ./frontend
       dockerfile: Dockerfile.prod
       args:
           NODE_ENV: ${NODE_ENV}

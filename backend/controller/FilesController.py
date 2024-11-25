@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 import os
-from .dependencies import get_token_header
+from .dependencies import get_query_token
 from typing import List
 from werkzeug.utils import secure_filename
 from config.constants import (
@@ -13,7 +13,7 @@ from model.FilesLogic import FilesLogic
 files_router = APIRouter(
     prefix="/files",
     tags=["files"],
-    dependencies=[Depends(get_token_header)],
+    dependencies=[Depends(get_query_token)],
     responses={404: {"description": "Not found"}},
 )
 
