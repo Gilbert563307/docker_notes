@@ -6,14 +6,33 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
       args:
-          NODE_ENV: ${NODE_ENV}
-          VITE_APP_FIREBASE_API_KEY: ${VITE_APP_FIREBASE_API_KEY}
-          VITE_APP_FIREBASE_AUTH_DOMAIN: ${VITE_APP_FIREBASE_AUTH_DOMAIN}
-          VITE_APP_FIREBASE_PROJECT_ID: ${VITE_APP_FIREBASE_PROJECT_ID}
-          VITE_APP_FIREBASE_STORAGE_BUCKET: ${VITE_APP_FIREBASE_STORAGE_BUCKET}
-          VITE_APP_FIREBASE_MESSAGING_SENDER_ID: ${VITE_APP_FIREBASE_MESSAGING_SENDER_ID}
-          VITE_APP_FIREBASE_APP_ID: ${VITE_APP_FIREBASE_APP_ID}
-          VITE_APP_FIREBASE_MEASUREMENT_ID: ${VITE_APP_FIREBASE_MEASUREMENT_ID}
+        NODE_ENV: ${NODE_ENV}
+        VITE_APP_FIREBASE_API_KEY: ${VITE_APP_FIREBASE_API_KEY}
+        VITE_APP_FIREBASE_AUTH_DOMAIN: ${VITE_APP_FIREBASE_AUTH_DOMAIN}
+        VITE_APP_FIREBASE_PROJECT_ID: ${VITE_APP_FIREBASE_PROJECT_ID}
+        VITE_APP_FIREBASE_STORAGE_BUCKET: ${VITE_APP_FIREBASE_STORAGE_BUCKET}
+        VITE_APP_FIREBASE_MESSAGING_SENDER_ID: ${VITE_APP_FIREBASE_MESSAGING_SENDER_ID}
+        VITE_APP_FIREBASE_APP_ID: ${VITE_APP_FIREBASE_APP_ID}
+        VITE_APP_FIREBASE_MEASUREMENT_ID: ${VITE_APP_FIREBASE_MEASUREMENT_ID}
+        VITE_APP_BACKEND_SECRET_TOKEN: ${VITE_APP_BACKEND_SECRET_TOKEN}
+      environment:
+        - BACKEND_URL=http://fastapi-backend:8000
+      depends_on:
+        - fastapi-backend
+
+  #Needs testing
+  fastapi-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    environment:
+      - ENV=production
+    restart: unless-stopped
+    expose:
+      - "8000"
+    volumes:
+      - fastapi_data:/app/data
+
   caddy:
     image: caddy:latest
     restart: unless-stopped
@@ -31,4 +50,4 @@ services:
 volumes:
   caddy_data:
   caddy_config:
-
+  fastapi_data:
