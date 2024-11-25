@@ -20,7 +20,7 @@ const TOOLBAR_OPTIONS = [
     [{ 'direction': 'rtl' }],
     [{ 'size': [] }],
     [{ align: [] }],
-    ["image", "blockquote", "code-block", 'link', 'video'],
+    ["image", "blockquote", "code-block", 'link'],
     ["clean"],
 ];
 
