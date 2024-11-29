@@ -21,6 +21,8 @@ import SettingsController from './SettingsController';
 import CollectListSettings from '../view/settings/CollectListSettings';
 import CollectListBoard from '../view/board/CollectListBoard';
 import BoardsController from './BoardsController';
+import DriveController from './DriveController';
+import CollectListDriveFiles from '../view/files/CollectListDriveFiles';
 
 
 const router = createBrowserRouter([
@@ -82,6 +84,21 @@ const router = createBrowserRouter([
                         element: <CollectUpdateTask />,
                     }
                 ],
+            },
+            {
+                path: "/drive",
+                element: (
+                    <ProtectedRoute>
+                        <DriveController />
+                    </ProtectedRoute>
+                ),
+                children: [
+                    {
+                        index: true,
+                        path: "",
+                        element: <CollectListDriveFiles />,
+                    },
+                ]
             },
             {
                 path: "/auth",

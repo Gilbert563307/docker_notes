@@ -252,7 +252,7 @@ export default function BoardsController() {
                     return;
                 default:
                     console.log(
-                        `TasksController: No action type found ${action.type}`
+                        `BoardsController: No action type found ${action.type}`
                     );
                     return;
             }
@@ -260,7 +260,7 @@ export default function BoardsController() {
             // Close loader in case of error
             closeLoader();
             setErrorToState(error);
-            console.log(`TasksController: error ${error}`);
+            console.log(`BoardsController: error ${error}`);
         } finally {
             // Close loader after action processing
             closeLoader();

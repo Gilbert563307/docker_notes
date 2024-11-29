@@ -94,6 +94,18 @@ import React from 'react'
  * @typedef {Array<TaskBoardHeader>} TaskBoardHeaders 
  */
 
+/**
+ * @typedef {Object} DriveFile
+ * @property {number} id
+ * @property {string} name
+ */
+
+/**
+ * 
+ * @typedef {Array<DriveFile>} DriveFiles 
+ */
+
+
 
 export default function types() {
     return null;

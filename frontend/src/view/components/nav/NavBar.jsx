@@ -25,6 +25,7 @@ export default function NavBar() {
     const items = [
         { name: "Board", url: "/board", icon: "fa-regular fa-clapperboard" },
         { name: "Tasks", url: "/tasks", icon: "fa-regular fa-notebook" },
+        { name: "Drive", url: "/drive", icon: "fa-duotone fa-regular fa-hard-drive" },
         { name: "Settings", url: "/settings", icon: "fa-regular fa-gear" },
     ];
 
@@ -44,7 +45,7 @@ export default function NavBar() {
                         </li>
                     );
                 })}
-                
+
             </ul>
             <ul className="sign-out">
                 <li>
