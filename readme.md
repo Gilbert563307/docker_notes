@@ -1,3 +1,7 @@
+### Debelopment Setup Guide
+1.docker-compose -f "docker-compose-dev.yaml" build
+2.docker-compose -f "docker-compose-dev.yaml" up
+
 
 ### Production Setup Guide
 
