@@ -3,11 +3,12 @@ import useBS5PreloaderHook from '../hooks/useBS5PreloaderHook';
 import { ALERT_ACTIONS, ALERT_TYPES } from '../view/components/bs5/BS5Alert';
 import NotificationV3 from '../view/components/notifications/NotificationV3';
 import { Outlet } from 'react-router-dom';
+import FilesLogic from '../model/FilesLogic';
 
 /**
  * @typedef {Object} InitialState
  * @property {import("../types/types").DriveFile | Object} file - The current task.
- * @property {import("../types/types").DriveFiles | []} files - The list of tasks.
+ * @property { {files: import("../types/types").DriveFiles | [], total: number, pages: number} } files - The list of tasks.
  * @property {Object} notification - The notification object.
  * @property {string} notification.message - The notification message.
  * @property {number} notification.type - The notification type.
@@ -19,7 +20,7 @@ import { Outlet } from 'react-router-dom';
  */
 const initialState = {
     file: {},
-    files: [],
+    files: { files: [], total: 0, pages: 0 },
     notification: { message: "", type: 0 },
 };
 
@@ -73,6 +74,7 @@ export default function DriveController() {
 
     //import the methods and loader component from our custom component
     const { showLoader, closeLoader, PreloaderComponent } = useBS5PreloaderHook();
+    const { listFiles } = FilesLogic();
 
     const REDUCER_ACTIONS = {
         SET_FILES: "SET_FILES", //Action type for setting multiple task's.
@@ -145,6 +147,27 @@ export default function DriveController() {
         });
     };
 
+
+    const collectListFiles = async () => {
+        try {
+
+            const files = await listFiles();
+
+            // Update state with the created task response
+            dispatchAction({
+                type: REDUCER_ACTIONS.SET_FILES,
+                payload: files.results,
+            });
+
+            dispatchAction({
+                type: REDUCER_ACTIONS.SET_FILE,
+                payload: {},
+            });
+        } catch (error) {
+            setErrorToState(error)
+        }
+    }
+
     /**
    * Dispatches actions based on the specified type and payload.
    * @param {{ type: string; payload?: any; }} action - The action object containing type and payload.
@@ -160,6 +183,9 @@ export default function DriveController() {
 
             // Handle different action types
             switch (action.type) {
+                case DRIVE_CONTROLLER_ACTIONS.LIST:
+                    await collectListFiles();
+                    return;
 
                 case ALERT_ACTIONS.CLOSE_ALERT:
                     closeAlert();

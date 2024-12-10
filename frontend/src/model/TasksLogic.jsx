@@ -33,6 +33,8 @@ export default function TasksLogic() {
         updateDoc,
         getDoc,
         deleteDoc,
+        getSearchQueryByFieldName,
+        convertQuerySnapShotDocs,
     } = DataHandler({ table: "tasks" });
 
     /**
@@ -208,26 +210,7 @@ export default function TasksLogic() {
         }
     }
 
-    /**
-     * 
-     * @param {string} fieldName 
-     * @param {string} searchText 
-     * @returns {Array}
-     */
-    const getSearchQueryByFieldName = (fieldName, searchText) => {
-        try {
-            if (!searchText) return [];
 
-            const startText = searchText;
-            const endText = startText + '\uf8ff';
-
-            return [where(fieldName, '>=', startText), where(fieldName, '<=', endText)]
-
-        } catch (error) {
-            console.log(`[getSearchQuery]: ${error.message}`);
-            return []
-        }
-    }
 
     /**
      * @param {{searchTearm?: string}} payload
@@ -339,42 +322,6 @@ export default function TasksLogic() {
         }
     }
 
-    const convertQuerySnapShotDocs = (querySnapshot) => {
-        try {
-            // Map through the query snapshot to add the document ID to each task.
-            const results = querySnapshot.docs.map((document) => {
-                const convertedCreatedAt = convertTimeStampToDate({
-                    seconds: document.data().created_at.seconds,
-                    nanoseconds: document.data().created_at.nanoseconds,
-                });
-
-                const convertedUpdatedAt = convertTimeStampToDate({
-                    seconds: document.data().updated_at.seconds,
-                    nanoseconds: document.data().updated_at.nanoseconds,
-                });
-                return {
-                    ...document.data(),
-                    id: document.id,
-                    created_at: convertedCreatedAt,
-                    updated_at: convertedUpdatedAt,
-                }
-            });
-            return {
-                results: results,
-                message: "",
-                type: ALERT_TYPES.SUCCESS
-            };
-        } catch (error) {
-            console.log(`[convertQuerySnapShotDocs]: ${error.message}`);
-            return {
-                results: [],
-                message: error.message,
-                type: ALERT_TYPES.DANGER
-            };
-        }
-    }
-
-
 
     /**
      * 
@@ -418,7 +365,7 @@ export default function TasksLogic() {
             const totalRecords = await getTotalTasksInDatabaseByUserAndFilters();
             //get total pages for paginartion
             const totalPages = getTotalPages(totalRecords);
-            //retutn results
+            //return results
             return {
                 results: { tasks: results, total: totalRecords, pages: totalPages },
                 message: "",

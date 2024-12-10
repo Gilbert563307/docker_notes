@@ -49,17 +49,6 @@
     background-color: #df4958;
 }
 
-.tasks-table-actions>button>a {
-    color: #0143a3;
-}
-
-.tasks-table-actions>button {
-    border: none;
-    background: none;
-    color: #0143a3;
-
-}
-
 html.dark .selected-status-item-0 {
     background-color: #282D33;
 }

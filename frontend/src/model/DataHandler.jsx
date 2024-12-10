@@ -22,6 +22,7 @@ import { ref, uploadBytes } from "firebase/storage";
 import { useAuthProvider } from "../context/AuthProvider";
 import useHelpers from "../helpers/useHelpers";
 import { DEFAULT_ITEMS_PER_PAGE, ITEMS_PER_PAGE } from "../config";
+import { ALERT_TYPES } from "../view/components/bs5/BS5Alert";
 
 /**
  * 
@@ -73,6 +74,62 @@ export default function DataHandler({ table }) {
         return parseInt(getUrlParams(ITEMS_PER_PAGE) || DEFAULT_ITEMS_PER_PAGE);
     }
 
+    /**
+    * 
+    * @param {string} fieldName 
+    * @param {string} searchText 
+    * @returns {Array}
+    */
+    const getSearchQueryByFieldName = (fieldName, searchText) => {
+        try {
+            if (!searchText) return [];
+
+            const startText = searchText;
+            const endText = startText + '\uf8ff';
+
+            return [where(fieldName, '>=', startText), where(fieldName, '<=', endText)]
+
+        } catch (error) {
+            console.log(`[getSearchQuery]: ${error.message}`);
+            return []
+        }
+    }
+
+    const convertQuerySnapShotDocs = (querySnapshot) => {
+        try {
+            // Map through the query snapshot to add the document ID to each task.
+            const results = querySnapshot.docs.map((document) => {
+                const convertedCreatedAt = convertTimeStampToDate({
+                    seconds: document.data().created_at.seconds,
+                    nanoseconds: document.data().created_at.nanoseconds,
+                });
+
+                const convertedUpdatedAt = convertTimeStampToDate({
+                    seconds: document.data().updated_at.seconds,
+                    nanoseconds: document.data().updated_at.nanoseconds,
+                });
+                return {
+                    ...document.data(),
+                    id: document.id,
+                    created_at: convertedCreatedAt,
+                    updated_at: convertedUpdatedAt,
+                }
+            });
+            return {
+                results: results,
+                message: "",
+                type: ALERT_TYPES.SUCCESS
+            };
+        } catch (error) {
+            console.log(`[convertQuerySnapShotDocs]: ${error.message}`);
+            return {
+                results: [],
+                message: error.message,
+                type: ALERT_TYPES.DANGER
+            };
+        }
+    }
+
     return {
         collectionRef,
         getDocs,
@@ -100,5 +157,7 @@ export default function DataHandler({ table }) {
         getDoc,
         startAt,
         endAt,
+        getSearchQueryByFieldName,
+        convertQuerySnapShotDocs,
     };
 }

@@ -192,3 +192,14 @@ html.dark body {
 .dialogic-domain-tag-button {
     pointer-events: none;
 }
+
+.main-table-actions>button>a {
+    color: #0143a3;
+}
+
+.main-table-actions>button {
+    border: none;
+    background: none;
+    color: #0143a3;
+}
+

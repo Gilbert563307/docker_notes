@@ -31,7 +31,7 @@ export default function DefaultLayout() {
             <Outlet></Outlet>
           </article>
         </article>
-        <p className='app-version'> Application version: Beta 1.0</p>
+        {/* <p className='app-version'> Application version: Beta 1.0</p> */}
       </article>
     </section>
   )

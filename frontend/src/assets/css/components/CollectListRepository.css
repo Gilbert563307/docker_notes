@@ -1,0 +1,7 @@
+.drive-container{
+    margin: 1em;
+}
+
+.repository-table-tr-headers>th {
+    font-weight: 400;
+}

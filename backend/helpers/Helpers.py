@@ -4,7 +4,7 @@ class Helpers:
     def __init__(self) -> None:
         pass
 
-    def ensure_directory_exists(directory_path: str):
+    def ensure_directory_exists(self, directory_path: str):
         """
         Checks if a directory exists; if not, creates it.
 

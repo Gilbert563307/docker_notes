@@ -5,7 +5,7 @@ import { ALERT_ACTIONS, ALERT_TYPES } from '../view/components/bs5/BS5Alert';
 import NotificationV3 from '../view/components/notifications/NotificationV3';
 import TasksLogic from '../model/TasksLogic';
 import useHelpers from '../helpers/useHelpers';
-import FileLogic from '../model/FileLogic';
+import FilesLogic from '../model/FilesLogic';
 
 
 /**
@@ -91,7 +91,7 @@ export const useTasksControllerContext = () => {
  */
 export default function TasksController() {
   const { createTask, listTasks, updateTask, readTask, archiveTask, deleteTask, listTasksBySearchTerm } = TasksLogic();
-  const { convertHtmlToDocx } = FileLogic();
+  const { convertHtmlToDocx } = FilesLogic();
   const { getCurrentPageNumber } = useHelpers();
   const navigate = useNavigate();
 

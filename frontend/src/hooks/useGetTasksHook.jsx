@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React  from 'react';
 import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../controller/TasksController';
 import usePaginationHook from './usePaginationHook';
 
@@ -19,10 +19,10 @@ export default function useGetTasksHook() {
 
     usePaginationHook({ methodToCall: fetchTasks });
 
-    useEffect(() => {
-        fetchTasks();
-    }, []);
-
-    return { tasks: state.tasks.tasks, totalTasks: state.tasks.total, totalPages: state.tasks.pages };
+    return {
+        tasks: state.tasks.tasks,
+        totalTasks: state.tasks.total,
+        totalPages: state.tasks.pages
+    };
 }
 

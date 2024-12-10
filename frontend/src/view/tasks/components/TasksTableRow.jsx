@@ -45,7 +45,6 @@ export default function TasksTableRow({ task }) {
           <input
             className="form-check-input"
             type="checkbox"
-            // id={`task-${task.id}}`}
             disabled={true}
           />
         </div>
@@ -66,7 +65,7 @@ export default function TasksTableRow({ task }) {
       <td>{task.created_at.toLocaleString()}</td>
       <td>{task.updated_at.toLocaleString()}</td>
       <td>{Assignee}</td>
-      <td className="tasks-table-actions">
+      <td className="main-table-actions">
         <button>
           <Link to={readTaskUrl} state={{ task: task }}>
             <i className="fa-light fa-magnifying-glass"></i>

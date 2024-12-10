@@ -1,0 +1,235 @@
+import React from 'react'
+import { ALERT_TYPES } from '../view/components/bs5/BS5Alert';
+import { asBlob } from 'html-docx-js-typescript'
+import DataHandler from './DataHandler';
+import useHelpers from '../helpers/useHelpers';
+import { Query } from 'firebase/firestore';
+// import { DEFAULT_TASKS_ARCHIVE, FILES_ARCHIVED_SESSION_FILTER } from '../config';
+
+export default function FilesLogic() {
+
+    const {
+        getTheCurrentItemsPerPage,
+        userUid, where, orderBy,
+        getSearchQueryByFieldName,
+        query, collectionRef, limit, getDocs, startAfter, convertQuerySnapShotDocs, getCountFromServer
+    } = DataHandler({ table: "files" });
+    const { getCurrentPageNumber } = useHelpers();
+
+    /**
+   * @param {{searchTearm?: string}} payload
+   * @returns {{queryItems: Array<Query> | Array, message: string, type: number}}
+   */
+    function getFilesQueryClauses(payload) {
+        try {
+            // const tasksArchived = getSessionFilter(FILES_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
+
+            let queryItems = [
+                where("user_uid", "==", userUid),
+                // where("archived", "==", tasksArchived),
+                orderBy("created_at", "desc"),
+            ];
+
+            if (payload.searchTearm && payload.searchTearm != "") {
+                const { searchTearm } = payload;
+                queryItems = [...queryItems, ...getSearchQueryByFieldName("name", searchTearm)];
+
+            }
+
+            return {
+                queryItems: queryItems,
+                message: "",
+                type: ALERT_TYPES.SUCCESS,
+            };
+        } catch (error) {
+            console.log(`[getFilessQueryClauses]: ${error.message}`);
+            return {
+                queryItems: [],
+                message: error.message,
+                type: ALERT_TYPES.DANGER,
+            };
+        }
+    }
+
+    /**
+     * 
+     * @param {number} currentPage 
+     * @param {Array} queryItems 
+     * @param {number} itemsPerPage 
+     * @returns {{query: Query, message: string, type: number} | void}
+     */
+    function fetchFilesOnPageOne(currentPage, queryItems, itemsPerPage) {
+        if (currentPage === 1) {
+            const tasksQuery = query(
+                collectionRef,
+                ...queryItems,
+                limit(itemsPerPage)
+            );
+            return { query: tasksQuery, message: "", type: ALERT_TYPES.SUCCESS }
+        }
+    }
+
+    /**
+     * 
+     * @param {number} currentPage 
+     * @param {Object} payload 
+     * @param {number} itemsPerPage 
+     * @param {Array} queryItems 
+     * @returns {Promise<{query: Query, message: string, type: number}>}
+     */
+    async function fetchPaginatedFiles(currentPage, payload, itemsPerPage, queryItems) {
+        // Calculate the limit for fetching documents up to the current page
+        const newPageLimit = currentPage * (payload?.itemsPerPage || itemsPerPage);
+
+        // Fetch tasks limited by the new page limit
+        const allDocsLimitedByThePageNumber = query(
+            collectionRef,
+            ...queryItems,
+            limit(newPageLimit)
+        );
+
+        // Get document snapshots for the calculated limit clause
+        const documentSnapshots = await getDocs(allDocsLimitedByThePageNumber);
+
+        // Calculate the offset to start from the last doc in the array
+        const offset = (currentPage - 1) * itemsPerPage;
+
+        // Get the document to start after, based on the offset
+        const startFromDocument = documentSnapshots.docs[offset];
+        if (!startFromDocument) {
+            throw new Error("No document found to start after for the given page.");
+        }
+
+        // Return a query that starts after the last visible document of the previous page
+        const tasksQuery = query(
+            collectionRef,
+            ...queryItems,
+            startAfter(startFromDocument),
+            limit(itemsPerPage)
+        );
+        return { query: tasksQuery, message: "", type: ALERT_TYPES.SUCCESS }
+    }
+
+    /**
+   * Generates a Firestore query to fetch tasks for the current page.
+   * 
+   * @param {{ searchTearm?: string }} payload - The current page number for pagination.
+   * @returns {Promise<{query: Query | null, message: string, type: number}>} The Firestore query to fetch tasks for the specified page.
+   */
+    function getFilesTasksQuery(payload) {
+        try {
+            const currentPage = getCurrentPageNumber();
+
+            // Get the number of items to be displayed per page
+            const itemsPerPage = getTheCurrentItemsPerPage();
+            const { queryItems } = getFilesQueryClauses(payload);
+
+            // If the current page is the first page, create a query limited by the items per page
+            fetchFilesOnPageOne(currentPage, queryItems, itemsPerPage);
+
+            fetchPaginatedFiles(currentPage, payload, itemsPerPage, queryItems);
+        } catch (error) {
+            return { query: null, message: error.message, type: ALERT_TYPES.DANGER }
+        }
+    }
+
+    async function getTotalTasksInDatabaseByUserAndFilters() {
+        try {
+            const payload = { searchTearm: "" };
+            const { queryItems } = getFilesQueryClauses(payload);
+
+            const totalQuery = query(collectionRef, ...queryItems)
+            const totalRecordsSnapShot = await getCountFromServer(totalQuery);
+            const totalRecords = totalRecordsSnapShot.data().count;
+            return totalRecords;
+        } catch (error) {
+            console.log(`[getTotalTasksInDatabaseByUserAndFilters]: ${error.message}`);
+            return 0;
+        }
+    }
+
+    /**
+     * 
+     * @param {{ searchTearm?: string}} payload 
+     * @returns 
+     */
+    async function listFiles(payload) {
+        try {
+            // Construct the query to get all tasks for the current user UID with a 
+            const { query } = await getFilesTasksQuery(payload);
+
+            // Execute the query to get the files.
+            const querySnapshot = await getDocs(query);
+
+            const { results } = convertQuerySnapShotDocs(querySnapshot);
+
+            //get total records for pagination
+            const totalRecords = await getTotalTasksInDatabaseByUserAndFilters();
+            //get total pages for paginartion
+            const totalPages = getTotalPages(totalRecords);
+
+            //return results
+            return {
+                results: { files: results, total: totalRecords, pages: totalPages },
+                message: "",
+                type: ALERT_TYPES.SUCCESS
+            };
+        } catch (error) {
+            return {
+                results: { files: [], total: 0, pages: 0 },
+                message: error.message,
+                type: ALERT_TYPES.DANGER
+            };
+        }
+    }
+
+    /**
+     * 
+     * @returns {string}
+     */
+    function generateRandomFileName() {
+        const timestamp = Date.now();
+        const randomPart = Math.random().toString(36).substring(2, 7);
+        return `${timestamp}-${randomPart}`;
+    }
+
+    /**
+     * 
+     * @param {string} html 
+     * @returns {Promise<{downloaded: Boolean, message: string, type: number}>}
+     */
+    async function convertHtmlToDocx(html) {
+        try {
+            const data = await asBlob(html);
+            const blob = new Blob([data], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" });
+            const url = URL.createObjectURL(blob);
+
+            const filename = generateRandomFileName();
+
+            // Create a temporary link to download the DOCX file
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `${filename}.docx`;
+            document.body.appendChild(link);
+
+            // Trigger the download and clean up
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            return {
+                downloaded: true,
+                message: "",
+                type: ALERT_TYPES.SUCCESS,
+            };
+        } catch (error) {
+            console.log(`[convertHtmlToDocx] #${error.message}`);
+            return {
+                downloaded: false,
+                message: error.message,
+                type: ALERT_TYPES.DANGER,
+            };
+        }
+    }
+
+    return { convertHtmlToDocx, listFiles }
+}

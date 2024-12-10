@@ -42,7 +42,6 @@ export default function CollectListTasks() {
             </Link>
           </div>
         </div>
-
       </div>
 
       <div className="tasks-content table-responsive">
