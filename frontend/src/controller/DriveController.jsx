@@ -150,9 +150,9 @@ export default function DriveController() {
 
     const collectListFiles = async () => {
         try {
-
-            const files = await listFiles();
-
+            const payload = { searchTearm: "" };
+            const files = await listFiles(payload);
+ 
             // Update state with the created task response
             dispatchAction({
                 type: REDUCER_ACTIONS.SET_FILES,

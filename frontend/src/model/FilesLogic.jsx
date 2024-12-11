@@ -12,8 +12,11 @@ export default function FilesLogic() {
         getTheCurrentItemsPerPage,
         userUid, where, orderBy,
         getSearchQueryByFieldName,
-        query, collectionRef, limit, getDocs, startAfter, convertQuerySnapShotDocs, getCountFromServer
+        query, collectionRef, limit,
+        getDocs, startAfter, convertQuerySnapShotDocs,
+        getCountFromServer, getTotalPages
     } = DataHandler({ table: "files" });
+
     const { getCurrentPageNumber } = useHelpers();
 
     /**
@@ -30,10 +33,9 @@ export default function FilesLogic() {
                 orderBy("created_at", "desc"),
             ];
 
-            if (payload.searchTearm && payload.searchTearm != "") {
+            if (payload && payload.searchTearm && payload.searchTearm != "") {
                 const { searchTearm } = payload;
                 queryItems = [...queryItems, ...getSearchQueryByFieldName("name", searchTearm)];
-
             }
 
             return {
@@ -53,20 +55,17 @@ export default function FilesLogic() {
 
     /**
      * 
-     * @param {number} currentPage 
      * @param {Array} queryItems 
      * @param {number} itemsPerPage 
      * @returns {{query: Query, message: string, type: number} | void}
      */
-    function fetchFilesOnPageOne(currentPage, queryItems, itemsPerPage) {
-        if (currentPage === 1) {
-            const tasksQuery = query(
-                collectionRef,
-                ...queryItems,
-                limit(itemsPerPage)
-            );
-            return { query: tasksQuery, message: "", type: ALERT_TYPES.SUCCESS }
-        }
+    function fetchFilesOnPageOne(queryItems, itemsPerPage) {
+        const filesQuery = query(
+            collectionRef,
+            ...queryItems,
+            limit(itemsPerPage)
+        );
+        return { query: filesQuery, message: "", type: ALERT_TYPES.SUCCESS }
     }
 
     /**
@@ -101,13 +100,13 @@ export default function FilesLogic() {
         }
 
         // Return a query that starts after the last visible document of the previous page
-        const tasksQuery = query(
+        const filesQuery = query(
             collectionRef,
             ...queryItems,
             startAfter(startFromDocument),
             limit(itemsPerPage)
         );
-        return { query: tasksQuery, message: "", type: ALERT_TYPES.SUCCESS }
+        return { query: filesQuery, message: "", type: ALERT_TYPES.SUCCESS }
     }
 
     /**
@@ -125,9 +124,11 @@ export default function FilesLogic() {
             const { queryItems } = getFilesQueryClauses(payload);
 
             // If the current page is the first page, create a query limited by the items per page
-            fetchFilesOnPageOne(currentPage, queryItems, itemsPerPage);
+            if (currentPage === 1) {
+                return fetchFilesOnPageOne(queryItems, itemsPerPage);
+            }
 
-            fetchPaginatedFiles(currentPage, payload, itemsPerPage, queryItems);
+            return fetchPaginatedFiles(currentPage, payload, itemsPerPage, queryItems);
         } catch (error) {
             return { query: null, message: error.message, type: ALERT_TYPES.DANGER }
         }
@@ -160,8 +161,10 @@ export default function FilesLogic() {
 
             // Execute the query to get the files.
             const querySnapshot = await getDocs(query);
+            console.log(querySnapshot.docs);
 
             const { results } = convertQuerySnapShotDocs(querySnapshot);
+            console.log(results);
 
             //get total records for pagination
             const totalRecords = await getTotalTasksInDatabaseByUserAndFilters();
