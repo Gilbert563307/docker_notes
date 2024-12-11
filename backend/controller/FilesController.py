@@ -18,7 +18,7 @@ files_router = APIRouter(
 )
 
 
-@files_router.post("/uploadfile/")
+@files_router.post("/uploadfile")
 async def create_upload_files(files: List[UploadFile] = File(...), user_uid: str = ""):
     if len(user_uid) == 0:
         raise HTTPException(status_code=400, detail=f"The user uid cannot be empty")
@@ -36,7 +36,7 @@ async def create_upload_files(files: List[UploadFile] = File(...), user_uid: str
             )
 
         # Check file type
-        if not FilesLogic().is_allowed_file(file):
+        if not FilesLogic.is_allowed_file(file):
             raise HTTPException(
                 status_code=400,
                 detail=f"File {file.filename} is not a valid image, PDF, text file, or document.",
