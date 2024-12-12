@@ -105,10 +105,22 @@ import React from 'react'
  */
 
 /**
+ * @typedef {Object} Folder
+ * @property {string} id
+ * @property {string} user_uid
+ * @property {string} name
+ * @property {string} color
+ */
+
+/**
  * 
  * @typedef {Array<DriveFile>} DriveFiles 
  */
 
+/**
+ * 
+ * @typedef {Array<Folder>} Folders 
+ */
 
 
 export default function types() {
