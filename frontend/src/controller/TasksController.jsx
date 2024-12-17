@@ -143,26 +143,22 @@ export default function TasksController() {
    * @param {import("../types/types").Notification} object 
    * @returns 
    */
-  const setNotificationToState = (object) => {
-    if (object.message === "") return;
+ const setNotificationToState = (object) => {
+   if (object.message === "") return;
+   // Set the message
+   dispatchAction({
+     type: REDUCER_ACTIONS.SET_NOTIFICATION,
+     payload: object,
+   });
 
-    // Set the message
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: {
-        message: object.message,
-        type: object.type
-      },
-    });
+   // Remove message after 20 seconds
+   const timeoutId = setTimeout(() => {
+     closeAlert();
+   }, 20000);
 
-    // Remove message after 5 seconds
-    const timeoutId = setTimeout(() => {
-      closeAlert();
-    }, 5000);
-
-    // Clear timeout if needed
-    return () => clearTimeout(timeoutId);
-  };
+   // Clear timeout if needed
+   return () => clearTimeout(timeoutId);
+ };
 
 
   /**

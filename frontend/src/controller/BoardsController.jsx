@@ -116,21 +116,22 @@ export default function BoardsController() {
     // Defining the state and the dispatchAction using the useReducer hook
     const [state, dispatchAction] = useReducer(reducer, initialState);
 
-    const setNotificationToState = (object) => {
-        // Set the message
-        dispatchAction({
-            type: REDUCER_ACTIONS.SET_NOTIFICATION,
-            payload: object,
-        });
+   const setNotificationToState = (object) => {
+     if (object.message == "") return;
+     // Set the message
+     dispatchAction({
+       type: REDUCER_ACTIONS.SET_NOTIFICATION,
+       payload: object,
+     });
 
-        // Remove message after 5 seconds
-        const timeoutId = setTimeout(() => {
-            closeAlert();
-        }, 5000);
+     // Remove message after 20 seconds
+     const timeoutId = setTimeout(() => {
+       closeAlert();
+     }, 20000);
 
-        // Clear timeout if needed
-        return () => clearTimeout(timeoutId);
-    };
+     // Clear timeout if needed
+     return () => clearTimeout(timeoutId);
+   };
 
     /**
      * Sets error to the state and dispatches notification.

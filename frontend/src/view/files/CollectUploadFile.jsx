@@ -1,10 +1,27 @@
-import React, { useRef, useState } from "react";
+import React, { useState, useRef } from "react";
 import "../../assets/css/views/CollectUploadFile.css";
-import { ALLOWED_UPLOAD_FILE_TYPES } from "../../config";
+import {
+  ALLOWED_UPLOAD_FILE_TYPES,
+  DEFAULT_SELECT_FOLDER_MESSAGE,
+} from "../../config";
+import RepositorySelectFolder from "../components/drive/components/RepositorySelectFolder";
+import { Show } from "../components/custom/Show";
+import RepositorySelectedFiles from "../components/drive/components/RepositorySelectedFiles";
+import {
+  DRIVE_CONTROLLER_ACTIONS,
+  useDriveControllerContext,
+} from "../../controller/DriveController";
+import { ALERT_TYPES } from "../components/bs5/BS5Alert";
 
 export default function CollectUploadFile() {
+  const { dispatch } = useDriveControllerContext();
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const selectedFolderIdRef = useRef(null);
 
+  /**
+   *
+   * @param {Event} event
+   */
   function handleFileDrop(event) {
     event.preventDefault();
     const droppedFiles = Array.from(event.dataTransfer.files);
@@ -16,6 +33,10 @@ export default function CollectUploadFile() {
     setUploadedFiles(acceptedFiles);
   }
 
+  /**
+   *
+   * @param {Event} event
+   */
   function handleFileSelect(event) {
     const selectedFiles = Array.from(event.target.files);
     const acceptedFiles = selectedFiles.filter((file) =>
@@ -26,19 +47,51 @@ export default function CollectUploadFile() {
     setUploadedFiles(acceptedFiles);
   }
 
-  React.useEffect(() => {
-    // Handle file uploads (e.g., display progress, upload to server)
-    console.log("Uploaded Files:", uploadedFiles);
-  }, [uploadedFiles]);
-
-  function dragOverHandler(event) {
-    console.log("File(s) in drop zone");
-    // Prevent default behavior (Prevent file from being opened)
-    event.preventDefault();
-  }
-
+  /**
+   *
+   * @param {File} file
+   */
   function removeFile(file) {
     setUploadedFiles(uploadedFiles.filter((f) => f != file));
+  }
+
+  /**
+   *
+   * @param {Event} event
+   */
+  function handleFolderSelection(event) {
+    if (event === null || event.target === null) return;
+    if (event.target?.value === DEFAULT_SELECT_FOLDER_MESSAGE) return;
+    selectedFolderIdRef.current = event.target?.value;
+  }
+
+  function uploadFiles() {
+    if (uploadedFiles.length === 0) {
+      return dispatch({
+        type: DRIVE_CONTROLLER_ACTIONS.SET_NOTIFICATION,
+        payload: {
+          message: "You must select at least 1 file.",
+          type: ALERT_TYPES.DANGER,
+        },
+      });
+    }
+
+    if (selectedFolderIdRef.current === null) {
+      return dispatch({
+        type: DRIVE_CONTROLLER_ACTIONS.SET_NOTIFICATION,
+        payload: {
+          message:
+            "You must select at least 1 folder to upload the file(s) into.",
+          type: ALERT_TYPES.DANGER,
+        },
+      });
+    }
+    const payload = { files: uploadedFiles, folder_id: selectedFolderIdRef };
+    dispatch({ type: DRIVE_CONTROLLER_ACTIONS.UPLOAD_FILES, payload: payload });
+
+    //reset form
+    setUploadedFiles([]);
+    selectedFolderIdRef.current = null;
   }
 
   return (
@@ -55,34 +108,22 @@ export default function CollectUploadFile() {
             </p>
           </div>
         </div>
+        <RepositorySelectFolder handleFolderSelection={handleFolderSelection} />
+        <Show>
+          <Show.When isTrue={uploadedFiles.length > 0}>
+            <div>
+              <a
+                href="#"
+                role="button"
+                onClick={() => setUploadedFiles([])}
+                className="upload-reset-btn"
+              >
+                reset
+              </a>
+            </div>
+          </Show.When>
+        </Show>
 
-        <div>
-          <label htmlFor="folders_data_list" className="form-label">
-            Click to select the folder to upload files to
-          </label>
-          <input
-            className="form-control"
-            list="datalistOptions"
-            id="exampleDataList"
-            placeholder="Type to search..."
-          />
-          <datalist id="datalistOptions">
-            <option value="MYHU" />
-            <option value="AI" />
-            <option value="MOD" />
-            <option value="BIM" />
-          </datalist>
-        </div>
-        <div>
-          <a
-            href="#"
-            role="button"
-            onClick={() => setUploadedFiles([])}
-            className="upload-reset-btn"
-          >
-            reset
-          </a>
-        </div>
         <div
           className="upload-file-drop-zone"
           id="files_drop_zone"
@@ -114,42 +155,24 @@ export default function CollectUploadFile() {
           </div>
         </div>
 
-        <div className="uploaded-files-container">
-          {uploadedFiles.map((f) => {
-            const sizeInKB = (f.size / 1024).toFixed(2);
-            const sizeInMB = (f.size / (1024 * 1024)).toFixed(2);
+        <RepositorySelectedFiles
+          uploadedFiles={uploadedFiles}
+          removeFile={removeFile}
+        ></RepositorySelectedFiles>
 
-            let displaySize;
-            if (sizeInKB < 1024) {
-              displaySize = `${sizeInKB} KB`;
-            } else {
-              displaySize = `${sizeInMB} MB`;
-            }
-
-            return (
-              <div className="uploaded-file">
-                <div className="uploaded-file-header">
-                  <div className="uploaded-file-header-options">
-                    <div>
-                      <i className="fa-duotone fa-solid fa-file fa-xl"></i>
-                    </div>
-                    <div>{f.name}</div>
-                  </div>
-
-                  <button
-                    className="remove-upload-button"
-                    onClick={() => removeFile(f)}
-                  >
-                    <i className="fa-solid fa-trash"></i>
-                  </button>
-                </div>
-                <p className="upload-file-info-text uploaded-file-size">
-                  size: {displaySize}
-                </p>
-              </div>
-            );
-          })}
-        </div>
+        <Show>
+          <Show.When isTrue={uploadedFiles.length > 0}>
+            <div>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={uploadFiles}
+              >
+                Upload files
+              </button>
+            </div>
+          </Show.When>
+        </Show>
       </div>
     </article>
   );

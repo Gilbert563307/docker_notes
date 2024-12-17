@@ -61,6 +61,9 @@ export const DEFAULT_PROJECT_ID = 0;
 export const MAX_BOARD_ITEMS = 150;
 export const DEFAULT_TASKS_ARCHIVE = false;
 
+//FOLDERS
+export const MAX_FOLDERS_TO_FETCH = 50;
+
 //status filters 
 const TASKS_STATUS_TYPES_TODO = "TASKS_STATUS_TYPES_TODO";
 const TASKS_STATUS_IN_PROGRESS = "TASKS_STATUS_IN_PROGRESS";
@@ -88,3 +91,5 @@ export const PRIORITY_FILTER_TYPE_TAGS = [
 export const LANDING_PAGE_ROUTE = "/board";
 
 export const ALLOWED_UPLOAD_FILE_TYPES = ["pdf", "docx", "doc", "txt"];
+
+export const DEFAULT_SELECT_FOLDER_MESSAGE = "Select the folder to upload files to";
