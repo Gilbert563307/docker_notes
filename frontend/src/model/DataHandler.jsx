@@ -37,6 +37,8 @@ export default function DataHandler({ table }) {
   const collectionRef = collection(db, table);
   const userUid = user ? user.uid : null;
   const currentServerTimestamp = serverTimestamp();
+  const BACKEND_URL = import.meta.env.VITE_APP_BACKEND_URL;
+  const BACKEND_TOKEN = import.meta.env.VITE_APP_BACKEND_SECRET_TOKEN;
 
   /**
    * @param {{ seconds: number, nanoseconds: number } } object
@@ -46,7 +48,7 @@ export default function DataHandler({ table }) {
     try {
       return new Timestamp(object.seconds, object.nanoseconds).toDate();
     } catch (error) {
-        console.log(`[convertTimeStampToDate] ${error.message}`);
+      console.log(`[convertTimeStampToDate] ${error.message}`);
       return null;
     }
   };
@@ -168,5 +170,7 @@ export default function DataHandler({ table }) {
     getSearchQueryByFieldName,
     convertQuerySnapShotDocs,
     writeBatch,
+    BACKEND_URL,
+    BACKEND_TOKEN,
   };
 }

@@ -198,7 +198,7 @@ export default function DriveController() {
 
   /**
    *
-   * @param {{files: Array<File>, folder_id: string}} payload
+   * @param {{files: Array<File>, folderId: string}} payload
    */
   const collectUploadFiles = async (payload) => {
     try {

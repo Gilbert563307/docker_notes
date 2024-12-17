@@ -8,7 +8,11 @@ from config.constants import (
     UPLOAD_DIRECTORY,
 )
 from model.FilesLogic import FilesLogic
+from pydantic import BaseModel
 
+class uploadPayload(BaseModel):
+    files: List[UploadFile] 
+    user_uid: str = ""
 
 files_router = APIRouter(
     prefix="/files",
@@ -18,14 +22,14 @@ files_router = APIRouter(
 )
 
 
-@files_router.post("/uploadfile")
-async def create_upload_files(files: List[UploadFile] = File(...), user_uid: str = ""):
-    if len(user_uid) == 0:
+@files_router.post("/upload")
+async def create_upload_files(uploadPayload: uploadPayload):
+    if len(uploadPayload.user_uid) == 0:
         raise HTTPException(status_code=400, detail=f"The user uid cannot be empty")
 
     uploaded_files: list[File] = []
 
-    for file in files:
+    for file in uploadPayload.files:
         content = await file.read()
 
         # Check file size

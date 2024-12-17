@@ -61,7 +61,7 @@ export default function CollectUploadFile() {
    */
   function handleFolderSelection(event) {
     if (event === null || event.target === null) return;
-    if (event.target?.value === DEFAULT_SELECT_FOLDER_MESSAGE) return;
+    // if (event.target?.value === DEFAULT_SELECT_FOLDER_MESSAGE) return;
     selectedFolderIdRef.current = event.target?.value;
   }
 
@@ -86,7 +86,7 @@ export default function CollectUploadFile() {
         },
       });
     }
-    const payload = { files: uploadedFiles, folder_id: selectedFolderIdRef };
+    const payload = { files: uploadedFiles, folderId: selectedFolderIdRef.current };
     dispatch({ type: DRIVE_CONTROLLER_ACTIONS.UPLOAD_FILES, payload: payload });
 
     //reset form
