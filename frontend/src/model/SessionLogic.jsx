@@ -3,10 +3,17 @@ import { ALERT_ACTIONS } from "../view/components/bs5/BS5Alert";
 import DataHandler from "./DataHandler";
 
 export default function SessionLogic() {
-  const { collectionRef, currentServerTimestamp, Timestamp, addDoc } =
-    DataHandler({
-      table: "sessions",
-    });
+  const {
+    collectionRef,
+    currentServerTimestamp,
+    Timestamp,
+    addDoc,
+    query,
+    where,
+    getDocs,
+  } = DataHandler({
+    table: "sessions",
+  });
 
   function generateUniqueToken(length = 64) {
     const characters =
@@ -46,7 +53,7 @@ export default function SessionLogic() {
     }
 
     const expireDate = getSessionExpireDate();
-    const payload = createSessionPayload(user_uid, expireDate);
+    const payload = await createSessionPayload(user_uid, expireDate);
 
     try {
       const created = await addDoc(collectionRef, payload);
@@ -70,19 +77,67 @@ export default function SessionLogic() {
   }
 
   /**
+   * Generates a unique token that is not already in use for the given user.
+   * @param {string} user_uid - The user ID.
+   * @returns {Promise<{token: string, message: string, type: string}>}
+   */
+  async function getAvailableSessionToken(user_uid) {
+    try {
+      let token;
+      let isUnique = false;
+
+      do {
+        token = generateUniqueToken(); // Generate a new token
+        const sessionQuery = query(
+          collectionRef,
+          where("user_uid", "==", user_uid),
+          where("token", "==", token) // Directly check if the token exists
+        );
+
+        const documentSnapshots = await getDocs(sessionQuery);
+        isUnique = documentSnapshots.empty; // Check if the token is unique
+      } while (!isUnique); // Repeat if the token already exists
+
+      return {
+        token: token,
+        message: "Token generated successfully.",
+        type: ALERT_ACTIONS.SUCCESS,
+      };
+    } catch (error) {
+      return {
+        token: "",
+        message:
+          error.message || "An error occurred while generating the token.",
+        type: ALERT_ACTIONS.DANGER,
+      };
+    }
+  }
+
+  /**
    *
    * @param {string} user_uid
    * @param {Date} expireDate
-   * @returns  {import("../types/types").Session}
+   * @returns  {Promise<import("../types/types").Session>}
    */
-  function createSessionPayload(user_uid, expireDate) {
-    return {
-      user_uid: user_uid,
-      token: generateUniqueToken(),
-      expire_date: Timestamp.fromDate(expireDate),
-      created_at: currentServerTimestamp,
-      updated_at: currentServerTimestamp,
-    };
+  async function createSessionPayload(user_uid, expireDate) {
+    try {
+      const { token } = await getAvailableSessionToken(user_uid);
+      return {
+        user_uid: user_uid,
+        token: token,
+        expire_date: Timestamp.fromDate(expireDate),
+        created_at: currentServerTimestamp,
+        updated_at: currentServerTimestamp,
+      };
+    } catch (error) {
+      return {
+        user_uid: "",
+        token: "",
+        expire_date: "",
+        created_at: "",
+        updated_at: "",
+      };
+    }
   }
   return { createSession };
 }

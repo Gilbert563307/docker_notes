@@ -23,5 +23,4 @@ cred = credentials.Certificate(
     }
 )
 app = firebase_admin.initialize_app(cred)
-db = firestore.client()
-
+database = firestore.client()

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 import os
-from .dependencies import get_query_token
+from .dependencies import get_token_header
 from typing import List
 from werkzeug.utils import secure_filename
 from config.constants import (
@@ -11,13 +11,13 @@ from model.FilesLogic import FilesLogic
 from pydantic import BaseModel
 
 class uploadPayload(BaseModel):
-    files: List[UploadFile] 
+    files: List[UploadFile] = File(...)
     user_uid: str = ""
 
 files_router = APIRouter(
     prefix="/files",
     tags=["files"],
-    dependencies=[Depends(get_query_token)],
+    dependencies=[Depends(get_token_header)],
     responses={404: {"description": "Not found"}},
 )
 
