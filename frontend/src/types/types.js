@@ -10,6 +10,7 @@ import React from 'react'
  * @typedef {Object} User
  * @property {string} displayName 
  * @property {string} photoURL 
+ * @property {string} token 
  * @property {string} [uid] 
  * @property {string} [email] 
  * 
@@ -17,15 +18,15 @@ import React from 'react'
 
 /**
  * @typedef {Object} Assignee
- * @property {string} name - 
- * @property {string} assignee 
+ * @property {string} name 
+ * @property {string} assignee_id 
  * 
  */
 
 /**
  * @typedef {Object} Reporter
  * @property {string} name - 
- * @property {string} assignee 
+ * @property {string} assignee_id || TODO change to reporter_id in FUTURE
  * 
  */
 
@@ -96,7 +97,7 @@ import React from 'react'
 
 /**
  * @typedef {Object} DriveFile
- * @property {number} id
+ * @property {string} id
  * @property {string} user_uid
  * @property {string} folder_id
  * @property {string} name
@@ -122,6 +123,21 @@ import React from 'react'
  * @typedef {Array<Folder>} Folders 
  */
 
+/**
+ * 
+ * @typedef {Object} Session 
+ * @property {string} [id] 
+ * @property {string} user_uid 
+ * @property {string} token 
+ * @property {string | any} expire_date 
+ * @property {string} created_at
+ * @property {string} updated_at
+ */
+
+/**
+ * 
+ * @typedef {Array<Session>} Sessions
+ */
 
 export default function types() {
     return null;

@@ -273,41 +273,42 @@ export default function FilesLogic() {
     // Append additional fields
     formData.append("folder_id", payload.folderId);
     formData.append("user_uid", userUid);
-    formData.append("token", BACKEND_TOKEN);
 
-    //
-  //localhost:8000/files/upload?user_uid=4a422422542e48ec029f6d21bc93c2d3cd24f823a33dba037672c5d1808c6fcf&token=ab47c9f1d2e34567ac89de12b3f45a67
+    //localhost:8000/files/upload?user_uid=4a422422542e48ec029f6d21bc93c2d3cd24f823a33dba037672c5d1808c6fcf&token=ab47c9f1d2e34567ac89de12b3f45a67
 
- try {
-  const response = await fetch(`${BACKEND_URL}files/upload`, {
-    method: "POST",
-    body: formData, // Use FormData for file uploads
-    // No need to set Content-Type manually; the browser sets it for FormData
-  });
+    try {
+      const response = await fetch(`${BACKEND_URL}files/upload`, {
+        method: "POST",
+        body: formData, // Use FormData for file uploads
+        // No need to set Content-Type manually; the browser sets it for FormData
+      });
 
-  if (!response.ok) {
-    // Handle HTTP error responses
-    const errorResponse = await response.json();
-    console.error(`[uploadFilesToBackendServer] Backend Error:`, errorResponse);
-    throw new Error(errorResponse.message || "File upload failed.");
-  }
+      if (!response.ok) {
+        // Handle HTTP error responses
+        const errorResponse = await response.json();
+        console.error(
+          `[uploadFilesToBackendServer] Backend Error:`,
+          errorResponse
+        );
+        throw new Error(errorResponse.message || "File upload failed.");
+      }
 
-  const data = await response.json();
-  console.log("File Upload Response:", data);
+      const data = await response.json();
+      console.log("File Upload Response:", data);
 
-  return {
-    uploaded: true,
-    message: "Files uploaded successfully.",
-    type: ALERT_TYPES.SUCCESS,
-  };
-} catch (error) {
-  console.error(`[uploadFilesToBackendServer] ${error.message}`);
-  return {
-    uploaded: false,
-    message: error.message || "An error occurred during file upload.",
-    type: ALERT_TYPES.DANGER,
-  };
-}
+      return {
+        uploaded: true,
+        message: "Files uploaded successfully.",
+        type: ALERT_TYPES.SUCCESS,
+      };
+    } catch (error) {
+      console.error(`[uploadFilesToBackendServer] ${error.message}`);
+      return {
+        uploaded: false,
+        message: error.message || "An error occurred during file upload.",
+        type: ALERT_TYPES.DANGER,
+      };
+    }
   }
 
   /**

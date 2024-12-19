@@ -172,5 +172,6 @@ export default function DataHandler({ table }) {
     writeBatch,
     BACKEND_URL,
     BACKEND_TOKEN,
+    Timestamp,
   };
 }

@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
-
 cred = credentials.Certificate(
     {
         "type": os.getenv("BACKEND_FIREBASE_TYPE"),

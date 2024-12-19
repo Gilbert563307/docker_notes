@@ -54,6 +54,9 @@ export default function TasksLogic() {
   const createTask = async (payload) => {
     try {
       // Define default values for the task
+      /**
+       * @type {import("../types/types").Task}
+       */
       const defaultValues = {
         project_id: payload.project_id || DEFAULT_PROJECT_ID,
         user_uid: userUid,

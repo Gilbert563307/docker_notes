@@ -25,9 +25,9 @@ export default function useHelpers() {
   }
 
   /**
-  * - Checks if there any active filters in the session tab
-  * @returns {Array<{name: string, value: boolean, pathname: string }>}
-  */
+   * - Checks if there any active filters in the session tab
+   * @returns {Array<{name: string, value: boolean, pathname: string }>}
+   */
   function getAllActiveSessionFilters() {
     const value = sessionStorage.getItem(SESSION_FILTERS_ARRAY_CONFIG_NAME);
     if (value != null) {
@@ -36,13 +36,11 @@ export default function useHelpers() {
     return [];
   }
 
-
-
   /**
-  * This function returns the boolean that is stored, the session storage given by the param name
-  * @param {string} paramName - This is a constant from .config file
-  * @returns {boolean | null} - When the given param filter is active or not
-  */
+   * This function returns the boolean that is stored, the session storage given by the param name
+   * @param {string} paramName - This is a constant from .config file
+   * @returns {boolean | null} - When the given param filter is active or not
+   */
   function getSessionFilter(paramName) {
     const allActiveFilters = getAllActiveSessionFilters();
 
@@ -165,7 +163,6 @@ export default function useHelpers() {
   function getCurrentPageNumber() {
     const paramValue = getUrlParams(PAGE_NUMBER) || DEFAULT_PAGE_NUMBER;
     return parseInt(paramValue) ? parseInt(paramValue) : DEFAULT_PAGE_NUMBER;
-
   }
 
   /**
@@ -205,7 +202,6 @@ export default function useHelpers() {
    * @property {string} name
    * @property {string} config
    */
-
 
   /**
    * Check if the current filter is active.
@@ -267,17 +263,16 @@ export default function useHelpers() {
   }
 
   /**
-   * 
-   * @param {string} [pathName] 
-   * @returns 
+   *
+   * @param {string} [pathName]
+   * @returns
    */
-  const getHowManyFiltersAreActiveByCurrentPath = (pathName = "") => {
+  function getHowManyFiltersAreActiveByCurrentPath(pathName = "") {
     const currentPathName = pathName != "" ? pathName : getCurrentPathName();
     return getAllActiveSessionFilters().filter(
       (obj) => obj.value === true && obj.pathname === currentPathName
     );
-  };
-
+  }
 
   return {
     convertToDutchDateFormat,
@@ -301,6 +296,3 @@ export default function useHelpers() {
     getHowManyFiltersAreActiveByCurrentPath,
   };
 }
-
-
-
