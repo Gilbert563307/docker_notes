@@ -39,11 +39,12 @@ export default function SessionLogic() {
 
   /**
    *
-   * @param {string} user_uid
+   * @param {string} hashedUid
+   * @param {import("../types/types").User} currentUser
    * @returns {Promise<{created: Boolean, sessionToken: string, message: string, type: number}>}
    */
-  async function createSession(user_uid) {
-    if (!user_uid) {
+  async function createSession(hashedUid, currentUser) {
+    if (!hashedUid || !currentUser) {
       return {
         created: false,
         sessionToken: "",
@@ -53,7 +54,11 @@ export default function SessionLogic() {
     }
 
     const expireDate = getSessionExpireDate();
-    const payload = await createSessionPayload(user_uid, expireDate);
+    const payload = await createSessionPayload(
+      currentUser,
+      hashedUid,
+      expireDate
+    );
 
     try {
       const created = await addDoc(collectionRef, payload);
@@ -115,18 +120,21 @@ export default function SessionLogic() {
 
   /**
    *
-   * @param {string} user_uid
+   * @param {Object} currentUser
+   * @param {string} hashedUid
    * @param {Date} expireDate
    * @returns  {Promise<import("../types/types").Session>}
    */
-  async function createSessionPayload(user_uid, expireDate) {
+  async function createSessionPayload(currentUser, hashedUid, expireDate) {
     try {
-      const { token } = await getAvailableSessionToken(user_uid);
+      const { token } = await getAvailableSessionToken(hashedUid);
       return {
-        user_uid: user_uid,
+        user: JSON.stringify(currentUser),
         token: token,
         expire_date: Timestamp.fromDate(expireDate),
+        // @ts-ignore
         created_at: currentServerTimestamp,
+        // @ts-ignore
         updated_at: currentServerTimestamp,
       };
     } catch (error) {

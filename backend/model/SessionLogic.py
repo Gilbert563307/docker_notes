@@ -1,11 +1,7 @@
 from fastapi import Header, HTTPException
 from config.firebaseConfig import database
 from datetime import datetime
-from google.cloud.firestore_v1.base_query import (
-    FieldFilter,
-    QueryResultsList,
-    DocumentSnapshot,
-)
+from google.cloud.firestore_v1.base_query import FieldFilter
 
 
 class SessionLogic:
@@ -21,7 +17,7 @@ class SessionLogic:
                 filter=FieldFilter("token", "==", x_token)
             )
 
-            documents: QueryResultsList[DocumentSnapshot] = doc_ref.get()
+            documents = doc_ref.get()
 
             # If no document is found, the token is invalid
             if len(documents) == 0:

@@ -17,7 +17,7 @@ export default function AuthLogic() {
    * - `type`: A string representing the type of alert (SUCCESS for successful login, DANGER for error).
    * - `message`: A message describing the result of the login attempt.
    */
-  const LoginWithGoogle = async () => {
+  async function LoginWithGoogle() {
     try {
       const response = await signInWithPopup(auth, googleProvider);
 
@@ -30,7 +30,15 @@ export default function AuthLogic() {
         };
 
       const hashedUid = SHA256(auth.currentUser.uid).toString();
-      const { sessionToken } = await createSession(hashedUid);
+      const sessionResponse = await createSession(hashedUid, auth.currentUser);
+
+      if (!sessionResponse.created){
+        return {
+          ...sessionResponse,
+          login: false,
+          user: {},
+        };
+      }
 
       //if user is logged in create a session token
       return {
@@ -40,7 +48,7 @@ export default function AuthLogic() {
           displayName: auth.currentUser.displayName || "",
           email: auth.currentUser.email || "",
           photoURL: auth.currentUser.photoURL || "",
-          token: sessionToken,
+          token: sessionResponse.sessionToken,
         },
         type: ALERT_TYPES.SUCCESS,
         message: "",
@@ -53,7 +61,7 @@ export default function AuthLogic() {
         message: error.message || "Failed to login with Google",
       };
     }
-  };
+  }
 
   const SignUserOut = async () => {
     try {
