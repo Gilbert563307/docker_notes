@@ -1,4 +1,5 @@
 import React from "react";
+import BS5TruncateSpan from "../../bs5/BS5TruncateSpan";
 
 /**
  *
@@ -28,7 +29,10 @@ export default function RepositorySelectedFiles({ uploadedFiles, removeFile }) {
                 <div>
                   <i className="fa-duotone fa-solid fa-file fa-xl"></i>
                 </div>
-                <div>{f.name}</div>
+                <BS5TruncateSpan
+                  content={f.name}
+                  maxWidthToSet="350px"
+                ></BS5TruncateSpan>
               </div>
 
               <button

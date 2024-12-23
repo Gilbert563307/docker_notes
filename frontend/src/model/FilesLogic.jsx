@@ -25,7 +25,7 @@ export default function FilesLogic() {
     db,
     doc,
     BACKEND_URL,
-    BACKEND_TOKEN,
+    X_TOKEN,
     currentServerTimestamp,
   } = DataHandler({ table: "files" });
 
@@ -279,8 +279,10 @@ export default function FilesLogic() {
     try {
       const response = await fetch(`${BACKEND_URL}files/upload`, {
         method: "POST",
-        body: formData, // Use FormData for file uploads
-        // No need to set Content-Type manually; the browser sets it for FormData
+        body: formData,
+        headers: {
+          "x-token": X_TOKEN,
+        },
       });
 
       if (!response.ok) {

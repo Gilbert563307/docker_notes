@@ -38,7 +38,7 @@ export default function DataHandler({ table }) {
   const userUid = user ? user.uid : null;
   const currentServerTimestamp = serverTimestamp();
   const BACKEND_URL = import.meta.env.VITE_APP_BACKEND_URL;
-  const BACKEND_TOKEN = import.meta.env.VITE_APP_BACKEND_SECRET_TOKEN;
+  const X_TOKEN = user ? user.token : null;
 
   /**
    * @param {{ seconds: number, nanoseconds: number } } object
@@ -171,7 +171,7 @@ export default function DataHandler({ table }) {
     convertQuerySnapShotDocs,
     writeBatch,
     BACKEND_URL,
-    BACKEND_TOKEN,
     Timestamp,
+    X_TOKEN,
   };
 }
