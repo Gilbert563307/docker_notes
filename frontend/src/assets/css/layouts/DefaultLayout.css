@@ -27,7 +27,7 @@
   background-color: #ffff;
   border-right: 2px solid #dee2e6;
   width: 290px;
-  /* height: 100dvh; */
+  min-height: 100dvh;
 }
 
 .aside-navigation>h1 {
