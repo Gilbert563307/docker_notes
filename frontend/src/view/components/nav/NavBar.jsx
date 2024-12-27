@@ -10,7 +10,6 @@ export default function NavBar() {
   const [activeItem, setActiveItem] = useState(
     cacheUrl ? parseInt(cacheUrl) : 0
   );
-
   /**
    *
    * @param {number} key
@@ -23,14 +22,19 @@ export default function NavBar() {
    * @returns {Array<{name: string, url: string, icon: string}>}
    */
   const items = [
-    { name: "Board", url: "/board", icon: "fa-regular fa-clapperboard" },
-    { name: "Tasks", url: "/tasks", icon: "fa-regular fa-notebook" },
+    {
+      name: "Board",
+      url: "/board",
+      icon: "fa-duotone fa-solid fa-clapperboard",
+    },
+    { name: "Tasks", url: "/tasks", icon: "fa-duotone fa-solid fa-list-check" },
+    { name: "Folders", url: "/folders", icon: "fa-duotone fa-solid fa-folder" },
     {
       name: "Drive",
       url: "/drive",
       icon: "fa-duotone fa-regular fa-hard-drive",
     },
-    { name: "Settings", url: "/settings", icon: "fa-regular fa-gear" },
+    { name: "Settings", url: "/settings", icon: "fa-duotone fa-thin fa-gear" },
   ];
 
   //when user reloads the page and there is a url cached, navigate to that ur;

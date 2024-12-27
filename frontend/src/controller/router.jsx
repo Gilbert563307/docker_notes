@@ -21,6 +21,8 @@ import BoardsController from "./BoardsController";
 import DriveController from "./DriveController";
 import CollectListDriveFiles from "../view/files/CollectListDriveFiles";
 import CollectUploadFile from "../view/files/CollectUploadFile";
+import FoldersController from "./FoldersController";
+import CollectListFolders from "../view/folders/CollectListFolders";
 
 const router = createBrowserRouter([
   {
@@ -98,6 +100,21 @@ const router = createBrowserRouter([
           {
             path: "/drive/upload",
             element: <CollectUploadFile />,
+          },
+        ],
+      },
+      {
+        path: "/folders",
+        element: (
+          <ProtectedRoute>
+            <FoldersController />
+          </ProtectedRoute>
+        ),
+        children: [
+          {
+            index: true,
+            path: "",
+            element: <CollectListFolders />,
           },
         ],
       },

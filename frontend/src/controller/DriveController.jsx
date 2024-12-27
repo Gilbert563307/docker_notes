@@ -18,7 +18,6 @@ import useHelpers from "../helpers/useHelpers";
  */
 
 /**
- * Initial state for the tasks controller.
  * @type {InitialState}
  */
 const initialState = {
@@ -31,10 +30,15 @@ const initialState = {
 /**
  * @typedef {Object} DriveControllerActions
  * @property {string} LIST -
+ * @property {string} LIST_FOLDERS -
+ * @property {string} UPLOAD_FILES -
  * @property {string} CREATE
  * @property {string} READ -
  * @property {string} UPDATE -
  * @property {string} ARCHIVE -
+ * @property {string} DELETE -
+ * @property {string} DOWNLOAD_FILE -
+ * @property {string} SEARCH_FILES_BY_SEARCH_TERM -
  * @property {string} SET_NOTIFICATION -
  */
 export const DRIVE_CONTROLLER_ACTIONS = {
