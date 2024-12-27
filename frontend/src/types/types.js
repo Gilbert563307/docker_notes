@@ -102,6 +102,7 @@ import React from 'react'
  * @property {string} folder_id
  * @property {number} size
  * @property {string} type
+ * @property {boolean} archived
  * @property {string} created_at
  * @property {string} updated_at
  */

@@ -460,13 +460,13 @@ export default function TasksLogic() {
       if (!updatedTask)
         return {
           updated: false,
-          message: "Something went wrong while updating your task",
+          message: "Something went wrong while archiving your task",
           type: ALERT_TYPES.DANGER,
         };
 
       return {
         updated: true,
-        message: "Your task has been succesfully been updated",
+        message: "Your task has been succesfully been archived",
         type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {

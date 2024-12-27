@@ -76,10 +76,9 @@ export const useDriveControllerContext = () => {
 export default function DriveController() {
   //import the methods and loader component from our custom component
   const { showLoader, closeLoader, PreloaderComponent } = useBS5PreloaderHook();
-  const { listFiles, uploadFiles } = FilesLogic();
+  const { listFiles, uploadFiles, archiveFile } = FilesLogic();
   const { getFolders } = FoldersLogic();
-    const navigate = useNavigate();
-  
+  const navigate = useNavigate();
 
   const REDUCER_ACTIONS = {
     SET_FILES: "SET_FILES",
@@ -200,7 +199,7 @@ export default function DriveController() {
    *
    * @param {{files: Array<File>, folderId: string}} payload
    */
-  const collectUploadFiles = async (payload) => {
+  async function collectUploadFiles(payload) {
     try {
       const results = await uploadFiles(payload);
 
@@ -212,7 +211,25 @@ export default function DriveController() {
     } catch (error) {
       setErrorToState(error);
     }
-  };
+  }
+
+ 
+  /**
+   *
+   * @param {{id: string, archived: boolean }} payload
+   */
+  async function collectArchiveFile(payload) {
+    try {
+      const tbuArchived = await archiveFile(payload);
+
+      setNotificationToState(tbuArchived);
+
+      //reftech tasks after archive this one
+      await collectListFiles();
+    } catch (error) {
+      setErrorToState(error);
+    }
+  }
 
   /**
    * Dispatches actions based on the specified type and payload.
@@ -232,21 +249,22 @@ export default function DriveController() {
         case DRIVE_CONTROLLER_ACTIONS.LIST:
           await collectListFiles();
           return;
-
         case DRIVE_CONTROLLER_ACTIONS.LIST_FOLDERS:
           await collectListDriveFolders();
           return;
-
         case DRIVE_CONTROLLER_ACTIONS.UPLOAD_FILES:
           await collectUploadFiles(action.payload);
           return;
-
+        case DRIVE_CONTROLLER_ACTIONS.ARCHIVE:
+          await collectArchiveFile(action?.payload);
+          break;
         case ALERT_ACTIONS.CLOSE_ALERT:
           closeAlert();
           return;
         case DRIVE_CONTROLLER_ACTIONS.SET_NOTIFICATION:
           setNotificationToState(action?.payload);
           break;
+
         default:
           console.log(`DriveController: No action type found ${action.type}`);
           return;

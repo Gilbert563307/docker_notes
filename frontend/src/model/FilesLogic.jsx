@@ -4,7 +4,6 @@ import { asBlob } from "html-docx-js-typescript";
 import DataHandler from "./DataHandler";
 import useHelpers from "../helpers/useHelpers";
 import { Query } from "firebase/firestore";
-// import { DEFAULT_TASKS_ARCHIVE, FILES_ARCHIVED_SESSION_FILTER } from '../config';
 
 export default function FilesLogic() {
   const {
@@ -24,6 +23,8 @@ export default function FilesLogic() {
     writeBatch,
     db,
     doc,
+    table,
+    updateDoc,
     BACKEND_URL,
     X_TOKEN,
     currentServerTimestamp,
@@ -274,16 +275,13 @@ export default function FilesLogic() {
     });
 
     try {
-      const response = await fetch(
-        `${BACKEND_URL}files/upload`,
-        {
-          method: "POST",
-          body: formData,
-          headers: {
-            "x-token": X_TOKEN,
-          },
-        }
-      );
+      const response = await fetch(`${BACKEND_URL}files/upload`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          "x-token": X_TOKEN,
+        },
+      });
 
       if (!response.ok) {
         // Handle HTTP error responses
@@ -361,5 +359,42 @@ export default function FilesLogic() {
     }
   }
 
-  return { convertHtmlToDocx, listFiles, uploadFiles };
+  /**
+   *
+   * @param {{id: string, archived: boolean }} payload
+   * @returns {Promise<{ archived: boolean, message: string, type: number }>}
+   */
+  async function archiveFile(payload) {
+    try {
+      //manualy updated the updated_at
+      const updatedPayload = { ...payload, updated_at: currentServerTimestamp };
+
+      //get document
+      const file = doc(db, table, payload.id);
+
+      //update document
+      const updated = updateDoc(file, updatedPayload);
+      if (!updated)
+        return {
+          archived: false,
+          message: "Something went wrong while archiving your file",
+          type: ALERT_TYPES.DANGER,
+        };
+
+      return {
+        archived: true,
+        message: "Your file has been succesfully been archiving",
+        type: ALERT_TYPES.SUCCESS,
+      };
+    } catch (error) {
+      console.log(`[archiveFile] ${error.message}`);
+      return {
+        archived: false,
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+
+  return { convertHtmlToDocx, listFiles, uploadFiles, archiveFile };
 }
