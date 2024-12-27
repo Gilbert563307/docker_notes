@@ -1,21 +1,18 @@
 import React from "react";
 import {
-  TASKS_CONTROLLER_ACTIONS,
-  useTasksControllerContext,
-} from "../controller/TasksController";
+  DRIVE_CONTROLLER_ACTIONS,
+  useDriveControllerContext,
+} from "../controller/DriveController";
 import { useDebounce } from "use-debounce";
 import { DEBOUNCE_SECONDS } from "../config";
 
 /**
- * A custom React hook for handling task search functionality.
- * It dispatches an action to search tasks based on the provided search value.
- *
  * @param {Object} props - The props object.
- * @param {string} props.searchValue - The search value used for task search.
+ * @param {string} props.searchValue - The search value used for  search.
  * @returns {null} Returns null as this hook does not render any UI elements directly.
  */
-export default function useTasksSearchBarHook({ searchValue }) {
-  const { dispatch } = useTasksControllerContext();
+export default function useDriveSearchBarHook({ searchValue }) {
+  const { dispatch } = useDriveControllerContext();
 
   // Debounce the search value to prevent frequent API calls
   const [debounceSearchInput] = useDebounce(searchValue, DEBOUNCE_SECONDS);
@@ -28,7 +25,7 @@ export default function useTasksSearchBarHook({ searchValue }) {
      */
     const fetchTasksBySearchTerm = () => {
       dispatch({
-        type: TASKS_CONTROLLER_ACTIONS.SEARCH_TASKS_BY_SEARCH_TERM,
+        type: DRIVE_CONTROLLER_ACTIONS.SEARCH_FILES_BY_SEARCH_TERM,
         payload: debounceSearchInput,
       });
     };

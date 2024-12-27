@@ -141,6 +141,15 @@ import React from 'react'
  * @typedef {Array<Session>} Sessions
  */
 
+
+/**
+ * 
+ * @typedef {Object} FilesResponse
+ * @property {DriveFiles} files
+ * @property {number} total
+ * @property {number} pages
+ */
+
 export default function types() {
     return null;
 }

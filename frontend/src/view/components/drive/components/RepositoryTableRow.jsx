@@ -1,6 +1,6 @@
 import React from "react";
 import BS5TruncateSpan from "../../bs5/BS5TruncateSpan";
-// import ArchiveFileButton from "./buttons/ArchiveFileButton";
+import ArchiveFileButton from "./buttons/ArchiveFileButton";
 import DeleteFileButton from "./buttons/DeleteFileButton";
 import {
   DRIVE_CONTROLLER_ACTIONS,
@@ -42,10 +42,10 @@ export default function RepositoryTableRow({ file }) {
           fileId={file.id}
           filename={file.name}
         ></DeleteFileButton>
-        {/* <ArchiveFileButton
+        <ArchiveFileButton
           fileId={file.id}
           isArchived={file.archived}
-        ></ArchiveFileButton> */}
+        ></ArchiveFileButton>
       </td>
     </tr>
   );

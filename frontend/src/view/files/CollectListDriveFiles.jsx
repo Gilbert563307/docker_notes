@@ -4,18 +4,21 @@ import { Link } from "react-router-dom";
 import RepositoryTable from "../components/drive/components/RepositoryTable";
 import BS5PaginationV2 from "../components/bs5/BS5PaginationV2";
 import useGetFilesHook from "../../hooks/useGetFilesHook";
+import { Show } from "../components/custom/Show";
+import DriveSearchBar from "./components/DriveSearchBar";
 
 export default function CollectListDriveFiles() {
   useSetPageTitleHook({ title: "Drive " });
   const { files, total, pages } = useGetFilesHook();
-  
 
   return (
     <article className="drive-article ">
       <div>
         <div className="drive-container mt-4">
           <div className="tasks-header d-flex justify-content-between">
-            <div className=""></div>
+            <div className="">
+              <DriveSearchBar/>
+            </div>
             <div className="tasks-article-buttons">
               <div>{/* FILTER BUTTON TODO */}</div>
               <div>
@@ -30,8 +33,13 @@ export default function CollectListDriveFiles() {
             </div>
           </div>
           <div className="tasks-content table-responsive">
-            <RepositoryTable files={files} />
-            <BS5PaginationV2 totalItems={total} totalPages={pages} />
+            <Show>
+              <Show.When isTrue={files.length > 0}>
+                <RepositoryTable files={files} />
+                <BS5PaginationV2 totalItems={total} totalPages={pages} />
+              </Show.When>
+              <Show.Else render="No files available"></Show.Else>
+            </Show>
           </div>
         </div>
       </div>

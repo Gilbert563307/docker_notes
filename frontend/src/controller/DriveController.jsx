@@ -5,6 +5,7 @@ import NotificationV3 from "../view/components/notifications/NotificationV3";
 import { Outlet, useNavigate } from "react-router-dom";
 import FilesLogic from "../model/FilesLogic";
 import FoldersLogic from "../model/FoldersLogic";
+import useHelpers from "../helpers/useHelpers";
 
 /**
  * @typedef {Object} InitialState
@@ -46,6 +47,7 @@ export const DRIVE_CONTROLLER_ACTIONS = {
   ARCHIVE: "ARCHIVE",
   DELETE: "DELETE",
   DOWNLOAD_FILE: "DOWNLOAD_FILE",
+  SEARCH_FILES_BY_SEARCH_TERM: "SEARCH_FILES_BY_SEARCH_TERM",
   SET_NOTIFICATION: "SET_NOTIFICATION,",
 };
 
@@ -78,8 +80,17 @@ export const useDriveControllerContext = () => {
 export default function DriveController() {
   //import the methods and loader component from our custom component
   const { showLoader, closeLoader, PreloaderComponent } = useBS5PreloaderHook();
-  const { listFiles, uploadFiles, archiveFile, deleteFile, downloadFile } =
-    FilesLogic();
+  const { getCurrentPageNumber } = useHelpers();
+
+  const {
+    listFiles,
+    uploadFiles,
+    archiveFile,
+    deleteFile,
+    downloadFile,
+    listFilesBySearchTerm,
+  } = FilesLogic();
+
   const { getFolders } = FoldersLogic();
   const navigate = useNavigate();
 
@@ -163,7 +174,9 @@ export default function DriveController() {
 
   const collectListFiles = async () => {
     try {
-      const payload = { searchTearm: "" };
+      //get currentPageNumber
+      const currentPage = getCurrentPageNumber();
+      const payload = { currentPage: currentPage };
       const files = await listFiles(payload);
 
       // Update state with the created task response
@@ -259,7 +272,31 @@ export default function DriveController() {
       const downloaded = await downloadFile(payload);
       setNotificationToState(downloaded);
     } catch (error) {
-       setErrorToState(error);
+      setErrorToState(error);
+    }
+  }
+
+  /**
+   *
+   * @param {string} searchTearm
+   */
+  async function collectListFilesBySearchTerm(searchTearm) {
+    try {
+      //get currentPageNumber
+      const currentPage = getCurrentPageNumber();
+      //create Payload
+      const payload = { currentPage: currentPage, searchTearm: searchTearm };
+
+      const files = await listFilesBySearchTerm(payload);
+      setNotificationToState(files);
+
+      // Update state with the created task response
+      dispatchAction({
+        type: REDUCER_ACTIONS.SET_FILES,
+        payload: files.results,
+      });
+    } catch (error) {
+      setErrorToState(error);
     }
   }
 
@@ -298,6 +335,9 @@ export default function DriveController() {
           break;
         case DRIVE_CONTROLLER_ACTIONS.DOWNLOAD_FILE:
           await collectDownloadFile(action?.payload);
+          break;
+        case DRIVE_CONTROLLER_ACTIONS.SEARCH_FILES_BY_SEARCH_TERM:
+          await collectListFilesBySearchTerm(action?.payload);
           break;
         case DRIVE_CONTROLLER_ACTIONS.SET_NOTIFICATION:
           setNotificationToState(action?.payload);

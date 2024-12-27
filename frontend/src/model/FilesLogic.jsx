@@ -130,12 +130,13 @@ export default function FilesLogic() {
   /**
    * Generates a Firestore query to fetch tasks for the current page.
    *
-   * @param {{ searchTearm?: string }} payload - The current page number for pagination.
+   *@param {{currentPage: number, itemsPerPage?: number, searchTearm?: string }} payload
    * @returns {Promise<{query: Query | null, message: string, type: number}>} The Firestore query to fetch tasks for the specified page.
    */
   function getFilesTasksQuery(payload) {
     try {
-      const currentPage = getCurrentPageNumber();
+      // Destructure the vars
+      const { currentPage } = payload;
 
       // Get the number of items to be displayed per page
       const itemsPerPage = getTheCurrentItemsPerPage();
@@ -176,8 +177,8 @@ export default function FilesLogic() {
 
   /**
    *
-   * @param {{ searchTearm?: string}} payload
-   * @returns
+   * @param {{ currentPage: number, itemsPerPage?: number, searchTearm?: string}} payload
+   * @returns {Promise<{results: import("../types/types").FilesResponse,  message: string, type: number }>}
    */
   async function listFiles(payload) {
     try {
@@ -494,6 +495,7 @@ export default function FilesLogic() {
   /**
    *
    * @param {{filename: string }} payload
+   * @returns {Promise<{ downloaded: boolean, message: string, type: number }>}
    */
   async function downloadFile(payload) {
     try {
@@ -547,6 +549,24 @@ export default function FilesLogic() {
     }
   }
 
+  /**
+   *
+   * @param {{currentPage: number, searchTearm: string}} payload
+   * @returns {Promise<{results: import("../types/types").FilesResponse,  message: string, type: number }>}
+   */
+  async function listFilesBySearchTerm(payload) {
+    try {
+      return await listFiles(payload);
+    } catch (error) {
+      console.log(`[listFilesBySearchTerm]: ${error.message}`);
+      return {
+        results: { files: [], total: 0, pages: 0 },
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+
   return {
     convertHtmlToDocx,
     listFiles,
@@ -554,5 +574,6 @@ export default function FilesLogic() {
     archiveFile,
     deleteFile,
     downloadFile,
+    listFilesBySearchTerm,
   };
 }

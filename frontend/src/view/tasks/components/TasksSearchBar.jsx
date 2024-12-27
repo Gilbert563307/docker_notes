@@ -11,7 +11,7 @@ export default function TasksSearchBar() {
     return (
         <input
             type="text"
-            className="form-control disabled"
+            className="form-control "
             id="search_bar"
             placeholder="Search ...."
             value={searchValue}
