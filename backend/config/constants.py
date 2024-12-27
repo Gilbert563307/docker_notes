@@ -13,6 +13,6 @@ ALLOWED_UPLOAD_MIME_TYPES = [
     "application/zip",  # ZIP files (e.g., archives with documents)
 ]
 
-UPLOAD_DIRECTORY = "uploads"
-
-
+# Ensure the Directory Path Matches the Mounted Volume. The UPLOAD_DIRECTORY in your code should point to the path inside the container where the volume is mounted.
+# Based on your docker-compose.yml
+UPLOAD_DIRECTORY = "/code/app/uploads"

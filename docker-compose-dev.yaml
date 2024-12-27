@@ -18,6 +18,12 @@ services:
       dockerfile: Dockerfile.dev
     volumes:
       - ./backend:/code/app
+      - uploads-data:/code/app/uploads  # Mount the uploads folder to a named volume
     ports:
       - 8000:8000
     restart: on-failure
+
+volumes:
+  #This is a named volume. Named volumes are managed by Docker and store data outside the lifecycle of containers. 
+  #They are persistent even if you rebuild or restart the container.
+  uploads-data:  # Define the named volume
