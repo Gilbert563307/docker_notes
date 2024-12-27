@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form
 import os
 from .dependencies import get_token_header
 from typing import List
@@ -10,9 +10,6 @@ from config.constants import (
 from model.FilesLogic import FilesLogic
 from pydantic import BaseModel
 
-class uploadPayload(BaseModel):
-    files: List[UploadFile] = File(...)
-    user_uid: str = ""
 
 files_router = APIRouter(
     prefix="/files",
@@ -23,36 +20,38 @@ files_router = APIRouter(
 
 
 @files_router.post("/upload")
-async def create_upload_files(uploadPayload: uploadPayload):
-    if len(uploadPayload.user_uid) == 0:
-        raise HTTPException(status_code=400, detail=f"The user uid cannot be empty")
+async def create_upload_files(
+    files: list[UploadFile],
+    folder_id: str = Form(...),
+    user_uid: str = Form(...),
+):
+
+    if user_uid == "":
+        return {
+            "message": "The user uid cannot be empty",
+            "files_uploaded": False,
+        }
 
     uploaded_files: list[File] = []
 
-    for file in uploadPayload.files:
+    for file in files:
         content = await file.read()
 
         # Check file size
         if len(content) > MAX_FILE_UPLOAD_SIZE:
-            raise HTTPException(
-                status_code=400,
-                detail=f"File {file.filename} exceeds the maximum allowed size of {MAX_FILE_UPLOAD_SIZE / 1024 / 1024} MB.",
-            )
+            return {
+                "message": f"File {file.filename} exceeds the maximum allowed size of {MAX_FILE_UPLOAD_SIZE / 1024 / 1024} MB.",
+                "files_uploaded": False,
+            }, 400
 
         # Check file type
         if not FilesLogic.is_allowed_file(file):
-            raise HTTPException(
-                status_code=400,
-                detail=f"File {file.filename} is not a valid image, PDF, text file, or document.",
-            )
+            return {
+                "message": f"File {file.filename} is not a valid image, PDF, text file, or document.",
+                "files_uploaded": False,
+            }, 400
 
-        # Secure the filename and save the file
-        secure_name = secure_filename(file.filename)
-        file_location = os.path.join(UPLOAD_DIRECTORY, secure_name)
-
-        with open(file_location, "wb") as f:
-            f.write(content)
-
-        uploaded_files.append({"filename": secure_name, "size": len(content)})
+        if FilesLogic.upload_file(file, user_uid, content):
+            uploaded_files.append({"filename": file.filename})
 
     return {"message": "Success", "data": {"uploaded_files": uploaded_files}}

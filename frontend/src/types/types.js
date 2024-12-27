@@ -98,9 +98,10 @@ import React from 'react'
 /**
  * @typedef {Object} DriveFile
  * @property {string} id
- * @property {string} user_uid
- * @property {string} folder_id
  * @property {string} name
+ * @property {string} folder_id
+ * @property {number} size
+ * @property {string} type
  * @property {string} created_at
  * @property {string} updated_at
  */

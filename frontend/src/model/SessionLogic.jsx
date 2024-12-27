@@ -27,13 +27,25 @@ export default function SessionLogic() {
   }
 
   /**
+   * 
+   * @param {Date} date 
+   * @param {number} hours 
+   * @returns 
+   */
+  function addHours(date, hours) {
+    const hoursToAdd = hours * 60 * 60 * 1000;
+    date.setTime(date.getTime() + hoursToAdd);
+    return date;
+  }
+
+  /**
    *
    * @returns {Date}
    */
   function getSessionExpireDate() {
     // Create a Date object for the end of the current day
-    const endOfDay = new Date();
-    endOfDay.setHours(24, 0, 0, 0); // Set time to 00:00 of the next day
+    const currentDate = new Date();
+    const endOfDay = addHours(currentDate, 24);
     return endOfDay;
   }
 
@@ -147,5 +159,9 @@ export default function SessionLogic() {
       };
     }
   }
-  return { createSession };
+
+  async function checkUserSession() {
+    return false
+  }
+  return { createSession, checkUserSession };
 }

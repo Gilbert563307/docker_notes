@@ -265,25 +265,25 @@ export default function FilesLogic() {
   async function uploadFilesToBackendServer(payload) {
     const formData = new FormData();
 
-    // Append files to FormData
-    payload.files.forEach((file, index) => {
-      formData.append(`file_${index}`, file);
-    });
-
-    // Append additional fields
     formData.append("folder_id", payload.folderId);
     formData.append("user_uid", userUid);
 
-    //localhost:8000/files/upload?user_uid=4a422422542e48ec029f6d21bc93c2d3cd24f823a33dba037672c5d1808c6fcf&token=ab47c9f1d2e34567ac89de12b3f45a67
+    // Append files to FormData
+    payload.files.forEach((file) => {
+      formData.append(`files`, file, file.name);
+    });
 
     try {
-      const response = await fetch(`${BACKEND_URL}files/upload`, {
-        method: "POST",
-        body: formData,
-        headers: {
-          "x-token": X_TOKEN,
-        },
-      });
+      const response = await fetch(
+        `${BACKEND_URL}files/upload`,
+        {
+          method: "POST",
+          body: formData,
+          headers: {
+            "x-token": X_TOKEN,
+          },
+        }
+      );
 
       if (!response.ok) {
         // Handle HTTP error responses
@@ -320,15 +320,21 @@ export default function FilesLogic() {
    */
   async function uploadFiles(payload) {
     try {
+      //upload the files to the backend server
+      const uploadedToServer = await uploadFilesToBackendServer(payload);
+      if (!uploadedToServer.uploaded) return uploadedToServer;
+
       // Create a batch write operation
       const batch = writeBatch(db);
 
       //loop through data to  get the filename
-      payload.files.forEach((file) => {
+      payload.files.forEach((file /** @type {File}  */) => {
         const fileToUploadPayload = {
           name: file.name,
           folder_id: payload.folderId,
           user_uid: userUid,
+          size: file.size,
+          type: file.type,
           created_at: currentServerTimestamp,
           updated_at: currentServerTimestamp,
         };
@@ -340,11 +346,8 @@ export default function FilesLogic() {
       //add all data to firebase db
       const uploaded = await batch.commit();
 
-      //upload the files to the backend server
-      const uploadedToServer = await uploadFilesToBackendServer(payload);
-
       return {
-        uploaded: Boolean(uploaded) && Boolean(uploadedToServer),
+        uploaded: Boolean(uploaded),
         message: uploadedToServer.message || "File(s) uploaded successfully.",
         type: ALERT_TYPES.SUCCESS,
       };
