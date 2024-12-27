@@ -8,7 +8,7 @@ from pydantic import BaseModel
 
 
 # Define the request body model
-class DeleteFileRequest(BaseModel):
+class FileRequest(BaseModel):
     user_uid: str
     filename: str
 
@@ -60,8 +60,16 @@ async def create_upload_files(
 
 
 @files_router.post("/delete")
-async def delete_file(request: DeleteFileRequest):
+async def delete_file(request: FileRequest):
     if not request.user_uid:
         raise HTTPException(status_code=400, detail="The user uid cannot be empty")
 
     return FilesLogic.delete_file(request.user_uid, request.filename)
+
+
+@files_router.post("/get")
+async def get_file_to_download(request: FileRequest):
+    if not request.user_uid:
+        raise HTTPException(status_code=400, detail="The user uid cannot be empty")
+
+    return FilesLogic.get_download_file(request.user_uid, request.filename)

@@ -2,6 +2,10 @@ import React from "react";
 import BS5TruncateSpan from "../../bs5/BS5TruncateSpan";
 // import ArchiveFileButton from "./buttons/ArchiveFileButton";
 import DeleteFileButton from "./buttons/DeleteFileButton";
+import {
+  DRIVE_CONTROLLER_ACTIONS,
+  useDriveControllerContext,
+} from "../../../../controller/DriveController";
 
 /**
  *
@@ -10,6 +14,14 @@ import DeleteFileButton from "./buttons/DeleteFileButton";
  * @returns {JSX.Element} The rendered component.
  */
 export default function RepositoryTableRow({ file }) {
+  const { dispatch } = useDriveControllerContext();
+  function downloadFile() {
+    dispatch({
+      type: DRIVE_CONTROLLER_ACTIONS.DOWNLOAD_FILE,
+      payload: { filename: file.name },
+    });
+  }
+
   return (
     <tr className="repository-table-row">
       <th scope="row">
@@ -24,7 +36,7 @@ export default function RepositoryTableRow({ file }) {
       <td>{file.updated_at.toLocaleString()}</td>
       <td className="main-table-actions">
         <button>
-          <i className="fa-light fa-download"></i>
+          <i className="fa-light fa-download" onClick={downloadFile}></i>
         </button>
         <DeleteFileButton
           fileId={file.id}

@@ -45,6 +45,7 @@ export const DRIVE_CONTROLLER_ACTIONS = {
   UPDATE: "UPDATE",
   ARCHIVE: "ARCHIVE",
   DELETE: "DELETE",
+  DOWNLOAD_FILE: "DOWNLOAD_FILE",
   SET_NOTIFICATION: "SET_NOTIFICATION,",
 };
 
@@ -77,7 +78,8 @@ export const useDriveControllerContext = () => {
 export default function DriveController() {
   //import the methods and loader component from our custom component
   const { showLoader, closeLoader, PreloaderComponent } = useBS5PreloaderHook();
-  const { listFiles, uploadFiles, archiveFile, deleteFile } = FilesLogic();
+  const { listFiles, uploadFiles, archiveFile, deleteFile, downloadFile } =
+    FilesLogic();
   const { getFolders } = FoldersLogic();
   const navigate = useNavigate();
 
@@ -238,14 +240,26 @@ export default function DriveController() {
   async function collectDeleteFile(payload) {
     try {
       const tbuDeleted = await deleteFile(payload);
-      console.log(tbuDeleted)
+      console.log(tbuDeleted);
       setNotificationToState(tbuDeleted);
 
       //reftech files after archive this one
       await collectListFiles();
     } catch (error) {
       setErrorToState(error);
-      
+    }
+  }
+
+  /**
+   *
+   * @param {{filename: string }} payload
+   */
+  async function collectDownloadFile(payload) {
+    try {
+      const downloaded = await downloadFile(payload);
+      setNotificationToState(downloaded);
+    } catch (error) {
+       setErrorToState(error);
     }
   }
 
@@ -281,6 +295,9 @@ export default function DriveController() {
           return;
         case DRIVE_CONTROLLER_ACTIONS.DELETE:
           await collectDeleteFile(action?.payload);
+          break;
+        case DRIVE_CONTROLLER_ACTIONS.DOWNLOAD_FILE:
+          await collectDownloadFile(action?.payload);
           break;
         case DRIVE_CONTROLLER_ACTIONS.SET_NOTIFICATION:
           setNotificationToState(action?.payload);

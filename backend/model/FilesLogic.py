@@ -1,5 +1,6 @@
 from config.constants import ALLOWED_UPLOAD_MIME_TYPES, UPLOAD_DIRECTORY
 from fastapi import HTTPException, UploadFile
+from fastapi.responses import FileResponse
 import os
 from fastapi import File
 
@@ -79,7 +80,7 @@ class FilesLogic:
             if os.path.exists(file_path):
                 os.remove(file_path)
                 return {"deleted": True, "message": "File successfully deleted."}
-            
+
             return {"deleted": False, "message": "File not found."}
 
         except Exception as e:
@@ -87,3 +88,13 @@ class FilesLogic:
             print(f"[delete_file error]: {str(e)}")
             return {"deleted": False, "message": "An error occurred while trying to delete the file."}
 
+    @staticmethod
+    def get_download_file(user_uid: str, file_name: str):
+        # Get current directory
+        current_dir = os.getcwd()
+        file_path = os.path.join(current_dir, UPLOAD_DIRECTORY, user_uid, file_name)
+        if not os.path.exists(file_path):
+            raise HTTPException(status_code=404, detail="File not found")
+
+        # Return the file as a response
+        return FileResponse(file_path, filename=file_name)

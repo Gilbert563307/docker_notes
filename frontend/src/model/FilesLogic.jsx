@@ -413,7 +413,7 @@ export default function FilesLogic() {
         method: "POST",
         body: JSON.stringify(payload),
         headers: {
-          "Accept": "application/json",
+          Accept: "application/json",
           "Content-Type": "application/json",
           "x-token": X_TOKEN,
         },
@@ -491,5 +491,68 @@ export default function FilesLogic() {
     }
   }
 
-  return { convertHtmlToDocx, listFiles, uploadFiles, archiveFile, deleteFile };
+  /**
+   *
+   * @param {{filename: string }} payload
+   */
+  async function downloadFile(payload) {
+    try {
+      const updatedPayload = { ...payload, user_uid: userUid };
+
+      const response = await fetch(`${BACKEND_URL}files/get`, {
+        method: "POST",
+        body: JSON.stringify(updatedPayload),
+        headers: {
+          "Content-Type": "application/json",
+          "x-token": X_TOKEN,
+        },
+      });
+
+      if (response.status === 404) {
+        const data = await response.json();
+        return {
+          downloaded: false,
+          message: JSON.stringify(data),
+          type: ALERT_TYPES.DANGER,
+        };
+      }
+
+      // Ensure the response is a blob
+      const blob = await response.blob();
+
+      // Create a link element to trigger the download
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = payload.filename;
+      document.body.appendChild(link);
+
+      // Trigger the download and clean up
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      return {
+        downloaded: true,
+        message: "",
+        type: ALERT_TYPES.SUCCESS,
+      };
+    } catch (error) {
+      console.log(`[downloadFile] #${error.message}`);
+      return {
+        downloaded: false,
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+
+  return {
+    convertHtmlToDocx,
+    listFiles,
+    uploadFiles,
+    archiveFile,
+    deleteFile,
+    downloadFile,
+  };
 }
