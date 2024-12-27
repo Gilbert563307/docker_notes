@@ -2,3 +2,10 @@ backend/.env
 backend/__pycache__
 frontend/.env
 backend/service_account_key.json
+
+backend/config/__pycache__
+backend/model/__pycache__
+backend/controller/__pycache__
+backend/config/__pycache__/constants.cpython-312.pyc
+backend/controller/__pycache__/dependencies.cpython-312.pyc
+backend/controller/__pycache__/FilesController.cpython-312.pyc
