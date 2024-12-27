@@ -1,14 +1,12 @@
 import React from "react";
 import BS5TruncateSpan from "../../bs5/BS5TruncateSpan";
-import ArchiveFileButton from "./buttons/ArchiveFileButton";
+// import ArchiveFileButton from "./buttons/ArchiveFileButton";
+import DeleteFileButton from "./buttons/DeleteFileButton";
 
 /**
- * ArchiveTaskButton Component
- *
- * This component renders a button that, when clicked, opens a modal to confirm the archiving of a task.
  *
  * @param {Object} props - The props object.
- * @param {import("../../../../types/types").DriveFile} props.file - The task id to be archived.
+ * @param {import("../../../../types/types").DriveFile} props.file -
  * @returns {JSX.Element} The rendered component.
  */
 export default function RepositoryTableRow({ file }) {
@@ -25,13 +23,17 @@ export default function RepositoryTableRow({ file }) {
       <td>{file.created_at.toLocaleString()}</td>
       <td>{file.updated_at.toLocaleString()}</td>
       <td className="main-table-actions">
-        <ArchiveFileButton
-          fileId={file.id}
-          isArchived={file.archived}
-        ></ArchiveFileButton>
         <button>
           <i className="fa-light fa-download"></i>
         </button>
+        <DeleteFileButton
+          fileId={file.id}
+          filename={file.name}
+        ></DeleteFileButton>
+        {/* <ArchiveFileButton
+          fileId={file.id}
+          isArchived={file.archived}
+        ></ArchiveFileButton> */}
       </td>
     </tr>
   );

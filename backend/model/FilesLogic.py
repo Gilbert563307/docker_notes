@@ -65,3 +65,25 @@ class FilesLogic:
         except Exception as e:
             print(f"[upload_file]]: {e}")
             return False
+
+    @staticmethod
+    def delete_file(user_uid: str, file_name: str) -> dict:
+        try:
+            # Get current directory
+            current_dir = os.getcwd()
+
+            # Create file path
+            file_path = os.path.join(current_dir, UPLOAD_DIRECTORY, user_uid, file_name)
+
+            # Check if file exists
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                return {"deleted": True, "message": "File successfully deleted."}
+            
+            return {"deleted": False, "message": "File not found."}
+
+        except Exception as e:
+            # Log the exception for debugging (use logging in production)
+            print(f"[delete_file error]: {str(e)}")
+            return {"deleted": False, "message": "An error occurred while trying to delete the file."}
+

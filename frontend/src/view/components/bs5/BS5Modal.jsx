@@ -10,7 +10,7 @@ export const MODAL_SIZES = {
 };
 
 /**
- * 
+ *
  * @param {Object} props - Modal properties.
  * @param {string} props.modal_id - Unique identifier for the modal.
  * @param {string} props.modal_label - Accessible label for the modal.
@@ -18,6 +18,7 @@ export const MODAL_SIZES = {
  * @param {any} props.modal_content - Content to be displayed in the modal.
  * @param {boolean} [props.modal_footer=true] - Flag to show/hide the modal footer.
  * @param {boolean} [props.showSaveChanges=false] - Flag to show/hide the "Save Changes" button.
+ * @param {number} [props.saveChangesClass=0] - Number for the corresponding button class
  * @param {string} [props.saveChangesTitle="Opslaan"] - Text for the "Save Changes" button.
  * @param {import("react").MouseEventHandler} props.closeModal - Function to close the modal.
  * @param {boolean} [props.headerCentre=false] - Flag to center align the modal header.
@@ -32,13 +33,13 @@ export default function BS5Modal({
   modal_content,
   modal_footer = true,
   showSaveChanges = false,
+  saveChangesClass = 0,
   saveChangesTitle = "Save changes",
   closeModal,
   headerCentre = false,
   modalSize = MODAL_SIZES.NONE,
-  saveChangesFunction = () => { },
+  saveChangesFunction = () => {},
 }) {
-
   /**
    * pass a modal size as an integer from 0-3 from MODAL_SIZES constant
    * @param {number} modalSize
@@ -53,6 +54,28 @@ export default function BS5Modal({
     };
     return availableModalSizes[modalSize] || "";
   };
+
+  /**
+   *
+   * @param {number} saveChangesClass
+   * @returns {string}
+   */
+  function getSaveChangesClass(saveChangesClass) {
+    const availableBtnClasses = {
+      0: "btn-primary", // Primary button class
+      1: "btn-default", // Default button class
+      2: "btn-secondary", // Secondary button class
+      3: "btn-success", // Success button class
+      4: "btn-danger", // Danger button class
+      5: "btn-warning", // Warning button class
+      6: "btn-info", // Info button class
+      7: "btn-light", // Light button class
+      8: "btn-dark", // Dark button class
+    };
+
+    // Return the corresponding button class or first element
+    return availableBtnClasses[saveChangesClass] || availableBtnClasses[0];
+  }
 
   return (
     <div>
@@ -72,8 +95,9 @@ export default function BS5Modal({
         >
           <div className="modal-content">
             <div
-              className={`modal-header dialogic-modal-header ${headerCentre ? "dialogic-modal-header-centre" : ""
-                }`}
+              className={`modal-header dialogic-modal-header ${
+                headerCentre ? "dialogic-modal-header-centre" : ""
+              }`}
             >
               <h1 className="modal-title fs-5 " id={modal_label + `Label`}>
                 {modal_title}
@@ -102,7 +126,7 @@ export default function BS5Modal({
                   <button
                     type="button"
                     tabIndex={0}
-                    className="btn btn-primary"
+                    className={`btn ${getSaveChangesClass(saveChangesClass)}`}
                     onClick={saveChangesFunction}
                   >
                     {saveChangesTitle}
@@ -116,8 +140,3 @@ export default function BS5Modal({
     </div>
   );
 }
-
-
-
-
-

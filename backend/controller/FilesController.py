@@ -1,14 +1,16 @@
-from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form
-import os
+from fastapi import APIRouter, Depends, File, UploadFile, Form, HTTPException
 from .dependencies import get_token_header
-from typing import List
-from werkzeug.utils import secure_filename
 from config.constants import (
     MAX_FILE_UPLOAD_SIZE,
-    UPLOAD_DIRECTORY,
 )
 from model.FilesLogic import FilesLogic
 from pydantic import BaseModel
+
+
+# Define the request body model
+class DeleteFileRequest(BaseModel):
+    user_uid: str
+    filename: str
 
 
 files_router = APIRouter(
@@ -55,3 +57,11 @@ async def create_upload_files(
             uploaded_files.append({"filename": file.filename})
 
     return {"message": "Success", "data": {"uploaded_files": uploaded_files}}
+
+
+@files_router.post("/delete")
+async def delete_file(request: DeleteFileRequest):
+    if not request.user_uid:
+        raise HTTPException(status_code=400, detail="The user uid cannot be empty")
+
+    return FilesLogic.delete_file(request.user_uid, request.filename)

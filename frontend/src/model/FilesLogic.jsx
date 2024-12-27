@@ -27,6 +27,7 @@ export default function FilesLogic() {
     updateDoc,
     BACKEND_URL,
     X_TOKEN,
+    deleteDoc,
     currentServerTimestamp,
   } = DataHandler({ table: "files" });
 
@@ -290,11 +291,15 @@ export default function FilesLogic() {
           `[uploadFilesToBackendServer] Backend Error:`,
           errorResponse
         );
-        throw new Error(errorResponse.message || "File upload failed.");
+        return {
+          uploaded: false,
+          message: JSON.stringify(errorResponse),
+          type: ALERT_TYPES.DANGER,
+        };
       }
 
-      const data = await response.json();
-      console.log("File Upload Response:", data);
+      //TODO CHECK json response in future
+      // const data = await response.json();
 
       return {
         uploaded: true,
@@ -396,5 +401,95 @@ export default function FilesLogic() {
     }
   }
 
-  return { convertHtmlToDocx, listFiles, uploadFiles, archiveFile };
+  /**
+   * Upload files to the backend server
+   *
+   * @param {{user_uid: string, filename: string}} payload
+   * @returns {Promise<{deleted: boolean, message: string, type: number}>}
+   */
+  async function deleteFileFromBackendServer(payload) {
+    try {
+      const response = await fetch(`${BACKEND_URL}files/delete`, {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json",
+          "x-token": X_TOKEN,
+        },
+      });
+
+      if (!response.ok) {
+        // Handle HTTP error responses
+        const errorResponse = await response.json();
+        console.error(
+          `[deleteFileFromBackendServer] Backend Error:`,
+          errorResponse
+        );
+        return {
+          deleted: false,
+          message: JSON.stringify(errorResponse),
+          type: ALERT_TYPES.DANGER,
+        };
+      }
+
+      const data = await response.json();
+
+      if (!data.deleted) {
+        return {
+          deleted: false,
+          message: data.message,
+          type: ALERT_TYPES.DANGER,
+        };
+      }
+
+      return {
+        deleted: true,
+        message: "File deleted successfully.",
+        type: ALERT_TYPES.SUCCESS,
+      };
+    } catch (error) {
+      console.log(`[deleteFileFromBackendServer] ${error.message}`);
+      return {
+        deleted: false,
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+
+  /**
+   *
+   * @param {{id: string, filename: string }} payload
+   * @returns {Promise<{ deleted: boolean, message: string, type: number }>}
+   */
+  async function deleteFile(payload) {
+    try {
+      const { id, ...restPayload } = payload;
+      const updatedPayload = { ...restPayload, user_uid: userUid };
+
+      const deletedFromServer = await deleteFileFromBackendServer(
+        updatedPayload
+      );
+      if (!deletedFromServer.deleted) return deletedFromServer;
+
+      const fileRTef = doc(db, table, id);
+      const deleted = await deleteDoc(fileRTef);
+
+      return {
+        deleted: Boolean(deleted),
+        message: "Your file has been deleted",
+        type: ALERT_TYPES.DANGER,
+      };
+    } catch (error) {
+      console.log(`[deleteFile] ${error.message}`);
+      return {
+        deleted: false,
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+
+  return { convertHtmlToDocx, listFiles, uploadFiles, archiveFile, deleteFile };
 }
