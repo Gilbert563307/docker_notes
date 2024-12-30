@@ -2,7 +2,6 @@ import React from "react";
 import { ALERT_TYPES } from "../view/components/bs5/BS5Alert";
 import { asBlob } from "html-docx-js-typescript";
 import DataHandler from "./DataHandler";
-import useHelpers from "../helpers/useHelpers";
 import { Query } from "firebase/firestore";
 
 export default function FilesLogic() {
@@ -30,8 +29,6 @@ export default function FilesLogic() {
     deleteDoc,
     currentServerTimestamp,
   } = DataHandler({ table: "files" });
-
-  const { getCurrentPageNumber } = useHelpers();
 
   /**
    * @param {{searchTearm?: string}} payload
@@ -317,6 +314,53 @@ export default function FilesLogic() {
     }
   }
 
+  async function updateDocRefIfExists(fileName) {
+    try {
+      const checkFileQuery = query(
+        collectionRef,
+        where("name", "==", fileName)
+      );
+      const querySnapshot = await getDocs(checkFileQuery);
+
+      const updates = [];
+      let documentUpdated = "";
+      querySnapshot.forEach((document) => {
+        const oldData = document.data();
+
+        if (oldData.name === fileName) {
+          documentUpdated = fileName;
+          const newData = {
+            ...oldData,
+            james: "asdasdasd",
+            updated_at: currentServerTimestamp,
+          };
+
+          // Only update if data has changed
+          const docRef = doc(db, table, document.id);
+          updates.push(updateDoc(docRef, newData));
+        }
+      });
+
+      // Wait for all updates to complete
+      await Promise.all(updates);
+
+      return {
+        documentUpdated: documentUpdated,
+        updated: true,
+        message: "",
+        type: ALERT_TYPES.SUCCESS,
+      };
+    } catch (error) {
+      console.error(`[updateDocRefIfExists] ${error.message}`);
+      return {
+        documentUpdated: "",
+        updated: false,
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+
   /**
    *
    * @param {{files: Array<File>, folderId: string}} payload
@@ -331,8 +375,23 @@ export default function FilesLogic() {
       // Create a batch write operation
       const batch = writeBatch(db);
 
+      //check if the file already exits in firebase
+      //update the updated_at only do not save the entire file as a newly addec collection in firebase
+      const results = await Promise.all(
+        payload.files.map((file) => updateDocRefIfExists(file.name))
+      );
+
+      // Extract the `documentUpdated` values
+      const updatedDocuments = results.map((result) => result.documentUpdated);
+      console.log(updatedDocuments);
+
+      //filter out the docsname that you do not want to updae
+      const payloadToSave = payload.files.filter(
+        (f) => !updatedDocuments.includes(f.name)
+      );
+
       //loop through data to  get the filename
-      payload.files.forEach((file /** @type {File}  */) => {
+      payloadToSave.forEach((file /** @type {File}  */) => {
         const fileToUploadPayload = {
           name: file.name,
           folder_id: payload.folderId,
@@ -347,12 +406,13 @@ export default function FilesLogic() {
         const docRef = doc(collectionRef);
         batch.set(docRef, fileToUploadPayload);
       });
+
       //add all data to firebase db
       const uploaded = await batch.commit();
 
       return {
         uploaded: Boolean(uploaded),
-        message: uploadedToServer.message || "File(s) uploaded successfully.",
+        message: "",
         type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {
