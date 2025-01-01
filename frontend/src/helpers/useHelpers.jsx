@@ -62,7 +62,7 @@ export default function useHelpers() {
    * @param {string} created_at - The input timestamp in the format 'YYYY-MM-DDTHH:mm:ss.SSSSSSZ'.
    * @returns {string} - The Dutch-formatted date.
    */
-  const convertToDutchDateFormat = (created_at) => {
+  function convertToDutchDateFormat(created_at) {
     // Create a Date object from the timestamp
     const date = new Date(created_at);
 
@@ -71,7 +71,7 @@ export default function useHelpers() {
     const year = date.getFullYear();
 
     return `${day}-${month}-${year}`;
-  };
+  }
 
   /**
    *

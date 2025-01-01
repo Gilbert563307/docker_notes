@@ -2,8 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "../../assets/css/views/folders/CollectListFolders.css";
 import BS5PaginationV2 from "../components/bs5/BS5PaginationV2";
+import useSetPageTitleHook from "../../hooks/useSetPageTitleHook";
 
 export default function CollectListFolders() {
+  useSetPageTitleHook({ title: "Folders " });
+
   const folders = [
     {
       id: "NECQfscfVTouhVLvTjUo",
@@ -69,7 +72,7 @@ export default function CollectListFolders() {
         </ul>
       </div>
       <div>
-          {/* <BS5PaginationV2 totalItems={totalFiles} totalPages={totalPages} /> */}
+        {/* <BS5PaginationV2 totalItems={totalFiles} totalPages={totalPages} /> */}
       </div>
     </article>
   );

@@ -466,7 +466,7 @@ export default function TasksLogic() {
 
       return {
         updated: true,
-        message: "Your task has been succesfully been archived",
+        message: "Your task has been succesfully been updated",
         type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {

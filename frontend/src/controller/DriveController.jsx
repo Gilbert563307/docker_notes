@@ -71,15 +71,13 @@ const driveControllerContext = createContext(
 /**
  * @returns {ContextValue} The context value.
  */
-export const useDriveControllerContext = () => {
-  const context = useContext(driveControllerContext);
-  if (!context) {
-    throw new Error(
-      "useDriveControllerContext must be used within a DriveControllerProvider"
-    );
+export function useDriveControllerContext() {
+  try {
+    return useContext(driveControllerContext);
+  } catch (error) {
+    throw new Error(error.message);
   }
-  return context;
-};
+}
 
 export default function DriveController() {
   //import the methods and loader component from our custom component
@@ -111,7 +109,7 @@ export default function DriveController() {
    * @param {Object} action - Action object containing type and payload.
    * @returns {Object} - Updated state.
    */
-  const reducer = (state, action) => {
+  function reducer(state, action) {
     switch (action.type) {
       case REDUCER_ACTIONS.SET_FILES:
         return {
@@ -136,19 +134,24 @@ export default function DriveController() {
       default:
         return state;
     }
-  };
+  }
 
   // Defining the state and the dispatchAction using the useReducer hook
   const [state, dispatchAction] = useReducer(reducer, initialState);
 
-  const closeAlert = () => {
+  function closeAlert() {
     dispatchAction({
       type: REDUCER_ACTIONS.SET_NOTIFICATION,
       payload: { message: "", type: 0 },
     });
-  };
+  }
 
-  const setNotificationToState = (object) => {
+  /**
+   *
+   * @param {{message: string, type: number}} object
+   * @returns {void | null}
+   */
+  function setNotificationToState(object) {
     if (object.message === "") return;
     // Set the message
     dispatchAction({
@@ -162,21 +165,21 @@ export default function DriveController() {
     }, 20000);
 
     // Clear timeout if needed
-    return () => clearTimeout(timeoutId);
-  };
+    return clearTimeout(timeoutId);
+  }
 
   /**
    * Sets error to the state and dispatches notification.
    * @param {Error} error - The error object.
    */
-  const setErrorToState = (error) => {
+  function setErrorToState(error) {
     dispatchAction({
       type: REDUCER_ACTIONS.SET_NOTIFICATION,
       payload: { message: error.message, type: ALERT_TYPES.DANGER },
     });
-  };
+  }
 
-  const collectListFiles = async () => {
+  async function collectListFiles() {
     try {
       //get currentPageNumber
       const currentPage = getCurrentPageNumber();
@@ -198,9 +201,9 @@ export default function DriveController() {
     } catch (error) {
       setErrorToState(error);
     }
-  };
+  }
 
-  const collectListDriveFolders = async () => {
+  async function collectListDriveFolders() {
     try {
       const results = await getFolders();
 
@@ -213,7 +216,7 @@ export default function DriveController() {
     } catch (error) {
       setErrorToState(error);
     }
-  };
+  }
 
   /**
    *
@@ -310,9 +313,9 @@ export default function DriveController() {
    * @returns {Promise<void>} - A Promise that resolves when the operation is completed.
    */
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const dispatch = async (
+  async function dispatch(
     /** @type {{ type: string; payload?: any; }} */ action
-  ) => {
+  ) {
     try {
       // Show loader while processing action
       showLoader();
@@ -360,7 +363,7 @@ export default function DriveController() {
       // Close loader after action processing
       closeLoader();
     }
-  };
+  }
 
   /** @returns {ContextValue} */
   const contextValue = useMemo(
