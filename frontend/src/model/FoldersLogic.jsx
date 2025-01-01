@@ -15,6 +15,10 @@ export default function FoldersLogic() {
     convertQuerySnapShotDocs,
   } = DataHandler({ table: "folders" });
 
+  /**
+   *
+   * @returns {Promise<{folders: any, message: string, type: number}>}
+   */
   async function getFolders() {
     try {
       const foldersQuery = query(

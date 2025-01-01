@@ -71,7 +71,7 @@ export default function FilesLogic() {
    *
    * @param {Array} queryItems
    * @param {number} itemsPerPage
-   * @returns {{query: Query, message: string, type: number} | void}
+   * @returns {{query: Query, message: string, type: number}}
    */
   function fetchFilesOnPageOne(queryItems, itemsPerPage) {
     const filesQuery = query(collectionRef, ...queryItems, limit(itemsPerPage));
@@ -125,10 +125,17 @@ export default function FilesLogic() {
   }
 
   /**
+   * @typedef {Promise<Object> | Object} getFilesTasksQueryResponse
+   * @property {Query | null} query
+   * @property {string} message
+   * @property {number} type
+   */
+
+  /**
    * Generates a Firestore query to fetch tasks for the current page.
    *
    *@param {{currentPage: number, itemsPerPage?: number, searchTearm?: string }} payload
-   * @returns {Promise<{query: Query | null, message: string, type: number}>} The Firestore query to fetch tasks for the specified page.
+   * @returns {getFilesTasksQueryResponse} The Firestore query to fetch tasks for the specified page.
    */
   function getFilesTasksQuery(payload) {
     try {
@@ -314,6 +321,13 @@ export default function FilesLogic() {
     }
   }
 
+  /**
+   * This func should be called before uploading files to the backend server;
+   * It first checks if the file is already submitted into the firebase db;
+   * If so then it updates the updated_at timestamp for that specific document with that names;
+   * @param {string} fileName
+   * @returns {Promise<{documentUpdated: string, updated: boolean, message: string, type: number}>}
+   */
   async function updateDocRefIfExists(fileName) {
     try {
       const checkFileQuery = query(
@@ -331,7 +345,6 @@ export default function FilesLogic() {
           documentUpdated = fileName;
           const newData = {
             ...oldData,
-            james: "asdasdasd",
             updated_at: currentServerTimestamp,
           };
 

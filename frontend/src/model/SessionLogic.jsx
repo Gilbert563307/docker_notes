@@ -15,6 +15,11 @@ export default function SessionLogic() {
     table: "sessions",
   });
 
+  /**
+   * 
+   * @param {number} length 
+   * @returns {string}
+   */
   function generateUniqueToken(length = 64) {
     const characters =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
