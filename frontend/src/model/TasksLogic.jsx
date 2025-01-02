@@ -427,7 +427,7 @@ export default function TasksLogic() {
 
       //update document
       await updateDoc(task, updatedPayload);
-     
+
       return {
         updated: true,
         message: "Your task has been succesfully been updated",
@@ -499,14 +499,14 @@ export default function TasksLogic() {
    * @param {string} taskId
    * @returns {Promise<{ deleted: boolean, message: string, type: number }>}
    */
-  const deleteTask = async (taskId) => {
+  async function deleteTask(taskId) {
     try {
       const taskRef = doc(db, table, taskId);
       const deleted = await deleteDoc(taskRef);
       return {
         deleted: Boolean(deleted),
         message: "Your task has been deleted",
-        type: ALERT_TYPES.DANGER,
+        type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {
       console.log(`[deleteTask]: ${error.message}`);
@@ -516,7 +516,7 @@ export default function TasksLogic() {
         type: ALERT_TYPES.DANGER,
       };
     }
-  };
+  }
 
   return {
     createTask,

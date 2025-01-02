@@ -64,7 +64,7 @@ export default function CollectCreateFolder() {
         {/* start color picker */}
         <div className="col-12 mb-2">
           <label htmlFor="ColorInput" className="form-label">
-            Folder colour
+            Colour
           </label>
           <input
             type="color"

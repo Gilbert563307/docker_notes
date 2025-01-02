@@ -32,6 +32,7 @@ export default function FoldersLogic() {
     table,
     addDoc,
     getDocument,
+    deleteDoc,
   } = DataHandler({ table: "folders" });
 
   const { getSessionFilter } = useHelpers();
@@ -213,8 +214,6 @@ export default function FoldersLogic() {
     }
   }
 
-  
-
   /**
    *
    * @param {{id: string, archived: boolean}} payload -
@@ -338,6 +337,30 @@ export default function FoldersLogic() {
     }
   }
 
+  /**
+   *
+   * @param {string} folderId
+   * @returns {Promise<{ deleted: boolean, message: string, type: number }>}
+   */
+  async function deleteFolder(folderId) {
+    try {
+      const ref = doc(db, table, folderId);
+      const deleted = await deleteDoc(ref);
+      return {
+        deleted: Boolean(deleted),
+        message: "Your folder has been deleted",
+        type: ALERT_TYPES.SUCCESS,
+      };
+    } catch (error) {
+      console.log(`[deleteTask]: ${error.message}`);
+      return {
+        deleted: false,
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+
   return {
     getFolders,
     listFolders,
@@ -345,5 +368,6 @@ export default function FoldersLogic() {
     createFolder,
     readFolder,
     updateFolder,
+    deleteFolder,
   };
 }

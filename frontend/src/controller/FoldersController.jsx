@@ -73,8 +73,14 @@ export function useFoldersControllerContext() {
 export default function FoldersController() {
   const { getCurrentPageNumber } = useHelpers();
   const { showLoader, closeLoader, PreloaderComponent } = useBS5PreloaderHook();
-  const { listFolders, archiveFolder, createFolder, readFolder, updateFolder } =
-    FoldersLogic();
+  const {
+    listFolders,
+    archiveFolder,
+    createFolder,
+    readFolder,
+    updateFolder,
+    deleteFolder,
+  } = FoldersLogic();
 
   const navigate = useNavigate();
 
@@ -250,6 +256,26 @@ export default function FoldersController() {
   }
 
   /**
+   *
+   * @param {string} folderId
+   */
+  async function collectDeletFolder(folderId) {
+    try {
+      const tbuDeleted = await deleteFolder(folderId);
+
+      setNotificationToState(tbuDeleted);
+
+      //reftech tasks after archive this one
+      await collectListFolders;
+
+      //navugate to tasks page
+      navigate("/folders");
+    } catch (error) {
+      setErrorToState(error);
+    }
+  }
+
+  /**
    * Dispatches actions based on the specified type and payload.
    * @param {{ type: string; payload?: any; }} action - The action object containing type and payload.
    * @returns {Promise<void>} - A Promise that resolves when the operation is completed.
@@ -293,6 +319,10 @@ export default function FoldersController() {
 
         case FOLDERS_CONTROLLER_ACTIONS.READ:
           await collectReadFolder(action.payload);
+          break;
+
+        case FOLDERS_CONTROLLER_ACTIONS.DELETE:
+          await collectDeletFolder(action?.payload);
           break;
 
         default:

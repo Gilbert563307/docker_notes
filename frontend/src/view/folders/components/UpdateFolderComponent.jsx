@@ -1,6 +1,8 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { FOLDERS_CONTROLLER_ACTIONS } from "../../../controller/FoldersController";
+import DeleteFolderButton from "../buttons/DeleteFolderButton";
+import "../../../assets/css/components/folders/UpdateFolderComponent.css";
 
 export default function UpdateFolderComponent({ folder, dispatch }) {
   const {
@@ -61,7 +63,7 @@ export default function UpdateFolderComponent({ folder, dispatch }) {
         {/* start color picker */}
         <div className="col-12 mb-2">
           <label htmlFor="ColorInput" className="form-label">
-            Folder colour
+            Colour
           </label>
           <input
             type="color"
@@ -73,13 +75,16 @@ export default function UpdateFolderComponent({ folder, dispatch }) {
         </div>
         {/* end color picker */}
 
-        <div className="col-12 mt-3">
-          <input
-            type="submit"
-            name="submit"
-            value="Update"
-            className="add-task-button task-btn-plain"
-          ></input>
+        <div className="update-folder-component-actions">
+          <div className="">
+            <input
+              type="submit"
+              name="submit"
+              value="Update"
+              className="add-task-button task-btn-plain"
+            ></input>
+          </div>
+          <DeleteFolderButton folderId={folder.id} />
         </div>
       </form>
     </article>

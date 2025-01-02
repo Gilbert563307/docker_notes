@@ -25,7 +25,19 @@ export default function FoldersTableRow({ folder }) {
               style={{ color: folder.color }}
             ></i>
           </span>
-          <BS5TruncateSpan content={folder.name} maxWidthToSet="350px" />
+
+          <BS5TruncateSpan
+            content={
+              <Link
+                to={`/folders/read/${folder.id}`}
+                state={{ folder: folder }}
+                className="read-link"
+              >
+                {folder.name}
+              </Link>
+            }
+            maxWidthToSet="350px"
+          />
         </div>
       </td>
       <td>{folder.created_at.toLocaleString()}</td>
