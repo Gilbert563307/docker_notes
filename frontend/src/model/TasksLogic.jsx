@@ -500,13 +500,13 @@ export default function TasksLogic() {
    */
   const archiveTask = async (payload) => {
     try {
-      const archived = await updateTask(payload);
+      const { updated, message, type } = await updateTask(payload);
 
       // Return the result of the update operation
       return {
-        archived: Boolean(archived),
-        message: "",
-        type: ALERT_TYPES.SUCCESSU,
+        archived: updated,
+        message: message,
+        type: type,
       };
     } catch (error) {
       // Return an error response if the update operation fails

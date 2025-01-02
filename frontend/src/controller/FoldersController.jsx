@@ -73,7 +73,7 @@ export function useFoldersControllerContext() {
 export default function FoldersController() {
   const { getCurrentPageNumber } = useHelpers();
   const { showLoader, closeLoader, PreloaderComponent } = useBS5PreloaderHook();
-  const { listFolders } = FoldersLogic();
+  const { listFolders, archiveFolder } = FoldersLogic();
 
   const REDUCER_ACTIONS = {
     SET_FILES: "SET_FILES",
@@ -178,6 +178,10 @@ export default function FoldersController() {
         case FOLDERS_CONTROLLER_ACTIONS.LIST:
           await CollectListFolders();
           break;
+        
+        case FOLDERS_CONTROLLER_ACTIONS.ARCHIVE:
+          await collectArchiveFolder(action?.payload);
+          break;
 
         case FOLDERS_CONTROLLER_ACTIONS.SET_NOTIFICATION:
           setNotificationToState(action?.payload);
@@ -215,6 +219,23 @@ export default function FoldersController() {
     } catch (error) {
       setErrorToState(error);
     }
+  }
+
+  /**
+   *
+   * @param {{id: string, archived: boolean}} payload
+   */
+  async function collectArchiveFolder(payload) {
+     try {
+       const tbuArchived = await archiveFolder(payload);
+
+       setNotificationToState(tbuArchived);
+
+       //reftech tasks after archive this one
+       await CollectListFolders();
+     } catch (error) {
+       setErrorToState(error);
+     }
   }
 
   /** @returns {ContextValue} */

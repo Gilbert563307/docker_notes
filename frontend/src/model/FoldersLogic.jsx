@@ -25,6 +25,11 @@ export default function FoldersLogic() {
     fetchPaginatedResults,
     getTotalPages,
     getCountFromServer,
+    currentServerTimestamp,
+    updateDoc,
+    doc,
+    db,
+    table,
   } = DataHandler({ table: "folders" });
 
   const { getSessionFilter } = useHelpers();
@@ -196,5 +201,68 @@ export default function FoldersLogic() {
       };
     }
   }
-  return { getFolders, listFolders };
+
+  /**
+   *
+   * @param {import("../types/types").Folder} payload
+   * @returns {Promise<{ updated: boolean, message: string, type: number }>}
+   */
+  async function updateFolder(payload) {
+    try {
+      //manualy updated the updated_at
+      const updatedPayload = { ...payload, updated_at: currentServerTimestamp };
+
+      //get document
+      const docRef = doc(db, table, payload.id);
+
+      //update document
+      const updated = updateDoc(docRef, updatedPayload);
+      if (!updated)
+        return {
+          updated: false,
+          message: "Something went wrong while archiving your folder",
+          type: ALERT_TYPES.DANGER,
+        };
+
+      return {
+        updated: true,
+        message: "Your folder has been succesfully been updated",
+        type: ALERT_TYPES.SUCCESS,
+      };
+    } catch (error) {
+      console.log(`[updateFolder]: ${error.message}`);
+      return {
+        updated: false,
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+
+  /**
+   *
+   * @param {{id: string, archived: boolean}} payload -
+   * @returns {Promise<{ archived: boolean, message: string, type: number }>} - A promise that resolves to an object indicating the result of the archiving process.
+   */
+  async function archiveFolder(payload) {
+    try {
+      const { updated, message, type } = await updateFolder(payload);
+
+      // Return the result of the update operation
+      return {
+        archived: updated,
+        message: message,
+        type: type,
+      };
+    } catch (error) {
+      // Return an error response if the update operation fails
+      console.log(`[archiveFolder]: ${error.message}`);
+      return {
+        archived: false,
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+  return { getFolders, listFolders, archiveFolder };
 }
