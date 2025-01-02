@@ -1,12 +1,11 @@
-import React, { createContext, useContext, useMemo, useReducer } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import useBS5PreloaderHook from '../hooks/useBS5PreloaderHook';
-import { ALERT_ACTIONS, ALERT_TYPES } from '../view/components/bs5/BS5Alert';
-import NotificationV3 from '../view/components/notifications/NotificationV3';
-import TasksLogic from '../model/TasksLogic';
-import useHelpers from '../helpers/useHelpers';
-import FilesLogic from '../model/FilesLogic';
-
+import React, { createContext, useContext, useMemo, useReducer } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import useBS5PreloaderHook from "../hooks/useBS5PreloaderHook";
+import { ALERT_ACTIONS, ALERT_TYPES } from "../view/components/bs5/BS5Alert";
+import NotificationV3 from "../view/components/notifications/NotificationV3";
+import TasksLogic from "../model/TasksLogic";
+import useHelpers from "../helpers/useHelpers";
+import FilesLogic from "../model/FilesLogic";
 
 /**
  * @typedef {Array<import("../types/types").Task>} Tasks - State for tasks.
@@ -64,9 +63,9 @@ export const TASKS_CONTROLLER_ACTIONS = {
 
 // Create context with initial state and dispatch function
 const tasksControllerContext = createContext(
-  /** @type {ContextValue} */({
+  /** @type {ContextValue} */ ({
     state: initialState,
-    dispatch: () => { },
+    dispatch: () => {},
   })
 );
 
@@ -75,22 +74,29 @@ const tasksControllerContext = createContext(
  * Throws an error if used outside the TasksControllerProvider.
  * @returns {ContextValue} The context value.
  */
-export const useTasksControllerContext = () => {
-  const context = useContext(tasksControllerContext);
-  if (!context) {
-    throw new Error(
-      "useTasksControllerContext must be used within a TasksControllerProvider"
-    );
+export function useTasksControllerContext() {
+  try {
+    return useContext(tasksControllerContext);
+  } catch (error) {
+    throw new Error(error.message);
   }
-  return context;
-};
+}
 
 /**
  * TasksController component that provides an outlet for nested routes.
  * @returns {JSX.Element} The TasksController component.
  */
 export default function TasksController() {
-  const { createTask, listTasks, updateTask, readTask, archiveTask, deleteTask, listTasksBySearchTerm } = TasksLogic();
+  const {
+    createTask,
+    listTasks,
+    updateTask,
+    readTask,
+    archiveTask,
+    deleteTask,
+    listTasksBySearchTerm,
+  } = TasksLogic();
+
   const { convertHtmlToDocx } = FilesLogic();
   const { getCurrentPageNumber } = useHelpers();
   const navigate = useNavigate();
@@ -110,7 +116,7 @@ export default function TasksController() {
    * @param {Object} action - Action object containing type and payload.
    * @returns {Object} - Updated state.
    */
-  const reducer = (state, action) => {
+  function reducer(state, action) {
     switch (action.type) {
       case REDUCER_ACTIONS.SET_TASKS:
         // console.log('Setting tasks:', action.payload);
@@ -133,75 +139,73 @@ export default function TasksController() {
       default:
         return state;
     }
-  };
+  }
 
   // Defining the state and the dispatchAction using the useReducer hook
   const [state, dispatchAction] = useReducer(reducer, initialState);
 
   /**
-   * 
-   * @param {import("../types/types").Notification} object 
-   * @returns 
+   *
+   * @param {{message: string, type: number}} object
+   * @returns {void | null}
    */
- const setNotificationToState = (object) => {
-   if (object.message === "") return;
-   // Set the message
-   dispatchAction({
-     type: REDUCER_ACTIONS.SET_NOTIFICATION,
-     payload: object,
-   });
+  function setNotificationToState(object) {
+    if (object.message === "") return;
+    // Set the message
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_NOTIFICATION,
+      payload: object,
+    });
 
-   // Remove message after 20 seconds
-   const timeoutId = setTimeout(() => {
-     closeAlert();
-   }, 20000);
+    // Remove message after 20 seconds
+    const timeoutId = setTimeout(() => {
+      closeAlert();
+    }, 20000);
 
-   // Clear timeout if needed
-   return () => clearTimeout(timeoutId);
- };
-
+    // Clear timeout if needed
+    return clearTimeout(timeoutId);
+  }
 
   /**
    * Sets error to the state and dispatches notification.
    * @param {Error} error - The error object.
    */
-  const setErrorToState = (error) => {
+  function setErrorToState(error) {
     dispatchAction({
       type: REDUCER_ACTIONS.SET_NOTIFICATION,
       payload: { message: error.message, type: ALERT_TYPES.DANGER },
     });
-  };
+  }
 
-  const closeAlert = () => {
+  function closeAlert() {
     dispatchAction({
       type: REDUCER_ACTIONS.SET_NOTIFICATION,
       payload: { message: "", type: 0 },
     });
-  };
-
-  /**
-   * 
-   * @param {{ message: string, type: number }} notification 
-   */
-  const collectSetNotification = (notification) => {
-    setNotificationToState(notification);
   }
 
+  /**
+   *
+   * @param {{ message: string, type: number }} notification
+   */
+  function collectSetNotification(notification) {
+    setNotificationToState(notification);
+  }
 
   /**
    * When a user creates a task, refetch the tasks;
    */
-  const refreshTasksList = async () => {
+  async function refreshTasksList() {
     // const currentPage = getCurrentPageNumber();
     // const payload = { currentPage: currentPage };
     await collectListTasks();
   }
 
   /**
-   * 
-   * @param {{title: string, description: string,  priority: number }} payload 
+   *
+   * @param {{title: string, description: string,  priority: number }} payload
    */
-  const collectCreateTask = async (payload) => {
+  async function collectCreateTask(payload) {
     try {
       const taskCreated = await createTask(payload);
 
@@ -220,9 +224,9 @@ export default function TasksController() {
   }
 
   /**
-   * 
+   *
    */
-  const collectListTasks = async () => {
+  async function collectListTasks() {
     try {
       //get currentPageNumber
       const currentPage = getCurrentPageNumber();
@@ -241,18 +245,16 @@ export default function TasksController() {
         type: REDUCER_ACTIONS.SET_TASK,
         payload: {},
       });
-
     } catch (error) {
-      setErrorToState(error)
+      setErrorToState(error);
     }
   }
 
-
   /**
-   * 
-   * @param {import("../types/types").Task} payload 
+   *
+   * @param {import("../types/types").Task} payload
    */
-  const collectUpdateTask = async (payload) => {
+  async function collectUpdateTask(payload) {
     try {
       const tbuTask = await updateTask(payload);
 
@@ -272,12 +274,11 @@ export default function TasksController() {
     }
   }
 
-
   /**
-   * 
-   * @param {string} taskId 
+   *
+   * @param {string} taskId
    */
-  const collectReadTask = async (taskId) => {
+  async function collectReadTask(taskId) {
     try {
       // try to find the task in the current state;
       const results = await readTask(taskId);
@@ -292,51 +293,47 @@ export default function TasksController() {
       });
     } catch (error) {
       setErrorToState(error);
-
     }
   }
 
   /**
-  * 
-  * @param {{id: string, archived: boolean}} payload 
-  */
-  const collectArchiveTask = async (payload) => {
+   *
+   * @param {{id: string, archived: boolean}} payload
+   */
+  async function collectArchiveTask(payload) {
     try {
       const tbuArchived = await archiveTask(payload);
 
       setNotificationToState(tbuArchived);
 
-      //reftech tasks after archive this one 
+      //reftech tasks after archive this one
       await refreshTasksList();
-
     } catch (error) {
       setErrorToState(error);
-
     }
   }
 
   /**
-   * 
-   * @param {string} taskId 
+   *
+   * @param {string} taskId
    */
-  const collectDeleteTask = async (taskId) => {
+  async function collectDeleteTask(taskId) {
     try {
       const tbuDeleted = await deleteTask(taskId);
 
       setNotificationToState(tbuDeleted);
 
-      //reftech tasks after archive this one 
+      //reftech tasks after archive this one
       await refreshTasksList();
 
       //navugate to tasks page
       navigate("/tasks");
     } catch (error) {
       setErrorToState(error);
-
     }
   }
 
-  const collectDownloadTask = async (payload) => {
+  async function collectDownloadTask(payload) {
     try {
       const downloaded = await convertHtmlToDocx(payload);
       setNotificationToState(downloaded);
@@ -346,10 +343,10 @@ export default function TasksController() {
   }
 
   /**
-   * 
-   * @param {string} searchTearm 
+   *
+   * @param {string} searchTearm
    */
-  const collectListTasksBySearchTerm = async (searchTearm) => {
+  async function collectListTasksBySearchTerm(searchTearm) {
     try {
       //get currentPageNumber
       const currentPage = getCurrentPageNumber();
@@ -372,14 +369,14 @@ export default function TasksController() {
   }
 
   /**
-  * Dispatches actions based on the specified type and payload.
-  * @param {{ type: string; payload?: any; }} action - The action object containing type and payload.
-  * @returns {Promise<void>} - A Promise that resolves when the operation is completed.
-  */
+   * Dispatches actions based on the specified type and payload.
+   * @param {{ type: string; payload?: any; }} action - The action object containing type and payload.
+   * @returns {Promise<void>} - A Promise that resolves when the operation is completed.
+   */
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const dispatch = async (
+  async function dispatch(
     /** @type {{ type: string; payload?: any; }} */ action
-  ) => {
+  ) {
     try {
       // Show loader while processing action
       showLoader();
@@ -417,9 +414,7 @@ export default function TasksController() {
           closeAlert();
           break;
         default:
-          console.log(
-            `TasksController: No action type found ${action.type}`
-          );
+          console.log(`TasksController: No action type found ${action.type}`);
           break;
       }
     } catch (error) {
@@ -431,7 +426,7 @@ export default function TasksController() {
       // Close loader after action processing
       closeLoader();
     }
-  };
+  }
 
   /** @returns {ContextValue} */
   const contextValue = useMemo(

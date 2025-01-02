@@ -1,9 +1,9 @@
-import React, { createContext, useMemo, useState, useContext } from 'react';
-import DefaultLayout from '../view/layout/DefaultLayout';
-import { useAuthProvider } from '../context/AuthProvider';
-import GuestLayout from '../view/layout/GuestLayout';
-import { ThemeContext } from '../context/ThemeContext';
-import ThemeLogic from '../model/ThemeLogic';
+import React, { createContext, useMemo, useState, useContext } from "react";
+import DefaultLayout from "../view/layout/DefaultLayout";
+import { useAuthProvider } from "../context/AuthProvider";
+import GuestLayout from "../view/layout/GuestLayout";
+import { ThemeContext } from "../context/ThemeContext";
+import ThemeLogic from "../model/ThemeLogic";
 
 /**
  * Initial state for the MainController.
@@ -18,7 +18,7 @@ import ThemeLogic from '../model/ThemeLogic';
  */
 const initialState = {
   title: "",
-  setTitle: () => { },
+  setTitle: () => {},
 };
 
 /**
@@ -32,16 +32,13 @@ const MainControllerContext = createContext(initialState);
  * @returns {MainControllerState} The MainController context state.
  * @throws {Error} Throws an error if used outside of MainController.
  */
-export const useMainControllerContext = () => {
-  const mainControllerContext = useContext(MainControllerContext);
-
-  if (!mainControllerContext) {
-    throw new Error('useMainControllerContext must be used within MainController');
+export function useMainControllerContext() {
+  try {
+    return useContext(MainControllerContext);
+  } catch (error) {
+    throw new Error(error.message);
   }
-
-  return mainControllerContext;
-};
-
+}
 
 /**
  * @typedef {{type: number, message: string}} notificationObject

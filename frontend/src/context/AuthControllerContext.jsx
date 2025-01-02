@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext } from "react";
 
 /**
  * @typedef {Object} InitialState
@@ -10,7 +10,7 @@ import React, { createContext, useContext } from 'react';
  * @type {InitialState}
  */
 export const initialState = {
-    notification: { message: "", type: 0 },
+  notification: { message: "", type: 0 },
 };
 
 /**
@@ -21,23 +21,20 @@ export const initialState = {
 
 /** @type {React.Context<AuthControllerContext>} */
 const AuthControllerContext = createContext({
-    state: initialState,
-    dispatch: (action) => { },
+  state: initialState,
+  dispatch: (action) => {},
 });
 
 /**
  * Custom hook to access the AuthController context.
  * @returns {AuthControllerContext} AuthController context value.
  */
-export const useAuthControllerContext = () => {
-    const authControllerContext = useContext(AuthControllerContext);
-
-    if (!authControllerContext) {
-        throw new Error('useAuthControllerContext must be used within an AuthController');
-    }
-
-    return authControllerContext;
-};
+export function useAuthControllerContext() {
+  try {
+    return useContext(AuthControllerContext);
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
 
 export default AuthControllerContext;
-
