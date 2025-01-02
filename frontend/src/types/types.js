@@ -113,6 +113,8 @@ import React from 'react'
  * @property {string} user_uid
  * @property {string} name
  * @property {string} color
+ * @property {string} created_at
+ * @property {string} updated_at
  */
 
 /**

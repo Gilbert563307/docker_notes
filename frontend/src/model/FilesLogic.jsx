@@ -15,7 +15,6 @@ export default function FilesLogic() {
     collectionRef,
     limit,
     getDocs,
-    startAfter,
     convertQuerySnapShotDocs,
     getCountFromServer,
     getTotalPages,
@@ -28,6 +27,8 @@ export default function FilesLogic() {
     X_TOKEN,
     deleteDoc,
     currentServerTimestamp,
+    fetchResultsOnPageOne,
+    fetchPaginatedResults,
   } = DataHandler({ table: "files" });
 
   /**
@@ -68,74 +69,21 @@ export default function FilesLogic() {
   }
 
   /**
-   *
-   * @param {Array} queryItems
-   * @param {number} itemsPerPage
-   * @returns {{query: Query, message: string, type: number}}
-   */
-  function fetchFilesOnPageOne(queryItems, itemsPerPage) {
-    const filesQuery = query(collectionRef, ...queryItems, limit(itemsPerPage));
-    return { query: filesQuery, message: "", type: ALERT_TYPES.SUCCESS };
-  }
-
-  /**
-   *
-   * @param {number} currentPage
-   * @param {Object} payload
-   * @param {number} itemsPerPage
-   * @param {Array} queryItems
-   * @returns {Promise<{query: Query, message: string, type: number}>}
-   */
-  async function fetchPaginatedFiles(
-    currentPage,
-    payload,
-    itemsPerPage,
-    queryItems
-  ) {
-    // Calculate the limit for fetching documents up to the current page
-    const newPageLimit = currentPage * (payload?.itemsPerPage || itemsPerPage);
-
-    // Fetch tasks limited by the new page limit
-    const allDocsLimitedByThePageNumber = query(
-      collectionRef,
-      ...queryItems,
-      limit(newPageLimit)
-    );
-
-    // Get document snapshots for the calculated limit clause
-    const documentSnapshots = await getDocs(allDocsLimitedByThePageNumber);
-
-    // Calculate the offset to start from the last doc in the array
-    const offset = (currentPage - 1) * itemsPerPage;
-
-    // Get the document to start after, based on the offset
-    const startFromDocument = documentSnapshots.docs[offset];
-    if (!startFromDocument) {
-      throw new Error("No document found to start after for the given page.");
-    }
-
-    // Return a query that starts after the last visible document of the previous page
-    const filesQuery = query(
-      collectionRef,
-      ...queryItems,
-      startAfter(startFromDocument),
-      limit(itemsPerPage)
-    );
-    return { query: filesQuery, message: "", type: ALERT_TYPES.SUCCESS };
-  }
-
-  /**
-   * @typedef {Promise<Object> | Object} getFilesTasksQueryResponse
-   * @property {Query | null} query
+   * @typedef {Object} getFilesTasksQueryResponse
+   * @property {Query | null} resultsQuery
    * @property {string} message
    * @property {number} type
+   */
+
+  /**
+   * @typedef {Promise<getFilesTasksQueryResponse> | getFilesTasksQueryResponse} GetFilesTasksQueryResponseType
    */
 
   /**
    * Generates a Firestore query to fetch tasks for the current page.
    *
    *@param {{currentPage: number, itemsPerPage?: number, searchTearm?: string }} payload
-   * @returns {getFilesTasksQueryResponse} The Firestore query to fetch tasks for the specified page.
+   * @returns {GetFilesTasksQueryResponseType} The Firestore query to fetch tasks for the specified page.
    */
   function getFilesTasksQuery(payload) {
     try {
@@ -148,17 +96,21 @@ export default function FilesLogic() {
 
       // If the current page is the first page, create a query limited by the items per page
       if (currentPage === 1) {
-        return fetchFilesOnPageOne(queryItems, itemsPerPage);
+        return fetchResultsOnPageOne(queryItems, itemsPerPage);
       }
 
-      return fetchPaginatedFiles(
+      return fetchPaginatedResults(
         currentPage,
         payload,
         itemsPerPage,
         queryItems
       );
     } catch (error) {
-      return { query: null, message: error.message, type: ALERT_TYPES.DANGER };
+      return {
+        resultsQuery: null,
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
     }
   }
 
@@ -187,10 +139,10 @@ export default function FilesLogic() {
   async function listFiles(payload) {
     try {
       // Construct the query to get all tasks for the current user UID with a
-      const { query } = await getFilesTasksQuery(payload);
+      const { resultsQuery } = await getFilesTasksQuery(payload);
 
       // Execute the query to get the files.
-      const querySnapshot = await getDocs(query);
+      const querySnapshot = await getDocs(resultsQuery);
 
       const { results } = convertQuerySnapShotDocs(querySnapshot);
 

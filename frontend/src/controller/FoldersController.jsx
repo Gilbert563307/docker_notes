@@ -3,6 +3,8 @@ import { Outlet } from "react-router-dom";
 import { ALERT_ACTIONS, ALERT_TYPES } from "../view/components/bs5/BS5Alert";
 import useBS5PreloaderHook from "../hooks/useBS5PreloaderHook";
 import NotificationV3 from "../view/components/notifications/NotificationV3";
+import useHelpers from "../helpers/useHelpers";
+import FoldersLogic from "../model/FoldersLogic";
 
 /**
  * @typedef {Object} InitialState
@@ -69,7 +71,9 @@ export function useFoldersControllerContext() {
 }
 
 export default function FoldersController() {
+  const { getCurrentPageNumber } = useHelpers();
   const { showLoader, closeLoader, PreloaderComponent } = useBS5PreloaderHook();
+  const { listFolders } = FoldersLogic();
 
   const REDUCER_ACTIONS = {
     SET_FILES: "SET_FILES",
@@ -171,6 +175,10 @@ export default function FoldersController() {
         case ALERT_ACTIONS.CLOSE_ALERT:
           closeAlert();
 
+        case FOLDERS_CONTROLLER_ACTIONS.LIST:
+          await CollectListFolders();
+          break;
+
         case FOLDERS_CONTROLLER_ACTIONS.SET_NOTIFICATION:
           setNotificationToState(action?.payload);
           break;
@@ -187,6 +195,25 @@ export default function FoldersController() {
     } finally {
       // Close loader after action processing
       closeLoader();
+    }
+  }
+
+  async function CollectListFolders() {
+    try {
+      //get currentPageNumber
+      const currentPage = getCurrentPageNumber();
+      //create Payload
+      const payload = { currentPage: currentPage };
+
+      const folders = await listFolders(payload);
+
+      // Update state with the created task response
+      dispatchAction({
+        type: REDUCER_ACTIONS.SET_FOLDERS,
+        payload: folders.results,
+      });
+    } catch (error) {
+      setErrorToState(error);
     }
   }
 

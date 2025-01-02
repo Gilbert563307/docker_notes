@@ -43,6 +43,8 @@ export default function TasksLogic() {
     deleteDoc,
     getSearchQueryByFieldName,
     convertQuerySnapShotDocs,
+    fetchResultsOnPageOne,
+    fetchPaginatedResults,
   } = DataHandler({ table: "tasks" });
 
   /**
@@ -284,7 +286,7 @@ export default function TasksLogic() {
    * Generates a Firestore query to fetch tasks for the current page.
    *
    * @param {{currentPage: number, itemsPerPage?: number, searchTearm?: string }} payload - The current page number for pagination.
-   * @returns {Promise<{tasksQuery: Query | null, message: string, type: number}>} The Firestore query to fetch tasks for the specified page.
+   * @returns {Promise<{resultsQuery: Query | null, message: string, type: number}>} The Firestore query to fetch tasks for the specified page.
    */
   const getTasksQuery = async (payload) => {
     try {
@@ -297,53 +299,19 @@ export default function TasksLogic() {
 
       // If the current page is the first page, create a query limited by the items per page
       if (currentPage === 1) {
-        const tasksQuery = query(
-          collectionRef,
-          ...queryItems,
-          limit(itemsPerPage)
-        );
-        return {
-          tasksQuery: tasksQuery,
-          message: "",
-          type: ALERT_TYPES.SUCCESS,
-        };
+        return fetchResultsOnPageOne(queryItems, itemsPerPage);
       }
 
-      // Calculate the limit for fetching documents up to the current page
-      const newPageLimit =
-        currentPage * (payload?.itemsPerPage || itemsPerPage);
-
-      // Fetch tasks limited by the new page limit
-      const allDocsLimitedByThePageNumber = query(
-        collectionRef,
-        ...queryItems,
-        limit(newPageLimit)
+      return fetchPaginatedResults(
+        currentPage,
+        payload,
+        itemsPerPage,
+        queryItems
       );
-
-      // Get document snapshots for the calculated limit clause
-      const documentSnapshots = await getDocs(allDocsLimitedByThePageNumber);
-
-      // Calculate the offset to start from the last doc in the array
-      const offset = (currentPage - 1) * itemsPerPage;
-
-      // Get the document to start after, based on the offset
-      const startFromDocument = documentSnapshots.docs[offset];
-      if (!startFromDocument) {
-        throw new Error("No document found to start after for the given page.");
-      }
-
-      // Return a query that starts after the last visible document of the previous page
-      const tasksQuery = query(
-        collectionRef,
-        ...queryItems,
-        startAfter(startFromDocument),
-        limit(itemsPerPage)
-      );
-      return { tasksQuery: tasksQuery, message: "", type: ALERT_TYPES.SUCCESS };
     } catch (error) {
       console.log(`[getTasksQuery]: ${error.message}`);
       return {
-        tasksQuery: null,
+        resultsQuery: null,
         message: error.message,
         type: ALERT_TYPES.DANGER,
       };
@@ -380,16 +348,16 @@ export default function TasksLogic() {
   const listTasks = async (payload) => {
     try {
       // Construct the query to get all tasks for the current user UID with a
-      const { tasksQuery } = await getTasksQuery(payload);
+      const { resultsQuery } = await getTasksQuery(payload);
 
       // Execute the query to get the tasks.
-      const querySnapshot = await getDocs(tasksQuery);
+      const querySnapshot = await getDocs(resultsQuery);
 
       const { results } = convertQuerySnapShotDocs(querySnapshot);
 
       //get total records for pagination
       const totalRecords = await getTotalTasksInDatabaseByUserAndFilters();
-      //get total pages for paginartion
+      //get total pages for pagination
       const totalPages = getTotalPages(totalRecords);
       //return results
       return {

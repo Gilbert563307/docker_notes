@@ -18,6 +18,7 @@ import {
   startAt,
   endAt,
   writeBatch,
+  Query,
 } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import { useAuthProvider } from "../context/AuthProvider";
@@ -140,6 +141,92 @@ export default function DataHandler({ table }) {
     }
   };
 
+  /**
+   *
+   * @param {number} currentPage
+   * @param {Object} payload
+   * @param {number} itemsPerPage
+   * @param {Array} queryItems
+   * @returns {Promise<{resultsQuery: Query | null, message: string, type: number}>}
+   */
+  async function fetchPaginatedResults(
+    currentPage,
+    payload,
+    itemsPerPage,
+    queryItems
+  ) {
+    try {
+      // Calculate the limit for fetching documents up to the current page
+      const newPageLimit =
+        currentPage * (payload?.itemsPerPage || itemsPerPage);
+
+      // Fetch tasks limited by the new page limit
+      const allDocsLimitedByThePageNumber = query(
+        collectionRef,
+        ...queryItems,
+        limit(newPageLimit)
+      );
+
+      // Get document snapshots for the calculated limit clause
+      const documentSnapshots = await getDocs(allDocsLimitedByThePageNumber);
+
+      // Calculate the offset to start from the last doc in the array
+      const offset = (currentPage - 1) * itemsPerPage;
+
+      // Get the document to start after, based on the offset
+      const startFromDocument = documentSnapshots.docs[offset];
+      if (!startFromDocument) {
+        throw new Error("No document found to start after for the given page.");
+      }
+
+      // Return a query that starts after the last visible document of the previous page
+      const resultsQuery = query(
+        collectionRef,
+        ...queryItems,
+        startAfter(startFromDocument),
+        limit(itemsPerPage)
+      );
+      return {
+        resultsQuery: resultsQuery,
+        message: "",
+        type: ALERT_TYPES.SUCCESS,
+      };
+    } catch (error) {
+      return {
+        resultsQuery: null,
+        message: error.message,
+        type: ALERT_TYPES.SUCCESS,
+      };
+    }
+  }
+
+  /**
+   *
+   * @param {Array} queryItems
+   * @param {number} itemsPerPage
+   * @returns {{resultsQuery: Query | null, message: string, type: number}}
+   */
+  function fetchResultsOnPageOne(queryItems, itemsPerPage) {
+    try {
+      const resultsQuery = query(
+        collectionRef,
+        ...queryItems,
+        limit(itemsPerPage)
+      );
+      return {
+        resultsQuery: resultsQuery,
+        message: "",
+        type: ALERT_TYPES.SUCCESS,
+      };
+    } catch (error) {
+      return {
+        resultsQuery: null,
+        message: error.message,
+        type: ALERT_TYPES.SUCCESS,
+      };
+    }
+  }
+
   return {
     collectionRef,
     getDocs,
@@ -173,5 +260,7 @@ export default function DataHandler({ table }) {
     BACKEND_URL,
     Timestamp,
     X_TOKEN,
+    fetchPaginatedResults,
+    fetchResultsOnPageOne,
   };
 }

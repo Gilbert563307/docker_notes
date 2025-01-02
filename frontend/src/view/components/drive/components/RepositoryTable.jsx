@@ -23,21 +23,29 @@ export default function RepositoryTable({ files }) {
     ];
 
     return (
-        <table className="table table-striped repository-table table-sm mt-3">
-            <thead className="thead-light">
-                <tr className='repository-table-tr-headers'>
-                    {headers.map((header) => {
-                        return <th scope="col" className={`${header.className} px-6 py-3`} key={header.name} >
-                            <span>{header.icon}</span> {header.name}
-                        </th>
-                    })}
-                </tr>
-            </thead>
-            <tbody>
-                {files && files.length > 0 && files.map((file, index) => (
-                    <RepositoryTableRow key={file.id || index} file={file} />
-                ))}
-            </tbody>
-        </table>
-    )
+      <table className="table table-striped repository-table table-sm mt-3">
+        <thead className="thead-light">
+          <tr className="repository-table-tr-headers tasks-table-tr-headers">
+            {headers.map((header) => {
+              return (
+                <th
+                  scope="col"
+                  className={`${header.className} px-6 py-3`}
+                  key={header.name}
+                >
+                  <span>{header.icon}</span> {header.name}
+                </th>
+              );
+            })}
+          </tr>
+        </thead>
+        <tbody>
+          {files &&
+            files.length > 0 &&
+            files.map((file, index) => (
+              <RepositoryTableRow key={file.id || index} file={file} />
+            ))}
+        </tbody>
+      </table>
+    );
 }
