@@ -42,10 +42,10 @@ export default function RepositoryTableRow({ file }) {
           fileId={file.id}
           filename={file.name}
         ></DeleteFileButton>
-        <ArchiveFileButton
+        {/* <ArchiveFileButton
           fileId={file.id}
           isArchived={file.archived}
-        ></ArchiveFileButton>
+        ></ArchiveFileButton> */}
       </td>
     </tr>
   );

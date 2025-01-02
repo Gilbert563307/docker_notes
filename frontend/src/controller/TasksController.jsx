@@ -362,7 +362,6 @@ export default function TasksController() {
         payload: tasks.results,
       });
 
-      // setNotificationToState(tasks);
     } catch (error) {
       setErrorToState(error);
     }

@@ -3,6 +3,11 @@ import { ALERT_TYPES } from "../view/components/bs5/BS5Alert";
 import { asBlob } from "html-docx-js-typescript";
 import DataHandler from "./DataHandler";
 import { Query } from "firebase/firestore";
+import {
+  DEFAULT_FILES_ARCHIVE,
+  FILES_ARCHIVED_SESSION_FILTER,
+} from "../config";
+import useHelpers from "../helpers/useHelpers";
 
 export default function FilesLogic() {
   const {
@@ -31,17 +36,20 @@ export default function FilesLogic() {
     fetchPaginatedResults,
   } = DataHandler({ table: "files" });
 
+  const { getSessionFilter } = useHelpers();
   /**
    * @param {{searchTearm?: string}} payload
    * @returns {{queryItems: Array<Query> | Array, message: string, type: number}}
    */
   function getFilesQueryClauses(payload) {
     try {
-      // const tasksArchived = getSessionFilter(FILES_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
+      const archived =
+        getSessionFilter(FILES_ARCHIVED_SESSION_FILTER) ||
+        DEFAULT_FILES_ARCHIVE;
 
       let queryItems = [
         where("user_uid", "==", userUid),
-        // where("archived", "==", tasksArchived),
+        where("archived", "==", archived),
         orderBy("created_at", "desc"),
       ];
 
@@ -357,13 +365,20 @@ export default function FilesLogic() {
 
       //loop through data to  get the filename
       payloadToSave.forEach((file /** @type {File}  */) => {
+
+        /**
+         * @type {import("../types/types").DriveFile}
+         */
         const fileToUploadPayload = {
           name: file.name,
           folder_id: payload.folderId,
           user_uid: userUid,
           size: file.size,
           type: file.type,
+          archived: false,
+          // @ts-ignore
           created_at: currentServerTimestamp,
+          // @ts-ignore
           updated_at: currentServerTimestamp,
         };
 
@@ -414,7 +429,7 @@ export default function FilesLogic() {
 
       return {
         archived: true,
-        message: "Your file has been succesfully been archiving",
+        message: "Your file has been succesfully been archived",
         type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {

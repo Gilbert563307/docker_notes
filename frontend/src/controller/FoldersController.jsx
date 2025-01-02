@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo, useReducer } from "react";
-import { Outlet } from "react-router-dom";
+import { Await, Outlet } from "react-router-dom";
 import { ALERT_ACTIONS, ALERT_TYPES } from "../view/components/bs5/BS5Alert";
 import useBS5PreloaderHook from "../hooks/useBS5PreloaderHook";
 import NotificationV3 from "../view/components/notifications/NotificationV3";
@@ -158,6 +158,30 @@ export default function FoldersController() {
   }
 
   /**
+   *
+   * @param {string} searchTearm
+   */
+  async function collectListFoldersBySearchTerm(searchTearm) {
+    try {
+      //get currentPageNumber
+      const currentPage = getCurrentPageNumber();
+      //create Payload
+      const payload = { currentPage: currentPage, searchTearm: searchTearm };
+
+      const folders = await listFolders(payload);
+      setNotificationToState(folders);
+
+      // Update state with the created task response
+      dispatchAction({
+        type: REDUCER_ACTIONS.SET_FOLDERS,
+        payload: folders.results,
+      });
+    } catch (error) {
+      setErrorToState(error);
+    }
+  }
+
+  /**
    * Dispatches actions based on the specified type and payload.
    * @param {{ type: string; payload?: any; }} action - The action object containing type and payload.
    * @returns {Promise<void>} - A Promise that resolves when the operation is completed.
@@ -178,13 +202,17 @@ export default function FoldersController() {
         case FOLDERS_CONTROLLER_ACTIONS.LIST:
           await CollectListFolders();
           break;
-        
+
         case FOLDERS_CONTROLLER_ACTIONS.ARCHIVE:
           await collectArchiveFolder(action?.payload);
           break;
 
         case FOLDERS_CONTROLLER_ACTIONS.SET_NOTIFICATION:
           setNotificationToState(action?.payload);
+          break;
+
+        case FOLDERS_CONTROLLER_ACTIONS.SEARCH_FOLDERS_BY_SEARCH_TERM:
+          await collectListFoldersBySearchTerm(action?.payload);
           break;
 
         default:
@@ -226,16 +254,16 @@ export default function FoldersController() {
    * @param {{id: string, archived: boolean}} payload
    */
   async function collectArchiveFolder(payload) {
-     try {
-       const tbuArchived = await archiveFolder(payload);
+    try {
+      const tbuArchived = await archiveFolder(payload);
 
-       setNotificationToState(tbuArchived);
+      setNotificationToState(tbuArchived);
 
-       //reftech tasks after archive this one
-       await CollectListFolders();
-     } catch (error) {
-       setErrorToState(error);
-     }
+      //reftech tasks after archive this one
+      await CollectListFolders();
+    } catch (error) {
+      setErrorToState(error);
+    }
   }
 
   /** @returns {ContextValue} */
