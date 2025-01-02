@@ -73,7 +73,8 @@ export function useFoldersControllerContext() {
 export default function FoldersController() {
   const { getCurrentPageNumber } = useHelpers();
   const { showLoader, closeLoader, PreloaderComponent } = useBS5PreloaderHook();
-  const { listFolders, archiveFolder, createFolder } = FoldersLogic();
+  const { listFolders, archiveFolder, createFolder, readFolder, updateFolder } =
+    FoldersLogic();
 
   const navigate = useNavigate();
 
@@ -145,7 +146,7 @@ export default function FoldersController() {
     }, 20000);
 
     // Clear timeout if needed
-    return clearTimeout(timeoutId);
+    return () => clearTimeout(timeoutId);
   }
 
   /**
@@ -206,6 +207,49 @@ export default function FoldersController() {
   }
 
   /**
+   *
+   * @param {string} folderId
+   */
+  async function collectReadFolder(folderId) {
+    try {
+      const results = await readFolder(folderId);
+
+      setNotificationToState(results);
+
+      // set taskt to state;
+      dispatchAction({
+        type: REDUCER_ACTIONS.SET_FOLDER,
+        payload: results.folder,
+      });
+    } catch (error) {
+      setErrorToState(error);
+    }
+  }
+
+  /**
+   *
+   * @param {import("../types/types").Folder} payload
+   */
+  async function CollectUpdateFolder(payload) {
+    try {
+      const tbu = await updateFolder(payload);
+
+      setNotificationToState(tbu);
+
+      // get the updated task content
+      const results = await readFolder(payload.id);
+
+      // set taskt to state;
+      dispatchAction({
+        type: REDUCER_ACTIONS.SET_TASK,
+        payload: results.folder,
+      });
+    } catch (error) {
+      setErrorToState(error);
+    }
+  }
+
+  /**
    * Dispatches actions based on the specified type and payload.
    * @param {{ type: string; payload?: any; }} action - The action object containing type and payload.
    * @returns {Promise<void>} - A Promise that resolves when the operation is completed.
@@ -241,6 +285,14 @@ export default function FoldersController() {
 
         case FOLDERS_CONTROLLER_ACTIONS.SEARCH_FOLDERS_BY_SEARCH_TERM:
           await collectListFoldersBySearchTerm(action?.payload);
+          break;
+
+        case FOLDERS_CONTROLLER_ACTIONS.UPDATE:
+          await CollectUpdateFolder(action?.payload);
+          break;
+
+        case FOLDERS_CONTROLLER_ACTIONS.READ:
+          await collectReadFolder(action.payload);
           break;
 
         default:

@@ -132,7 +132,7 @@ export default function BoardsController() {
     }, 20000);
 
     // Clear timeout if needed
-    return clearTimeout(timeoutId);
+     return () => clearTimeout(timeoutId);
   }
 
   /**

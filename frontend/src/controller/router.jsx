@@ -24,6 +24,7 @@ import CollectUploadFile from "../view/files/CollectUploadFile";
 import FoldersController from "./FoldersController";
 import CollectListFolders from "../view/folders/CollectListFolders";
 import CollectCreateFolder from "../view/folders/CollectCreateFolder";
+import CollectUpdateFolder from "../view/folders/CollectUpdateFolder";
 
 const router = createBrowserRouter([
   {
@@ -120,6 +121,10 @@ const router = createBrowserRouter([
           {
             path: "/folders/create",
             element: <CollectCreateFolder />,
+          },
+          {
+            path: "/folders/update/:folderId",
+            element: <CollectUpdateFolder />,
           },
         ],
       },

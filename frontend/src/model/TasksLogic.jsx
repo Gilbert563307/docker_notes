@@ -45,6 +45,7 @@ export default function TasksLogic() {
     convertQuerySnapShotDocs,
     fetchResultsOnPageOne,
     fetchPaginatedResults,
+    getDocument,
   } = DataHandler({ table: "tasks" });
 
   /**
@@ -394,11 +395,12 @@ export default function TasksLogic() {
       // Execute the query to get the tasks.
       const querySnapshot = await getDocs(tasksQuery);
 
-      const { results } = convertQuerySnapShotDocs(querySnapshot);
+      const { results, message, type } =
+        convertQuerySnapShotDocs(querySnapshot);
       return {
         tasks: results,
-        message: "",
-        type: ALERT_TYPES.SUCCESS,
+        message: message,
+        type: type,
       };
     } catch (error) {
       console.log(`[listBoardTasks]: ${error.message}`);
@@ -424,14 +426,8 @@ export default function TasksLogic() {
       const task = doc(db, table, payload.id);
 
       //update document
-      const updatedTask = updateDoc(task, updatedPayload);
-      if (!updatedTask)
-        return {
-          updated: false,
-          message: "Something went wrong while archiving your task",
-          type: ALERT_TYPES.DANGER,
-        };
-
+      await updateDoc(task, updatedPayload);
+     
       return {
         updated: true,
         message: "Your task has been succesfully been updated",
@@ -454,32 +450,11 @@ export default function TasksLogic() {
    */
   const readTask = async (taskId) => {
     try {
-      // Get a reference to the task document in the database
-      const taskRef = doc(db, table, taskId);
-
-      // Fetch the document snapshot
-      const taskSnap = await getDoc(taskRef);
-
-      // Check if the task document exists
-      if (!taskSnap.exists()) {
-        return {
-          task: {},
-          message: "An error occurred while fetching the task.",
-          type: ALERT_TYPES.DANGER,
-        };
-      }
-
-      // Get the document data
-      const taskDocData = taskSnap.data();
-
-      // Manually assign the ID to the task because Firebase doesn't return the ID
-      const task = { ...taskDocData, id: taskId };
-
-      // Return the task with a success message
+      const { document, message, type } = await getDocument(taskId);
       return {
-        task: task,
-        message: "",
-        type: ALERT_TYPES.SUCCESS,
+        task: document,
+        message: message,
+        type: type,
       };
     } catch (error) {
       // Return an error response if the fetch operation fails

@@ -21,7 +21,7 @@ export default function CollectUpdateTask() {
         </Show.When>
         <Show.Else>
           <article className="d-flex justify-content-center read-project-component">
-            <p>Wachten op de server....</p>
+            <p>Loading....</p>
           </article>
         </Show.Else>
       </Show>

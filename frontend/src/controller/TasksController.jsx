@@ -163,7 +163,7 @@ export default function TasksController() {
     }, 20000);
 
     // Clear timeout if needed
-    return clearTimeout(timeoutId);
+    return () => clearTimeout(timeoutId);
   }
 
   /**

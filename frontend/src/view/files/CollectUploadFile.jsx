@@ -2,7 +2,6 @@ import React, { useState, useRef } from "react";
 import "../../assets/css/views/CollectUploadFile.css";
 import {
   ALLOWED_UPLOAD_FILE_TYPES,
-  DEFAULT_SELECT_FOLDER_MESSAGE,
 } from "../../config";
 import RepositorySelectFolder from "../components/drive/components/RepositorySelectFolder";
 import { Show } from "../components/custom/Show";

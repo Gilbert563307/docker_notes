@@ -31,6 +31,7 @@ export default function FoldersLogic() {
     db,
     table,
     addDoc,
+    getDocument,
   } = DataHandler({ table: "folders" });
 
   const { getSessionFilter } = useHelpers();
@@ -212,42 +213,7 @@ export default function FoldersLogic() {
     }
   }
 
-  /**
-   *
-   * @param {import("../types/types").Folder} payload
-   * @returns {Promise<{ updated: boolean, message: string, type: number }>}
-   */
-  async function updateFolder(payload) {
-    try {
-      //manualy updated the updated_at
-      const updatedPayload = { ...payload, updated_at: currentServerTimestamp };
-
-      //get document
-      const docRef = doc(db, table, payload.id);
-
-      //update document
-      const updated = updateDoc(docRef, updatedPayload);
-      if (!updated)
-        return {
-          updated: false,
-          message: "Something went wrong while archiving your folder",
-          type: ALERT_TYPES.DANGER,
-        };
-
-      return {
-        updated: true,
-        message: "Your folder has been succesfully been updated",
-        type: ALERT_TYPES.SUCCESS,
-      };
-    } catch (error) {
-      console.log(`[updateFolder]: ${error.message}`);
-      return {
-        updated: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
-      };
-    }
-  }
+  
 
   /**
    *
@@ -317,5 +283,67 @@ export default function FoldersLogic() {
     }
   }
 
-  return { getFolders, listFolders, archiveFolder, createFolder };
+  /**
+   * Fetches a task from the database by its ID.
+   * @param {string} folderId
+   * @returns {Promise<{folder: import("../types/types").Folder | {}, message: string, type: number}>}
+   */
+  async function readFolder(folderId) {
+    try {
+      const { document, message, type } = await getDocument(folderId);
+      return {
+        folder: document,
+        message: message,
+        type: type,
+      };
+    } catch (error) {
+      // Return an error response if the fetch operation fails
+      console.log(`[readFolder]: ${error.message}`);
+      return {
+        folder: {},
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+
+  /**
+   *
+   * @param {import("../types/types").Folder} payload
+   * @returns {Promise<{ updated: boolean, message: string, type: number }>}
+   */
+  async function updateFolder(payload) {
+    try {
+      //manualy updated the updated_at
+      const updatedPayload = { ...payload, updated_at: currentServerTimestamp };
+
+      //get document
+      const folder = doc(db, table, payload.id);
+
+      //update document
+      await updateDoc(folder, updatedPayload);
+
+      return {
+        updated: true,
+        message: "Your folder has been succesfully been updated",
+        type: ALERT_TYPES.SUCCESS,
+      };
+    } catch (error) {
+      console.log(`[updateFolder]: ${error.message}`);
+      return {
+        updated: false,
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+
+  return {
+    getFolders,
+    listFolders,
+    archiveFolder,
+    createFolder,
+    readFolder,
+    updateFolder,
+  };
 }

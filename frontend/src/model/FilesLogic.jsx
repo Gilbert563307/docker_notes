@@ -418,14 +418,8 @@ export default function FilesLogic() {
       const file = doc(db, table, payload.id);
 
       //update document
-      const updated = updateDoc(file, updatedPayload);
-      if (!updated)
-        return {
-          archived: false,
-          message: "Something went wrong while archiving your file",
-          type: ALERT_TYPES.DANGER,
-        };
-
+      await updateDoc(file, updatedPayload);
+   
       return {
         archived: true,
         message: "Your file has been succesfully been archived",

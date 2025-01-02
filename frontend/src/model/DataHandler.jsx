@@ -228,6 +228,47 @@ export default function DataHandler({ table }) {
     }
   }
 
+  /**
+   *
+   * @param {string} documentId
+   * @returns {Promise<{document: Object, message: string, type: number}>}
+   */
+  async function getDocument(documentId) {
+    try {
+      // Get a reference to the document in the database
+      const reference = doc(db, table, documentId);
+
+      // Fetch the document snapshot
+      const snapshot = await getDoc(reference);
+
+      // Check if the document exists
+      if (!snapshot.exists()) {
+        return {
+          document: {},
+          message: "An error occurred while fetching the document.",
+          type: ALERT_TYPES.DANGER,
+        };
+      }
+
+      // Get the document data
+      const docData = snapshot.data();
+
+      // Manually assign the ID to the doc because Firebase doesn't return the ID
+      return {
+        document: { ...docData, id: documentId },
+        message: "",
+        type: ALERT_TYPES.SUCCESS,
+      };
+    } catch (error) {
+      console.log(`[getDocument]: ${error.message}`);
+      return {
+        document: {},
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+
   return {
     collectionRef,
     getDocs,
@@ -263,5 +304,6 @@ export default function DataHandler({ table }) {
     X_TOKEN,
     fetchPaginatedResults,
     fetchResultsOnPageOne,
+    getDocument,
   };
 }
