@@ -61,6 +61,7 @@
 .tasks-article-buttons {
     display: flex;
     gap: 1em;
+    align-items: center;
 }
 
 .btn-filter {
