@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo, useReducer } from "react";
-import { Await, Outlet } from "react-router-dom";
+import { Await, Outlet, useNavigate } from "react-router-dom";
 import { ALERT_ACTIONS, ALERT_TYPES } from "../view/components/bs5/BS5Alert";
 import useBS5PreloaderHook from "../hooks/useBS5PreloaderHook";
 import NotificationV3 from "../view/components/notifications/NotificationV3";
@@ -73,7 +73,9 @@ export function useFoldersControllerContext() {
 export default function FoldersController() {
   const { getCurrentPageNumber } = useHelpers();
   const { showLoader, closeLoader, PreloaderComponent } = useBS5PreloaderHook();
-  const { listFolders, archiveFolder } = FoldersLogic();
+  const { listFolders, archiveFolder, createFolder } = FoldersLogic();
+
+  const navigate = useNavigate();
 
   const REDUCER_ACTIONS = {
     SET_FILES: "SET_FILES",
@@ -182,6 +184,28 @@ export default function FoldersController() {
   }
 
   /**
+   *
+   * @param {{name: string, color: string }} payload
+   */
+  async function collectCreateFolder(payload) {
+    try {
+      const folderCreated = await createFolder(payload);
+
+      // Update state with the created task response
+      setNotificationToState(folderCreated);
+
+      //refresh  after creating one
+      //TODO get state and remogve that task with that uuid no need to refesh or make all to api
+      await collectListFolders();
+
+      //navugate to tasks page
+      navigate("/folders");
+    } catch (error) {
+      setErrorToState(error);
+    }
+  }
+
+  /**
    * Dispatches actions based on the specified type and payload.
    * @param {{ type: string; payload?: any; }} action - The action object containing type and payload.
    * @returns {Promise<void>} - A Promise that resolves when the operation is completed.
@@ -196,11 +220,15 @@ export default function FoldersController() {
 
       // Handle different action types
       switch (action.type) {
+        case FOLDERS_CONTROLLER_ACTIONS.CREATE:
+          await collectCreateFolder(action?.payload);
+          break;
+
         case ALERT_ACTIONS.CLOSE_ALERT:
           closeAlert();
 
         case FOLDERS_CONTROLLER_ACTIONS.LIST:
-          await CollectListFolders();
+          await collectListFolders();
           break;
 
         case FOLDERS_CONTROLLER_ACTIONS.ARCHIVE:
@@ -230,7 +258,7 @@ export default function FoldersController() {
     }
   }
 
-  async function CollectListFolders() {
+  async function collectListFolders() {
     try {
       //get currentPageNumber
       const currentPage = getCurrentPageNumber();
@@ -260,7 +288,7 @@ export default function FoldersController() {
       setNotificationToState(tbuArchived);
 
       //reftech tasks after archive this one
-      await CollectListFolders();
+      await collectListFolders();
     } catch (error) {
       setErrorToState(error);
     }

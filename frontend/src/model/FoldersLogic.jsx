@@ -30,6 +30,7 @@ export default function FoldersLogic() {
     doc,
     db,
     table,
+    addDoc,
   } = DataHandler({ table: "folders" });
 
   const { getSessionFilter } = useHelpers();
@@ -264,5 +265,48 @@ export default function FoldersLogic() {
       };
     }
   }
-  return { getFolders, listFolders, archiveFolder };
+
+  /**
+   *
+   * @param {{name: string, color: string}} payload
+   * @returns {Promise<{created: boolean, message: string, type: number}>} -
+   */
+  async function createFolder(payload) {
+    try {
+      /**
+       * @type {import("../types/types").Folder}
+       */
+      const defaultValues = {
+        user_uid: userUid,
+        archived: false,
+        // @ts-ignore
+        created_at: currentServerTimestamp,
+        // @ts-ignore
+        updated_at: currentServerTimestamp,
+      };
+
+      // Merge payload with defaults, giving precedence to user-provided values
+      const payloadToSave = { ...defaultValues, ...payload };
+
+      // Attempt to add the document to the collection
+      const created = await addDoc(collectionRef, payloadToSave);
+
+      // Return success message if task creation was successful
+      return {
+        created: Boolean(created),
+        message: "Your folder has been created",
+        type: ALERT_TYPES.SUCCESS,
+      };
+    } catch (error) {
+      console.log(`[createFolder]: ${error.message}`);
+      // Return error message in case of failure
+      return {
+        created: false,
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+
+  return { getFolders, listFolders, archiveFolder, createFolder };
 }

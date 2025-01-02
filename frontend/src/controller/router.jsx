@@ -23,6 +23,7 @@ import CollectListDriveFiles from "../view/files/CollectListDriveFiles";
 import CollectUploadFile from "../view/files/CollectUploadFile";
 import FoldersController from "./FoldersController";
 import CollectListFolders from "../view/folders/CollectListFolders";
+import CollectCreateFolder from "../view/folders/CollectCreateFolder";
 
 const router = createBrowserRouter([
   {
@@ -115,6 +116,10 @@ const router = createBrowserRouter([
             index: true,
             path: "",
             element: <CollectListFolders />,
+          },
+          {
+            path: "/folders/create",
+            element: <CollectCreateFolder />,
           },
         ],
       },

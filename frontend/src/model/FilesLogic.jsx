@@ -356,7 +356,6 @@ export default function FilesLogic() {
 
       // Extract the `documentUpdated` values
       const updatedDocuments = results.map((result) => result.documentUpdated);
-      console.log(updatedDocuments);
 
       //filter out the docsname that you do not want to updae
       const payloadToSave = payload.files.filter(
