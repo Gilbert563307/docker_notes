@@ -174,7 +174,8 @@ export default function DataHandler({ table }) {
       const offset = (currentPage - 1) * itemsPerPage;
 
       // Get the document to start after, based on the offset
-      const startFromDocument = documentSnapshots.docs[offset];
+      const startFromDocument = documentSnapshots.docs[offset - 1];
+
       if (!startFromDocument) {
         throw new Error("No document found to start after for the given page.");
       }

@@ -145,7 +145,16 @@ export default function FoldersLogic() {
   async function listFolders(payload) {
     try {
       // Construct the query to get all tasks for the current user UID with a
-      const { resultsQuery } = await getFoldersQuery(payload);
+      const { resultsQuery, message, type } = await getFoldersQuery(payload);
+
+      //check if query is null
+      if (!resultsQuery) {
+        return {
+          results: { folders: [], total: 0, pages: 0 },
+          message: message,
+          type: type,
+        };
+      }
 
       // Execute the query to get the tasks.
       const querySnapshot = await getDocs(resultsQuery);
