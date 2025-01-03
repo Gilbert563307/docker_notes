@@ -37,12 +37,6 @@ export default function NavBar() {
     { name: "Settings", url: "/settings", icon: "fa-duotone fa-thin fa-gear" },
   ];
 
-  //when user reloads the page and there is a url cached, navigate to that ur;
-  React.useEffect(() => {
-    if (!cacheUrl) return;
-    navigate(items[parseInt(cacheUrl)].url);
-  }, []);
-
   return (
     <nav className="main-navigation">
       <ul className="navbar">

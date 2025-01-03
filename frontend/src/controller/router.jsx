@@ -25,6 +25,7 @@ import FoldersController from "./FoldersController";
 import CollectListFolders from "../view/folders/CollectListFolders";
 import CollectCreateFolder from "../view/folders/CollectCreateFolder";
 import CollectUpdateFolder from "../view/folders/CollectUpdateFolder";
+import CollectReadFolder from "../view/folders/CollectReadFolder";
 
 const router = createBrowserRouter([
   {
@@ -125,6 +126,10 @@ const router = createBrowserRouter([
           {
             path: "/folders/update/:folderId",
             element: <CollectUpdateFolder />,
+          },
+          {
+            path: "/folders/read/:folderId",
+            element: <CollectReadFolder />,
           },
         ],
       },

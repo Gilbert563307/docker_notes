@@ -28,7 +28,6 @@ export default function BS5PaginationV2({
     return pageNumberParam ? parseInt(pageNumberParam) - 1 : 0;
   };
 
-  
   const [forcePage, setForcePage] = useState(getInitialForcePage());
   const nextLabelHtml =
     '<i class="fa-regular fa-chevrons-right" style="color: #0143a3;"></i>';
@@ -60,9 +59,14 @@ export default function BS5PaginationV2({
       setForcePage(parseInt(pageNumberParam) - 1);
       return;
     }
+
+    //do nothing when total pages less than one
+    if (totalPages <= 1) return;
+
     //when the total items change for the page back to zero index
     setForcePage(0);
     //set the use back to page one
+
     setPageNumberToSessionMemory(1);
   };
 

@@ -19,13 +19,13 @@ export default function useGetFolderHook() {
      * @param {string | undefined} folderId
      * @returns {Void}
      */
-    function fetchTaskById(folderId) {
+    function fetchFolderById(folderId) {
       if (!folderId) return;
 
       dispatch({ type: FOLDERS_CONTROLLER_ACTIONS.READ, payload: folderId });
     }
 
-    fetchTaskById(folderId);
+    fetchFolderById(folderId);
   }, [folderId]);
   return { folder: state?.folder, dispatch };
 }

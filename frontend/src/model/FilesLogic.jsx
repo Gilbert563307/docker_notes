@@ -38,7 +38,7 @@ export default function FilesLogic() {
 
   const { getSessionFilter } = useHelpers();
   /**
-   * @param {{searchTearm?: string}} payload
+   * @param {{searchTearm?: string, folderId?: string}} payload
    * @returns {{queryItems: Array<Query> | Array, message: string, type: number}}
    */
   function getFilesQueryClauses(payload) {
@@ -59,6 +59,11 @@ export default function FilesLogic() {
           ...queryItems,
           ...getSearchQueryByFieldName("name", searchTearm),
         ];
+      }
+
+      if (payload && payload.folderId && payload.folderId != "") {
+        const { folderId } = payload;
+        queryItems = [...queryItems, where("folder_id", "==", folderId)];
       }
 
       return {
@@ -141,7 +146,7 @@ export default function FilesLogic() {
 
   /**
    *
-   * @param {{ currentPage: number, itemsPerPage?: number, searchTearm?: string}} payload
+   * @param {{ currentPage: number, itemsPerPage?: number, searchTearm?: string, folderId?: string }} payload
    * @returns {Promise<{results: import("../types/types").FilesResponse,  message: string, type: number }>}
    */
   async function listFiles(payload) {
@@ -166,6 +171,7 @@ export default function FilesLogic() {
         type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {
+      console.log(`[listFiles]: ${error.message}`);
       return {
         results: { files: [], total: 0, pages: 0 },
         message: error.message,
@@ -364,7 +370,6 @@ export default function FilesLogic() {
 
       //loop through data to  get the filename
       payloadToSave.forEach((file /** @type {File}  */) => {
-
         /**
          * @type {import("../types/types").DriveFile}
          */
@@ -419,7 +424,7 @@ export default function FilesLogic() {
 
       //update document
       await updateDoc(file, updatedPayload);
-   
+
       return {
         archived: true,
         message: "Your file has been succesfully been archived",
@@ -600,6 +605,24 @@ export default function FilesLogic() {
     }
   }
 
+  /**
+   *
+   * @param {{currentPage: number, folderId: string}} payload
+   * @returns {Promise<{results: import("../types/types").FilesResponse,  message: string, type: number }>}
+   */
+  async function listFilesByFolderId(payload) {
+    try {
+      return await listFiles(payload);
+    } catch (error) {
+      console.log(`[listFilesByFolderId]: ${error.message}`);
+      return {
+        results: { files: [], total: 0, pages: 0 },
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+
   return {
     convertHtmlToDocx,
     listFiles,
@@ -608,5 +631,6 @@ export default function FilesLogic() {
     deleteFile,
     downloadFile,
     listFilesBySearchTerm,
+    listFilesByFolderId,
   };
 }

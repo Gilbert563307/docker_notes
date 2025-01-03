@@ -5,6 +5,7 @@ import useBS5PreloaderHook from "../hooks/useBS5PreloaderHook";
 import NotificationV3 from "../view/components/notifications/NotificationV3";
 import useHelpers from "../helpers/useHelpers";
 import FoldersLogic from "../model/FoldersLogic";
+import FilesLogic from "../model/FilesLogic";
 
 /**
  * @typedef {Object} InitialState
@@ -43,6 +44,7 @@ export const FOLDERS_CONTROLLER_ACTIONS = {
   ARCHIVE: "ARCHIVE",
   DELETE: "DELETE",
   SEARCH_FOLDERS_BY_SEARCH_TERM: "SEARCH_FOLDERS_BY_SEARCH_TERM",
+  LIST_FILES_IN_FOLDER: "LIST_FILES_IN_FOLDER",
   SET_NOTIFICATION: "SET_NOTIFICATION,",
 };
 
@@ -81,6 +83,8 @@ export default function FoldersController() {
     updateFolder,
     deleteFolder,
   } = FoldersLogic();
+
+  const { listFilesByFolderId } = FilesLogic();
 
   const navigate = useNavigate();
 
@@ -259,17 +263,39 @@ export default function FoldersController() {
    *
    * @param {string} folderId
    */
-  async function collectDeletFolder(folderId) {
+  async function collectDeleteFolder(folderId) {
     try {
       const tbuDeleted = await deleteFolder(folderId);
 
       setNotificationToState(tbuDeleted);
 
-      //reftech tasks after archive this one
+      //reftech folders after archive this one
       await collectListFolders;
 
-      //navugate to tasks page
+      //navigate to tasks page
       navigate("/folders");
+    } catch (error) {
+      setErrorToState(error);
+    }
+  }
+
+  /**
+   *
+   * @param {string} folderId
+   */
+  async function collectListFilesByFolderId(folderId) {
+    try {
+      const response = await listFilesByFolderId({
+        currentPage: getCurrentPageNumber(),
+        folderId: folderId,
+      });
+
+      setNotificationToState(response);
+
+      dispatchAction({
+        type: REDUCER_ACTIONS.SET_FILES,
+        payload: response.results,
+      });
     } catch (error) {
       setErrorToState(error);
     }
@@ -322,18 +348,21 @@ export default function FoldersController() {
           break;
 
         case FOLDERS_CONTROLLER_ACTIONS.DELETE:
-          await collectDeletFolder(action?.payload);
+          await collectDeleteFolder(action?.payload);
+          break;
+        case FOLDERS_CONTROLLER_ACTIONS.LIST_FILES_IN_FOLDER:
+          await collectListFilesByFolderId(action?.payload);
           break;
 
         default:
-          console.log(`DriveController: No action type found ${action.type}`);
+          console.log(`FoldersController: No action type found ${action.type}`);
           return;
       }
     } catch (error) {
       // Close loader in case of error
       closeLoader();
       setErrorToState(error);
-      console.log(`DriveController: error ${error}`);
+      console.log(`FoldersController: error ${error}`);
     } finally {
       // Close loader after action processing
       closeLoader();
