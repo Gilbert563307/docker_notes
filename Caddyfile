@@ -3,7 +3,6 @@ tasks-tracker.online {
 }
 
 tasks-tracker.online/api/* {
-    reverse_proxy fastapi-backend:9000 {
-        rewrite * /api{uri}
-    }
+    rewrite * /{path.1}
+    reverse_proxy fastapi-backend:9000
 }
