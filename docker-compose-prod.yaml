@@ -54,7 +54,8 @@ services:
       - "443:443"
       - "443:443/udp"
     volumes:
-      - /root/Caddyfile:/etc/caddy/Caddyfile
+      # - /root/Caddyfile:/etc/caddy/Caddyfile
+      - ./Caddyfile:/etc/caddy/Caddyfile  # Use relative path to map local Caddyfile
       - caddy_data:/data
       - caddy_config:/config
 
@@ -62,3 +63,4 @@ volumes:
   caddy_data:
   caddy_config:
   fastapi_data:
+  uploads-data:
