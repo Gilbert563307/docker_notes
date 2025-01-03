@@ -43,18 +43,15 @@ services:
       - fastapi_data:/app/data
       - uploads-data:/code/app/uploads
 
-  caddy:
-    image: caddy:latest
+   caddy:
+    build:
+      context: .  # Pass the root context to include the Caddyfile
+      dockerfile: Dockerfile.caddy
     restart: unless-stopped
-    cap_add:
-      - NET_ADMIN
     ports:
       - "80:80"
       - "443:443"
-      - "443:443/udp"
     volumes:
-      # - /root/Caddyfile:/etc/caddy/Caddyfile
-      - ./Caddyfile:/etc/caddy/Caddyfile # Use relative path to map local Caddyfile
       - caddy_data:/data
       - caddy_config:/config
 
