@@ -14,7 +14,7 @@ class FileRequest(BaseModel):
 
 
 files_router = APIRouter(
-    prefix="/files",
+    prefix="/api/files",
     tags=["files"],
     dependencies=[Depends(get_token_header)],
     responses={404: {"description": "Not found"}},
