@@ -43,9 +43,9 @@ services:
       - fastapi_data:/app/data
       - uploads-data:/code/app/uploads
 
-   caddy:
+  caddy:
     build:
-      context: .  # Pass the root context to include the Caddyfile
+      context: . # Pass the root context to include the Caddyfile
       dockerfile: Dockerfile.caddy
     restart: unless-stopped
     ports:
