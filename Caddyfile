@@ -3,5 +3,5 @@ tasks-tracker.online {
 }
 
 tasks-tracker.online/api/* {
-    reverse_proxy fastapi-backend:8000
+    reverse_proxy fastapi-backend:9000
 }
