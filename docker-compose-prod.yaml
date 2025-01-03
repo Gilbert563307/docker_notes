@@ -38,7 +38,7 @@ services:
         - BACKEND_FIREBASE_UNIVERSE_DOMAIN=${BACKEND_FIREBASE_UNIVERSE_DOMAIN}
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "9000:9000"
     volumes:
       - fastapi_data:/app/data
       - uploads-data:/code/app/uploads
