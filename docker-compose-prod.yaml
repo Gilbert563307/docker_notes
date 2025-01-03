@@ -37,8 +37,8 @@ services:
         - BACKEND_FIREBASE_CLIENT_X590_CERT_URL=${BACKEND_FIREBASE_CLIENT_X590_CERT_URL}
         - BACKEND_FIREBASE_UNIVERSE_DOMAIN=${BACKEND_FIREBASE_UNIVERSE_DOMAIN}
     restart: unless-stopped
-    expose:
-      - "8000"
+    ports:
+      - "8000:80"
     volumes:
       - fastapi_data:/app/data
       - uploads-data:/code/app/uploads
