@@ -2,8 +2,8 @@ tasks-tracker.online {
     reverse_proxy react-vite-app:5173
 }
 
-
 tasks-tracker.online/api/* {
-    rewrite * {path:/api/*} /{path}
-    reverse_proxy fastapi-backend:9000
+    reverse_proxy fastapi-backend:9000 {
+        rewrite * /api{uri}
+    }
 }
