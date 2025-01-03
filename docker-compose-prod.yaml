@@ -15,9 +15,11 @@ services:
         VITE_APP_FIREBASE_APP_ID: ${VITE_APP_FIREBASE_APP_ID}
         VITE_APP_FIREBASE_MEASUREMENT_ID: ${VITE_APP_FIREBASE_MEASUREMENT_ID}
         VITE_APP_BACKEND_URL: ${VITE_APP_BACKEND_URL}
-      depends_on:
-        - fastapi-backend
-      restart: unless-stopped
+    depends_on:
+      - fastapi-backend
+    restart: unless-stopped
+    expose:
+      - "5173" # Ensure the frontend service exposes the correct port
 
   #Needs testing
   fastapi-backend:
@@ -36,7 +38,7 @@ services:
       - BACKEND_FIREBASE_TOKEN_URI=${BACKEND_FIREBASE_TOKEN_URI}
       - BACKEND_FIREBASE_AUTH_PROVIDER_X509_CERT_URL=${BACKEND_FIREBASE_AUTH_PROVIDER_X509_CERT_URL}
       - BACKEND_FIREBASE_CLIENT_X590_CERT_URL=${BACKEND_FIREBASE_CLIENT_X590_CERT_URL}
-      - BACKEND_FIREBASE_UNIVERSE_DOMAIN=${BACKEND_FIREBASE_UNIVERSE_DOMAIN}  
+      - BACKEND_FIREBASE_UNIVERSE_DOMAIN=${BACKEND_FIREBASE_UNIVERSE_DOMAIN}
     restart: unless-stopped
     expose:
       - "8000"
@@ -55,7 +57,7 @@ services:
       - "443:443/udp"
     volumes:
       # - /root/Caddyfile:/etc/caddy/Caddyfile
-      - ./Caddyfile:/etc/caddy/Caddyfile  # Use relative path to map local Caddyfile
+      - ./Caddyfile:/etc/caddy/Caddyfile # Use relative path to map local Caddyfile
       - caddy_data:/data
       - caddy_config:/config
 
