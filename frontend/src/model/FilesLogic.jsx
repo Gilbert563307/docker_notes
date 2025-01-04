@@ -247,7 +247,7 @@ export default function FilesLogic() {
     });
 
     try {
-      const response = await fetch(`${BACKEND_URL}api/files/upload`, {
+      const response = await fetch(`${BACKEND_URL}files/upload`, {
         method: "POST",
         body: formData,
         headers: {
@@ -448,7 +448,7 @@ export default function FilesLogic() {
    */
   async function deleteFileFromBackendServer(payload) {
     try {
-      const response = await fetch(`${BACKEND_URL}api/files/delete`, {
+      const response = await fetch(`${BACKEND_URL}files/delete`, {
         method: "POST",
         body: JSON.stringify(payload),
         headers: {
@@ -539,7 +539,7 @@ export default function FilesLogic() {
     try {
       const updatedPayload = { ...payload, user_uid: userUid };
 
-      const response = await fetch(`${BACKEND_URL}api/files/get`, {
+      const response = await fetch(`${BACKEND_URL}files/get`, {
         method: "POST",
         body: JSON.stringify(updatedPayload),
         headers: {
