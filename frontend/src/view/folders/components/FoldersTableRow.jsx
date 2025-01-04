@@ -27,6 +27,7 @@ export default function FoldersTableRow({ folder }) {
           </span>
 
           <BS5TruncateSpan
+            title={`${folder.name} folder`}
             content={
               <Link
                 to={`/folders/read/${folder.id}`}

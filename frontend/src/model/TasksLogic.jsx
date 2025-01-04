@@ -388,7 +388,7 @@ export default function TasksLogic() {
         collectionRef,
         where("user_uid", "==", userUid),
         // where("archived", "==", tasksArchived),
-        orderBy("created_at", "desc"),
+        orderBy("updated_at", "desc"),
         limit(MAX_BOARD_ITEMS)
       );
 

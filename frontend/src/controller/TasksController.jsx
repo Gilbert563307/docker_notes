@@ -234,6 +234,7 @@ export default function TasksController() {
       const payload = { currentPage: currentPage };
 
       const tasks = await listTasks(payload);
+      setNotificationToState(tasks);
 
       // Update state with the created task response
       dispatchAction({

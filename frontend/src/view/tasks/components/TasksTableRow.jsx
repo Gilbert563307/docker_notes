@@ -42,18 +42,22 @@ export default function TasksTableRow({ task }) {
     <tr className="tasks-table-row">
       <th scope="row">
         <div className="form-check">
-          <input
-            className="form-check-input"
-            type="checkbox"
-            disabled={true}
-          />
+          <input className="form-check-input" type="checkbox" disabled={true} />
         </div>
       </th>
       <td>
         <BS5TruncateSpan
-          content={<Link to={readTaskUrl} state={{ task: task }}  title={task.title} className="read-link">
-            {task.title}
-          </Link>}
+          title={task.title}
+          content={
+            <Link
+              to={readTaskUrl}
+              state={{ task: task }}
+              title={task.title}
+              className="read-link"
+            >
+              {task.title}
+            </Link>
+          }
           maxWidthToSet="350px"
         />
       </td>
@@ -76,7 +80,7 @@ export default function TasksTableRow({ task }) {
             <i className="fa-sharp fa-light fa-pencil"></i>
           </Link>
         </button>
-        <ArchiveTaskButton taskId={task.id} isArchived={task.archived}/>
+        <ArchiveTaskButton taskId={task.id} isArchived={task.archived} />
       </td>
     </tr>
   );

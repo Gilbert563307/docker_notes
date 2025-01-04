@@ -25,6 +25,10 @@
     border-radius: 5px;
 }
 
+.selected-status-item--1 {
+    background-color: #343a40 ;
+}
+
 .selected-status-item-0 {
     background-color: #E4E6EA;
 }

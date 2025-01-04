@@ -1,8 +1,6 @@
 import React, { useState, useRef } from "react";
 import "../../assets/css/views/CollectUploadFile.css";
-import {
-  ALLOWED_UPLOAD_FILE_TYPES,
-} from "../../config";
+import { ALLOWED_UPLOAD_FILE_TYPES } from "../../config";
 import RepositorySelectFolder from "../components/drive/components/RepositorySelectFolder";
 import { Show } from "../components/custom/Show";
 import RepositorySelectedFiles from "../components/drive/components/RepositorySelectedFiles";
@@ -16,6 +14,8 @@ export default function CollectUploadFile() {
   const { dispatch } = useDriveControllerContext();
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const selectedFolderIdRef = useRef(null);
+  const uploadFileDropZoneRef = useRef(null);
+  const dragginOverClass = "upload-drag-over";
 
   /**
    *
@@ -29,7 +29,18 @@ export default function CollectUploadFile() {
         file.name.split(".").pop().toLowerCase()
       )
     );
-    setUploadedFiles(acceptedFiles);
+
+    setUploadedFiles([...uploadedFiles, ...acceptedFiles]);
+    if (uploadFileDropZoneRef?.current?.classList) {
+      uploadFileDropZoneRef.current.classList.remove(dragginOverClass);
+    }
+  }
+
+  function handleFileDragOver(event) {
+    event.preventDefault();
+    if (uploadFileDropZoneRef?.current?.classList) {
+      uploadFileDropZoneRef.current.classList.add(dragginOverClass);
+    }
   }
 
   /**
@@ -43,7 +54,7 @@ export default function CollectUploadFile() {
         file.name.split(".").pop().toLowerCase()
       )
     );
-    setUploadedFiles(acceptedFiles);
+    setUploadedFiles([...uploadedFiles, ...acceptedFiles]);
   }
 
   /**
@@ -85,7 +96,10 @@ export default function CollectUploadFile() {
         },
       });
     }
-    const payload = { files: uploadedFiles, folderId: selectedFolderIdRef.current };
+    const payload = {
+      files: uploadedFiles,
+      folderId: selectedFolderIdRef.current,
+    };
     dispatch({ type: DRIVE_CONTROLLER_ACTIONS.UPLOAD_FILES, payload: payload });
 
     //reset form
@@ -127,7 +141,8 @@ export default function CollectUploadFile() {
           className="upload-file-drop-zone"
           id="files_drop_zone"
           onDrop={handleFileDrop}
-          onDragOver={(e) => e.preventDefault()}
+          onDragOver={handleFileDragOver}
+          ref={uploadFileDropZoneRef}
         >
           <div className="upload-file-drop-zone-1-child">
             <div className="upload-file-drop-zone-1-child-icon-parent">

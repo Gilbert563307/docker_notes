@@ -251,7 +251,7 @@ export default function FoldersController() {
 
       // set taskt to state;
       dispatchAction({
-        type: REDUCER_ACTIONS.SET_TASK,
+        type: REDUCER_ACTIONS.SET_FOLDER,
         payload: results.folder,
       });
     } catch (error) {

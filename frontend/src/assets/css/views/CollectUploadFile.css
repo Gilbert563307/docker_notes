@@ -39,6 +39,10 @@
   border-radius: 20px;
 }
 
+.upload-drag-over {
+  border: 2px dashed #007bff;
+}
+
 #file-uploader-btn {
   /* hide the no file chosen text */
   color: rgba(0, 0, 0, 0);
@@ -141,3 +145,4 @@
   margin: 0 !important;
   float: right;
 }
+

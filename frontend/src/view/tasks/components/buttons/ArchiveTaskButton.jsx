@@ -44,14 +44,25 @@ export default function ArchiveTaskButton({ taskId, isArchived }) {
     hideArchiveModal();
   };
 
-  const modalContent = (
+
+  const modalContent = isArchived ? (
     <p>
-      {" "}
-      Archiving will move the task to the archive and it will no longer be
-      visible in your active task list. You can restore it from the archive
-      later if needed.
+      Restoring this task will move it back to your active task list. You can archive it again later if needed.
+    </p>
+  ) : (
+    <p>
+      Archiving will move the task to the archive and it will no longer be visible in your active task list. You can restore it from the archive later if needed.
     </p>
   );
+
+ 
+
+  const modalTitle = isArchived
+    ? "Are you sure you want to restore this task ?"
+    : "Are you sure you want to archive this task ?";
+
+  const saveChangesTitle = isArchived ? "Restore" : "Archive";
+  const saveChangesClass = isArchived ? 3 : 4;
 
   return (
     <React.Fragment>
@@ -63,7 +74,7 @@ export default function ArchiveTaskButton({ taskId, isArchived }) {
           <BS5Modal
             modal_id={modalId}
             modal_label="archive_tasks_modal"
-            modal_title="Are you sure you want to archive this task ?"
+            modal_title={modalTitle}
             modal_content={modalContent}
             showSaveChanges={true}
             modal_footer={true}
@@ -71,8 +82,8 @@ export default function ArchiveTaskButton({ taskId, isArchived }) {
             closeModal={hideArchiveModal}
             saveChangesFunction={archiveTask}
             modalSize={MODAL_SIZES.LARGE}
-            saveChangesClass={4}
-            saveChangesTitle="Archive"
+            saveChangesClass={saveChangesClass}
+            saveChangesTitle={saveChangesTitle}
           />
         </Show.When>
       </Show>

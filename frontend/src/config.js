@@ -26,6 +26,7 @@ export const TASKS_PRIORITY = {
 }
 
 export const TASKS_STATUS = {
+    BACKLOG: -1,
     TODO: 0,
     IN_PROGRESS: 1,
     COMPLETED: 2,
@@ -35,6 +36,7 @@ export const TASKS_STATUS = {
  * @type {import("./types/types").TaskBoardHeaders}
  */
 export const TASKS_BOARD_HEADERS = [
+    { id: -1, name: "Backlog", status: TASKS_STATUS.BACKLOG, },
     { id: 1, name: "Todo", status: TASKS_STATUS.TODO, },
     { id: 2, name: "Doing", status: TASKS_STATUS.IN_PROGRESS },
     { id: 3, name: "Done", status: TASKS_STATUS.COMPLETED }
@@ -60,7 +62,7 @@ export const HIGH_PRIORITY_TASKS_SESSION_FILTER = "HIGH_PRIORITY_TASKS_SESSION_F
 
 //DEFAULTS
 export const DEFAULT_PROJECT_ID = 0;
-export const MAX_BOARD_ITEMS = 150;
+export const MAX_BOARD_ITEMS = 250;
 export const DEFAULT_TASKS_ARCHIVE = false;
 
 //FOLDERS

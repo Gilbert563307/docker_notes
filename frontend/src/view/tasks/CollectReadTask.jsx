@@ -29,7 +29,7 @@ export default function CollectReadTask() {
         <p className="fs-1 task-title">{task.title}</p>
       </div>
       <div className="read-task-div">
-        <div>
+        <div className="read-task-description-parent">
           <div>
             <label htmlFor="description" className="form-label ms-2">
               Description

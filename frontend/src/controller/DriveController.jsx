@@ -260,7 +260,6 @@ export default function DriveController() {
   async function collectDeleteFile(payload) {
     try {
       const tbuDeleted = await deleteFile(payload);
-      console.log(tbuDeleted);
       setNotificationToState(tbuDeleted);
 
       //reftech files after archive this one

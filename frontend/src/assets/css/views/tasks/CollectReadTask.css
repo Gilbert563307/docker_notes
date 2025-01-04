@@ -33,7 +33,7 @@
   justify-content: space-between;
 }
 
-.tasks-deatils-div-details-header>h6 {
+.tasks-deatils-div-details-header > h6 {
   margin: 1em;
   margin-bottom: 0;
 }
@@ -41,7 +41,7 @@
 .update-task-title {
   border: none;
   background: inherit;
-  width: 75%;
+  width: 85%;
 }
 
 .update-task-grid-2 {
@@ -52,7 +52,7 @@
   color: black !important;
 }
 
-.read-task-actions{
+.read-task-actions {
   display: flex;
   align-items: center;
   margin-top: 2em;
@@ -82,7 +82,6 @@
   /* Handle long lines by wrapping */
   word-wrap: break-word;
   /* Break words to prevent overflow */
-
 }
 
 .dialogic-badge {
@@ -110,7 +109,7 @@
 
 .show-header {
   font-size: 14px;
-  color: #4D4D4D;
+  color: #4d4d4d;
 }
 
 .mdx-editor-editor,
@@ -119,13 +118,11 @@
   overflow: auto;
 }
 
-
 html.dark .task-title {
-  color: #B6C2CF;
+  color: #b6c2cf;
 }
 
-
-html.dark ._contentEditable_yms4a_379{
+html.dark ._contentEditable_yms4a_379 {
   /* color: white; */
 }
 
@@ -133,14 +130,25 @@ html.dark .mdx_editor_create > div:nth-child(2) > ._contentEditable_yms4a_379 {
   color: white !important;
 }
 
-.mdx_editor_create{
+.mdx_editor_create {
   min-height: 250px;
 }
 
+.read-task-description-parent {
+  max-width: 1100px;
+}
+
 @media only screen and (max-width: 768px) {
-  .read-task-div{
+  .read-task-div {
     display: flex;
     flex-direction: column;
-   
+  }
+
+  .update-task-title {
+    width: auto;
+  }
+
+  .read-task-description-parent {
+    width: auto;
   }
 }

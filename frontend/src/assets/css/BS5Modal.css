@@ -1,44 +1,38 @@
 #modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    content: "";
-    /* z-index: 0; */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  content: "";
+  z-index: 1055;
 }
-
 
 .dialogic-modal-footer {
-    display: flex;
-    justify-content: center;
-    gap: 1em;
-    margin: 1em;
+  display: flex;
+  justify-content: center;
+  gap: 1em;
+  margin: 1em;
 }
 
-.dialogic-modal-footer>button:last-of-type {
-    order: -1;
+.dialogic-modal-footer > button:last-of-type {
+  order: -1;
 }
 
 .dialogic-modal-margin {
-    margin-top: 5%;
+  margin-top: 5%;
 }
 
 .dialogic-modal-header {
-    text-align: center;
-    color: #003764;
+  text-align: center;
+  color: #003764;
 }
 
-.dialogic-modal-header-centre>h1 {
-    width: 100%;
+.dialogic-modal-header-centre > h1 {
+  width: 100%;
 }
 
-
-.modal-content {
-    /* min-width: 700px !important; */
-}
-
-html.dark .modal-title{
-    color: #B6C2CF;
+html.dark .modal-title {
+  color: #b6c2cf;
 }

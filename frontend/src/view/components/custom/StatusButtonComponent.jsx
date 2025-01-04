@@ -33,6 +33,7 @@ export default function StatusButtonComponent({ taskStatus, callBackFn }) {
      * @type {Array<{content: number, onclick: Function}>}
      */
     const statusDropDownItems = [
+        { content: TASKS_STATUS.BACKLOG, onclick: () => toggleSelectedStatusDropDownItem(TASKS_STATUS.BACKLOG) },
         { content: TASKS_STATUS.TODO, onclick: () => toggleSelectedStatusDropDownItem(TASKS_STATUS.TODO) },
         { content: TASKS_STATUS.IN_PROGRESS, onclick: () => toggleSelectedStatusDropDownItem(TASKS_STATUS.IN_PROGRESS) },
         { content: TASKS_STATUS.COMPLETED, onclick: () => toggleSelectedStatusDropDownItem(TASKS_STATUS.COMPLETED) },

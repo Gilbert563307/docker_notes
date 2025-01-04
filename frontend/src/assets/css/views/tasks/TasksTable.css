@@ -16,6 +16,11 @@
     color: #44546F !important;
 }
 
+.badge-backlog {
+    background-color: #343a40 !important;
+    color: #fff !important;
+}
+
 .badge-inprogress {
     background-color: #E9F2FF !important;
     color: #0055CC !important;

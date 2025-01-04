@@ -164,6 +164,7 @@ export default function BoardsController() {
   async function collectListBoardTasks() {
     try {
       const response = await listBoardTasks();
+      setNotificationToState(response);
 
       // Update state with the created task response
       dispatchAction({
@@ -187,6 +188,7 @@ export default function BoardsController() {
         // Update state with the created task response
         setNotificationToState(tbuTask);
       }
+      await collectListBoardTasks();
     } catch (error) {
       setErrorToState(error);
     }

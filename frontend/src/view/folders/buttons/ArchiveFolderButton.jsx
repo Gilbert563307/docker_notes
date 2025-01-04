@@ -35,13 +35,22 @@ export default function ArchiveFolderButton({ folderId, isArchived }) {
     closeModal();
   };
 
-  const modalContent = (
+  const modalContent = isArchived ? (
     <p>
-      Archiving will move the fodler to the archive and it will no longer be
-      visible in your active fodlers list. You can restore it from the archive
-      later if needed.
+      Restoring this folder will move it back to your active folders list. You can archive it again later if needed.
+    </p>
+  ) : (
+    <p>
+      Archiving will move the folder to the archive and it will no longer be visible in your active folders list. You can restore it from the archive later if needed.
     </p>
   );
+
+  const modalTitle = isArchived
+    ? "Are you sure you want to restore this folder ?"
+    : "Are you sure you want to archive this folder ?";
+
+  const saveChangesTitle = isArchived ? "Restore" : "Archive";
+  const saveChangesClass = isArchived ? 3 : 4;
 
   return (
     <React.Fragment>
@@ -53,7 +62,7 @@ export default function ArchiveFolderButton({ folderId, isArchived }) {
           <BS5Modal
             modal_id={modalId}
             modal_label="archive_tasks_modal"
-            modal_title="Are you sure you want to archive this task ?"
+            modal_title={modalTitle}
             modal_content={modalContent}
             showSaveChanges={true}
             modal_footer={true}
@@ -61,8 +70,8 @@ export default function ArchiveFolderButton({ folderId, isArchived }) {
             closeModal={closeModal}
             saveChangesFunction={archiveFolder}
             modalSize={MODAL_SIZES.LARGE}
-            saveChangesClass={4}
-            saveChangesTitle="Archive"
+            saveChangesClass={saveChangesClass}
+            saveChangesTitle={saveChangesTitle}
           />
         </Show.When>
       </Show>
