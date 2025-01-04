@@ -85,9 +85,15 @@ export default function UpdateTaskComponent({ task, dispatch }) {
         },
       });
     }
+    const localDateString = new Date()
+      .toLocaleDateString()
+      .replaceAll("/", "_");
     dispatch({
       type: TASKS_CONTROLLER_ACTIONS.DOWNLOAD_TASK,
-      payload: customFields.description,
+      payload: {
+        description: customFields.description,
+        filename: `${task.title}_${task.assignee.name}_${localDateString}`,
+      },
     });
   };
   return (

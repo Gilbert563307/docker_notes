@@ -334,6 +334,10 @@ export default function TasksController() {
     }
   }
 
+  /**
+   *
+   * @param {{description: string, filename: string}} payload
+   */
   async function collectDownloadTask(payload) {
     try {
       const downloaded = await convertHtmlToDocx(payload);
@@ -362,7 +366,6 @@ export default function TasksController() {
         type: REDUCER_ACTIONS.SET_TASKS,
         payload: tasks.results,
       });
-
     } catch (error) {
       setErrorToState(error);
     }

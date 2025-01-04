@@ -191,24 +191,35 @@ export default function FilesLogic() {
   }
 
   /**
+   * @param {string} string
+   * @returns {string}
+   */
+  function convertToValidFilename(string) {
+    return string.replace(/[\/|\\:*?"<>]/g, " ");
+  }
+
+  /**
    *
-   * @param {string} html
+   * @param {{description: string, filename: string}} payload
    * @returns {Promise<{downloaded: Boolean, message: string, type: number}>}
    */
-  async function convertHtmlToDocx(html) {
+  async function convertHtmlToDocx(payload) {
     try {
-      const data = await asBlob(html);
+      const { description, filename } = payload;
+      console.log(payload)
+
+      const data = await asBlob(description);
       const blob = new Blob([data], {
         type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       });
       const url = URL.createObjectURL(blob);
 
-      const filename = generateRandomFileName();
+      const correct_filename = convertToValidFilename(filename);
 
       // Create a temporary link to download the DOCX file
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${filename}.docx`;
+      link.download = `${correct_filename}.docx`;
       document.body.appendChild(link);
 
       // Trigger the download and clean up
@@ -221,7 +232,7 @@ export default function FilesLogic() {
         type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {
-      console.log(`[convertHtmlToDocx] #${error.message}`);
+      console.log(`[convertHtmlToDocx] ${error.message}`);
       return {
         downloaded: false,
         message: error.message,
@@ -518,7 +529,7 @@ export default function FilesLogic() {
       return {
         deleted: Boolean(deleted),
         message: "Your file has been deleted",
-        type: ALERT_TYPES.DANGER,
+        type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {
       console.log(`[deleteFile] ${error.message}`);

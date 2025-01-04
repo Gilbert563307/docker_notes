@@ -14,15 +14,21 @@ class FilesLogic:
         from PIL import Image
         from io import BytesIO
 
+        # Add MIME type for .docx files
+        mimetypes.add_type(
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".docx",
+        )
+
         try:
             mime_type, _ = mimetypes.guess_type(file.filename)
 
             if mime_type is None:
-                raise HTTPException(
-                    status_code=400, detail="Unable to determine file type."
-                )
+                print(f"[is_allowed_file]: Unable to determine file type.")
+                return False
 
             if mime_type not in ALLOWED_UPLOAD_MIME_TYPES:
+                print(f"[is_allowed_file]: File type not allowed.")
                 return False
 
             if mime_type.startswith("image"):
@@ -45,8 +51,6 @@ class FilesLogic:
             # Get current directory
             current_dir = os.getcwd()
 
-            file_name = file.filename
-
             # Create folder called 'uploads' if it doesn't exist
             uploads_path = os.path.join(current_dir, UPLOAD_DIRECTORY)
             os.makedirs(uploads_path, exist_ok=True)
@@ -56,7 +60,7 @@ class FilesLogic:
             os.makedirs(user_upload_folder_path, exist_ok=True)
 
             # Check if file already exists
-            file_upload_path = os.path.join(user_upload_folder_path, file_name)
+            file_upload_path = os.path.join(user_upload_folder_path, file.filename)
 
             # Write new content to the file (overwriting if it exists)
             with open(file_upload_path, "wb") as f:
@@ -86,7 +90,10 @@ class FilesLogic:
         except Exception as e:
             # Log the exception for debugging (use logging in production)
             print(f"[delete_file error]: {str(e)}")
-            return {"deleted": False, "message": "An error occurred while trying to delete the file."}
+            return {
+                "deleted": False,
+                "message": "An error occurred while trying to delete the file.",
+            }
 
     @staticmethod
     def get_download_file(user_uid: str, file_name: str):
