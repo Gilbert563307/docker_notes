@@ -488,7 +488,7 @@ export default function FilesLogic() {
       if (!data.deleted) {
         return {
           deleted: false,
-          message: data.message,
+          message: data?.message || "An error occurred during file deletion.",
           type: ALERT_TYPES.DANGER,
         };
       }
