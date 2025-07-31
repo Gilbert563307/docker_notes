@@ -196,7 +196,7 @@ export default function DataHandler({ table }) {
       return {
         resultsQuery: null,
         message: error.message,
-        type: ALERT_TYPES.SUCCESS,
+        type: ALERT_TYPES.DANGER,
       };
     }
   }
@@ -223,7 +223,7 @@ export default function DataHandler({ table }) {
       return {
         resultsQuery: null,
         message: error.message,
-        type: ALERT_TYPES.SUCCESS,
+        type: ALERT_TYPES.DANGER,
       };
     }
   }

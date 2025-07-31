@@ -16,8 +16,6 @@ services:
     depends_on:
       - fastapi-backend
     restart: unless-stopped
-    expose:
-      - "5173" # Ensure the frontend service exposes the correct port
 
   fastapi-backend:
     build:

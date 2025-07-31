@@ -1,10 +1,12 @@
-import React, { useMemo, useReducer } from "react";
+import React, { useContext, useMemo, useReducer } from "react";
 import { Outlet } from "react-router-dom";
 import { useAuthProvider } from "../context/AuthProvider";
 import AuthLogic from "../model/AuthLogic";
 import AuthControllerContext, {
   initialState,
 } from "../context/AuthControllerContext";
+import NotificationV3 from "../view/components/notifications/NotificationV3";
+import { ALERT_ACTIONS } from "../view/components/bs5/BS5Alert";
 
 /**
  * @typedef {Object} AuthControllerActions
@@ -12,7 +14,16 @@ import AuthControllerContext, {
  */
 export const AUTH_CONTROLLER_ACTIONS = {
   LOGIN_WITH_GOOGLE: "LOGIN_WITH_GOOGLE",
+  LOGIN_WITH_GITHUB: "LOGIN_WITH_GITHUB",
 };
+
+export function useAuthControllerContext(){
+  try {
+      return useContext(AuthControllerContext);
+    } catch (error) {
+      throw new Error(error.message);
+    }
+}
 
 /**
  * AuthController component manages authentication logic and state.
@@ -20,7 +31,12 @@ export const AUTH_CONTROLLER_ACTIONS = {
  */
 export default function AuthController() {
   const { login } = useAuthProvider();
-  const { LoginWithGoogle } = AuthLogic();
+  const { LoginWithGoogle, LoginWithGithub } = AuthLogic();
+
+
+  const REDUCER_ACTIONS = {
+    SET_NOTIFICATION: "SET_NOTIFICATION", //Action type for setting a notification.
+  };
 
   /**
    * Reducer function for handling state updates in AuthController.
@@ -30,7 +46,7 @@ export default function AuthController() {
    */
   function reducer(state, action) {
     switch (action.type) {
-      case AUTH_CONTROLLER_ACTIONS.SET_NOTIFICATION:
+      case REDUCER_ACTIONS.SET_NOTIFICATION:
         return { ...state, notification: action.payload };
       default:
         return state;
@@ -50,7 +66,7 @@ export default function AuthController() {
     )
       return;
     dispatchAction({
-      type: AUTH_CONTROLLER_ACTIONS.SET_NOTIFICATION,
+      type: REDUCER_ACTIONS.SET_NOTIFICATION,
       payload: {
         message: notificationObject.message,
         type: notificationObject.type,
@@ -72,6 +88,26 @@ export default function AuthController() {
     }
   }
 
+  async function collectLoginWithGithub() {
+    try {
+      const response = await LoginWithGithub();
+      if (response.login === false || Object.keys(response.user).length === 0)
+      {
+        setMessageToState(response);
+      }
+      login(response.user);
+    } catch (error) {
+      setMessageToState(error);
+    }
+  }
+
+  function closeAlert() {
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_NOTIFICATION,
+      payload: { message: "", type: 0 },
+    });
+  }
+
   /**
    * Dispatches actions based on provided action type.
    * @param {{ type: string, payload: any }} action - Action object with type and optional payload.
@@ -83,6 +119,13 @@ export default function AuthController() {
         case AUTH_CONTROLLER_ACTIONS.LOGIN_WITH_GOOGLE:
           await collectLoginWithGoogle();
           return;
+        case AUTH_CONTROLLER_ACTIONS.LOGIN_WITH_GITHUB:
+          await collectLoginWithGithub();
+          return;
+
+        case ALERT_ACTIONS.CLOSE_ALERT:
+                  closeAlert();
+                  return;
         default:
           return;
       }
@@ -96,6 +139,9 @@ export default function AuthController() {
 
   return (
     <AuthControllerContext.Provider value={contextValue}>
+      <NotificationV3
+              controllerContext={useAuthControllerContext}
+            ></NotificationV3>
       <Outlet></Outlet>
     </AuthControllerContext.Provider>
   );

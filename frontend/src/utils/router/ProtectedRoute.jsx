@@ -12,14 +12,16 @@ import { AUTH_STORAGE_KEYS } from "../../context/AuthProvider";
  */
 // eslint-disable-next-line react/prop-types
 export default function ProtectedRoute({ children }) {
-  const { getCookie } = useAuthHelpers();
+  const { getCookie, parseJson } = useAuthHelpers();
 
-  // Redirect to login if user is not authenticated
-  const user = getCookie(AUTH_STORAGE_KEYS.USER);
-  if (user === null || (user && Object.keys(user).length === 0)) {
+  const rawUser = getCookie(AUTH_STORAGE_KEYS.USER);
+  const userObject = parseJson(rawUser);
+
+  console.log("userObject:", userObject);
+
+  if (userObject === null || Object.keys(userObject).length === 0) {
     return <Navigate to="/auth/verify" />;
   }
 
-  // Render children if user is authenticated
   return <>{children}</>;
 }

@@ -47,7 +47,7 @@ async def create_upload_files(
             }, 400
 
         # Check file type
-        if not FilesLogic.is_allowed_file(file):
+        if FilesLogic.is_allowed_file(file) == False:
             return {
                 "message": f"File {file.filename} is not a valid image, PDF, text file, or document.",
                 "files_uploaded": False,

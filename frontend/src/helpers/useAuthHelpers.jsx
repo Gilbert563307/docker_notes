@@ -18,5 +18,14 @@ export default function useAuthHelpers() {
     return null;
   }
 
-  return { getCookie };
+   function parseJson(rawString){
+      try {
+        return JSON.parse(rawString);
+      } catch (e) {
+        return null;
+      }
+    }
+  
+
+  return { getCookie, parseJson };
 }

@@ -23,9 +23,10 @@ class FilesLogic:
         try:
             mime_type, _ = mimetypes.guess_type(file.filename)
 
-            if mime_type is None:
-                print(f"[is_allowed_file]: Unable to determine file type.")
-                return False
+            #TODO causes bugs for  file types like docx
+            # if mime_type is None:
+            #     print(f"[is_allowed_file]: Unable to determine file type.")
+            #     return False
 
             if mime_type not in ALLOWED_UPLOAD_MIME_TYPES:
                 print(f"[is_allowed_file]: File type not allowed.")

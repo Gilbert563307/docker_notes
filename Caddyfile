@@ -5,3 +5,7 @@ tasks-tracker.online {
 tasks-tracker.online/api/* {
     reverse_proxy fastapi-backend:9000
 }
+
+tasks-tracker.online/portainer/* {
+    reverse_proxy portainer:9443
+}

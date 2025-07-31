@@ -5,14 +5,16 @@ import useAuthHelpers from "../../helpers/useAuthHelpers";
 import { AUTH_STORAGE_KEYS } from "../../context/AuthProvider";
 
 export default function GuestRoute({ children }) {
-  const { getCookie } = useAuthHelpers();
+  const { getCookie, parseJson } = useAuthHelpers();
 
-  // Redirect to baord if user authenticated
-  const user = getCookie(AUTH_STORAGE_KEYS.USER);
-  if (user !== null || (user && Object.keys(user).length > 0)) {
+  const rawUser = getCookie(AUTH_STORAGE_KEYS.USER);
+  const userObject = parseJson(rawUser);
+
+  // Redirect if user is authenticated (not null and not empty)
+  if (userObject !== null && Object.keys(userObject).length > 0) {
     return <Navigate to={LANDING_PAGE_ROUTE} />;
   }
 
-  // Render children if user is authenticated
+  // Allow guest to view the route
   return <>{children}</>;
 }
