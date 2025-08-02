@@ -6,11 +6,4 @@ tasks-tracker.online/api/* {
     reverse_proxy fastapi-backend:9000
 }
 
-tasks-tracker.online/portainer/* {
-    reverse_proxy https://92.113.21.173:9443 {
-        transport http {
-            tls_insecure_skip_verify
-        }
-    }
-    rewrite /portainer/* /{path}
-}
+
