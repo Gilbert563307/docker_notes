@@ -17,8 +17,6 @@ export default function ProtectedRoute({ children }) {
   const rawUser = getCookie(AUTH_STORAGE_KEYS.USER);
   const userObject = parseJson(rawUser);
 
-  console.log("userObject:", userObject);
-
   if (userObject === null || Object.keys(userObject).length === 0) {
     return <Navigate to="/auth/verify" />;
   }

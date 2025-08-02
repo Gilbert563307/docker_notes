@@ -15,9 +15,9 @@ export default function CollectListAuth() {
     dispatch({ type: AUTH_CONTROLLER_ACTIONS.LOGIN_WITH_GITHUB });
   }
 
-  function signInWithEmailAndPassword() {
-    // dispatch({ type: AUTH_CONTROLLER_ACTIONS.LOGIN_WITH_EMAIL });
-  }
+  // function signInWithEmailAndPassword() {
+  //   // dispatch({ type: AUTH_CONTROLLER_ACTIONS.LOGIN_WITH_EMAIL });
+  // }
 
   return (
     <article className="auth-article">
@@ -26,13 +26,13 @@ export default function CollectListAuth() {
           <h1>Your Tasks</h1>
 
           <div className="sign-in-buttons">
-            <button
+            {/* <button
               type="button"
               className="btn sign-in-btn"
               onClick={signInWithEmailAndPassword}
             >
               Sign in with Email & Password
-            </button>
+            </button> */}
             <button
               type="button"
               className="btn sign-in-btn"

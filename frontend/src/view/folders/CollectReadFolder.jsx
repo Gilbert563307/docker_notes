@@ -8,15 +8,11 @@ import { Show } from "../components/custom/Show";
 
 export default function CollectReadFolder() {
   let { state } = useLocation();
-  const [folder, setFolder] = useState({});
+
+  const folder = state != null ? state.folder : {};
 
   const { files, total, pages } = useGetDriveFilesByFolderId();
-
-  useEffect(() => {
-    if (state === undefined || state === null) return;
-    setFolder(state?.folder);
-  }, [state]);
-
+  
   return (
     <article className="drive-article ">
       <div className="read-folder-name">

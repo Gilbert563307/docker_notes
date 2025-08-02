@@ -48,6 +48,9 @@ export default function FoldersTable({ folders }) {
                 key={header.name}
               >
                 <span>{header.icon}</span> {header.name}
+                {/* <span className="badge rounded-pill text-bg-light">
+                 
+                </span> */}
               </th>
             );
           })}
