@@ -57,3 +57,7 @@ services:
 volumes:
   fastapi_data:
   uploads-data:
+
+networks:
+  vps_network:
+    external: true
