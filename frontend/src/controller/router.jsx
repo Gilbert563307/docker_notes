@@ -27,8 +27,6 @@ import CollectCreateFolder from "../view/folders/CollectCreateFolder";
 import CollectUpdateFolder from "../view/folders/CollectUpdateFolder";
 import CollectReadFolder from "../view/folders/CollectReadFolder";
 
-const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
-
 const router = createBrowserRouter([
   {
     path: "/",
@@ -48,7 +46,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: `${BASE_URL}/board`,
+        path: "/board",
         element: (
           <ProtectedRoute>
             <BoardsController />
@@ -63,7 +61,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: `${BASE_URL}/tasks`,
+        path: "/tasks",
         element: (
           <ProtectedRoute>
             <TasksController />
@@ -90,7 +88,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: `${BASE_URL}/drive`,
+        path: "/drive",
         element: (
           <ProtectedRoute>
             <DriveController />
@@ -109,7 +107,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: `${BASE_URL}/folders`,
+        path: "/folders",
         element: (
           <ProtectedRoute>
             <FoldersController />
@@ -136,7 +134,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: `${BASE_URL}/auth`,
+        path: "/auth",
         element: (
           <GuestRoute>
             <AuthController />
@@ -150,7 +148,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: `${BASE_URL}/settings`,
+        path: "/settings",
         element: (
           <ProtectedRoute>
             <SettingsController />
