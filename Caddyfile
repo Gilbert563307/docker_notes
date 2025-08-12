@@ -1,9 +1,0 @@
-tasks-tracker.online {
-    reverse_proxy react-vite-app:5173
-}
-
-tasks-tracker.online/api/* {
-    reverse_proxy fastapi-backend:9000
-}
-
-

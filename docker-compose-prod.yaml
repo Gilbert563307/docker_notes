@@ -41,20 +41,7 @@ services:
       - fastapi_data:/app/data
       - uploads-data:/code/app/uploads
 
-  caddy:
-    build:
-      context: . # Pass the root context to include the Caddyfile
-      dockerfile: Dockerfile.caddy
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - caddy_data:/data
-      - caddy_config:/config
 
 volumes:
-  caddy_data:
-  caddy_config:
   fastapi_data:
   uploads-data:

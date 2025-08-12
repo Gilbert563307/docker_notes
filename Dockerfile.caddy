@@ -1,8 +1,0 @@
-FROM caddy:latest
-
-# Copy the Caddyfile to the correct location in the image
-COPY Caddyfile /etc/caddy/Caddyfile
-
-# Expose the default Caddy ports
-EXPOSE 80
-EXPOSE 443
