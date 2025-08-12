@@ -217,7 +217,7 @@ export default function TasksController() {
       await refreshTasksList();
 
       //navugate to tasks page
-      navigate("/tasks");
+      navigate("/app/tasks");
     } catch (error) {
       setErrorToState(error);
     }
@@ -328,7 +328,7 @@ export default function TasksController() {
       await refreshTasksList();
 
       //navugate to tasks page
-      navigate("/tasks");
+      navigate("/app/tasks");
     } catch (error) {
       setErrorToState(error);
     }

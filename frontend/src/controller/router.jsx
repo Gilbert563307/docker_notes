@@ -76,15 +76,15 @@ const router = createBrowserRouter([
             element: <CollectListTasks />,
           },
           {
-            path: "/tasks/create",
+            path: "create",
             element: <CollectCreateTask />,
           },
           {
-            path: "/tasks/read/:taskId",
+            path: "read/:taskId",
             element: <CollectReadTask />,
           },
           {
-            path: "/tasks/update/:taskId",
+            path: "update/:taskId",
             element: <CollectUpdateTask />,
           },
         ],
@@ -103,7 +103,7 @@ const router = createBrowserRouter([
             element: <CollectListDriveFiles />,
           },
           {
-            path: "/drive/upload",
+            path: "upload",
             element: <CollectUploadFile />,
           },
         ],
@@ -122,15 +122,15 @@ const router = createBrowserRouter([
             element: <CollectListFolders />,
           },
           {
-            path: "/folders/create",
+            path: "create",
             element: <CollectCreateFolder />,
           },
           {
-            path: "/folders/update/:folderId",
+            path: "update/:folderId",
             element: <CollectUpdateFolder />,
           },
           {
-            path: "/folders/read/:folderId",
+            path: "read/:folderId",
             element: <CollectReadFolder />,
           },
         ],
@@ -144,7 +144,7 @@ const router = createBrowserRouter([
         ),
         children: [
           {
-            path: "/auth/verify",
+            path: "verify",
             element: <CollectListAuth />,
           },
         ],

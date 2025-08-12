@@ -41,12 +41,11 @@ export default function CollectReadTask() {
           <div className="read-task-actions">
             <div>{getStatusButton(task.status)}</div>
             <div>
-              <Link to={`/tasks/update/${task.id}`}>
+              <Link to={`/app/tasks/update/${task.id}`}>
                 <i className="fa-sharp fa-light fa-pencil"></i> Change
               </Link>
             </div>
           </div>
-
 
           <div className="tasks-deatils-div border rounded">
             <div className="tasks-deatils-div-details-header">
@@ -77,9 +76,7 @@ export default function CollectReadTask() {
               {/* think bout what to show of the tasks */}
               {/* <span className="badge dialogic-badge">Comments</span> */}
             </div>
-            <div>
-
-            </div>
+            <div></div>
           </div>
         </div>
       </div>

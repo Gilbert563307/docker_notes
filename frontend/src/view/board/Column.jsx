@@ -38,7 +38,7 @@ export default function Column({
         <div className="board-tasks">
           {filteredContent.length > 0 ? (
             filteredContent.map((task) => {
-              const readTaskUrl = `/tasks/read/${task.id}`;
+              const readTaskUrl = `/app/tasks/read/${task.id}`;
 
               return (
                 <div

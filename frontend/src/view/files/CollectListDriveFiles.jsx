@@ -24,7 +24,7 @@ export default function CollectListDriveFiles() {
                 <Link
                   aria-describedby="create task button"
                   className="add-task-button task-btn-plain "
-                  to="/drive/upload"
+                  to="/app/drive/upload"
                 >
                   Upload
                 </Link>

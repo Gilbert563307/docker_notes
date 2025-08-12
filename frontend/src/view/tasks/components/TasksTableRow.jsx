@@ -37,7 +37,7 @@ export default function TasksTableRow({ task }) {
   const Status = getStatusBadge(task.status);
   const Priority = getPriorityBadge(task.priority);
 
-  const readTaskUrl = `/tasks/read/${task.id}`;
+  const readTaskUrl = `/app/tasks/read/${task.id}`;
   return (
     <tr className="tasks-table-row">
       <th scope="row">
@@ -76,7 +76,7 @@ export default function TasksTableRow({ task }) {
           </Link>
         </button>
         <button>
-          <Link to={`/tasks/update/${task.id}`}>
+          <Link to={`/app/tasks/update/${task.id}`}>
             <i className="fa-sharp fa-light fa-pencil"></i>
           </Link>
         </button>

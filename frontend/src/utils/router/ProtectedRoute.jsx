@@ -18,7 +18,7 @@ export default function ProtectedRoute({ children }) {
   const userObject = parseJson(rawUser);
 
   if (userObject === null || Object.keys(userObject).length === 0) {
-    return <Navigate to="/auth/verify" />;
+    return <Navigate to="/app/auth/verify" />;
   }
 
   return <>{children}</>;

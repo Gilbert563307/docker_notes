@@ -26,7 +26,7 @@ export default function CollectListTasks() {
     <article className="tasks-article d-flex flex-column gap-1">
       <div className="tasks-header d-flex justify-content-between">
         <div className="">
-         <TasksSearchBar></TasksSearchBar>
+          <TasksSearchBar></TasksSearchBar>
         </div>
         <div className="tasks-article-buttons">
           <div>
@@ -36,7 +36,7 @@ export default function CollectListTasks() {
             <Link
               aria-describedby="create task button"
               className="add-task-button task-btn-plain "
-              to="/tasks/create"
+              to="/app/tasks/create"
             >
               Create
             </Link>

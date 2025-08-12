@@ -24,17 +24,29 @@ export default function NavBar() {
   const items = [
     {
       name: "Board",
-      url: "/board",
+      url: "/app/board",
       icon: "fa-duotone fa-solid fa-clapperboard",
     },
-    { name: "Tasks", url: "/tasks", icon: "fa-duotone fa-solid fa-list-check" },
-    { name: "Folders", url: "/folders", icon: "fa-duotone fa-solid fa-folder" },
+    {
+      name: "Tasks",
+      url: "/app/tasks",
+      icon: "fa-duotone fa-solid fa-list-check",
+    },
+    {
+      name: "Folders",
+      url: "/app/folders",
+      icon: "fa-duotone fa-solid fa-folder",
+    },
     {
       name: "Drive",
-      url: "/drive",
+      url: "/app/drive",
       icon: "fa-duotone fa-regular fa-hard-drive",
     },
-    { name: "Settings", url: "/settings", icon: "fa-duotone fa-thin fa-gear" },
+    {
+      name: "Settings",
+      url: "/app/settings",
+      icon: "fa-duotone fa-thin fa-gear",
+    },
   ];
 
   return (
