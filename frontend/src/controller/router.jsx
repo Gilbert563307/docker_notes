@@ -27,7 +27,7 @@ import CollectCreateFolder from "../view/folders/CollectCreateFolder";
 import CollectUpdateFolder from "../view/folders/CollectUpdateFolder";
 import CollectReadFolder from "../view/folders/CollectReadFolder";
 
-const router = createBrowserRouter([
+const routes = [
   {
     path: "/",
     element: (
@@ -165,6 +165,7 @@ const router = createBrowserRouter([
     ],
     errorElement: <ErrorPage />,
   },
-]);
+]
+const router = createBrowserRouter(routes, {basename: "/app/"});
 
 export default router;
