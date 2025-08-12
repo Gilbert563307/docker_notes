@@ -9,3 +9,5 @@ backend/controller/__pycache__
 backend/config/__pycache__/constants.cpython-312.pyc
 backend/controller/__pycache__/dependencies.cpython-312.pyc
 backend/controller/__pycache__/FilesController.cpython-312.pyc
+frontend/.env.production
+backend/.env.production
