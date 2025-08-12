@@ -13,10 +13,15 @@ services:
         VITE_APP_FIREBASE_APP_ID: ${VITE_APP_FIREBASE_APP_ID}
         VITE_APP_FIREBASE_MEASUREMENT_ID: ${VITE_APP_FIREBASE_MEASUREMENT_ID}
         VITE_APP_BACKEND_URL: ${VITE_APP_BACKEND_URL}
+    networks:
+      - vps_network 
     depends_on:
       - fastapi-backend
     ports:
       - "5173:5173"
+    #expose the port so that the caddy vps (in different gh repo can find it)
+    expose:
+      - 5173
     restart: unless-stopped
 
   fastapi-backend:
@@ -37,8 +42,13 @@ services:
         - BACKEND_FIREBASE_CLIENT_X590_CERT_URL=${BACKEND_FIREBASE_CLIENT_X590_CERT_URL}
         - BACKEND_FIREBASE_UNIVERSE_DOMAIN=${BACKEND_FIREBASE_UNIVERSE_DOMAIN}
     restart: unless-stopped
+    networks:
+      - vps_network 
     ports:
       - "9000:9000"
+    #expose the port so that the caddy vps (in different gh repo can find it)
+    expose:
+      - 9000
     volumes:
       - fastapi_data:/app/data
       - uploads-data:/code/app/uploads
