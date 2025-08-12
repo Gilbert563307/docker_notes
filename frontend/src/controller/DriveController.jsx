@@ -230,7 +230,7 @@ export default function DriveController() {
       setNotificationToState(results);
 
       //navugate to files page
-      navigate("/app/drive");
+      navigate("/drive");
     } catch (error) {
       setErrorToState(error);
     }

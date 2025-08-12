@@ -45,15 +45,12 @@ export default function FoldersTableRow({ folder }) {
       <td>{folder.updated_at.toLocaleString()}</td>
       <td className="main-table-actions">
         <button>
-          <Link
-            to={`/app/folders/read/${folder.id}`}
-            state={{ folder: folder }}
-          >
+          <Link to={`/folders/read/${folder.id}`} state={{ folder: folder }}>
             <i className="fa-light fa-magnifying-glass"></i>
           </Link>
         </button>
         <button>
-          <Link to={`/app/folders/update/${folder.id}`}>
+          <Link to={`/folders/update/${folder.id}`}>
             <i className="fa-sharp fa-light fa-pencil"></i>
           </Link>
         </button>

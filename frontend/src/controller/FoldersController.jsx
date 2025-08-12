@@ -210,7 +210,7 @@ export default function FoldersController() {
       await collectListFolders();
 
       //navugate to tasks page
-      navigate("/app/folders");
+      navigate("/folders");
     } catch (error) {
       setErrorToState(error);
     }
@@ -273,7 +273,7 @@ export default function FoldersController() {
       await collectListFolders;
 
       //navigate to tasks page
-      navigate("/app/folders");
+      navigate("/folders");
     } catch (error) {
       setErrorToState(error);
     }
