@@ -21,14 +21,12 @@ export default function CollectListFolders() {
               <FoldersSearchBar />
             </div>
             <div className="tasks-article-buttons">
-              <div>
-                <FilterFoldersButton></FilterFoldersButton>
-              </div>
+              <div><FilterFoldersButton></FilterFoldersButton></div>
               <div>
                 <Link
                   aria-describedby="create task button"
                   className="add-task-button task-btn-plain "
-                  to="/app/folders/create"
+                  to="/folders/create"
                 >
                   create
                 </Link>

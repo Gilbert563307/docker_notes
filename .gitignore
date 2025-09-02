@@ -1,4 +1,5 @@
 backend/.env
+backend/venv
 backend/__pycache__
 frontend/.env
 backend/service_account_key.json
@@ -11,3 +12,5 @@ backend/controller/__pycache__/dependencies.cpython-312.pyc
 backend/controller/__pycache__/FilesController.cpython-312.pyc
 frontend/.env.production
 backend/.env.production
+frontend/.env
+.env

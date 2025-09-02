@@ -4,8 +4,8 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   //Production notes
-  //When reverse proxying under /app, you must set Vite’s base option so it knows to prepend /app/ to all asset paths.
-  base: "/app/",
+  //When reverse proxying under /app/, you must set Vite’s base option so it knows to prepend /app/ to all asset paths., so in react router use the basename attribute
+  base: '/app/',
   plugins: [react()],
   server: {
     host: true,

@@ -27,9 +27,7 @@ import CollectCreateFolder from "../view/folders/CollectCreateFolder";
 import CollectUpdateFolder from "../view/folders/CollectUpdateFolder";
 import CollectReadFolder from "../view/folders/CollectReadFolder";
 
-const BASE_URL = import.meta.env.VITE_APP_BASE_URL;
-
-const router = createBrowserRouter([
+const routes = [
   {
     path: "/",
     element: (
@@ -48,7 +46,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: `${BASE_URL}/board`,
+        path: "/board",
         element: (
           <ProtectedRoute>
             <BoardsController />
@@ -63,7 +61,7 @@ const router = createBrowserRouter([
         ],
       },
       {
-        path: `${BASE_URL}/tasks`,
+        path: "/tasks",
         element: (
           <ProtectedRoute>
             <TasksController />
@@ -76,21 +74,21 @@ const router = createBrowserRouter([
             element: <CollectListTasks />,
           },
           {
-            path: "create",
+            path: "/tasks/create",
             element: <CollectCreateTask />,
           },
           {
-            path: "read/:taskId",
+            path: "/tasks/read/:taskId",
             element: <CollectReadTask />,
           },
           {
-            path: "update/:taskId",
+            path: "/tasks/update/:taskId",
             element: <CollectUpdateTask />,
           },
         ],
       },
       {
-        path: `${BASE_URL}/drive`,
+        path: "/drive",
         element: (
           <ProtectedRoute>
             <DriveController />
@@ -103,13 +101,13 @@ const router = createBrowserRouter([
             element: <CollectListDriveFiles />,
           },
           {
-            path: "upload",
+            path: "/drive/upload",
             element: <CollectUploadFile />,
           },
         ],
       },
       {
-        path: `${BASE_URL}/folders`,
+        path: "/folders",
         element: (
           <ProtectedRoute>
             <FoldersController />
@@ -122,21 +120,21 @@ const router = createBrowserRouter([
             element: <CollectListFolders />,
           },
           {
-            path: "create",
+            path: "/folders/create",
             element: <CollectCreateFolder />,
           },
           {
-            path: "update/:folderId",
+            path: "/folders/update/:folderId",
             element: <CollectUpdateFolder />,
           },
           {
-            path: "read/:folderId",
+            path: "/folders/read/:folderId",
             element: <CollectReadFolder />,
           },
         ],
       },
       {
-        path: `${BASE_URL}/auth`,
+        path: "/auth",
         element: (
           <GuestRoute>
             <AuthController />
@@ -144,13 +142,13 @@ const router = createBrowserRouter([
         ),
         children: [
           {
-            path: "verify",
+            path: "/auth/verify",
             element: <CollectListAuth />,
           },
         ],
       },
       {
-        path: `${BASE_URL}/settings`,
+        path: "/settings",
         element: (
           <ProtectedRoute>
             <SettingsController />
@@ -167,6 +165,7 @@ const router = createBrowserRouter([
     ],
     errorElement: <ErrorPage />,
   },
-]);
+]
+const router = createBrowserRouter(routes, {basename: "/app/"});
 
 export default router;
