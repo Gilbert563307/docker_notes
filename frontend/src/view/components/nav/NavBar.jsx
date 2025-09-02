@@ -23,6 +23,11 @@ export default function NavBar() {
    */
   const items = [
     {
+      name: "Kanban",
+      url: "kanboards",
+      icon: "fa-duotone fa-solid fa-chart-kanban",
+    },
+    {
       name: "Board",
       url: "/board",
       icon: "fa-duotone fa-solid fa-clapperboard",

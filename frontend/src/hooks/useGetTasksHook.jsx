@@ -1,4 +1,3 @@
-import React  from 'react';
 import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../controller/TasksController';
 import usePaginationHook from './usePaginationHook';
 

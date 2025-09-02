@@ -5,7 +5,7 @@ import useSetPageTitleHook from "../../hooks/useSetPageTitleHook";
 import useGetBoardTasksHook from "../../hooks/useGetBoardTasksHook";
 import { TASKS_BOARD_HEADERS } from "../../config";
 import { BOARD_CONTROLLER_ACTIONS } from "../../controller/BoardsController";
-
+import { useParams } from "react-router-dom";
 /**
  * CollectListBoard component displays a board with columns to organize tasks.
  * Manages drag-and-drop functionality to update task statuses across columns.
@@ -15,6 +15,9 @@ import { BOARD_CONTROLLER_ACTIONS } from "../../controller/BoardsController";
  */
 export default function CollectListBoard() {
   useSetPageTitleHook({ title: "Board" });
+  const { boardId } = useParams();
+
+  console.log(boardId);
   const { tasks, dispatch } = useGetBoardTasksHook();
 
   /**

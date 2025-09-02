@@ -26,6 +26,8 @@ import CollectListFolders from "../view/folders/CollectListFolders";
 import CollectCreateFolder from "../view/folders/CollectCreateFolder";
 import CollectUpdateFolder from "../view/folders/CollectUpdateFolder";
 import CollectReadFolder from "../view/folders/CollectReadFolder";
+import KanBoardsController from "./KanBoardsController";
+import CollectListKanBoards from "../view/kanboard/CollectListKanBoards";
 
 const routes = [
   {
@@ -55,7 +57,7 @@ const routes = [
         children: [
           {
             index: true,
-            path: "",
+            path: ":boardId",
             element: <CollectListBoard />,
           },
         ],
@@ -131,6 +133,21 @@ const routes = [
             path: "/folders/read/:folderId",
             element: <CollectReadFolder />,
           },
+        ],
+      },
+      {
+        path: "/kanboards",
+        element: (
+          <ProtectedRoute>
+            <KanBoardsController/>
+          </ProtectedRoute>
+        ),
+        children: [
+          {
+            index: true,
+            path: "",
+            element: <CollectListKanBoards/>
+          }
         ],
       },
       {

@@ -157,11 +157,12 @@ import React from 'react'
 /**
  * @typedef {Object} Board
  * @property {string} id
+ * @property {string} user_uid
  * @property {string} name
- * @property {string} project_id
+ * @property {string} color
  * @property {boolean} archived
  * @property {string} created_at
- * @property {string} deleted_at
+ * @property {string} updated_at
  */
 
 export default function types() {
