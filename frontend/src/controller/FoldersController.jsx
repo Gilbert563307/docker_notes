@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useMemo, useReducer } from "react";
-import { Await, Outlet, useNavigate } from "react-router-dom";
+import  { createContext, useContext, useMemo, useReducer } from "react";
+import {  Outlet, useNavigate } from "react-router-dom";
 import { ALERT_ACTIONS, ALERT_TYPES } from "../view/components/bs5/BS5Alert";
 import useBS5PreloaderHook from "../hooks/useBS5PreloaderHook";
 import NotificationV3 from "../view/components/notifications/NotificationV3";
@@ -140,7 +140,7 @@ export default function FoldersController() {
   /**
    *
    * @param {{message: string, type: number}} object
-   * @returns {void | null}
+   * @returns {Function | void}
    */
   function setNotificationToState(object) {
     if (object.message === "") return;
@@ -322,6 +322,7 @@ export default function FoldersController() {
 
         case ALERT_ACTIONS.CLOSE_ALERT:
           closeAlert();
+          break;
 
         case FOLDERS_CONTROLLER_ACTIONS.LIST:
           await collectListFolders();

@@ -98,9 +98,11 @@ export const PRIORITY_FILTER_TYPE_TAGS = [
 //LANDING PAGE router
 export const LANDING_PAGE_ROUTE = "/board";
 
-export const ALLOWED_UPLOAD_FILE_TYPES = ["pdf", "docx", "doc", "txt", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+export const ALLOWED_UPLOAD_FILE_TYPES = ["pdf", "docx", "doc", "txt", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "md"];
 
 export const DEFAULT_SELECT_FOLDER_MESSAGE = "Select the folder to upload files to";
 
 //debouce
 export const DEBOUNCE_SECONDS = 1000;
+
+export const MAX_KAN_BOARDS = 10;

@@ -14,7 +14,6 @@ import {
 import { useAuthProvider } from "../context/AuthProvider";
 import useHelpers from "../helpers/useHelpers";
 import DataHandler from "./DataHandler";
-import { Query } from "firebase/firestore";
 
 export default function TasksLogic() {
   const { user } = useAuthProvider();
@@ -32,14 +31,12 @@ export default function TasksLogic() {
     getCountFromServer,
     getTotalPages,
     getTheCurrentItemsPerPage,
-    startAfter,
     currentServerTimestamp,
     orderBy,
     doc,
     db,
     table,
     updateDoc,
-    getDoc,
     deleteDoc,
     getSearchQueryByFieldName,
     convertQuerySnapShotDocs,
