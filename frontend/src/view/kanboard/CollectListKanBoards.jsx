@@ -10,7 +10,7 @@ export default function CollectListKanBoards() {
   useSetPageTitleHook({ title: "Kanban" });
 
   return (
-    <article>
+    <article className="kanboard-article">
       <div>
         <Link
           aria-describedby="create task button"

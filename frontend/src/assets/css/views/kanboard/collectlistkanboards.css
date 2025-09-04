@@ -30,6 +30,12 @@
   color: #333;
 }
 
+.kanboard-article{
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
 /* 📱 Mobile responsiveness */
 @media (max-width: 600px) {
   .cards {

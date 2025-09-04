@@ -28,6 +28,7 @@ import CollectUpdateFolder from "../view/folders/CollectUpdateFolder";
 import CollectReadFolder from "../view/folders/CollectReadFolder";
 import KanBoardsController from "./KanBoardsController";
 import CollectListKanBoards from "../view/kanboard/CollectListKanBoards";
+import CollectistCreateKanBoard from "../view/kanboard/CollectistCreateKanBoard";
 
 const routes = [
   {
@@ -147,6 +148,10 @@ const routes = [
             index: true,
             path: "",
             element: <CollectListKanBoards/>
+          },
+          {
+            path: "/kanboards/create",
+            element: <CollectistCreateKanBoard/>
           }
         ],
       },
