@@ -159,7 +159,7 @@ export default function KanBoardsController() {
 
   /**
    *
-   * @param {{name: string }} payload
+   * @param {{name: string, color: string }} payload
    */
   async function collectCreateKanBoard(payload) {
     try {
@@ -168,7 +168,7 @@ export default function KanBoardsController() {
       // Update state with the created  response
       setNotificationToState(kanBoardCreated);
 
-      await refreshKanBoardList();
+      navigate("/kanboards");
     } catch (error) {
       setErrorToState(error);
     }

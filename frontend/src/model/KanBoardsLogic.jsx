@@ -18,7 +18,7 @@ export default function KanBoardsLogic() {
 
   /**
    *
-   * @param {{name: string}} payload
+   * @param {{name: string, color: string}} payload
    */
   async function createKanBoard(payload) {
     try {
@@ -26,6 +26,7 @@ export default function KanBoardsLogic() {
         name: payload.name,
         user_uid: userUid,
         archived: false,
+        color: payload.color,
         created_at: currentServerTimestamp,
         updated_at: currentServerTimestamp,
       };

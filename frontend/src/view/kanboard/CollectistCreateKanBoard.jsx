@@ -16,6 +16,10 @@ export default function CollectistCreateKanBoard() {
     formState: { errors },
   } = useForm({});
 
+  /**
+   * 
+   * @param {{name: string, color: string}} data 
+   */
   const onSubmit = (data) => {
     reset();
     dispatch({ type: KAN_BOARDS_CONTROLLER_ACTIONS.CREATE, payload: data });
