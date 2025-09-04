@@ -14,11 +14,16 @@ export default function KanBoardsLogic() {
     currentServerTimestamp,
     convertQuerySnapShotDocs,
     addDoc,
+    doc,
+    table,
+    db,
+    updateDoc,
   } = DataHandler({ table: "kanboards" });
 
   /**
    *
    * @param {{name: string, color: string}} payload
+   * @returns {Promise<{ created: boolean, message: string, type: number }>}
    */
   async function createKanBoard(payload) {
     try {
@@ -48,6 +53,41 @@ export default function KanBoardsLogic() {
     }
   }
 
+  /**
+   * 
+   * @param {import("../types/types").Board} payload 
+   * @returns {Promise<{ updated: boolean, message: string, type: number }>}
+   */
+  async function updateKanBoard(payload) {
+     try {
+      //manualy updated the updated_at
+      const updatedPayload = { ...payload, updated_at: currentServerTimestamp };
+
+      //get document
+      const kanban = doc(db, table, payload.id);
+
+      //update document
+      await updateDoc(kanban, updatedPayload);
+
+      return {
+        updated: true,
+        message: "Your kanban has been succesfully been updated",
+        type: ALERT_TYPES.SUCCESS,
+      };
+    } catch (error) {
+      console.log(`[updateKanBoard]: ${error.message}`);
+      return {
+        updated: false,
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+
+  /**
+   * 
+   * @returns {Promise<{ results: Array<import("../types/types").Board>, message: string, type: number }>}
+   */
   async function listKanBoards() {
     try {
       // Construct the query to get all tasks for the current user UID with a
@@ -79,5 +119,34 @@ export default function KanBoardsLogic() {
       };
     }
   }
-  return { listKanBoards, createKanBoard };
+
+  /**
+   * 
+   *
+   * @param {{id: string, archived: boolean}} payload - 
+   * @returns {Promise<{ archived: boolean, message: string, type: number }>} - 
+   * */
+  async function archiveKanBoard(payload) {
+    try {
+      const { updated, message, type } = await updateKanBoard(payload);
+
+      // Return the result of the update operation
+      return {
+        archived: updated,
+        message: message,
+        type: type,
+      };
+      
+    } catch (error) {
+      // Return an error response if the update operation fails
+      console.log(`[archiveKanBoard]: ${error.message}`);
+      return {
+        archived: false,
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+    
+  }
+  return { listKanBoards, createKanBoard, updateKanBoard, archiveKanBoard };
 }

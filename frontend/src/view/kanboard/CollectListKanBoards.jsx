@@ -17,7 +17,7 @@ export default function CollectListKanBoards() {
           className="add-task-button task-btn-plain "
           to="/kanboards/create"
         >
-          create
+          create kanban
         </Link>
       </div>
       <div className="cards">
