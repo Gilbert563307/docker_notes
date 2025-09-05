@@ -67,6 +67,7 @@ export default function KanBoardsLogic() {
         user_uid: userUid,
         archived: false,
         color: payload.color,
+        collaborative: false, 
         created_at: currentServerTimestamp,
         updated_at: currentServerTimestamp,
       };

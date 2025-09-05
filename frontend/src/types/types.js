@@ -161,6 +161,7 @@ import React from 'react'
  * @property {string} name
  * @property {string} color
  * @property {boolean} archived
+ * @property {boolean} collaborative
  * @property {string} created_at
  * @property {string} updated_at
  */
