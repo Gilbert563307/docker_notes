@@ -96,7 +96,7 @@ export const PRIORITY_FILTER_TYPE_TAGS = [
 
 
 //LANDING PAGE router
-export const LANDING_PAGE_ROUTE = "/board";
+export const LANDING_PAGE_ROUTE = "/kanboards";
 
 export const ALLOWED_UPLOAD_FILE_TYPES = ["pdf", "docx", "doc", "txt", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "md"];
 
