@@ -18,7 +18,32 @@ export default function KanBoardsLogic() {
     table,
     db,
     updateDoc,
+    getCountFromServer,
   } = DataHandler({ table: "kanboards" });
+
+  async function doesUserHaveMaxKanBoards() {
+  try {
+    const q = query(collectionRef, where("user_uid", "==", userUid));
+    const snapshot = await getCountFromServer(q);
+    const count = snapshot.data().count;
+
+    const maximumReached = count >= MAX_KAN_BOARDS;
+    return {
+      max: maximumReached,
+      message: maximumReached 
+        ? `You have reached the maximum number of Kanboards (${MAX_KAN_BOARDS}).` 
+        : `You have created ${count} out of ${MAX_KAN_BOARDS} Kanboards.`,
+      type: maximumReached ? ALERT_TYPES.DANGER : ALERT_TYPES.INFO
+    };
+    
+  } catch (error) {
+    return {
+      max: true,
+      message: error.message,
+      type: ALERT_TYPES.DANGER
+    };
+  }
+}
 
   /**
    *
@@ -27,6 +52,16 @@ export default function KanBoardsLogic() {
    */
   async function createKanBoard(payload) {
     try {
+      //check if the max kanboards already created
+      const maxKanBoardsCreated = await doesUserHaveMaxKanBoards();
+      if (maxKanBoardsCreated.max) {
+        return {
+          created: false,
+          message: maxKanBoardsCreated.message,
+          type: ALERT_TYPES.DANGER,
+        };
+      }
+
       const defaultValues = {
         name: payload.name,
         user_uid: userUid,
@@ -36,14 +71,12 @@ export default function KanBoardsLogic() {
         updated_at: currentServerTimestamp,
       };
 
-      const created = addDoc(collectionRef, defaultValues);;
-
+      const created = addDoc(collectionRef, defaultValues);
       return {
         created: Boolean(created),
         message: "Your kan board has been created",
         type: ALERT_TYPES.SUCCESS,
       };
-      
     } catch (error) {
       return {
         created: false,
@@ -54,12 +87,12 @@ export default function KanBoardsLogic() {
   }
 
   /**
-   * 
-   * @param {import("../types/types").Board} payload 
+   *
+   * @param {import("../types/types").Board} payload
    * @returns {Promise<{ updated: boolean, message: string, type: number }>}
    */
   async function updateKanBoard(payload) {
-     try {
+    try {
       //manualy updated the updated_at
       const updatedPayload = { ...payload, updated_at: currentServerTimestamp };
 
@@ -85,7 +118,7 @@ export default function KanBoardsLogic() {
   }
 
   /**
-   * 
+   *
    * @returns {Promise<{ results: Array<import("../types/types").Board>, message: string, type: number }>}
    */
   async function listKanBoards() {
@@ -95,7 +128,6 @@ export default function KanBoardsLogic() {
         collectionRef,
         where("user_uid", "==", userUid),
         // where("archived", "==", tasksArchived),
-        orderBy("updated_at", "desc"),
         limit(MAX_KAN_BOARDS)
       );
 
@@ -121,10 +153,10 @@ export default function KanBoardsLogic() {
   }
 
   /**
-   * 
    *
-   * @param {{id: string, archived: boolean}} payload - 
-   * @returns {Promise<{ archived: boolean, message: string, type: number }>} - 
+   *
+   * @param {{id: string, archived: boolean}} payload -
+   * @returns {Promise<{ archived: boolean, message: string, type: number }>} -
    * */
   async function archiveKanBoard(payload) {
     try {
@@ -136,7 +168,6 @@ export default function KanBoardsLogic() {
         message: message,
         type: type,
       };
-      
     } catch (error) {
       // Return an error response if the update operation fails
       console.log(`[archiveKanBoard]: ${error.message}`);
@@ -146,7 +177,6 @@ export default function KanBoardsLogic() {
         type: ALERT_TYPES.DANGER,
       };
     }
-    
   }
   return { listKanBoards, createKanBoard, updateKanBoard, archiveKanBoard };
 }

@@ -14,6 +14,5 @@ export default function useGetKanBoardsHook() {
 
     fetchTasks();
   }, []);
-  console.log(state);
   return { boards: state.boards };
 }

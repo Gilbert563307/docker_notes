@@ -374,17 +374,22 @@ export default function TasksLogic() {
   };
 
   /**
+   * @param {{boardId: string}} payload
    * @returns {Promise<{tasks: import("../types/types").Tasks, message: string, type: number}>}
    */
-  const listBoardTasks = async () => {
+  const listBoardTasks = async (payload) => {
     try {
       // Get the session archived filter
       // const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
+      
+      //THIS IS FOR WHE THE MAIN DEV I STILL HAS TASKS ON THE DEFAULT PROJECT ID
+      const boardId = payload.boardId === "0" ? 0 : payload.boardId;
 
       const tasksQuery = query(
         collectionRef,
         where("user_uid", "==", userUid),
         // where("archived", "==", tasksArchived),
+        where("project_id", "==", boardId),
         orderBy("updated_at", "desc"),
         limit(MAX_BOARD_ITEMS)
       );

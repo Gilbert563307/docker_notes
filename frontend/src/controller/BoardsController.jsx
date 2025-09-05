@@ -1,4 +1,4 @@
-import  { createContext, useContext, useMemo, useReducer } from "react";
+import { createContext, useContext, useMemo, useReducer } from "react";
 import TasksLogic from "../model/TasksLogic";
 import NotificationV3 from "../view/components/notifications/NotificationV3";
 import useBS5PreloaderHook from "../hooks/useBS5PreloaderHook";
@@ -132,7 +132,7 @@ export default function BoardsController() {
     }, 20000);
 
     // Clear timeout if needed
-     return () => clearTimeout(timeoutId);
+    return () => clearTimeout(timeoutId);
   }
 
   /**
@@ -161,9 +161,12 @@ export default function BoardsController() {
     setNotificationToState(notification);
   }
 
-  async function collectListBoardTasks() {
+  /**
+   * @param {{boardId: string}} payload
+   */
+  async function collectListBoardTasks(payload) {
     try {
-      const response = await listBoardTasks();
+      const response = await listBoardTasks(payload);
       setNotificationToState(response);
 
       // Update state with the created task response
@@ -178,17 +181,19 @@ export default function BoardsController() {
 
   /**
    *
-   * @param {import("../types/types").Task} payload
+   * @param {{task:import("../types/types").Task, boardId: string }} payload
    */
   async function collectUpdateBoardTask(payload) {
     try {
-      const tbuTask = await updateTask(payload);
+      
+      const taskPayload = payload.task;
+      const tbuTask = await updateTask(taskPayload);
 
       if (tbuTask.type != ALERT_TYPES.SUCCESS) {
         // Update state with the created task response
         setNotificationToState(tbuTask);
       }
-      await collectListBoardTasks();
+      await collectListBoardTasks({ boardId: payload.boardId });
     } catch (error) {
       setErrorToState(error);
     }
@@ -196,18 +201,20 @@ export default function BoardsController() {
 
   /**
    *
-   * @param {import("../types/types").createTaskPayload} payload
+   * @param {{task: import("../types/types").createTaskPayload, boardId: string}} payload
    */
   async function collectCreateBoardTask(payload) {
     try {
-      const taskCreated = await createTask(payload);
+      const task = {...payload.task, project_id: payload.boardId};
+
+      const taskCreated = await createTask(task);
 
       if (taskCreated.type === ALERT_TYPES.DANGER) {
         // Update state with the created task response
         setNotificationToState(taskCreated);
       }
 
-      const { tasks } = await listBoardTasks();
+      const { tasks } = await listBoardTasks({ boardId: payload.boardId });
 
       // Update state with the created task response
       dispatchAction({
@@ -235,7 +242,7 @@ export default function BoardsController() {
       // Handle different action types
       switch (action.type) {
         case BOARD_CONTROLLER_ACTIONS.LIST:
-          await collectListBoardTasks();
+          await collectListBoardTasks(action?.payload);
           return;
         case BOARD_CONTROLLER_ACTIONS.UPDATE:
           await collectUpdateBoardTask(action?.payload);

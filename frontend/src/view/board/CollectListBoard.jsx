@@ -17,8 +17,7 @@ export default function CollectListBoard() {
   useSetPageTitleHook({ title: "Board" });
   const { boardId } = useParams();
 
-  console.log(boardId);
-  const { tasks, dispatch } = useGetBoardTasksHook();
+  const { tasks, dispatch } = useGetBoardTasksHook({boardId: boardId});
 
   /**
    * Updates a task in the board state.
@@ -27,7 +26,8 @@ export default function CollectListBoard() {
    */
   const updateTask = useCallback(
     (payload) => {
-      dispatch({ type: BOARD_CONTROLLER_ACTIONS.UPDATE, payload });
+      const updatedPayload = { task: payload, boardId: boardId };
+      dispatch({ type: BOARD_CONTROLLER_ACTIONS.UPDATE, payload: updatedPayload });
     },
     [dispatch]
   );
@@ -70,9 +70,7 @@ export default function CollectListBoard() {
    */
   const handleDragEnter = useCallback(
     (newStatus) => {
-      const oldStatus = items.find(
-        (item) => item.id === draggingId
-      )?.status;
+      const oldStatus = items.find((item) => item.id === draggingId)?.status;
 
       setItems((prevItems) =>
         prevItems.map((item) => {

@@ -214,7 +214,7 @@ export default function TasksController() {
 
       //reftech tasks afte creating one
       //TODO get state and remogve that task with that uuid no need to refesh or make all to api
-      await refreshTasksList();
+      // await refreshTasksList(); //REMOVED BECAUSEWHEN U NAVIGATE TO TASKS THE TASKS IS ALLREADY THERE
 
       //navugate to tasks page
       navigate("/tasks");

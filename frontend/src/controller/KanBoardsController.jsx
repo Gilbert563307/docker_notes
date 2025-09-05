@@ -137,7 +137,6 @@ export default function KanBoardsController() {
   async function collectListKanBoards() {
     try {
       const kanBoards = await listKanBoards();
-      
       setNotificationToState(kanBoards);
 
       // Update state with the   response

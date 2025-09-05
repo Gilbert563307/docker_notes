@@ -27,11 +27,11 @@ export default function NavBar() {
       url: "kanboards",
       icon: "fa-duotone fa-solid fa-chart-kanban",
     },
-    {
-      name: "Board",
-      url: "/board",
-      icon: "fa-duotone fa-solid fa-clapperboard",
-    },
+    // {
+    //   name: "Board",
+    //   url: "/board",
+    //   icon: "fa-duotone fa-solid fa-clapperboard",
+    // },
     { name: "Tasks", url: "/tasks", icon: "fa-duotone fa-solid fa-list-check" },
     { name: "Folders", url: "/folders", icon: "fa-duotone fa-solid fa-folder" },
     {

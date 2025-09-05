@@ -33,7 +33,7 @@ import React from 'react'
 /**
  * @typedef {Object} Task
  * @property {string} id - The unique identifier for the task.
- * @property {number} project_id - The unique identifier for the project.
+ * @property {string} project_id - The unique identifier for the project.
  * @property {string} user_uid - The unique identifier for the user.
  * @property {string} title - The title of the task.
  * @property {string} description - The description of the task.
@@ -50,7 +50,7 @@ import React from 'react'
  * @typedef {Object} createTaskPayload
  * @property {string} [id] - The unique identifier for the task.
  * @property {string} title - The title of the task.
- * @property {number} [project_id] - The unique identifier for the project.
+ * @property {string} [project_id] - The unique identifier for the project.
  * @property {string} [description] - The description of the task.
  * @property {number} [status] - The status of the task.
  * @property {number} [priority] - The priority level of the task.

@@ -1,6 +1,6 @@
 .cards {
   display: flex;
-  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .card {
@@ -24,6 +24,10 @@
   background-position: center;
 }
 
+.card > a {
+  text-decoration: none;
+}
+
 .card-label {
   padding: 6px 8px;
   font-size: 14px;
@@ -33,7 +37,16 @@
 .kanboard-article{
   display: flex;
   flex-direction: column;
-  gap: 1em;
+}
+
+.kanban-button-div{
+  display: flex;
+  margin: 1em 1em 0 0em;
+  justify-content: space-between;
+}
+
+.kanban-p{
+  margin-left: 1em;
 }
 
 /* 📱 Mobile responsiveness */

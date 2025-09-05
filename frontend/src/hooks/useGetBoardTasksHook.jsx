@@ -1,16 +1,25 @@
-import React, { useEffect } from 'react'
-import { BOARD_CONTROLLER_ACTIONS, useBoardsControllerContext } from '../controller/BoardsController';
+import React, { useEffect } from "react";
+import {
+  BOARD_CONTROLLER_ACTIONS,
+  useBoardsControllerContext,
+} from "../controller/BoardsController";
 
-export default function useGetBoardTasksHook() {
-    const { state, dispatch } = useBoardsControllerContext();
+/**
+ *
+ * @param {Object} props
+ * @param {string} props.boardId
+ * @returns {{tasks: Array<import("../types/types").Task>, dispatch: Function}}
+ */
+export default function useGetBoardTasksHook({ boardId }) {
+  const { state, dispatch } = useBoardsControllerContext();
 
-    const fetchTasks = () => {
-        dispatch({ type: BOARD_CONTROLLER_ACTIONS.LIST });
-    };
+  const fetchTasks = () => {
+    dispatch({ type: BOARD_CONTROLLER_ACTIONS.LIST, payload: {boardId: boardId} });
+  };
 
-    useEffect(() => {
-        fetchTasks();
-    }, []);
+  useEffect(() => {
+    fetchTasks();
+  }, []);
 
-    return { tasks: state.tasks, dispatch: dispatch }
+  return { tasks: state.tasks, dispatch: dispatch };
 }

@@ -106,10 +106,56 @@ export default function DataHandler({ table }) {
     }
   };
 
+  /**
+   *
+   * @param {number} seconds
+   * @param {number} nanoseconds
+   * @returns {{date: null | Date, error: string, type: number} }
+   */
+  function convertFirebaseTimestampToDate(seconds, nanoseconds) {
+    try {
+      const date = convertTimeStampToDate({
+        seconds: seconds,
+        nanoseconds: nanoseconds,
+      });
+
+      return {
+        date: date,
+        error: "",
+        type: ALERT_TYPES.SUCCESS,
+      };
+    } catch (error) {
+      return {
+        date: null,
+        error: error.message(),
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+
   const convertQuerySnapShotDocs = (querySnapshot) => {
     try {
       // Map through the query snapshot to add the document ID to each task.
       const results = querySnapshot.docs.map((document) => {
+        //https://stackoverflow.com/questions/68304942/there-is-a-delay-on-updating-a-timestamp-field-compared-to-any-other-field
+        // When a user creates or updates `currentTimestamp` in Firebase,
+        // the value may temporarily return as null if fetched immediately.
+        // To avoid this, wait a few seconds before fetching the updated data.
+
+        if (
+          document.data().created_at === null ||
+          document.data().updated_at === null
+        ) {
+
+          const dateNow = Date.now();
+          return {
+            ...document.data(),
+            id: document.id,
+            created_at: dateNow,
+            updated_at: dateNow,
+          };
+        }
+
         const convertedCreatedAt = convertTimeStampToDate({
           seconds: document.data().created_at.seconds,
           nanoseconds: document.data().created_at.nanoseconds,
@@ -119,6 +165,7 @@ export default function DataHandler({ table }) {
           seconds: document.data().updated_at.seconds,
           nanoseconds: document.data().updated_at.nanoseconds,
         });
+
         return {
           ...document.data(),
           id: document.id,

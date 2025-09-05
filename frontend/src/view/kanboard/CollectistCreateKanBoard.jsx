@@ -4,6 +4,7 @@ import {
   KAN_BOARDS_CONTROLLER_ACTIONS,
   useKanBoardsControllerContext,
 } from "../../controller/KanBoardsController";
+import "../../assets/css/views/kanboard/collectlistcreatekanboard.css";
 
 export default function CollectistCreateKanBoard() {
   const { dispatch } = useKanBoardsControllerContext();
@@ -26,7 +27,7 @@ export default function CollectistCreateKanBoard() {
   };
 
   return (
-    <article>
+    <article className="create-kanban-article">
       <form
         className="d-flex flex-column g-3"
         onSubmit={handleSubmit(onSubmit)}
