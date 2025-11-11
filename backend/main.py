@@ -9,8 +9,11 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://tasks-tracker.online",
-        "https://tasks-tracker.online/api/",
+        # "https://tasks-tracker.online",
+        # "https://tasks-tracker.online/api/",
+        "https://gilbert-ssempijja.space/",
+        "https://gilbert-ssempijja.space/app/",
+        "https://gilbert-ssempijja.space/api/",
     ],  # Replace "*" with your React app's URL in production
     allow_credentials=True,
     allow_methods=["*"],
