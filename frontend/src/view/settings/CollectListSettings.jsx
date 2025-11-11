@@ -36,9 +36,11 @@ export default function CollectListSettings() {
                 </li>
               </ul>
               <ul>
-                <Link to="/board/0" title="Kanban default">
-                  Kanban default
-                </Link>
+                <li>
+                  <Link to="/board/0" title="Kanban default">
+                    Kanban default
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>

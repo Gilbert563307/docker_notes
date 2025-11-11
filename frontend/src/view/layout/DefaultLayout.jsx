@@ -17,7 +17,7 @@ export default function DefaultLayout() {
     <section className="default-layout">
 
       <aside className="aside-navigation">
-        <article>
+        <article className="aside-article-header">
           <h1 className="stats-tracker-h1">Tasks - Tracker</h1>
           <p ><span className='text-body-secondary user-welcome'>Welcome,</span> <b className="fw-medium user-name">{user?.displayName}</b> </p>
           <NavBar />

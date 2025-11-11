@@ -24,14 +24,34 @@
   background-position: center;
 }
 
-.card > a {
-  text-decoration: none;
+.card{
+  display: flex;
 }
 
+/* .card > div:first-child a {
+  text-decoration: none;
+} */
+
 .card-label {
+  display: flex;
+  justify-content: space-between;
   padding: 6px 8px;
   font-size: 14px;
   color: #333;
+  gap: 1em;
+}
+
+.kanboard-options-button{
+  border: none;
+  background: inherit;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  transition: ease-in 100ms;
+}
+.kanboard-options-button:hover{
+  background-color: #a6a8a9;
+  
 }
 
 .kanboard-article{

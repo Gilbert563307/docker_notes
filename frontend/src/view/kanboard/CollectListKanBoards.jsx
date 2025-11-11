@@ -26,13 +26,20 @@ export default function CollectListKanBoards() {
           const boardsUrl = `/board/${item.id}`;
           return (
             <div className="card" key={item.id}>
-              <Link to={boardsUrl} >
+              <Link to={boardsUrl}>
                 <div
                   className="card-color"
                   style={{ backgroundColor: item.color }}
                 />
-                <div className="card-label">{item.name}</div>
               </Link>
+              <div className="card-label">
+                {item.name}
+                <div>
+                  <button className="kanboard-options-button">
+                    <i className="fa-solid fa-ellipsis-vertical"></i>
+                  </button>
+                </div>
+              </div>
             </div>
           );
         })}

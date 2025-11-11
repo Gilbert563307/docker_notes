@@ -114,4 +114,8 @@ html.dark .content {
   .layout-title {
     margin-left: 1em;
   }
+
+  .aside-article-header{
+    width: 100%;
+  }
 }
