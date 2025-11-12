@@ -18,7 +18,7 @@ export default function ProtectedRoute({ children }) {
   const userObject = parseJson(rawUser);
 
   if (userObject === null || Object.keys(userObject).length === 0) {
-    window.location.href = "app/auth/verify";
+    window.location.href = "./auth/verify";
   }
 
   return <>{children}</>;
