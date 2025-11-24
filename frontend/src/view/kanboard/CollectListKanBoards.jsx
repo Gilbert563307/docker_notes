@@ -32,14 +32,14 @@ export default function CollectListKanBoards() {
                   style={{ backgroundColor: item.color }}
                 />
               </Link>
-              <div className="card-label">
+              {/* <div className="card-label">
                 {item.name}
                 <div>
                   <button className="kanboard-options-button">
                     <i className="fa-solid fa-ellipsis-vertical"></i>
                   </button>
                 </div>
-              </div>
+              </div> */}
             </div>
           );
         })}

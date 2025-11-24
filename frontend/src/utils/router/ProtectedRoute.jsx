@@ -1,5 +1,4 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
 import useAuthHelpers from "../../helpers/useAuthHelpers";
 import { AUTH_STORAGE_KEYS } from "../../context/AuthProvider";
 
