@@ -1,5 +1,5 @@
 import React, { createRef, useEffect, useState } from "react";
-import { notificationObserver } from "../../../observers/NotificationObserver";
+import { notificationObserver } from "../observer/NotificationObserver";
 
 export const NOTIFICATION_TYPES = {
   INFO: 0,

@@ -1,6 +1,6 @@
 import React from "react";
-import useAuthHelpers from "../../helpers/useAuthHelpers";
-import { AUTH_STORAGE_KEYS } from "../../context/AuthProvider";
+import useAuthHelpers from "../../shared/helpers/useAuthHelpers";
+import { AUTH_STORAGE_KEYS } from "../../shared/context/AuthProvider";
 
 /**
  * ProtectedRoute component renders children only if the user is authenticated.
