@@ -84,6 +84,7 @@ export default function AuthProvider({ children }) {
     setUser(null); // Clear authenticated user
     SignUserOut(); // Sign user out of firebase
     localStorage.clear(); //Clear all localstorage items stored
+    sessionStorage.clear(); //Clear all sessionstorage items stored
   };
 
   /**

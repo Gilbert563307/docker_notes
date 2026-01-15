@@ -32,7 +32,7 @@ export default function CollectListSettings() {
                     onClick={logout}
                   >
                     Force Logout
-                  </button>
+                </button>
                 </li>
               </ul>
               <ul>

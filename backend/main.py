@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from controller.FilesController import files_router
+from tasks.presentation.FilesController import files_router
 
 
 app = FastAPI()
