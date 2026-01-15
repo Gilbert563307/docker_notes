@@ -4,6 +4,7 @@ import { Outlet } from 'react-router-dom'
 export default function GuestLayout() {
     return (
         <section className='main-section'>
+            <Notif></Notif>
             <Outlet></Outlet>
         </section>
     )

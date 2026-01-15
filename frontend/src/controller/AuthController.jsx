@@ -2,9 +2,7 @@ import React, { useContext, useMemo, useReducer } from "react";
 import { Outlet } from "react-router-dom";
 import { useAuthProvider } from "../context/AuthProvider";
 import AuthLogic from "../model/AuthLogic";
-import AuthControllerContext, {
-  initialState,
-} from "../context/AuthControllerContext";
+import AuthControllerContext, { initialState } from "../context/AuthControllerContext";
 import NotificationV3 from "../view/components/notifications/NotificationV3";
 import { ALERT_ACTIONS } from "../view/components/bs5/BS5Alert";
 
@@ -17,12 +15,12 @@ export const AUTH_CONTROLLER_ACTIONS = {
   LOGIN_WITH_GITHUB: "LOGIN_WITH_GITHUB",
 };
 
-export function useAuthControllerContext(){
+export function useAuthControllerContext() {
   try {
-      return useContext(AuthControllerContext);
-    } catch (error) {
-      throw new Error(error.message);
-    }
+    return useContext(AuthControllerContext);
+  } catch (error) {
+    throw new Error(error.message);
+  }
 }
 
 /**
@@ -32,7 +30,6 @@ export function useAuthControllerContext(){
 export default function AuthController() {
   const { login } = useAuthProvider();
   const { LoginWithGoogle, LoginWithGithub } = AuthLogic();
-
 
   const REDUCER_ACTIONS = {
     SET_NOTIFICATION: "SET_NOTIFICATION", //Action type for setting a notification.
@@ -60,11 +57,7 @@ export default function AuthController() {
    * @param {import("../types/types").Notification} notificationObject - Object containing error message and type.
    */
   function setMessageToState(notificationObject) {
-    if (
-      Object.keys(notificationObject).length === 0 ||
-      notificationObject.message === ""
-    )
-      return;
+    if (Object.keys(notificationObject).length === 0 || notificationObject.message === "") return;
     dispatchAction({
       type: REDUCER_ACTIONS.SET_NOTIFICATION,
       payload: {
@@ -80,8 +73,7 @@ export default function AuthController() {
   async function collectLoginWithGoogle() {
     try {
       const response = await LoginWithGoogle();
-      if (response.login === false || Object.keys(response.user).length === 0)
-        return;
+      if (response.login === false || Object.keys(response.user).length === 0) return;
       login(response.user);
     } catch (error) {
       setMessageToState(error);
@@ -91,8 +83,7 @@ export default function AuthController() {
   async function collectLoginWithGithub() {
     try {
       const response = await LoginWithGithub();
-      if (response.login === false || Object.keys(response.user).length === 0)
-      {
+      if (response.login === false || Object.keys(response.user).length === 0) {
         setMessageToState(response);
       }
       login(response.user);
@@ -124,8 +115,8 @@ export default function AuthController() {
           return;
 
         case ALERT_ACTIONS.CLOSE_ALERT:
-                  closeAlert();
-                  return;
+          closeAlert();
+          return;
         default:
           return;
       }
@@ -139,9 +130,7 @@ export default function AuthController() {
 
   return (
     <AuthControllerContext.Provider value={contextValue}>
-      <NotificationV3
-              controllerContext={useAuthControllerContext}
-            ></NotificationV3>
+      <NotificationV3 controllerContext={useAuthControllerContext}></NotificationV3>
       <Outlet></Outlet>
     </AuthControllerContext.Provider>
   );
