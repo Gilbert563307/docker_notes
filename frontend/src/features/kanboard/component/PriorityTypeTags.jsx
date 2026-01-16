@@ -1,6 +1,6 @@
 import React from 'react'
-import SessionMemoryFilter from '../../components/custom/SessionMemoryFilter';
 import { PRIORITY_FILTER_TYPE_TAGS } from '../../../config';
+import SessionMemoryFilter from '../../../shared/components/custom/SessionMemoryFilter';
 
 export default function PriorityTypeTags() {
     return (

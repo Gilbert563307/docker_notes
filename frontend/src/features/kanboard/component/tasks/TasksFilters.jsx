@@ -1,9 +1,10 @@
 import React from 'react'
-import SessionMemoryFilter from '../../components/custom/SessionMemoryFilter'
-import { TASKS_ARCHIVED_SESSION_FILTER } from '../../../config'
-import StatusTypeTags from './StatusTypeTags'
-import PriorityTypeTags from './PriorityTypeTags'
-import "../../../assets/css/components/TasksFilters.css"
+import SessionMemoryFilter from '../../../../shared/components/custom/SessionMemoryFilter';
+import { TASKS_ARCHIVED_SESSION_FILTER } from '../../../../config';
+import StatusTypeTags from '../StatusTypeTags';
+import PriorityTypeTags from '../PriorityTypeTags';
+import "../../css/TasksFilters.css";
+
 
 export default function TasksFilters() {
   return (

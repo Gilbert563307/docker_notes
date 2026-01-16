@@ -67,8 +67,8 @@ export default function NotificationV4() {
   return (
      <article
         role="alert"
-        ariaLive="assertive"
-        ariaAtomic="true"
+        aria-live="assertive"
+        aria-atomic="true"
         tabIndex={-1}
         ref={articleRef}
         className=""

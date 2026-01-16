@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import useLocalStorageHook from '../hooks/useLocalStorageHook';
-import { THEME_MODES } from '../shared/context/ThemeContext';
-import { SESSION_THEME_MODE } from '../config';
+import { SESSION_THEME_MODE } from '../../config';
+import { THEME_MODES } from '../context/ThemeContext';
 
 /**
  * Manages theme logic including reading and setting the theme mode.

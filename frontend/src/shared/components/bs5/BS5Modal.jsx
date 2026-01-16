@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import React from "react";
-import "../../../assets/css/BS5Modal.css";
+import "./css/BS5Modal.css";
 
 export const MODAL_SIZES = {
   NONE: 0,

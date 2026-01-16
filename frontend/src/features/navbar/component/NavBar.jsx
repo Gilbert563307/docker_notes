@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "../../../assets/css/components/NavBar.css";
-import { useAuthProvider } from "../../shared/context/AuthProvider";
+import { Link  } from "react-router-dom";
+import "../css/NavBar.css";
+import { useAuthProvider } from "../../../shared/context/AuthProvider";
 
 export default function NavBar() {
   const { logout } = useAuthProvider();
-  const navigate = useNavigate();
+
   const cacheUrl = sessionStorage.getItem("ACTIVE_URL");
   const [activeItem, setActiveItem] = useState(
     cacheUrl ? parseInt(cacheUrl) : 0

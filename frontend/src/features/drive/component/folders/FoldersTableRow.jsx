@@ -1,7 +1,7 @@
 import React from "react";
-import BS5TruncateSpan from "../../components/bs5/BS5TruncateSpan";
 import { Link } from "react-router-dom";
-import ArchiveFolderButton from "../buttons/ArchiveFolderButton";
+import BS5TruncateSpan from "../../../../shared/components/bs5/BS5TruncateSpan";
+import ArchiveFolderButton from "./ArchiveFolderButton";
 
 /**
  *

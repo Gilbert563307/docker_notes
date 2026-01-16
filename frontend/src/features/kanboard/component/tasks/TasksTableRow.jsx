@@ -1,19 +1,23 @@
 /* eslint-disable react/prop-types */
 import React from "react";
-import { useAuthProvider } from "../../../shared/context/AuthProvider";
-import useHtmlCssHelpers from "../../../helpers/useHtmlCssHelpers";
 import { Link } from "react-router-dom";
-import ArchiveTaskButton from "../../../features/kanboard/component/buttons/ArchiveTaskButton";
-import BS5TruncateSpan from "../../components/bs5/BS5TruncateSpan";
+import useHtmlCssHelpers from "../../../../shared/helpers/useHtmlCssHelpers";
+import { useAuthProvider } from "../../../../shared/context/AuthProvider";
+import BS5TruncateSpan from "../../../../shared/components/bs5/BS5TruncateSpan";
+import ArchiveTaskButton from "./buttons/ArchiveTaskButton";
 
 /**
  * Renders a single row in the tasks table.
  *
  * @param {Object} props - The props object.
- * @param {import("../../../types/types").Task} props.task - The task object.
+ * @param {import("../../../../types/types").Task} props.task - The task object.
  * @returns {JSX.Element} A JSX element representing a single row in the tasks table.
  */
 export default function TasksTableRow({ task }) {
+
+  /**
+   * @type {import("../../../../shared/context/AuthProvider").AuthContextType}
+   */
   const { user } = useAuthProvider();
   const { getStatusBadge, getPriorityBadge } = useHtmlCssHelpers();
 

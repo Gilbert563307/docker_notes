@@ -1,3 +1,5 @@
+Note: need python 3.13 dor development
+
 ### Debelopment Setup Guide
 1.docker-compose -f "docker-compose-dev.yaml" build
 2.docker-compose -f "docker-compose-dev.yaml" up
@@ -14,7 +16,7 @@
 
 
 
-### ✅ **Steps to Deploy a Stack via GitHub Repository in Portainer**
+###  **Steps to Deploy a Stack via GitHub Repository in Portainer**
 
 #### **1. Sign into Portainer**
 

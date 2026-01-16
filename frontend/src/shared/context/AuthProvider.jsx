@@ -5,7 +5,7 @@ import useCookieStorageHook from '../hooks/useCookieStorageHook';
 /**
  * Context for managing user authentication state and actions.
  * @typedef {Object} AuthContextType
- * @property {import("../../types/types").User | {}} user - The authenticated user object.
+ * @property {import("../../types/types").User} user - The authenticated user object.
  * @property {Function} login - Function to perform user login.
  * @property {Function} logout - Function to perform user logout.
  */
@@ -17,7 +17,13 @@ import useCookieStorageHook from '../hooks/useCookieStorageHook';
  * @returns {React.Context<AuthContextType>} AuthProviderContext - Context provider for authentication.
  */
 const AuthProviderContext = createContext({
-  user: {},
+  user: {
+    displayName: "",
+    photoURL: "",
+    token: "",
+    uid: undefined,
+    email: undefined
+  },
   login: () => { },
   logout: () => { },
 });

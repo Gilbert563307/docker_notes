@@ -1,10 +1,10 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
-import "../../assets/css/layouts/DefaultLayout.css";
-import { useAuthProvider } from '../../context/AuthProvider';
-import NavBar from "../../features/navbar/NavBar";
-import { useMainControllerContext } from '../../controller/MainController';
-import NotificationV4 from '../../../features/notification/component/NotificationV4';
+import "../css/DefaultLayout.css";
+import { useAuthProvider } from '../../../context/AuthProvider';
+import { useMainControllerContext } from '../../../controller/MainController';
+import NavBar from '../../../../features/navbar/component/NavBar';
+import NotificationV4 from '../../../../features/notification/component/NotificationV4';
 
 /**
  * 

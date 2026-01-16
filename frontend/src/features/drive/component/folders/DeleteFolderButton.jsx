@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { Show } from "../../components/custom/Show";
-import BS5Modal, { MODAL_SIZES } from "../../components/bs5/BS5Modal";
-import { FOLDERS_CONTROLLER_ACTIONS, useFoldersControllerContext } from "../../../controller/FoldersController";
+import { FOLDERS_CONTROLLER_ACTIONS, useFoldersControllerContext } from "../../controller/FoldersController";
+import { Show } from "../../../../shared/components/custom/Show";
+import BS5Modal, { MODAL_SIZES } from "../../../../shared/components/bs5/BS5Modal";
 
 export default function DeleteFolderButton({ folderId }) {
   const { dispatch } = useFoldersControllerContext();

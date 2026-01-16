@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import useTasksSearchBarHook from '../../../shared/hooks/useTasksSearchBarHook';
+import useTasksSearchBarHook from '../../../../shared/hooks/useTasksSearchBarHook';
 
 export default function TasksSearchBar() {
     // State for storing search input value

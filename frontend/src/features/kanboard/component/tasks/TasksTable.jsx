@@ -1,16 +1,16 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
 import TasksTableRow from './TasksTableRow'
-import "../../../assets/css/views/tasks/TasksTable.css";
+import "../../css/TasksTable.css";
 import { Link } from 'react-router-dom';
-import { Show } from '../../components/custom/Show';
+import { Show } from '../../../../shared/components/custom/Show';
 
 
 /**
  * Component representing a table of tasks.
  * 
  * @param {Object} props - The properties object.
- * @param {import("../../../types/types").Task[]} props.tasks - The array of tasks to display.
+ * @param {import("../../../../types/types").Task[]} props.tasks - The array of tasks to display.
  * @returns {JSX.Element} The rendered TasksTable component.
  */
 export default function TasksTable({ tasks }) {

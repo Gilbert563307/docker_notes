@@ -1,14 +1,14 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
-import StatusButtonComponent from '../../components/custom/StatusButtonComponent'
-import PriorityButtonComponent from '../../components/custom/PriorityButtonComponent'
+import StatusButtonComponent from '../../../../shared/components/custom/StatusButtonComponent'
+import PriorityButtonComponent from '../../../../shared/components/custom/PriorityButtonComponent'
 
 /**
  * TaskDetails component displays detailed information about a task.
  * 
  * @param {Object} props - The component props.
- * @param {import("../../../types/types").Task} props.task - The task object containing task details.
- * @param {import("../../../types/types").customFieldsPayload} props.customFields - The task object containing task details.
+ * @param {import("../../../../types/types").Task} props.task - The task object containing task details.
+ * @param {import("../../../../types/types").customFieldsPayload} props.customFields - The task object containing task details.
  * @param {function} props.setStatus - Callback function to update the task status.
  * @param {function} props.setPriority - Callback function to update the task priority.
  * @returns {JSX.Element} A component displaying task details.

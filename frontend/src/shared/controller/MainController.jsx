@@ -1,9 +1,9 @@
 import React, { createContext, useMemo, useState, useContext } from "react";
-import DefaultLayout from "../layout/component/DefaultLayout";
 import { useAuthProvider } from "../context/AuthProvider";
-import GuestLayout from "../layout/component/GuestLayout";
 import { ThemeContext } from "../context/ThemeContext";
 import ThemeService from "../service/ThemeService";
+import DefaultLayout from "../components/layout/component/DefaultLayout";
+import GuestLayout from "../components/layout/component/GuestLayout";
 
 /**
  * Initial state for the MainController.
