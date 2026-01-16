@@ -2,7 +2,7 @@ import React from "react";
 import { ALERT_ACTIONS } from "../../../shared/components/bs5/BS5Alert";
 import DataHandler from "./DataHandler";
 
-export default function SessionLogic() {
+export default function SessionService() {
   const {
     collectionRef,
     currentServerTimestamp,

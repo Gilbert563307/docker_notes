@@ -9,7 +9,7 @@ import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
 import useHelpers from "../../../shared/helpers/useHelpers";
 import { Query } from "firebase/firestore";
 
-export default function FoldersLogic() {
+export default function FoldersService() {
   const {
     collectionRef,
     userUid,

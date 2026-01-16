@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo, useReducer } from "react";
-import TasksLogic from "../service/TasksLogic";
 import { Outlet } from "react-router-dom";
 import { ALERT_ACTIONS, ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
+import TasksService from "../service/TasksService";
 
 /**
  * @typedef {Object} InitialState
@@ -69,7 +69,7 @@ export function useBoardsControllerContext() {
 }
 
 export default function BoardsController() {
-  const { createTask, listBoardTasks, updateTask } = TasksLogic();
+  const { createTask, listBoardTasks, updateTask } = TasksService();
 
   const REDUCER_ACTIONS = {
     SET_TASKS: "SET_TASKS", //Action type for setting multiple task's.

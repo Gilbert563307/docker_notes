@@ -15,7 +15,7 @@ import { useAuthProvider } from "../../../shared/context/AuthProvider";
 import useHelpers from "../../../shared/helpers/useHelpers";
 import DataHandler from "./DataHandler";
 
-export default function TasksLogic() {
+export default function TasksService() {
   const { user } = useAuthProvider();
   const { getSessionFilter, getHowManyFiltersAreActiveByCurrentPath } =
     useHelpers();

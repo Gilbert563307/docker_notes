@@ -1,7 +1,7 @@
 import React, { useContext, useMemo, useReducer } from "react";
 import { Outlet } from "react-router-dom";
 import { useAuthProvider } from "../../../shared/context/AuthProvider";
-import AuthLogic from "../service/AuthLogic";
+import AuthService from "../service/AuthService";
 import AuthControllerContext, { initialState } from "../../../shared/context/AuthControllerContext";
 import NotificationV3 from "../../notification/component/NotificationV3";
 import { ALERT_ACTIONS } from "../../../shared/components/bs5/BS5Alert";
@@ -29,7 +29,7 @@ export function useAuthControllerContext() {
  */
 export default function AuthController() {
   const { login } = useAuthProvider();
-  const { LoginWithGoogle, LoginWithGithub } = AuthLogic();
+  const { LoginWithGoogle, LoginWithGithub } = AuthService();
 
   const REDUCER_ACTIONS = {
     SET_NOTIFICATION: "SET_NOTIFICATION", //Action type for setting a notification.

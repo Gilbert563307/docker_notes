@@ -1,7 +1,7 @@
 import React from "react";
 import { ALERT_TYPES } from "../components/bs5/BS5Alert";
 import { asBlob } from "html-docx-js-typescript";
-import DataHandler from "./DataHandler";
+import DataHandler from "../data/FirebaseInterface";
 import { Query } from "firebase/firestore";
 import {
   DEFAULT_FILES_ARCHIVE,
@@ -9,7 +9,7 @@ import {
 } from "../../config";
 import useHelpers from "../helpers/useHelpers";
 
-export default function FilesLogic() {
+export default function FilesService() {
   const {
     getTheCurrentItemsPerPage,
     userUid,

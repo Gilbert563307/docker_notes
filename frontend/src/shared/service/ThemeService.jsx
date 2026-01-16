@@ -7,7 +7,7 @@ import { SESSION_THEME_MODE } from '../config';
  * Manages theme logic including reading and setting the theme mode.
  * @returns {{darkTheme: Function, lightTheme: Function}} Functions to set the dark and light themes.
  */
-export default function ThemeLogic() {
+export default function ThemeService() {
     const { readValue, storeValue } = useLocalStorageHook();
 
     // Read the current theme mode from local storage.

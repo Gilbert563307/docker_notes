@@ -2,8 +2,9 @@ import  { createContext, useContext, useMemo, useReducer } from "react";
 import {  Outlet, useNavigate } from "react-router-dom";
 import { ALERT_ACTIONS, ALERT_TYPES } from "../view/components/bs5/BS5Alert";
 import useHelpers from "../helpers/useHelpers";
-import FoldersLogic from "../model/FoldersLogic";
-import FilesLogic from "../model/FilesLogic";
+
+import FilesService from "../../../shared/service/FilesService";
+import FoldersService from "../service/FoldersService";
 
 /**
  * @typedef {Object} InitialState
@@ -79,9 +80,9 @@ export default function FoldersController() {
     readFolder,
     updateFolder,
     deleteFolder,
-  } = FoldersLogic();
+  } = FoldersService();
 
-  const { listFilesByFolderId } = FilesLogic();
+  const { listFilesByFolderId } = FilesService();
 
   const navigate = useNavigate();
 

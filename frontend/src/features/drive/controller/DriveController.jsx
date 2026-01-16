@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useMemo, useReducer } from "react";
 import { ALERT_ACTIONS, ALERT_TYPES } from "../view/components/bs5/BS5Alert";
 import { Outlet, useNavigate } from "react-router-dom";
-import FilesLogic from "../model/FilesLogic";
-import FoldersLogic from "../model/FoldersLogic";
 import useHelpers from "../helpers/useHelpers";
+import FilesService from "../../../shared/service/FilesService";
+import FoldersService from "../service/FoldersService";
 
 /**
  * @typedef {Object} InitialState
@@ -88,9 +88,9 @@ export default function DriveController() {
     deleteFile,
     downloadFile,
     listFilesBySearchTerm,
-  } = FilesLogic();
+  } = FilesService();
 
-  const { getFolders } = FoldersLogic();
+  const { getFolders } = FoldersService();
   const navigate = useNavigate();
 
   const REDUCER_ACTIONS = {

@@ -3,7 +3,7 @@ import DefaultLayout from "../layout/component/DefaultLayout";
 import { useAuthProvider } from "../context/AuthProvider";
 import GuestLayout from "../layout/component/GuestLayout";
 import { ThemeContext } from "../context/ThemeContext";
-import ThemeLogic from "../../model/ThemeLogic";
+import ThemeService from "../service/ThemeService";
 
 /**
  * Initial state for the MainController.
@@ -51,7 +51,7 @@ export function useMainControllerContext() {
  */
 export default function MainController() {
   const { user } = useAuthProvider();
-  const { darkTheme, lightTheme } = ThemeLogic();
+  const { darkTheme, lightTheme } = ThemeService();
 
   const [title, setTitle] = useState("");
 

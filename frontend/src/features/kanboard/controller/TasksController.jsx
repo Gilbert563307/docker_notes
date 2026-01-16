@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { ALERT_ACTIONS, ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
-import TasksLogic from "../service/TasksLogic";
 import useHelpers from "../../../shared/helpers/useHelpers";
-import FilesLogic from "../../../shared/service/FilesLogic";
+import TasksService from "../service/TasksService";
+import FilesService from "../../../shared/service/FilesService";
 
 /**
  * @typedef {Array<import("../../../types/types").Task>} Tasks - State for tasks.
@@ -93,9 +93,9 @@ export default function TasksController() {
     archiveTask,
     deleteTask,
     listTasksBySearchTerm,
-  } = TasksLogic();
+  } = TasksService();
 
-  const { convertHtmlToDocx } = FilesLogic();
+  const { convertHtmlToDocx } = FilesService();
   const { getCurrentPageNumber } = useHelpers();
   const navigate = useNavigate();
 

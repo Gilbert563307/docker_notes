@@ -5,12 +5,12 @@ import {
   googleProvider,
   githubProvider,
 } from "../../../database/firebaseConfig";
-import { signInWithPopup, signOut, GithubAuthProvider } from "firebase/auth";
+import { signInWithPopup, signOut } from "firebase/auth";
 import { SHA256 } from "crypto-js";
-import SessionLogic from "./SessionLogic";
+import SessionService from "./SessionService";
 
-export default function AuthLogic() {
-  const { createSession } = SessionLogic();
+export default function AuthService() {
+  const { createSession } = SessionService();
 
   /**
    *

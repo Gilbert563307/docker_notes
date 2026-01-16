@@ -2,7 +2,7 @@ import DataHandler from "./DataHandler";
 import { MAX_KAN_BOARDS } from "../../../config";
 import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
 
-export default function KanBoardsLogic() {
+export default function KanBoardsService() {
   const {
     collectionRef,
     userUid,

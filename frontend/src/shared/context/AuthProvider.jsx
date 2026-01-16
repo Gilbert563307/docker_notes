@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
-import AuthLogic from '../../features/auth/service/AuthLogic';
+import AuthService from '../../features/auth/service/AuthService';
 import useCookieStorageHook from '../hooks/useCookieStorageHook';
 
 /**
@@ -49,7 +49,7 @@ export const useAuthProvider = () => {
  */
 // eslint-disable-next-line react/prop-types
 export default function AuthProvider({ children }) {
-  const { SignUserOut } = AuthLogic();
+  const { SignUserOut } = AuthService();
 
   const { createCookie, readCookie, deleteCookie } = useCookieStorageHook();
   const getUserFromCookie = () => {

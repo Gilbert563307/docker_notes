@@ -32,7 +32,7 @@ import { ALERT_TYPES } from "../view/components/bs5/BS5Alert";
  * @param {string} props.table - Firebase collection name
  * @returns
  */
-export default function DataHandler({ table }) {
+export default function FirebaseInterface({ table }) {
   const { getUrlParams } = useHelpers();
   const { user } = useAuthProvider();
   const collectionRef = collection(db, table);

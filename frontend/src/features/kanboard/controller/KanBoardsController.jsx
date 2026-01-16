@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { ALERT_ACTIONS, ALERT_TYPES } from "../view/components/bs5/BS5Alert";
-import KanBoardsLogic from "../model/KanBoardsLogic";
+import KanBoardsService from "../service/KanBoardsService";
 
 /**
  * @typedef {Object} InitialState
@@ -60,7 +60,7 @@ export function useKanBoardsControllerContext() {
 
 export default function KanBoardsController() {
 
-  const { listKanBoards, createKanBoard } = KanBoardsLogic();
+  const { listKanBoards, createKanBoard } = KanBoardsService();
   const navigate = useNavigate();
 
   /**
