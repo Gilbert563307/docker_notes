@@ -1,9 +1,8 @@
 import React, { createContext, useContext, useMemo, useReducer } from "react";
-import { ALERT_ACTIONS, ALERT_TYPES } from "../view/components/bs5/BS5Alert";
 import { Outlet, useNavigate } from "react-router-dom";
-import useHelpers from "../helpers/useHelpers";
 import FilesService from "../../../shared/service/FilesService";
 import FoldersService from "../service/FoldersService";
+import useHelpers from "../../../shared/helpers/useHelpers";
 
 /**
  * @typedef {Object} InitialState
@@ -329,7 +328,7 @@ export default function DriveController() {
         case DRIVE_CONTROLLER_ACTIONS.ARCHIVE:
           await collectArchiveFile(action?.payload);
           break;
-        case ALERT_ACTIONS.CLOSE_ALERT:
+        case "CLOSE_ALERT":
           closeAlert();
           return;
         case DRIVE_CONTROLLER_ACTIONS.DELETE:
@@ -346,16 +345,14 @@ export default function DriveController() {
           break;
 
         default:
-          console.log(`DriveController: No action type found ${action.type}`);
+          console.error(`DriveController: No action type found ${action.type}`);
           return;
       }
     } catch (error) {
       // Close loader in case of error
       setErrorToState(error);
-      console.log(`DriveController: error ${error}`);
-    } finally {
-      // Close loader after action processing
-    }
+      console.error(`DriveController: error ${error}`);
+    } 
   }
 
   /** @returns {ContextValue} */

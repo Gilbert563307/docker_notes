@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
-import "../../assets/css/views/board/CollectListBoard.css";
+import "./css/CollectListBoard.css";
 import Column from "../../features/kanboard/component/kanboard/Column";
 import useSetPageTitleHook from "../../shared/hooks/useSetPageTitleHook";
 import useGetBoardTasksHook from "../../shared/hooks/useGetBoardTasksHook";
@@ -11,7 +11,7 @@ import { useParams } from "react-router-dom";
  * Manages drag-and-drop functionality to update task statuses across columns.
  *
  * @component
- * @returns {JSX.Element}
+ * @returns {import("react").JSX.Element}
  */
 export default function CollectListBoard() {
   useSetPageTitleHook({ title: "Board" });

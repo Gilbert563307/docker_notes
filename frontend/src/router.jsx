@@ -1,34 +1,34 @@
 import React from "react";
 import { createBrowserRouter } from "react-router-dom";
+import AuthProvider from "./shared/context/AuthProvider";
 import MainController from "./shared/controller/MainController";
+import ProtectedRoute from "./utils/router/ProtectedRoute";
+import LandingPage from "./pages/LandingPage";
+import BoardsController from "./features/kanboard/controller/BoardsController";
+import CollectListBoard from "./pages/board/CollectListBoard";
 import TasksController from "./features/kanboard/controller/TasksController";
-import AuthController from "./features/auth/controller/AuthController";
 import CollectListTasks from "./pages/tasks/CollectListTasks";
 import CollectCreateTask from "./pages/tasks/CollectCreateTask";
-import CollectReadTask from "./view/tasks/CollectReadTask";
-import CollectUpdateTask from "./view/tasks/CollectUpdateTask";
-
-import CollectListAuth from "./view/auth/CollectListAuth";
-import ErrorPage from "./pages/error/ErrorPage";
-import ProtectedRoute from "./utils/router/ProtectedRoute";
-import GuestRoute from "./utils/router/GuestRoute";
-import LandingPage from "./view/pages/LandingPage";
-import AuthProvider from "./shared/context/AuthProvider";
-import SettingsController from "./features/settings/controller/SettingsController";
-import CollectListSettings from "./pages/settings/CollectListSettings";
-import CollectListBoard from "./pages/board/CollectListBoard";
-import BoardsController from "./features/kanboard/controller/BoardsController";
-import DriveController from "./DriveController";
-import CollectListDriveFiles from "./view/files/CollectListDriveFiles";
-import CollectUploadFile from "./view/files/CollectUploadFile";
-import FoldersController from "./FoldersController";
-import CollectListFolders from "./view/folders/CollectListFolders";
-import CollectCreateFolder from "./view/folders/CollectCreateFolder";
-import CollectUpdateFolder from "./view/folders/CollectUpdateFolder";
-import CollectReadFolder from "./view/folders/CollectReadFolder";
-import KanBoardsController from "./KanBoardsController";
+import CollectReadTask from "./pages/tasks/CollectReadTask";
+import CollectUpdateTask from "./pages/tasks/CollectUpdateTask";
+import DriveController from "./features/drive/controller/DriveController";
+import CollectListDriveFiles from "./pages/files/CollectListDriveFiles";
+import CollectUploadFile from "./pages/files/CollectUploadFile";
+import FoldersController from "./features/drive/controller/FoldersController";
+import CollectListFolders from "./pages/folders/CollectListFolders";
+import CollectCreateFolder from "./pages/folders/CollectCreateFolder";
+import CollectUpdateFolder from "./pages/folders/CollectUpdateFolder";
+import CollectReadFolder from "./pages/folders/CollectReadFolder";
+import KanBoardsController from "./features/kanboard/controller/KanBoardsController";
 import CollectListKanBoards from "./pages/kanboard/CollectListKanBoards";
 import CollectistCreateKanBoard from "./pages/kanboard/CollectistCreateKanBoard";
+import GuestRoute from "./utils/router/GuestRoute";
+import AuthController from "./features/auth/controller/AuthController";
+import CollectListAuth from "./pages/auth/CollectListAuth";
+import SettingsController from "./features/settings/controller/SettingsController";
+import CollectListSettings from "./pages/settings/CollectListSettings";
+import ErrorPage from "./pages/error/ErrorPage";
+
 
 const routes = [
   {

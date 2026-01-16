@@ -3,8 +3,6 @@ import { Outlet } from "react-router-dom";
 import { useAuthProvider } from "../../../shared/context/AuthProvider";
 import AuthService from "../service/AuthService";
 import AuthControllerContext, { initialState } from "../../../shared/context/AuthControllerContext";
-import NotificationV3 from "../../notification/component/NotificationV3";
-import { ALERT_ACTIONS } from "../../../shared/components/bs5/BS5Alert";
 
 /**
  * @typedef {Object} AuthControllerActions
@@ -114,7 +112,7 @@ export default function AuthController() {
           await collectLoginWithGithub();
           return;
 
-        case ALERT_ACTIONS.CLOSE_ALERT:
+        case "CLOSE_ALERT":
           closeAlert();
           return;
         default:
@@ -130,7 +128,6 @@ export default function AuthController() {
 
   return (
     <AuthControllerContext.Provider value={contextValue}>
-      <NotificationV3 controllerContext={useAuthControllerContext}></NotificationV3>
       <Outlet></Outlet>
     </AuthControllerContext.Provider>
   );

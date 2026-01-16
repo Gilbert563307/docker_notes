@@ -1,8 +1,8 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { FOLDERS_CONTROLLER_ACTIONS } from "../../../controller/FoldersController";
-import DeleteFolderButton from "../buttons/DeleteFolderButton";
-import "../../../assets/css/components/folders/UpdateFolderComponent.css";
+import "../../css/UpdateFolderComponent.css";
+import DeleteFolderButton from "./DeleteFolderButton";
+import { FOLDERS_CONTROLLER_ACTIONS } from "../../controller/FoldersController";
 
 export default function UpdateFolderComponent({ folder, dispatch }) {
   const {

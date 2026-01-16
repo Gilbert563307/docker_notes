@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from 'react';
-import { Show } from '../../../../shared/components/custom/Show';
-import BS5Modal, { MODAL_SIZES } from '../../../../shared/components/bs5/BS5Modal';
-import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../controller/TasksController';
-import TasksFilters from '../../../../view/tasks/components/TasksFilters';
-import useHelpers from '../../../../helpers/useHelpers';
-import "../../../../assets/css/components/DialogicFilterButton.css";
+import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../../controller/TasksController';
+import useHelpers from '../../../../../shared/helpers/useHelpers';
+import { Show } from '../../../../../shared/components/custom/Show';
+import BS5Modal, { MODAL_SIZES } from '../../../../../shared/components/bs5/BS5Modal';
+import TasksFilters from '../TasksFilters';
+// import "../../../../assets/css/components/DialogicFilterButton.css";
 
 /**
  * A button component that opens a modal for filtering tasks.

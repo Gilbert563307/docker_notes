@@ -1,12 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../../assets/css/views/folders/CollectListFolders.css";
-import BS5PaginationV2 from "../components/bs5/BS5PaginationV2";
+import "./css/CollectListFolders.css";
 import useSetPageTitleHook from "../../shared/hooks/useSetPageTitleHook";
 import useGetFoldersHook from "../../shared/hooks/useGetFoldersHook";
-import FoldersTable from "./components/FoldersTable";
-import FoldersSearchBar from "./components/FoldersSearchBar";
-import FilterFoldersButton from "./buttons/FilterFoldersButton";
+import FoldersSearchBar from "../../features/drive/component/folders/FoldersSearchBar";
+import FilterFoldersButton from "../../features/drive/component/folders/FilterFoldersButton";
+import FoldersTable from "../../features/drive/component/folders/FoldersTable";
+import BS5PaginationV2 from "../../shared/components/bs5/BS5PaginationV2";
 
 export default function CollectListFolders() {
   useSetPageTitleHook({ title: "Folders " });

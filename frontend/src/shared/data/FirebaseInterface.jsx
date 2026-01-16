@@ -1,4 +1,4 @@
-import { db, auth, storage } from "../database/firebaseConfig";
+import { db, auth, storage } from "../../database/firebaseConfig";
 import {
   collection,
   getDocs,
@@ -21,10 +21,9 @@ import {
   Query,
 } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
-import { useAuthProvider } from "../shared/context/AuthProvider";
 import useHelpers from "../helpers/useHelpers";
-import { DEFAULT_ITEMS_PER_PAGE, ITEMS_PER_PAGE } from "../config";
-import { ALERT_TYPES } from "../view/components/bs5/BS5Alert";
+import { useAuthProvider } from "../context/AuthProvider";
+import { DEFAULT_ITEMS_PER_PAGE, ITEMS_PER_PAGE } from "../../config";
 
 /**
  *
@@ -49,7 +48,7 @@ export default function FirebaseInterface({ table }) {
     try {
       return new Timestamp(object.seconds, object.nanoseconds).toDate();
     } catch (error) {
-      console.log(`[convertTimeStampToDate] ${error.message}`);
+      console.error(`[convertTimeStampToDate] ${error.message}`);
       return null;
     }
   };
@@ -101,7 +100,7 @@ export default function FirebaseInterface({ table }) {
         where(fieldName, "<=", endText),
       ];
     } catch (error) {
-      console.log(`[getSearchQuery]: ${error.message}`);
+      console.error(`[getSearchQuery]: ${error.message}`);
       return [];
     }
   };
@@ -179,7 +178,7 @@ export default function FirebaseInterface({ table }) {
         type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {
-      console.log(`[convertQuerySnapShotDocs]: ${error.message}`);
+      console.error(`[convertQuerySnapShotDocs]: ${error.message}`);
       return {
         results: [],
         message: error.message,
@@ -307,7 +306,7 @@ export default function FirebaseInterface({ table }) {
         type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {
-      console.log(`[getDocument]: ${error.message}`);
+      console.error(`[getDocument]: ${error.message}`);
       return {
         document: {},
         message: error.message,

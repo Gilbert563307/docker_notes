@@ -1,8 +1,8 @@
 import React from "react";
-import "../../assets/css/views/tasks/CollectReadTask.css";
+import "./css/CollectReadTask.css";
 import useGetTaskHook from "../../shared/hooks/useGetTaskHook";
-import { Show } from "../components/custom/Show";
-import UpdateTaskComponent from "../../features/kanboard/component/UpdateTaskComponent";
+import UpdateTaskComponent from "../../features/kanboard/component/tasks/UpdateTaskComponent";
+import { Show } from "../../shared/components/custom/Show";
 
 export default function CollectUpdateTask() {
 

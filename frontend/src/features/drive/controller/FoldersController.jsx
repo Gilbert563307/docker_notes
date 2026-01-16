@@ -1,16 +1,16 @@
 import  { createContext, useContext, useMemo, useReducer } from "react";
 import {  Outlet, useNavigate } from "react-router-dom";
-import { ALERT_ACTIONS, ALERT_TYPES } from "../view/components/bs5/BS5Alert";
-import useHelpers from "../helpers/useHelpers";
 
 import FilesService from "../../../shared/service/FilesService";
 import FoldersService from "../service/FoldersService";
+import useHelpers from "../../../shared/helpers/useHelpers";
+import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
 
 /**
  * @typedef {Object} InitialState
- * @property {import("../types/types").Folder | {}} folder
- * @property {{files: import("../types/types").DriveFiles | [], total: number, pages: number} } files
- * @property {{folders: import("../types/types").Folders | [],  total: number, pages: number} } folders
+ * @property {import("../../../types/types").Folder | {}} folder
+ * @property {{files: import("../../../types/types").DriveFiles | [], total: number, pages: number} } files
+ * @property {{folders: import("../../../types/types").Folders | [],  total: number, pages: number} } folders
  * @property {Object} notification - The notification object.
  * @property {string} notification.message - The notification message.
  * @property {number} notification.type - The notification type.
@@ -236,7 +236,7 @@ export default function FoldersController() {
 
   /**
    *
-   * @param {import("../types/types").Folder} payload
+   * @param {import("../../../types/types").Folder} payload
    */
   async function CollectUpdateFolder(payload) {
     try {
@@ -315,7 +315,7 @@ export default function FoldersController() {
           await collectCreateFolder(action?.payload);
           break;
 
-        case ALERT_ACTIONS.CLOSE_ALERT:
+        case "CLOSE_ALERT":
           closeAlert();
           break;
 
@@ -351,16 +351,14 @@ export default function FoldersController() {
           break;
 
         default:
-          console.log(`FoldersController: No action type found ${action.type}`);
+          console.error(`FoldersController: No action type found ${action.type}`);
           return;
       }
     } catch (error) {
       // Close loader in case of error
       setErrorToState(error);
-      console.log(`FoldersController: error ${error}`);
-    } finally {
-      // Close loader after action processing
-    }
+      console.error(`FoldersController: error ${error}`);
+    } 
   }
 
   async function collectListFolders() {

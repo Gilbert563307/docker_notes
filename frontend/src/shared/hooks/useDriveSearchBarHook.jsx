@@ -1,10 +1,8 @@
 import React from "react";
-import {
-  DRIVE_CONTROLLER_ACTIONS,
-  useDriveControllerContext,
-} from "../controller/DriveController";
+
 import { useDebounce } from "use-debounce";
 import { DEBOUNCE_SECONDS } from "../../config";
+import { DRIVE_CONTROLLER_ACTIONS, useDriveControllerContext } from "../../features/drive/controller/DriveController";
 
 /**
  * @param {Object} props - The props object.

@@ -1,12 +1,10 @@
 import React, { useMemo, useState } from "react";
-import {
-  FOLDERS_CONTROLLER_ACTIONS,
-  useFoldersControllerContext,
-} from "../../../controller/FoldersController";
+
 import useHelpers from "../../../../shared/helpers/useHelpers";
-import { Show } from "../../components/custom/Show";
-import BS5Modal, { MODAL_SIZES } from "../../components/bs5/BS5Modal";
-import FoldersFilters from "../components/FoldersFilters";
+import { FOLDERS_CONTROLLER_ACTIONS, useFoldersControllerContext } from "../../controller/FoldersController";
+import { Show } from "../../../../shared/components/custom/Show";
+import BS5Modal, { MODAL_SIZES } from "../../../../shared/components/bs5/BS5Modal";
+import FoldersFilters from "./FoldersFilters";
 
 export default function FilterFoldersButton() {
   const { dispatch } = useFoldersControllerContext();

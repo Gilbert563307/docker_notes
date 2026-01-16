@@ -2,22 +2,22 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import TaskDetails from "./TaskDetails";
-import { TASKS_CONTROLLER_ACTIONS } from "../controller/TasksController";
 import DeleteTaskButton from "./buttons/DeleteTaskButton";
-import "../../../assets/css/components/UpdateTaskComponent.css";
-import QuilTextEditor from "../../texteditor/component/QuilTextEditor";
-import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
+import "../../css/UpdateTaskComponent.css";
+import { TASKS_CONTROLLER_ACTIONS } from "../../controller/TasksController";
+import { ALERT_TYPES } from "../../../../shared/components/bs5/BS5Alert";
+import QuilTextEditor from "../../../../shared/components/texteditor/component/QuilTextEditor";
 
 /**
  *
  * @param {object} props
- * @param {import("../../../types/types").Task} props.task
+ * @param {import("../../../../types/types").Task} props.task
  * @param {Function} props.dispatch
  * @returns {JSX.Element}
  */
 export default function UpdateTaskComponent({ task, dispatch }) {
   /**
-   * @typedef {import("../../../types/types").customFieldsPayload} customFieldsPayload
+   * @typedef {import("../../../../types/types").customFieldsPayload} customFieldsPayload
    */
 
   /**

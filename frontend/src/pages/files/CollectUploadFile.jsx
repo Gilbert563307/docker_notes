@@ -1,14 +1,10 @@
 import React, { useState, useRef } from "react";
-import "../../assets/css/views/CollectUploadFile.css";
 import { ALLOWED_UPLOAD_FILE_TYPES } from "../../config";
-import RepositorySelectFolder from "../components/drive/components/RepositorySelectFolder";
-import { Show } from "../components/custom/Show";
-import RepositorySelectedFiles from "../components/drive/components/RepositorySelectedFiles";
-import {
-  DRIVE_CONTROLLER_ACTIONS,
-  useDriveControllerContext,
-} from "../../controller/DriveController";
-import { ALERT_TYPES } from "../components/bs5/BS5Alert";
+import { DRIVE_CONTROLLER_ACTIONS, useDriveControllerContext } from "../../features/drive/controller/DriveController";
+import { ALERT_TYPES } from "../../shared/components/bs5/BS5Alert";
+import RepositorySelectFolder from "../../features/drive/component/drive/RepositorySelectFolder";
+import { Show } from "../../shared/components/custom/Show";
+import RepositorySelectedFiles from "../../features/drive/component/drive/RepositorySelectedFiles";
 
 export default function CollectUploadFile() {
   const { dispatch } = useDriveControllerContext();
@@ -25,9 +21,7 @@ export default function CollectUploadFile() {
     event.preventDefault();
     const droppedFiles = Array.from(event.dataTransfer.files);
     const acceptedFiles = droppedFiles.filter((file) =>
-      ALLOWED_UPLOAD_FILE_TYPES.includes(
-        file.name.split(".").pop().toLowerCase()
-      )
+      ALLOWED_UPLOAD_FILE_TYPES.includes(file.name.split(".").pop().toLowerCase())
     );
 
     setUploadedFiles([...uploadedFiles, ...acceptedFiles]);
@@ -50,9 +44,7 @@ export default function CollectUploadFile() {
   function handleFileSelect(event) {
     const selectedFiles = Array.from(event.target.files);
     const acceptedFiles = selectedFiles.filter((file) =>
-      ALLOWED_UPLOAD_FILE_TYPES.includes(
-        file.name.split(".").pop().toLowerCase()
-      )
+      ALLOWED_UPLOAD_FILE_TYPES.includes(file.name.split(".").pop().toLowerCase())
     );
     setUploadedFiles([...uploadedFiles, ...acceptedFiles]);
   }
@@ -77,24 +69,25 @@ export default function CollectUploadFile() {
 
   function uploadFiles() {
     if (uploadedFiles.length === 0) {
-      return dispatch({
+      dispatch({
         type: DRIVE_CONTROLLER_ACTIONS.SET_NOTIFICATION,
         payload: {
           message: "You must select at least 1 file.",
           type: ALERT_TYPES.DANGER,
         },
       });
+      return;
     }
 
     if (selectedFolderIdRef.current === null) {
-      return dispatch({
+      dispatch({
         type: DRIVE_CONTROLLER_ACTIONS.SET_NOTIFICATION,
         payload: {
-          message:
-            "You must select at least 1 folder to upload the file(s) into.",
+          message: "You must select at least 1 folder to upload the file(s) into.",
           type: ALERT_TYPES.DANGER,
         },
       });
+      return;
     }
     const payload = {
       files: uploadedFiles,
@@ -116,21 +109,14 @@ export default function CollectUploadFile() {
           </div>
           <div className="upload-file-header-info">
             <h3 className="upload-file-title">Upload files</h3>
-            <p className="upload-file-info-text">
-              Select and upload the files of your choice
-            </p>
+            <p className="upload-file-info-text">Select and upload the files of your choice</p>
           </div>
         </div>
         <RepositorySelectFolder handleFolderSelection={handleFolderSelection} />
         <Show>
           <Show.When isTrue={uploadedFiles.length > 0}>
             <div>
-              <a
-                href="#"
-                role="button"
-                onClick={() => setUploadedFiles([])}
-                className="upload-reset-btn"
-              >
+              <a href="#" role="button" onClick={() => setUploadedFiles([])} className="upload-reset-btn">
                 reset
               </a>
             </div>
@@ -151,8 +137,7 @@ export default function CollectUploadFile() {
             <div className="upload-file-drop-zone-content">
               <p>Choose a file or drag & drop it here</p>
               <p className="upload-file-info-text upload-supported-file-types">
-                Supported file types: PDF, DOCX, DOC, TXT, MD. Maximum file size:
-                50MB.
+                Supported file types: PDF, DOCX, DOC, TXT, MD. Maximum file size: 50MB.
               </p>
             </div>
             <div className="upload-file-browse-btn-container">
@@ -169,19 +154,12 @@ export default function CollectUploadFile() {
           </div>
         </div>
 
-        <RepositorySelectedFiles
-          uploadedFiles={uploadedFiles}
-          removeFile={removeFile}
-        ></RepositorySelectedFiles>
+        <RepositorySelectedFiles uploadedFiles={uploadedFiles} removeFile={removeFile}></RepositorySelectedFiles>
 
         <Show>
           <Show.When isTrue={uploadedFiles.length > 0}>
             <div>
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={uploadFiles}
-              >
+              <button type="button" className="btn btn-primary" onClick={uploadFiles}>
                 Upload files
               </button>
             </div>

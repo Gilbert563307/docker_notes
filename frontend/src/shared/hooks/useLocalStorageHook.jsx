@@ -1,5 +1,3 @@
-import React from 'react';
-
 /**
  * A custom React hook for storing and retrieving values in local storage.
  * @returns {Object} An object containing functions to store and read values from local storage.

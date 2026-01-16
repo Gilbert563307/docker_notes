@@ -1,11 +1,10 @@
 import React, { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { ALERT_ACTIONS, ALERT_TYPES } from "../view/components/bs5/BS5Alert";
 import KanBoardsService from "../service/KanBoardsService";
 
 /**
  * @typedef {Object} InitialState
- * @property {Array<import('../types/types').Board>} boards
+ * @property {Array<import('../../../types/types').Board>} boards
  * @property {Object} notification - The notification object.
  * @property {string} notification.message - The notification message.
  * @property {number} notification.type - The notification type.
@@ -186,7 +185,7 @@ export default function KanBoardsController() {
           await collectCreateKanBoard(action.payload);
           break;
 
-        case ALERT_ACTIONS.CLOSE_ALERT:
+        case "CLOSE_ALERT":
           closeAlert();
           break;
 

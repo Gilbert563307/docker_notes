@@ -1,7 +1,7 @@
 import React from "react";
 import useSetPageTitleHook from "../../shared/hooks/useSetPageTitleHook";
 import ThemeModeComponent from "../../features/settings/component/ThemeModeComponent";
-import "../../assets/css/views/CollectListSettings.css";
+import "./css/CollectListSettings.css";
 import { useAuthProvider } from "../../shared/context/AuthProvider";
 import { Link } from "react-router-dom";
 

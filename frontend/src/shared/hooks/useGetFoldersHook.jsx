@@ -1,9 +1,7 @@
 import React from "react";
-import {
-  FOLDERS_CONTROLLER_ACTIONS,
-  useFoldersControllerContext,
-} from "../controller/FoldersController";
+
 import usePaginationHook from "./usePaginationHook";
+import { FOLDERS_CONTROLLER_ACTIONS, useFoldersControllerContext } from "../../features/drive/controller/FoldersController";
 
 export default function useGetFoldersHook() {
   const { state, dispatch } = useFoldersControllerContext();

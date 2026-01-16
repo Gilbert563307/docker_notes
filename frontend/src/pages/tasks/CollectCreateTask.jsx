@@ -2,9 +2,9 @@ import React, { useRef, useState } from 'react'
 import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../features/kanboard/controller/TasksController';
 import { useForm } from 'react-hook-form';
 import { TASKS_PRIORITY, TASKS_STATUS } from '../../config';
-import "../../assets/css/views/CollectCreateTask.css";
-import DrodownOptions from './components/DrodownOptions';
-import QuilTextEditor from '../../features/texteditor/component/QuilTextEditor';
+import "./css/CollectCreateTask.css";
+import QuilTextEditor from '../../shared/components/texteditor/component/QuilTextEditor';
+import DrodownOptions from '../../features/kanboard/component/tasks/DrodownOptions';
 
 export default function CollectCreateTask() {
   const { dispatch } = useTasksControllerContext();

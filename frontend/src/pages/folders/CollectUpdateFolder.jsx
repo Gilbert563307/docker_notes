@@ -1,9 +1,7 @@
 import React from "react";
-import { useFoldersControllerContext } from "../../controller/FoldersController";
 import useGetFolderHook from "../../shared/hooks/useGetFolderHook";
-import { Show } from "../components/custom/Show";
-import { useForm } from "react-hook-form";
-import UpdateFolderComponent from "./components/UpdateFolderComponent";
+import UpdateFolderComponent from "../../features/drive/component/folders/UpdateFolderComponent";
+import { Show } from "../../shared/components/custom/Show";
 
 export default function CollectUpdateFolder() {
   const { folder, dispatch } = useGetFolderHook();

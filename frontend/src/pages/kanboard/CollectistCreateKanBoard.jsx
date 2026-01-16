@@ -1,10 +1,8 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import {
-  KAN_BOARDS_CONTROLLER_ACTIONS,
-  useKanBoardsControllerContext,
-} from "../../controller/KanBoardsController";
-import "../../assets/css/views/kanboard/collectlistcreatekanboard.css";
+
+import "./css/collectlistcreatekanboard.css"
+import { KAN_BOARDS_CONTROLLER_ACTIONS, useKanBoardsControllerContext } from "../../features/kanboard/controller/KanBoardsController";
 
 export default function CollectistCreateKanBoard() {
   const { dispatch } = useKanBoardsControllerContext();

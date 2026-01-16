@@ -1,10 +1,10 @@
 import React from "react";
 import useSetPageTitleHook from "../../shared/hooks/useSetPageTitleHook";
 import { Link } from "react-router-dom";
-import RepositoryTable from "../components/drive/components/RepositoryTable";
-import BS5PaginationV2 from "../components/bs5/BS5PaginationV2";
 import useGetFilesHook from "../../shared/hooks/useGetFilesHook";
-import DriveSearchBar from "./components/DriveSearchBar";
+import RepositoryTable from "../../features/drive/component/drive/RepositoryTable";
+import BS5PaginationV2 from "../../shared/components/bs5/BS5PaginationV2";
+import DriveSearchBar from "../../features/drive/component/drive/DriveSearchBar";
 
 export default function CollectListDriveFiles() {
   useSetPageTitleHook({ title: "Drive " });

@@ -1,9 +1,7 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import {
-  FOLDERS_CONTROLLER_ACTIONS,
-  useFoldersControllerContext,
-} from "../controller/FoldersController";
+import { FOLDERS_CONTROLLER_ACTIONS, useFoldersControllerContext } from "../../features/drive/controller/FoldersController";
+
 
 /**
  *

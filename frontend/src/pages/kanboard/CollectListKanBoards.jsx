@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import useSetPageTitleHook from "../../shared/hooks/useSetPageTitleHook";
-import "../../assets/css/views/kanboard/collectlistkanboards.css";
+import "./css/collectlistkanboards.css";
 import useGetKanBoardsHook from "../../shared/hooks/useGetKanBoardsHook";
 
 export default function CollectListKanBoards() {

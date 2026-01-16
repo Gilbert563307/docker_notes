@@ -1,5 +1,5 @@
 import React from "react";
-import "../../assets/css/views/CollectListAuth.css";
+import "./css/CollectListAuth.css";
 import { useAuthControllerContext } from "../../shared/context/AuthControllerContext";
 import { AUTH_CONTROLLER_ACTIONS } from "../../features/auth/controller/AuthController";
 import IMAGES from "../../assets/images/Imajes";

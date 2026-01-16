@@ -1,8 +1,8 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import "../../assets/css/views/tasks/CollectReadTask.css";
+import "./css/CollectReadTask.css";
 import useHtmlCssHelpers from "../../shared/helpers/useHtmlCssHelpers";
-import QuilTextEditor from "../components/texteditor/QuilTextEditor";
+import QuilTextEditor from "../../shared/components/texteditor/component/QuilTextEditor";
 
 
 export default function CollectReadTask() {

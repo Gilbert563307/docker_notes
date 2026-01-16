@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import {
   BOARD_CONTROLLER_ACTIONS,
   useBoardsControllerContext,

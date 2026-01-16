@@ -1,12 +1,12 @@
 import React from "react";
 import useSetPageTitleHook from "../../shared/hooks/useSetPageTitleHook";
-import "../../assets/css/views/tasks/CollectListTasks.css";
+import "./css/CollectListTasks.css";
 import useGetTasksHook from "../../shared/hooks/useGetTasksHook";
-import TasksTable from "./components/TasksTable";
 import { Link } from "react-router-dom";
 import BS5PaginationV2 from "../../shared/components/bs5/BS5PaginationV2";
-import FilterTasksButton from "../../features/kanboard/component/buttons/FilterTasksButton";
-import TasksSearchBar from "./components/TasksSearchBar";
+import TasksTable from "../../features/kanboard/component/tasks/TasksTable";
+import TasksSearchBar from "../../features/kanboard/component/tasks/TasksSearchBar";
+import FilterTasksButton from "../../features/kanboard/component/tasks/buttons/FilterTasksButton";
 
 
 /**
@@ -16,7 +16,7 @@ import TasksSearchBar from "./components/TasksSearchBar";
  * a button to add a new task, and a modal for creating new tasks. The component
  * also sets the page title to "Tasks ".
  *
- * @returns {JSX.Element}
+ * @returns {import("react").JSX.Element}
  */
 export default function CollectListTasks() {
   useSetPageTitleHook({ title: "Tasks " });

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import useGetDriveFilesByFolderId from "../../shared/hooks/useGetDriveFilesByFolderId";
-import RepositoryTable from "../components/drive/components/RepositoryTable";
-import BS5PaginationV2 from "../components/bs5/BS5PaginationV2";
 import { useLocation } from "react-router-dom";
-import "../../assets/css/views/folders/CollectReadFolder.css";
-import { Show } from "../components/custom/Show";
+import "./css/CollectReadFolder.css";
+import { Show } from "../../shared/components/custom/Show";
+import RepositoryTable from "../../features/drive/component/drive/RepositoryTable";
+import BS5PaginationV2 from "../../shared/components/bs5/BS5PaginationV2";
 
 export default function CollectReadFolder() {
   let { state } = useLocation();
