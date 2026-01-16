@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { useAuthProvider } from "../../../shared/context/AuthProvider";
 import AuthService from "../service/AuthService";
 import AuthControllerContext, { initialState } from "../../../shared/context/AuthControllerContext";
+import { notificationObserver } from "../../notification/observer/NotificationObserver";
 
 /**
  * @typedef {Object} AuthControllerActions
@@ -29,40 +30,13 @@ export default function AuthController() {
   const { login } = useAuthProvider();
   const { LoginWithGoogle, LoginWithGithub } = AuthService();
 
-  const REDUCER_ACTIONS = {
-    SET_NOTIFICATION: "SET_NOTIFICATION", //Action type for setting a notification.
-  };
-
-  /**
-   * Reducer function for handling state updates in AuthController.
-   * @param {Object} state - Current state.
-   * @param {Object} action - Action object containing type and payload.
-   * @returns {Object} New state after processing the action.
-   */
-  function reducer(state, action) {
-    switch (action.type) {
-      case REDUCER_ACTIONS.SET_NOTIFICATION:
-        return { ...state, notification: action.payload };
-      default:
-        return state;
-    }
-  }
-
-  const [state, dispatchAction] = useReducer(reducer, initialState);
-
   /**
    * Sets error notification to state.
    * @param {import("../../../types/types").Notification} notificationObject - Object containing error message and type.
    */
   function setMessageToState(notificationObject) {
     if (Object.keys(notificationObject).length === 0 || notificationObject.message === "") return;
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: {
-        message: notificationObject.message,
-        type: notificationObject.type,
-      },
-    });
+    notificationObserver.addData({message: notificationObject.message, type: notificationObject.type});
   }
 
   /**
@@ -91,11 +65,23 @@ export default function AuthController() {
   }
 
   function closeAlert() {
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: { message: "", type: 0 },
-    });
+    notificationObserver.addData({ message: "", type: 0 });
   }
+
+   /**
+   * Reducer function for handling state updates in AuthController.
+   * @param {Object} state - Current state.
+   * @param {Object} action - Action object containing type and payload.
+   * @returns {Object} New state after processing the action.
+   */
+  function reducer(state, action) {
+    switch (action.type) {
+      default:
+        return state;
+    }
+  }
+
+  const [state, dispatchAction] = useReducer(reducer, initialState);
 
   /**
    * Dispatches actions based on provided action type.
@@ -119,7 +105,7 @@ export default function AuthController() {
           return;
       }
     } catch (error) {
-      console.log(`AuthController Error: `, error);
+      console.error(`AuthController Error: `, error);
     }
   }
 

@@ -1,13 +1,12 @@
-import React, { createContext, useContext, useMemo, useReducer } from "react";
+import  { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import KanBoardsService from "../service/KanBoardsService";
+import { notificationObserver } from "../../notification/observer/NotificationObserver";
+import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
 
 /**
  * @typedef {Object} InitialState
  * @property {Array<import('../../../types/types').Board>} boards
- * @property {Object} notification - The notification object.
- * @property {string} notification.message - The notification message.
- * @property {number} notification.type - The notification type.
  */
 
 /**
@@ -16,7 +15,6 @@ import KanBoardsService from "../service/KanBoardsService";
  */
 const initialState = {
   boards: [],
-  notification: { message: "", type: 0 },
 };
 
 export const KAN_BOARDS_CONTROLLER_ACTIONS = {
@@ -38,12 +36,11 @@ const kanBoardsControllerContext = createContext(
   /** @type {ContextValue} */ ({
     state: initialState,
     dispatch: () => {},
-  })
+  }),
 );
 
 const REDUCER_ACTIONS = {
   SET_KAN_BOARDS: "SET_KAN_BOARDS",
-  SET_NOTIFICATION: "SET_NOTIFICATION",
 };
 
 /**
@@ -58,7 +55,6 @@ export function useKanBoardsControllerContext() {
 }
 
 export default function KanBoardsController() {
-
   const { listKanBoards, createKanBoard } = KanBoardsService();
   const navigate = useNavigate();
 
@@ -76,12 +72,6 @@ export default function KanBoardsController() {
           boards: action.payload,
         };
 
-      case REDUCER_ACTIONS.SET_NOTIFICATION:
-        return {
-          ...state,
-          notification: action.payload,
-        };
-
       default:
         return state;
     }
@@ -91,10 +81,7 @@ export default function KanBoardsController() {
   const [state, dispatchAction] = useReducer(reducer, initialState);
 
   function closeAlert() {
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: { message: "", type: 0 },
-    });
+    notificationObserver.addData({ message: "", type: 0 });
   }
 
   /**
@@ -104,19 +91,7 @@ export default function KanBoardsController() {
    */
   function setNotificationToState(object) {
     if (object.message === "") return;
-    // Set the message
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: object,
-    });
-
-    // Remove message after 20 seconds
-    const timeoutId = setTimeout(() => {
-      closeAlert();
-    }, 20000);
-
-    // Clear timeout if needed
-    return () => clearTimeout(timeoutId);
+    notificationObserver.addData(object);
   }
 
   /**
@@ -124,10 +99,7 @@ export default function KanBoardsController() {
    * @param {Error} error - The error object.
    */
   function setErrorToState(error) {
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: { message: error.message, type: ALERT_TYPES.DANGER },
-    });
+    notificationObserver.addData({ message: error.message, type: ALERT_TYPES.DANGER });
   }
 
   async function collectListKanBoards() {
@@ -145,7 +117,6 @@ export default function KanBoardsController() {
     }
   }
 
-  
   async function refreshKanBoardList() {
     // const currentPage = getCurrentPageNumber();
     // const payload = { currentPage: currentPage };
@@ -170,9 +141,7 @@ export default function KanBoardsController() {
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  async function dispatch(
-    /** @type {{ type: string; payload?: any; }} */ action
-  ) {
+  async function dispatch(/** @type {{ type: string; payload?: any; }} */ action) {
     try {
       // Show loader while processing action
 
@@ -180,7 +149,7 @@ export default function KanBoardsController() {
         case KAN_BOARDS_CONTROLLER_ACTIONS.LIST:
           await collectListKanBoards();
           break;
-        
+
         case KAN_BOARDS_CONTROLLER_ACTIONS.CREATE:
           await collectCreateKanBoard(action.payload);
           break;
@@ -196,7 +165,7 @@ export default function KanBoardsController() {
       // Close loader in case of error
       setErrorToState(error);
       console.log(`KanBoardsController: error ${error}`);
-    } 
+    }
   }
 
   /** @returns {ContextValue} */
@@ -205,7 +174,7 @@ export default function KanBoardsController() {
       state,
       dispatch,
     }),
-    [state, dispatch]
+    [state, dispatch],
   );
 
   return (

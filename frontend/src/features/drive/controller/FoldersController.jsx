@@ -1,10 +1,11 @@
-import  { createContext, useContext, useMemo, useReducer } from "react";
-import {  Outlet, useNavigate } from "react-router-dom";
+import { createContext, useContext, useMemo, useReducer } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 
 import FilesService from "../../../shared/service/FilesService";
 import FoldersService from "../service/FoldersService";
 import useHelpers from "../../../shared/helpers/useHelpers";
 import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
+import { notificationObserver } from "../../notification/observer/NotificationObserver";
 
 /**
  * @typedef {Object} InitialState
@@ -57,7 +58,7 @@ const FoldersControllerContext = createContext(
   /** @type {ContextValue} */ ({
     state: initialState,
     dispatch: () => {},
-  })
+  }),
 );
 
 /**
@@ -73,14 +74,7 @@ export function useFoldersControllerContext() {
 
 export default function FoldersController() {
   const { getCurrentPageNumber } = useHelpers();
-  const {
-    listFolders,
-    archiveFolder,
-    createFolder,
-    readFolder,
-    updateFolder,
-    deleteFolder,
-  } = FoldersService();
+  const { listFolders, archiveFolder, createFolder, readFolder, updateFolder, deleteFolder } = FoldersService();
 
   const { listFilesByFolderId } = FilesService();
 
@@ -116,11 +110,6 @@ export default function FoldersController() {
           ...state,
           folders: action.payload,
         };
-      case REDUCER_ACTIONS.SET_NOTIFICATION:
-        return {
-          ...state,
-          notification: action.payload,
-        };
       default:
         return state;
     }
@@ -129,10 +118,7 @@ export default function FoldersController() {
   const [state, dispatchAction] = useReducer(reducer, initialState);
 
   function closeAlert() {
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: { message: "", type: 0 },
-    });
+    notificationObserver.addData({ message: "", type: 0 });
   }
 
   /**
@@ -142,19 +128,7 @@ export default function FoldersController() {
    */
   function setNotificationToState(object) {
     if (object.message === "") return;
-    // Set the message
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: object,
-    });
-
-    // Remove message after 20 seconds
-    const timeoutId = setTimeout(() => {
-      closeAlert();
-    }, 20000);
-
-    // Clear timeout if needed
-    return () => clearTimeout(timeoutId);
+    notificationObserver.addData(object);
   }
 
   /**
@@ -162,10 +136,7 @@ export default function FoldersController() {
    * @param {Error} error - The error object.
    */
   function setErrorToState(error) {
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: { message: error.message, type: ALERT_TYPES.DANGER },
-    });
+    notificationObserver.addData({ message: error.message, type: ALERT_TYPES.DANGER });
   }
 
   /**
@@ -305,9 +276,7 @@ export default function FoldersController() {
    * @returns {Promise<void>} - A Promise that resolves when the operation is completed.
    */
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  async function dispatch(
-    /** @type {{ type: string; payload?: any; }} */ action
-  ) {
+  async function dispatch(/** @type {{ type: string; payload?: any; }} */ action) {
     try {
       // Handle different action types
       switch (action.type) {
@@ -358,7 +327,7 @@ export default function FoldersController() {
       // Close loader in case of error
       setErrorToState(error);
       console.error(`FoldersController: error ${error}`);
-    } 
+    }
   }
 
   async function collectListFolders() {
@@ -403,7 +372,7 @@ export default function FoldersController() {
       state,
       dispatch,
     }),
-    [state, dispatch]
+    [state, dispatch],
   );
 
   return (

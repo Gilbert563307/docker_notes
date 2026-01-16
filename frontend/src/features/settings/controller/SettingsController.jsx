@@ -1,12 +1,10 @@
-import React, { createContext, useContext, useMemo, useReducer } from "react";
+import  { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet } from "react-router-dom";
 import { ALERT_ACTIONS, ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
+import { notificationObserver } from "../../notification/observer/NotificationObserver";
 
 /**
  * @typedef {Object} InitialState
- * @property {Object} notification - The notification object.
- * @property {string} notification.message - The notification message.
- * @property {number} notification.type - The notification type.
  */
 
 /**
@@ -14,7 +12,7 @@ import { ALERT_ACTIONS, ALERT_TYPES } from "../../../shared/components/bs5/BS5Al
  * @type {InitialState}
  */
 const initialState = {
-  notification: { message: "", type: 0 },
+  
 };
 
 /**
@@ -45,11 +43,7 @@ export function useSettingsControllerContext() {
 }
 
 export default function SettingsController() {
-  //import the methods and loader component from our custom component
 
-  const REDUCER_ACTIONS = {
-    SET_NOTIFICATION: "SET_NOTIFICATION", //Action type for setting a notification.
-  };
 
   /**
    * Reducer function for managing state changes.
@@ -59,12 +53,6 @@ export default function SettingsController() {
    */
   function reducer(state, action) {
     switch (action.type) {
-      case REDUCER_ACTIONS.SET_NOTIFICATION:
-        // console.log('Setting notification:', action.payload);
-        return {
-          ...state,
-          notification: action.payload,
-        };
       default:
         return state;
     }
@@ -78,17 +66,12 @@ export default function SettingsController() {
    * @param {Error} error - The error object.
    */
   function setErrorToState(error) {
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: { message: error.message, type: ALERT_TYPES.DANGER },
-    });
+    notificationObserver.addData({ message: error.message, type: ALERT_TYPES.DANGER })
+   
   }
 
   function closeAlert() {
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: { message: "", type: 0 },
-    });
+    notificationObserver.addData({ message: "", type: 0 })
   }
 
   /**

@@ -3,6 +3,8 @@ import { Outlet, useNavigate } from "react-router-dom";
 import FilesService from "../../../shared/service/FilesService";
 import FoldersService from "../service/FoldersService";
 import useHelpers from "../../../shared/helpers/useHelpers";
+import { notificationObserver } from "../../notification/observer/NotificationObserver";
+import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
 
 /**
  * @typedef {Object} InitialState
@@ -49,7 +51,7 @@ export const DRIVE_CONTROLLER_ACTIONS = {
   DELETE: "DELETE",
   DOWNLOAD_FILE: "DOWNLOAD_FILE",
   SEARCH_FILES_BY_SEARCH_TERM: "SEARCH_FILES_BY_SEARCH_TERM",
-  SET_NOTIFICATION: "SET_NOTIFICATION,",
+  SET_NOTIFICATION: "SET_NOTIFICATION"
 };
 
 /**
@@ -62,7 +64,7 @@ const driveControllerContext = createContext(
   /** @type {ContextValue} */ ({
     state: initialState,
     dispatch: () => {},
-  })
+  }),
 );
 
 /**
@@ -80,14 +82,7 @@ export default function DriveController() {
   //import the methods and loader component from our custom component
   const { getCurrentPageNumber } = useHelpers();
 
-  const {
-    listFiles,
-    uploadFiles,
-    archiveFile,
-    deleteFile,
-    downloadFile,
-    listFilesBySearchTerm,
-  } = FilesService();
+  const { listFiles, uploadFiles, archiveFile, deleteFile, downloadFile, listFilesBySearchTerm } = FilesService();
 
   const { getFolders } = FoldersService();
   const navigate = useNavigate();
@@ -96,7 +91,6 @@ export default function DriveController() {
     SET_FILES: "SET_FILES",
     SET_FILE: "SET_FILE",
     SET_FOLDERS: "SET_FOLDERS",
-    SET_NOTIFICATION: "SET_NOTIFICATION",
   };
 
   /**
@@ -122,11 +116,6 @@ export default function DriveController() {
           ...state,
           folders: action.payload,
         };
-      case REDUCER_ACTIONS.SET_NOTIFICATION:
-        return {
-          ...state,
-          notification: action.payload,
-        };
       default:
         return state;
     }
@@ -136,10 +125,7 @@ export default function DriveController() {
   const [state, dispatchAction] = useReducer(reducer, initialState);
 
   function closeAlert() {
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: { message: "", type: 0 },
-    });
+    notificationObserver.addData({ message: "", type: 0 });
   }
 
   /**
@@ -149,19 +135,7 @@ export default function DriveController() {
    */
   function setNotificationToState(object) {
     if (object.message === "") return;
-    // Set the message
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: object,
-    });
-
-    // Remove message after 20 seconds
-    const timeoutId = setTimeout(() => {
-      closeAlert();
-    }, 20000);
-
-    // Clear timeout if needed
-     return () => clearTimeout(timeoutId);
+    notificationObserver.addData(object);
   }
 
   /**
@@ -169,10 +143,7 @@ export default function DriveController() {
    * @param {Error} error - The error object.
    */
   function setErrorToState(error) {
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: { message: error.message, type: ALERT_TYPES.DANGER },
-    });
+    notificationObserver.addData({ message: error.message, type: ALERT_TYPES.DANGER });
   }
 
   async function collectListFiles() {
@@ -308,9 +279,7 @@ export default function DriveController() {
    * @returns {Promise<void>} - A Promise that resolves when the operation is completed.
    */
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  async function dispatch(
-    /** @type {{ type: string; payload?: any; }} */ action
-  ) {
+  async function dispatch(/** @type {{ type: string; payload?: any; }} */ action) {
     try {
       // Show loader while processing action
 
@@ -352,7 +321,7 @@ export default function DriveController() {
       // Close loader in case of error
       setErrorToState(error);
       console.error(`DriveController: error ${error}`);
-    } 
+    }
   }
 
   /** @returns {ContextValue} */
@@ -361,7 +330,7 @@ export default function DriveController() {
       state,
       dispatch,
     }),
-    [state, dispatch]
+    [state, dispatch],
   );
 
   return (

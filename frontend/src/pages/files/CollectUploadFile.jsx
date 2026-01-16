@@ -5,6 +5,7 @@ import { ALERT_TYPES } from "../../shared/components/bs5/BS5Alert";
 import RepositorySelectFolder from "../../features/drive/component/drive/RepositorySelectFolder";
 import { Show } from "../../shared/components/custom/Show";
 import RepositorySelectedFiles from "../../features/drive/component/drive/RepositorySelectedFiles";
+import "./css/CollectUploadFile.css";
 
 export default function CollectUploadFile() {
   const { dispatch } = useDriveControllerContext();

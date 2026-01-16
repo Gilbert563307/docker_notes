@@ -4,6 +4,7 @@ import { ThemeContext } from "../context/ThemeContext";
 import ThemeService from "../service/ThemeService";
 import DefaultLayout from "../components/layout/component/DefaultLayout";
 import GuestLayout from "../components/layout/component/GuestLayout";
+import NotificationV4 from "../../features/notification/component/NotificationV4";
 
 /**
  * Initial state for the MainController.
@@ -59,6 +60,7 @@ export default function MainController() {
 
   return (
     <MainControllerContext.Provider value={contextValue}>
+      <NotificationV4/>
       {user != null && Object.keys(user).length > 0 ? (
         <ThemeContext.Provider value={{ darkTheme, lightTheme }}>
           <DefaultLayout />

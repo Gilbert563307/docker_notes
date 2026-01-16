@@ -4,7 +4,6 @@ import "../css/DefaultLayout.css";
 import { useAuthProvider } from '../../../context/AuthProvider';
 import { useMainControllerContext } from '../../../controller/MainController';
 import NavBar from '../../../../features/navbar/component/NavBar';
-import NotificationV4 from '../../../../features/notification/component/NotificationV4';
 
 /**
  * 
@@ -29,7 +28,6 @@ export default function DefaultLayout() {
           <h2 className='layout-title'>{title}</h2>
           <div className="layout-line"></div>
           <article className="content border rounded">
-            <NotificationV4/>
             <Outlet></Outlet>
           </article>
         </article>

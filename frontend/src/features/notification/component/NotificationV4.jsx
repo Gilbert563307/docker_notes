@@ -1,5 +1,6 @@
 import React, { createRef, useEffect, useState } from "react";
 import { notificationObserver } from "../observer/NotificationObserver";
+import "../css/notificationv4.css";
 
 export const NOTIFICATION_TYPES = {
   INFO: 0,
@@ -7,7 +8,6 @@ export const NOTIFICATION_TYPES = {
   SUCCESS: 2,
   PRIMARY: 3,
 };
-
 
 /**
  *
@@ -29,55 +29,53 @@ export default function NotificationV4() {
     [NOTIFICATION_TYPES.PRIMARY]: "text-primary border-primary",
   };
 
- 
-  const [notification, setNotification] = useState({message: "", type: 0});
+  const [notification, setNotification] = useState({ message: "", type: 0 });
   const articleRef = createRef();
 
   /**
-   * 
-   * @param {number} type 
+   *
+   * @param {number} type
    * @returns {string}
    */
-  const getTypeClasses = (type) =>
-    typeMap[type] || typeMap[NOTIFICATION_TYPES.INFO];
+  const getTypeClasses = (type) => typeMap[type] || typeMap[NOTIFICATION_TYPES.INFO];
 
-   /**
+  /**
    * Will be called as a callback function because this class subscribed to the notification observer
    * Then the data will be passes as an array with
    *
    * @param {Array<{message: string, type: number}>} data
    */
   function next(data) {
-    if(data.length === 1){
-        const notification = data[0];
-        setNotification(notification);
-    };
+    if (data.length === 1) {
+      const notification = data[0];
+      setNotification(notification);
+      articleRef.current?.focus();
+    }
   }
 
-  function closeNotification(){
-    setNotification({message: "", type: 0});
+  function closeNotification() {
+    setNotification({ message: "", type: 0 });
   }
 
-  const observer = {next: next}
+  const observer = { next: next };
 
   useEffect(() => {
-    notificationObserver.subscribe(observer)
-  },[])
+    notificationObserver.subscribe(observer);
+  }, []);
 
   return (
-     <article
-        role="alert"
-        aria-live="assertive"
-        aria-atomic="true"
-        tabIndex={-1}
-        ref={articleRef}
-        className=""
-      >
-        <button className="close-btn"  title="Close" onClick={closeNotification}>
-          ×
-        </button>
-        <p className="notification-message">{notification.message}</p>
-      </article>
-   
+    <article
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+      tabIndex={-1}
+      ref={articleRef}
+      className={`notification ${notification.message != "" ? "show": "hide"}  ${getTypeClasses(notification.type)} `}
+    >
+      <button className="close-btn" title="Close" onClick={closeNotification}>
+        ×
+      </button>
+      <p className="notification-message">{notification.message}</p>
+    </article>
   );
 }

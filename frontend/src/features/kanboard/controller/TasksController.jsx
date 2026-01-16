@@ -4,6 +4,7 @@ import { ALERT_ACTIONS, ALERT_TYPES } from "../../../shared/components/bs5/BS5Al
 import useHelpers from "../../../shared/helpers/useHelpers";
 import TasksService from "../service/TasksService";
 import FilesService from "../../../shared/service/FilesService";
+import { notificationObserver } from "../../notification/observer/NotificationObserver";
 
 /**
  * @typedef {Array<import("../../../types/types").Task>} Tasks - State for tasks.
@@ -13,9 +14,7 @@ import FilesService from "../../../shared/service/FilesService";
  * @typedef {Object} InitialState
  * @property {import("../../../types/types").Task | Object} task - The current task.
  * @property {import("../../../types/types").ListTasks} tasks - The list of tasks.
- * @property {Object} notification - The notification object.
- * @property {string} notification.message - The notification message.
- * @property {number} notification.type - The notification type.
+
  */
 
 /**
@@ -25,7 +24,6 @@ import FilesService from "../../../shared/service/FilesService";
 const initialState = {
   task: {},
   tasks: { tasks: [], total: 0, pages: 0 },
-  notification: { message: "", type: 0 },
 };
 
 /**
@@ -49,8 +47,8 @@ export const TASKS_CONTROLLER_ACTIONS = {
   DELETE: "DELETE",
   UPLOAD_TEMP_IMAGE: "UPLOAD_TEMP_IMAGE",
   DOWNLOAD_TASK: "DOWNLOAD_TASK",
-  SET_NOTIFICATION: "SET_NOTIFICATION",
   SEARCH_TASKS_BY_SEARCH_TERM: "SEARCH_TASKS_BY_SEARCH_TERM",
+  SET_NOTIFICATION: "SET_NOTIFICATION"
 };
 
 /**
@@ -103,7 +101,6 @@ export default function TasksController() {
   const REDUCER_ACTIONS = {
     SET_TASKS: "SET_TASKS", //Action type for setting multiple task's.
     SET_TASK: "SET_TASK", //Action type for setting a task.
-    SET_NOTIFICATION: "SET_NOTIFICATION", //Action type for setting a notification.
   };
 
   /**
@@ -126,12 +123,6 @@ export default function TasksController() {
           ...state,
           task: action.payload,
         };
-      case REDUCER_ACTIONS.SET_NOTIFICATION:
-        // console.log('Setting notification:', action.payload);
-        return {
-          ...state,
-          notification: action.payload,
-        };
       default:
         return state;
     }
@@ -148,36 +139,19 @@ export default function TasksController() {
   function setNotificationToState(object) {
     if (object.message === "") return;
     // Set the message
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: object,
-    });
-
-    // Remove message after 20 seconds
-    const timeoutId = setTimeout(() => {
-      closeAlert();
-    }, 20000);
-
-    // Clear timeout if needed
-    return () => clearTimeout(timeoutId);
+    notificationObserver.addData(object);
   }
 
-  /**
+   /**
    * Sets error to the state and dispatches notification.
    * @param {Error} error - The error object.
    */
   function setErrorToState(error) {
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: { message: error.message, type: ALERT_TYPES.DANGER },
-    });
+    notificationObserver.addData({ message: error.message, type: ALERT_TYPES.DANGER });
   }
 
   function closeAlert() {
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: { message: "", type: 0 },
-    });
+    notificationObserver.addData({ message: "", type: 0 });
   }
 
   /**

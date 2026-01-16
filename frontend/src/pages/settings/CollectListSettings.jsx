@@ -13,7 +13,7 @@ export default function CollectListSettings() {
       <ThemeModeComponent />
 
       <div className="">
-        <div className="notification">
+        <div className="m-3">
           <div
             className="toast show"
             role="alert"
@@ -46,7 +46,7 @@ export default function CollectListSettings() {
           </div>
         </div>
 
-        {/* <div className="card" >
+        <div className="card bug-card" >
           <div className="card-body">
             <h5 className="card-title">Report a Bug or Suggest an Improvement</h5>
 
@@ -59,7 +59,7 @@ export default function CollectListSettings() {
               app.development759@gmail.com
             </a>
           </div>
-        </div>  */}
+        </div> 
       </div>
     </article>
   );

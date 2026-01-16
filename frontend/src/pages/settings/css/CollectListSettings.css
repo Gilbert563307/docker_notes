@@ -10,3 +10,7 @@
 .notification, .card{
     margin: 1em;
 }
+
+.bug-card{
+    min-width: 35%;
+}

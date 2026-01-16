@@ -2,14 +2,12 @@ import { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet } from "react-router-dom";
 import { ALERT_ACTIONS, ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
 import TasksService from "../service/TasksService";
+import { notificationObserver } from "../../notification/observer/NotificationObserver";
 
 /**
  * @typedef {Object} InitialState
  * @property {import("../../../types/types").Task | Object} task - The current task.
  * @property {import("../../../types/types").Tasks | []} tasks - The list of tasks.
- * @property {Object} notification - The notification object.
- * @property {string} notification.message - The notification message.
- * @property {number} notification.type - The notification type.
  */
 
 /**
@@ -18,8 +16,7 @@ import TasksService from "../service/TasksService";
  */
 const initialState = {
   task: {},
-  tasks: [],
-  notification: { message: "", type: 0 },
+  tasks: []
 };
 
 /**
@@ -30,7 +27,6 @@ const initialState = {
  * @property {string} READ - Action type for reading a task.
  * @property {string} UPDATE - Action type for updating a task.
  * @property {string} ARCHIVE - Action type for archiving a task.
- * @property {string} SET_NOTIFICATION - Action type for setting a message.
  */
 export const BOARD_CONTROLLER_ACTIONS = {
   LIST: "LIST_TASKS",
@@ -38,7 +34,7 @@ export const BOARD_CONTROLLER_ACTIONS = {
   READ: "READ_TASK",
   UPDATE: "UPDATE_TASK",
   ARCHIVE: "ARCHIVE_TASK",
-  SET_NOTIFICATION: "SET_NOTIFICATION,",
+  SET_NOTIFICATION: "SET_NOTIFICATION"
 };
 
 /**
@@ -73,8 +69,7 @@ export default function BoardsController() {
 
   const REDUCER_ACTIONS = {
     SET_TASKS: "SET_TASKS", //Action type for setting multiple task's.
-    SET_TASK: "SET_TASK", //Action type for setting a task.
-    SET_NOTIFICATION: "SET_NOTIFICATION", //Action type for setting a notification.
+    SET_TASK: "SET_TASK" //Action type for setting a task.
   };
 
   /**
@@ -95,11 +90,6 @@ export default function BoardsController() {
           ...state,
           task: action.payload,
         };
-      case REDUCER_ACTIONS.SET_NOTIFICATION:
-        return {
-          ...state,
-          notification: action.payload,
-        };
       default:
         return state;
     }
@@ -115,19 +105,7 @@ export default function BoardsController() {
    */
   function setNotificationToState(object) {
     if (object.message === "") return;
-    // Set the message
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: object,
-    });
-
-    // Remove message after 20 seconds
-    const timeoutId = setTimeout(() => {
-      closeAlert();
-    }, 20000);
-
-    // Clear timeout if needed
-    return () => clearTimeout(timeoutId);
+    notificationObserver.addData(object);
   }
 
   /**
@@ -135,17 +113,11 @@ export default function BoardsController() {
    * @param {Error} error - The error object.
    */
   function setErrorToState(error) {
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: { message: error.message, type: ALERT_TYPES.DANGER },
-    });
+    notificationObserver.addData({ message: error.message, type: ALERT_TYPES.DANGER });
   }
 
-  function closeAlert() {
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_NOTIFICATION,
-      payload: { message: "", type: 0 },
-    });
+   function closeAlert() {
+    notificationObserver.addData({ message: "", type: 0 });
   }
 
   /**
