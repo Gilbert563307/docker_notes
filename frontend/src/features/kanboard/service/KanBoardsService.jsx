@@ -1,6 +1,6 @@
-import DataHandler from "./DataHandler";
 import { MAX_KAN_BOARDS } from "../../../config";
 import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
+import FirebaseInterface from "../../../shared/data/FirebaseInterface";
 
 export default function KanBoardsService() {
   const {
@@ -19,7 +19,7 @@ export default function KanBoardsService() {
     db,
     updateDoc,
     getCountFromServer,
-  } = DataHandler({ table: "kanboards" });
+  } = FirebaseInterface({ table: "kanboards" });
 
   async function doesUserHaveMaxKanBoards() {
   try {

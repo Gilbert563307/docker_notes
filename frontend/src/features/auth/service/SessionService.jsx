@@ -1,6 +1,6 @@
 import React from "react";
 import { ALERT_ACTIONS } from "../../../shared/components/bs5/BS5Alert";
-import DataHandler from "./DataHandler";
+import FirebaseInterface from "../../../shared/data/FirebaseInterface";
 
 export default function SessionService() {
   const {
@@ -11,7 +11,7 @@ export default function SessionService() {
     query,
     where,
     getDocs,
-  } = DataHandler({
+  } = FirebaseInterface({
     table: "sessions",
   });
 

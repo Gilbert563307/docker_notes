@@ -1,13 +1,13 @@
 import React from "react";
 import { ALERT_TYPES } from "../components/bs5/BS5Alert";
 import { asBlob } from "html-docx-js-typescript";
-import DataHandler from "../data/FirebaseInterface";
 import { Query } from "firebase/firestore";
 import {
   DEFAULT_FILES_ARCHIVE,
   FILES_ARCHIVED_SESSION_FILTER,
 } from "../../config";
 import useHelpers from "../helpers/useHelpers";
+import FirebaseInterface from "../data/FirebaseInterface";
 
 export default function FilesService() {
   const {
@@ -18,7 +18,7 @@ export default function FilesService() {
     getSearchQueryByFieldName,
     query,
     collectionRef,
-    limit,
+    // limit,
     getDocs,
     convertQuerySnapShotDocs,
     getCountFromServer,
@@ -34,7 +34,7 @@ export default function FilesService() {
     currentServerTimestamp,
     fetchResultsOnPageOne,
     fetchPaginatedResults,
-  } = DataHandler({ table: "files" });
+  } = FirebaseInterface({ table: "files" });
 
   const { getSessionFilter } = useHelpers();
   /**

@@ -1,5 +1,4 @@
 import React from "react";
-import DataHandler from "./DataHandler";
 import {
   DEFAULT_FOLDERS_ARCHIVE,
   FOLDERS_ARCHIVED_SESSION_FILTER,
@@ -8,6 +7,7 @@ import {
 import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
 import useHelpers from "../../../shared/helpers/useHelpers";
 import { Query } from "firebase/firestore";
+import FirebaseInterface from "../../../shared/data/FirebaseInterface";
 
 export default function FoldersService() {
   const {
@@ -33,7 +33,7 @@ export default function FoldersService() {
     addDoc,
     getDocument,
     deleteDoc,
-  } = DataHandler({ table: "folders" });
+  } = FirebaseInterface({ table: "folders" });
 
   const { getSessionFilter } = useHelpers();
 

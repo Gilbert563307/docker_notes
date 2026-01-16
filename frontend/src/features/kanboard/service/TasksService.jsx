@@ -13,7 +13,7 @@ import {
 } from "../../../config";
 import { useAuthProvider } from "../../../shared/context/AuthProvider";
 import useHelpers from "../../../shared/helpers/useHelpers";
-import DataHandler from "./DataHandler";
+import FirebaseInterface from "../../../shared/data/FirebaseInterface";
 
 export default function TasksService() {
   const { user } = useAuthProvider();
@@ -43,7 +43,7 @@ export default function TasksService() {
     fetchResultsOnPageOne,
     fetchPaginatedResults,
     getDocument,
-  } = DataHandler({ table: "tasks" });
+  } = FirebaseInterface({ table: "tasks" });
 
   /**
    * Creates a new task with default values if not provided in the payload.
