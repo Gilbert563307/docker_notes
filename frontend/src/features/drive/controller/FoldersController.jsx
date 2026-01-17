@@ -12,9 +12,6 @@ import { notificationObserver } from "../../notification/observer/NotificationOb
  * @property {import("../../../types/types").Folder | {}} folder
  * @property {{files: import("../../../types/types").DriveFiles | [], total: number, pages: number} } files
  * @property {{folders: import("../../../types/types").Folders | [],  total: number, pages: number} } folders
- * @property {Object} notification - The notification object.
- * @property {string} notification.message - The notification message.
- * @property {number} notification.type - The notification type.
  */
 
 /**
@@ -24,7 +21,6 @@ const initialState = {
   folder: {},
   files: { files: [], total: 0, pages: 0 },
   folders: { folders: [], total: 0, pages: 0 },
-  notification: { message: "", type: 0 },
 };
 
 /**
@@ -84,7 +80,6 @@ export default function FoldersController() {
     SET_FILES: "SET_FILES",
     SET_FOLDER: "SET_FOLDER",
     SET_FOLDERS: "SET_FOLDERS",
-    SET_NOTIFICATION: "SET_NOTIFICATION",
   };
 
   /**

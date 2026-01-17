@@ -8,12 +8,9 @@ import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
 
 /**
  * @typedef {Object} InitialState
- * @property {import("../types/types").DriveFile | Object} file
- * @property { {files: import("../types/types").DriveFiles | [], total: number, pages: number} } files
- * @property {import("../types/types").Folders | [] } folders
- * @property {Object} notification - The notification object.
- * @property {string} notification.message - The notification message.
- * @property {number} notification.type - The notification type.
+ * @property {import("../../../types/types").DriveFile | Object} file
+ * @property { {files: import("../../../types/types").DriveFiles | [], total: number, pages: number} } files
+ * @property {import("../../../types/types").Folders | [] } folders
  */
 
 /**
@@ -23,7 +20,6 @@ const initialState = {
   file: {},
   files: { files: [], total: 0, pages: 0 },
   folders: [],
-  notification: { message: "", type: 0 },
 };
 
 /**

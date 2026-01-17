@@ -14,11 +14,13 @@ import {
 import { useAuthProvider } from "../../../shared/context/AuthProvider";
 import useHelpers from "../../../shared/helpers/useHelpers";
 import FirebaseInterface from "../../../shared/data/FirebaseInterface";
+import { Task } from "../model/Task";
+import { Assignee } from "../model/Assignee";
+import { Reporter } from "../model/Reporter";
 
 export default function TasksService() {
   const { user } = useAuthProvider();
-  const { getSessionFilter, getHowManyFiltersAreActiveByCurrentPath } =
-    useHelpers();
+  const { getSessionFilter, getHowManyFiltersAreActiveByCurrentPath } = useHelpers();
 
   const {
     collectionRef,
@@ -54,33 +56,24 @@ export default function TasksService() {
   const createTask = async (payload) => {
     try {
       // Define default values for the task
-      /**
-       * @type {import("../../../types/types").Task}
-       */
-      const defaultValues = {
-        project_id: payload.project_id || DEFAULT_PROJECT_ID,
-        user_uid: userUid,
-        status: payload.status || TASKS_STATUS.TODO,
-        description: payload.description || "",
-        priority: payload.priority || TASKS_PRIORITY.LOW,
-        assignee: payload.assignee || {
-          name: user.displayName,
-          assignee_id: user.uid,
-        },
-        reporter: payload.reporter || {
-          name: user.displayName,
-          assignee_id: user.uid,
-        },
-        archived: false,
-        created_at: currentServerTimestamp,
-        updated_at: currentServerTimestamp,
-      };
 
-      // Merge payload with defaults, giving precedence to user-provided values
-      const payloadToSave = { ...defaultValues, ...payload };
-
+      const task = new Task(
+        null,
+        payload.project_id || DEFAULT_PROJECT_ID,
+        userUid,
+        payload.title,
+        payload.description || "",
+        payload.status || TASKS_STATUS.TODO,
+        payload.priority || TASKS_PRIORITY.LOW,
+        payload.assignee || new Assignee(user.displayName, user.uid).toCreateObject(),
+        payload.reporter || new Reporter(user.displayName, user.uid).toCreateObject(),
+        false,
+        currentServerTimestamp,
+        currentServerTimestamp,
+      );
+     
       // Attempt to add the document to the collection
-      const created = await addDoc(collectionRef, payloadToSave);
+      const created = await addDoc(collectionRef, task.toCreateObject());
 
       // Return success message if task creation was successful
       return {
@@ -120,9 +113,7 @@ export default function TasksService() {
 
       return totalRecords;
     } catch (error) {
-      console.log(
-        `[getTotalTasksInDatabaseByUserAndFilters]: ${error.message}`
-      );
+      console.log(`[getTotalTasksInDatabaseByUserAndFilters]: ${error.message}`);
       return 0;
     }
   };
@@ -136,9 +127,7 @@ export default function TasksService() {
       const { names } = getActiveFiltersNamesOnTaskPath();
 
       // Filter and retrieve active status tags based on task names.
-      const results = STATUS_FILTER_TYPE_TAGS.filter((tag) =>
-        names.includes(tag.config)
-      ).map((tag) => tag.value);
+      const results = STATUS_FILTER_TYPE_TAGS.filter((tag) => names.includes(tag.config)).map((tag) => tag.value);
 
       // Return successful response with active status filters.
       return {
@@ -164,8 +153,7 @@ export default function TasksService() {
   const getActiveFiltersNamesOnTaskPath = () => {
     try {
       // Retrieve all active filters by the current task path.
-      const allActiveFilters =
-        getHowManyFiltersAreActiveByCurrentPath(TASKS_PATH);
+      const allActiveFilters = getHowManyFiltersAreActiveByCurrentPath(TASKS_PATH);
 
       // If no active filters, return default success response with empty filters.
       if (allActiveFilters.length === 0) {
@@ -203,9 +191,7 @@ export default function TasksService() {
       const { names } = getActiveFiltersNamesOnTaskPath();
 
       // Filter and retrieve active status tags based on task names.
-      const results = PRIORITY_FILTER_TYPE_TAGS.filter((tag) =>
-        names.includes(tag.config)
-      ).map((tag) => tag.value);
+      const results = PRIORITY_FILTER_TYPE_TAGS.filter((tag) => names.includes(tag.config)).map((tag) => tag.value);
 
       // Return successful response with active status filters.
       return {
@@ -231,9 +217,7 @@ export default function TasksService() {
   const getTasksQueryClauses = (payload = {}) => {
     try {
       // Get the session archived filter
-      const tasksArchived =
-        getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) ||
-        DEFAULT_TASKS_ARCHIVE;
+      const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
 
       const statusFilters = getActiveStatusFilters();
       const priorityFilters = getActivePriorityFilters();
@@ -244,25 +228,16 @@ export default function TasksService() {
         orderBy("created_at", "desc"),
       ];
       if (statusFilters.filters.length > 0) {
-        queryItems = [
-          ...queryItems,
-          where("status", "in", statusFilters.filters),
-        ];
+        queryItems = [...queryItems, where("status", "in", statusFilters.filters)];
       }
 
       if (priorityFilters.filters.length > 0) {
-        queryItems = [
-          ...queryItems,
-          where("priority", "in", priorityFilters.filters),
-        ];
+        queryItems = [...queryItems, where("priority", "in", priorityFilters.filters)];
       }
 
       if (payload.searchTearm && payload.searchTearm != "") {
         const { searchTearm } = payload;
-        queryItems = [
-          ...queryItems,
-          ...getSearchQueryByFieldName("title", searchTearm),
-        ];
+        queryItems = [...queryItems, ...getSearchQueryByFieldName("title", searchTearm)];
       }
 
       return {
@@ -300,12 +275,7 @@ export default function TasksService() {
         return fetchResultsOnPageOne(queryItems, itemsPerPage);
       }
 
-      return fetchPaginatedResults(
-        currentPage,
-        payload,
-        itemsPerPage,
-        queryItems
-      );
+      return fetchPaginatedResults(currentPage, payload, itemsPerPage, queryItems);
     } catch (error) {
       console.log(`[getTasksQuery]: ${error.message}`);
       return {
@@ -381,7 +351,7 @@ export default function TasksService() {
     try {
       // Get the session archived filter
       // const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
-      
+
       //THIS IS FOR WHE THE MAIN DEV I STILL HAS TASKS ON THE DEFAULT PROJECT ID
       const boardId = payload.boardId === "0" ? 0 : payload.boardId;
 
@@ -391,14 +361,13 @@ export default function TasksService() {
         // where("archived", "==", tasksArchived),
         where("project_id", "==", boardId),
         orderBy("updated_at", "desc"),
-        limit(MAX_BOARD_ITEMS)
+        limit(MAX_BOARD_ITEMS),
       );
 
       // Execute the query to get the tasks.
       const querySnapshot = await getDocs(tasksQuery);
 
-      const { results, message, type } =
-        convertQuerySnapShotDocs(querySnapshot);
+      const { results, message, type } = convertQuerySnapShotDocs(querySnapshot);
       return {
         tasks: results,
         message: message,

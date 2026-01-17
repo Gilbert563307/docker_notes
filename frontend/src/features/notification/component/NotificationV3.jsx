@@ -4,7 +4,7 @@ import BS5Alert, { ALERT_ACTIONS } from "../../../shared/components/bs5/BS5Alert
 
 /**
  * A reusable notification component that listens to a specified controller context.
- *
+ * @deprecated 
  * @param {Object} props - Component props.
  * @param {Object} props.controllerContext - The controller context from which to extract notifications.
  *
