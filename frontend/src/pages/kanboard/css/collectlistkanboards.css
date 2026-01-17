@@ -48,11 +48,12 @@
   width: 25px;
   height: 25px;
   transition: ease-in 100ms;
+  color: #0143a3;
 }
 .kanboard-options-button:hover{
   background-color: #a6a8a9;
-  
 }
+
 
 .kanboard-article{
   display: flex;

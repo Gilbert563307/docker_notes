@@ -14,5 +14,5 @@ export default function CollectUpdateKanBoard() {
     dispatch({ type: KAN_BOARDS_CONTROLLER_ACTIONS.UPDATE, payload: {...board, ...data} });
   };
 
-  return <KanBoardForm onSubmit={onSubmit} board={board} submitButtonValue="Update" />;
+  return <KanBoardForm onSubmit={onSubmit} board={board} submitButtonValue="update" />;
 }

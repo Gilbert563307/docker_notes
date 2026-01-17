@@ -15,6 +15,6 @@ export default function CollectListCreateKanBoard() {
   };
 
   return (                          
-    <KanboardForm onSubmit={onSubmit} board={{name: "", color: ""}} submitButtonValue="Create" />
+    <KanboardForm onSubmit={onSubmit} board={{name: "", color: ""}} submitButtonValue="create" />
   );
 }
