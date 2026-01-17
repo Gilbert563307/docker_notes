@@ -1,35 +1,42 @@
-import React from "react";
+import React, { useEffect } from "react";
+import "../../css/kanboardform.css";
 import { useForm } from "react-hook-form";
 
-import "./css/collectlistcreatekanboard.css"
-import { KAN_BOARDS_CONTROLLER_ACTIONS, useKanBoardsControllerContext } from "../../features/kanboard/controller/KanBoardsController";
-
-export default function CollectistCreateKanBoard() {
-  const { dispatch } = useKanBoardsControllerContext();
-
+/**
+ * @param {Object} props - Component props
+ * @param {(data: { name: string, color: string }) => void} props.onSubmit
+ * @param {import("../../../../types/types").Board} props.board
+ * @param {string} props.submitButtonValue Text displayed inside the submit button.
+ * @returns {JSX.Element} A form UI for creating or editing a Kanban board.
+ */
+export default function KanBoardForm({ onSubmit, board, submitButtonValue }) {
+  const values = board;
   const {
     register,
     handleSubmit,
     reset,
     // setError,
     formState: { errors },
-  } = useForm({});
+  } = useForm({
+    defaultValues: {
+      name: "",
+      color: "",
+    },
+    values,
+  });
 
-  /**
-   * 
-   * @param {{name: string, color: string}} data 
-   */
-  const onSubmit = (data) => {
-    reset();
-    dispatch({ type: KAN_BOARDS_CONTROLLER_ACTIONS.CREATE, payload: data });
-  };
+  //https://react-hook-form.com/docs/useform/reset
+  //https://react-hook-form.com/docs/useform#defaultValues
+  useEffect(() => {
+    reset({
+      name: board.name,
+      color: board.color,
+    });
+  }, [board]);
 
   return (
     <article className="create-kanban-article">
-      <form
-        className="d-flex flex-column g-3"
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <form className="d-flex flex-column g-3" onSubmit={handleSubmit(onSubmit)}>
         {/* start name  */}
         <div className="col-12 mb-2">
           <label htmlFor="name" className="form-label">
@@ -37,9 +44,7 @@ export default function CollectistCreateKanBoard() {
           </label>
           <input
             type="text"
-            className={`form-control ${
-              errors.name && errors.name.type ? "is-invalid" : ""
-            }`}
+            className={`form-control ${errors.name && errors.name.type ? "is-invalid" : ""}`}
             id="name"
             aria-describedby="name"
             maxLength={255}
@@ -55,11 +60,7 @@ export default function CollectistCreateKanBoard() {
               },
             })}
           />
-          {errors.name && (
-            <div className="invalid-feedback d-block">
-              {errors.name.message}
-            </div>
-          )}
+          {errors.name && <div className="invalid-feedback d-block">{errors.name.message}</div>}
         </div>
         {/* end name  */}
         {/* start color picker */}
@@ -78,12 +79,7 @@ export default function CollectistCreateKanBoard() {
         </div>
         {/* end color picker */}
         <div className="col-12 mt-3">
-          <input
-            type="submit"
-            name="submit"
-            value="Create"
-            className="add-task-button task-btn-plain"
-          ></input>
+          <input type="submit" name="submit" value={submitButtonValue} className="add-task-button task-btn-plain"></input>
         </div>
       </form>
     </article>

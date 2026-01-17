@@ -26,9 +26,11 @@ export default function CollectListKanBoards() {
         @type {import("../../types/types").Board}
         **/
         item) => {
-          const boardsUrl = `/board/${item.id}`;
+          const itemId = item.id;
+          const boardsUrl = `/board/${itemId}`;
+          const updateBoardsUrl = `/kanboards/update/${itemId}`
           return (
-            <div className="card" key={item.id}>
+            <div className="card" key={itemId}>
               <Link to={boardsUrl}>
                 <div
                   className="card-color"
@@ -37,11 +39,11 @@ export default function CollectListKanBoards() {
               </Link>
               <div className="card-label">
                 {item.name}
-                <div>
+                <Link  to={updateBoardsUrl}>
                   <button className="kanboard-options-button">
-                    <i className="fa-solid fa-ellipsis-vertical"></i>
+                    <i className="fa-thin fa-pencil"></i>
                   </button>
-                </div>
+                </Link>
               </div>
             </div>
           );

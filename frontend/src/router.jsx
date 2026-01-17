@@ -21,14 +21,14 @@ import CollectUpdateFolder from "./pages/folders/CollectUpdateFolder";
 import CollectReadFolder from "./pages/folders/CollectReadFolder";
 import KanBoardsController from "./features/kanboard/controller/KanBoardsController";
 import CollectListKanBoards from "./pages/kanboard/CollectListKanBoards";
-import CollectistCreateKanBoard from "./pages/kanboard/CollectistCreateKanBoard";
 import GuestRoute from "./utils/router/GuestRoute";
 import AuthController from "./features/auth/controller/AuthController";
 import CollectListAuth from "./pages/auth/CollectListAuth";
 import SettingsController from "./features/settings/controller/SettingsController";
 import CollectListSettings from "./pages/settings/CollectListSettings";
 import ErrorPage from "./pages/error/ErrorPage";
-
+import CollectUpdateKanBoard from "./pages/kanboard/CollectUpdateKanBoard";
+import CollectListCreateKanBoard from "./pages/kanboard/CollectListCreateKanBoard";
 
 const routes = [
   {
@@ -140,19 +140,23 @@ const routes = [
         path: "/kanboards",
         element: (
           <ProtectedRoute>
-            <KanBoardsController/>
+            <KanBoardsController />
           </ProtectedRoute>
         ),
         children: [
           {
             index: true,
             path: "",
-            element: <CollectListKanBoards/>
+            element: <CollectListKanBoards />,
           },
           {
             path: "/kanboards/create",
-            element: <CollectistCreateKanBoard/>
-          }
+            element: <CollectListCreateKanBoard />,
+          },
+          {
+            path: "/kanboards/update/:kanBoardId",
+            element: <CollectUpdateKanBoard />,
+          },
         ],
       },
       {
@@ -187,7 +191,7 @@ const routes = [
     ],
     errorElement: <ErrorPage />,
   },
-]
-const router = createBrowserRouter(routes, {basename: "/app/"});
+];
+const router = createBrowserRouter(routes, { basename: "/app/" });
 
 export default router;

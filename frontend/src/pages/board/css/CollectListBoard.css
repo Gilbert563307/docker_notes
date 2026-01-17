@@ -46,7 +46,7 @@
 
 .main-board{
     display: flex;
-    background-image: url("../../../images/land_scape.png");
+    background-image: url("../../../assets/images/land_scape.png");
     min-height: 60dvh;
 }
 

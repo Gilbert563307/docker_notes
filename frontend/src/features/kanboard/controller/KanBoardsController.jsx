@@ -1,4 +1,4 @@
-import  { createContext, useContext, useMemo, useReducer } from "react";
+import { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import KanBoardsService from "../service/KanBoardsService";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
@@ -7,6 +7,7 @@ import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
 /**
  * @typedef {Object} InitialState
  * @property {Array<import('../../../types/types').Board>} boards
+ * @property {import('../../../types/types').Board} board
  */
 
 /**
@@ -15,6 +16,7 @@ import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
  */
 const initialState = {
   boards: [],
+  board: {},
 };
 
 export const KAN_BOARDS_CONTROLLER_ACTIONS = {
@@ -41,6 +43,7 @@ const kanBoardsControllerContext = createContext(
 
 const REDUCER_ACTIONS = {
   SET_KAN_BOARDS: "SET_KAN_BOARDS",
+  SET_KAN_BOARD: "SET_KAN_BOARD",
 };
 
 /**
@@ -55,7 +58,7 @@ export function useKanBoardsControllerContext() {
 }
 
 export default function KanBoardsController() {
-  const { listKanBoards, createKanBoard } = KanBoardsService();
+  const { listKanBoards, createKanBoard, readKanBoard, updateKanBoard } = KanBoardsService();
   const navigate = useNavigate();
 
   /**
@@ -70,6 +73,12 @@ export default function KanBoardsController() {
         return {
           ...state,
           boards: action.payload,
+        };
+
+      case REDUCER_ACTIONS.SET_KAN_BOARD:
+        return {
+          ...state,
+          board: action.payload,
         };
 
       default:
@@ -117,6 +126,25 @@ export default function KanBoardsController() {
     }
   }
 
+  /**
+   *
+   * @param {string} kanBoardId
+   */
+  async function collectReadKanBoard(kanBoardId) {
+    try {
+      const kanBoard = await readKanBoard(kanBoardId);
+      setNotificationToState(kanBoard);
+
+      // Update state with the response
+      dispatchAction({
+        type: REDUCER_ACTIONS.SET_KAN_BOARD,
+        payload: kanBoard.board,
+      });
+    } catch (error) {
+      setErrorToState(error);
+    }
+  }
+
   async function refreshKanBoardList() {
     // const currentPage = getCurrentPageNumber();
     // const payload = { currentPage: currentPage };
@@ -140,6 +168,22 @@ export default function KanBoardsController() {
     }
   }
 
+  /**
+   *
+   * @param {import("../../../types/types").Board} payload
+   */
+  async function collectUpdateKanBoard(payload) {
+    try {
+      const kanBoardUpdated = await updateKanBoard(payload);
+
+      // Update state with the created  response
+      setNotificationToState(kanBoardUpdated);
+      navigate("/kanboards");
+    } catch (error) {
+      setErrorToState(error);
+    }
+  }
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   async function dispatch(/** @type {{ type: string; payload?: any; }} */ action) {
     try {
@@ -152,6 +196,14 @@ export default function KanBoardsController() {
 
         case KAN_BOARDS_CONTROLLER_ACTIONS.CREATE:
           await collectCreateKanBoard(action.payload);
+          break;
+
+        case KAN_BOARDS_CONTROLLER_ACTIONS.READ:
+          await collectReadKanBoard(action.payload);
+          break;
+
+        case KAN_BOARDS_CONTROLLER_ACTIONS.UPDATE:
+          await collectUpdateKanBoard(action.payload);
           break;
 
         case "CLOSE_ALERT":

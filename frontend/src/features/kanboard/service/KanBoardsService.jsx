@@ -19,31 +19,31 @@ export default function KanBoardsService() {
     db,
     updateDoc,
     getCountFromServer,
+    getDocument,
   } = FirebaseInterface({ table: "kanboards" });
 
   async function doesUserHaveMaxKanBoards() {
-  try {
-    const q = query(collectionRef, where("user_uid", "==", userUid));
-    const snapshot = await getCountFromServer(q);
-    const count = snapshot.data().count;
+    try {
+      const q = query(collectionRef, where("user_uid", "==", userUid));
+      const snapshot = await getCountFromServer(q);
+      const count = snapshot.data().count;
 
-    const maximumReached = count >= MAX_KAN_BOARDS;
-    return {
-      max: maximumReached,
-      message: maximumReached 
-        ? `You have reached the maximum number of Kanboards (${MAX_KAN_BOARDS}).` 
-        : `You have created ${count} out of ${MAX_KAN_BOARDS} Kanboards.`,
-      type: maximumReached ? ALERT_TYPES.DANGER : ALERT_TYPES.INFO
-    };
-    
-  } catch (error) {
-    return {
-      max: true,
-      message: error.message,
-      type: ALERT_TYPES.DANGER
-    };
+      const maximumReached = count >= MAX_KAN_BOARDS;
+      return {
+        max: maximumReached,
+        message: maximumReached
+          ? `You have reached the maximum number of Kanboards (${MAX_KAN_BOARDS}).`
+          : `You have created ${count} out of ${MAX_KAN_BOARDS} Kanboards.`,
+        type: maximumReached ? ALERT_TYPES.DANGER : ALERT_TYPES.INFO,
+      };
+    } catch (error) {
+      return {
+        max: true,
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
   }
-}
 
   /**
    *
@@ -67,7 +67,7 @@ export default function KanBoardsService() {
         user_uid: userUid,
         archived: false,
         color: payload.color,
-        collaborative: false, 
+        collaborative: false,
         created_at: currentServerTimestamp,
         updated_at: currentServerTimestamp,
       };
@@ -129,14 +129,13 @@ export default function KanBoardsService() {
         collectionRef,
         where("user_uid", "==", userUid),
         // where("archived", "==", tasksArchived),
-        limit(MAX_KAN_BOARDS)
+        limit(MAX_KAN_BOARDS),
       );
 
       // Execute the query to get the tasks.
       const querySnapshot = await getDocs(kanBoardsQuery);
 
-      const { results, message, type } =
-        convertQuerySnapShotDocs(querySnapshot);
+      const { results, message, type } = convertQuerySnapShotDocs(querySnapshot);
 
       return {
         results: results,
@@ -179,5 +178,27 @@ export default function KanBoardsService() {
       };
     }
   }
-  return { listKanBoards, createKanBoard, updateKanBoard, archiveKanBoard };
+
+  /**
+   *
+   * @param {string} id
+   * @returns {Promise<{board: import("../../../types/types").Board, message: string, type: number}>}
+   */
+  async function readKanBoard(id) {
+    try {
+      const { document, message, type } = await getDocument(id);
+      return {
+        board: document,
+        message: message,
+        type: type,
+      };
+    } catch (error) {
+      return {
+        board: {},
+        message: error.message,
+        type: ALERT_TYPES.DANGER,
+      };
+    }
+  }
+  return { listKanBoards, createKanBoard, updateKanBoard, archiveKanBoard, readKanBoard };
 }
