@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
 import React, { useId, useState } from "react";
-import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from "../../../controller/TasksController";
+import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from "../../../presentation/TasksController";
 import { Show } from "../../../../../shared/components/custom/Show";
 import BS5Modal, { MODAL_SIZES } from "../../../../../shared/components/bs5/BS5Modal";
+import { TaskDto } from "../../../application/dto/TaskDto";
 
 /**
  * ArchiveTaskButton Component
@@ -10,12 +11,12 @@ import BS5Modal, { MODAL_SIZES } from "../../../../../shared/components/bs5/BS5M
  * This component renders a button that, when clicked, opens a modal to confirm the archiving of a task.
  *
  * @param {Object} props - The props object.
- * @param {string} props.taskId - The task id to be archived.
+ * @param {TaskDto} props.task - The task id to be archived.
  * @param {boolean} props.isArchived - The task id to be archived.
  *
  * @returns {JSX.Element} The rendered component.
  */
-export default function ArchiveTaskButton({ taskId, isArchived }) {
+export default function ArchiveTaskButton({ task, isArchived }) {
   const { dispatch } = useTasksControllerContext();
   const modalId = useId();
   const [archiveModal, setArchiveModal] = useState(false);
@@ -36,7 +37,7 @@ export default function ArchiveTaskButton({ taskId, isArchived }) {
 
   const archiveTask = () => {
     const archived = isArchived === true ? false : true;
-    const payload = { id: taskId, archived: archived };
+    const payload = { ...task.toJson(), archived: archived };
     dispatch({ type: TASKS_CONTROLLER_ACTIONS.ARCHIVE, payload: payload });
     hideArchiveModal();
   };

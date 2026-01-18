@@ -1,28 +1,41 @@
 import React, { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { ALERT_ACTIONS, ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
-import useHelpers from "../../../shared/helpers/useHelpers";
-import TasksService from "../service/TasksService";
-import FilesService from "../../../shared/service/FilesService";
+import TasksService from "../application/service/TasksService";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
+import { TaskDto } from "../application/dto/TaskDto";
+import { AssigneeDto } from "../application/dto/AssigneeDto";
+import { ReporterDto } from "../application/dto/RepoterDto";
 
-/**
- * @typedef {Array<import("../../../types/types").Task>} Tasks - State for tasks.
- */
 
 /**
  * @typedef {Object} InitialState
- * @property {import("../../../types/types").Task | Object} task - The current task.
+ * @property {TaskDto} task - The current task.
  * @property {import("../../../types/types").ListTasks} tasks - The list of tasks.
 
  */
+
+const initialTaskDto = new TaskDto(
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  new AssigneeDto(null, null),
+  new ReporterDto(null, null),
+  null,
+  null,
+  null,
+);
 
 /**
  * Initial state for the tasks controller.
  * @type {InitialState}
  */
 const initialState = {
-  task: {},
+  task: initialTaskDto,
   tasks: { tasks: [], total: 0, pages: 0 },
 };
 
@@ -48,7 +61,7 @@ export const TASKS_CONTROLLER_ACTIONS = {
   UPLOAD_TEMP_IMAGE: "UPLOAD_TEMP_IMAGE",
   DOWNLOAD_TASK: "DOWNLOAD_TASK",
   SEARCH_TASKS_BY_SEARCH_TERM: "SEARCH_TASKS_BY_SEARCH_TERM",
-  SET_NOTIFICATION: "SET_NOTIFICATION"
+  SET_NOTIFICATION: "SET_NOTIFICATION",
 };
 
 /**
@@ -62,7 +75,7 @@ const tasksControllerContext = createContext(
   /** @type {ContextValue} */ ({
     state: initialState,
     dispatch: () => {},
-  })
+  }),
 );
 
 /**
@@ -83,21 +96,12 @@ export function useTasksControllerContext() {
  * @returns {JSX.Element} The TasksController component.
  */
 export default function TasksController() {
-  const {
-    createTask,
-    listTasks,
-    updateTask,
-    readTask,
-    archiveTask,
-    deleteTask,
-    listTasksBySearchTerm,
-  } = TasksService();
+  const { createTask, getTasks, updateTask, readTask, archiveTask, deleteTask, listTasksBySearchTerm, downloadTask } =
+    TasksService();
 
-  const { convertHtmlToDocx } = FilesService();
-  const { getCurrentPageNumber } = useHelpers();
+  // const { getCurrentPageNumber } = useHelpers();
   const navigate = useNavigate();
 
-  
   const REDUCER_ACTIONS = {
     SET_TASKS: "SET_TASKS", //Action type for setting multiple task's.
     SET_TASK: "SET_TASK", //Action type for setting a task.
@@ -142,7 +146,7 @@ export default function TasksController() {
     notificationObserver.addData(object);
   }
 
-   /**
+  /**
    * Sets error to the state and dispatches notification.
    * @param {Error} error - The error object.
    */
@@ -198,12 +202,7 @@ export default function TasksController() {
    */
   async function collectListTasks() {
     try {
-      //get currentPageNumber
-      const currentPage = getCurrentPageNumber();
-      //create Payload
-      const payload = { currentPage: currentPage };
-
-      const tasks = await listTasks(payload);
+      const tasks = await getTasks();
       setNotificationToState(tasks);
 
       // Update state with the created task response
@@ -214,7 +213,7 @@ export default function TasksController() {
 
       dispatchAction({
         type: REDUCER_ACTIONS.SET_TASK,
-        payload: {},
+        payload: initialTaskDto,
       });
     } catch (error) {
       setErrorToState(error);
@@ -232,14 +231,14 @@ export default function TasksController() {
       // Update state with the created task response
       setNotificationToState(tbuTask);
 
-      // get the updated task content
-      const results = await readTask(payload.id);
+      // // get the updated task content
+      // const results = await readTask(payload.id);
 
-      // set taskt to state;
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_TASK,
-        payload: results.task,
-      });
+      // // set taskt to state;
+      // dispatchAction({
+      //   type: REDUCER_ACTIONS.SET_TASK,
+      //   payload: results.task,
+      // });
     } catch (error) {
       setErrorToState(error);
     }
@@ -267,9 +266,9 @@ export default function TasksController() {
     }
   }
 
-  /**
+  /** //TODO MAKE PASS ENTIRE TASK
    *
-   * @param {{id: string, archived: boolean}} payload
+   * @param {import("../../../types/types").Task} payload
    */
   async function collectArchiveTask(payload) {
     try {
@@ -310,7 +309,7 @@ export default function TasksController() {
    */
   async function collectDownloadTask(payload) {
     try {
-      const downloaded = await convertHtmlToDocx(payload);
+      const downloaded = await downloadTask(payload);
       setNotificationToState(downloaded);
     } catch (error) {
       setErrorToState(error);
@@ -323,12 +322,7 @@ export default function TasksController() {
    */
   async function collectListTasksBySearchTerm(searchTearm) {
     try {
-      //get currentPageNumber
-      const currentPage = getCurrentPageNumber();
-      //create Payload
-      const payload = { currentPage: currentPage, searchTearm: searchTearm };
-
-      const tasks = await listTasksBySearchTerm(payload);
+      const tasks = await listTasksBySearchTerm(searchTearm);
       setNotificationToState(tasks);
 
       // Update state with the created task response
@@ -347,11 +341,8 @@ export default function TasksController() {
    * @returns {Promise<void>} - A Promise that resolves when the operation is completed.
    */
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  async function dispatch(
-    /** @type {{ type: string; payload?: any; }} */ action
-  ) {
+  async function dispatch(/** @type {{ type: string; payload?: any; }} */ action) {
     try {
-
       // Handle different action types
       switch (action.type) {
         case TASKS_CONTROLLER_ACTIONS.CREATE:
@@ -391,7 +382,7 @@ export default function TasksController() {
     } catch (error) {
       setErrorToState(error);
       console.log(`TasksController: error ${error}`);
-    } 
+    }
   }
 
   /** @returns {ContextValue} */
@@ -400,7 +391,7 @@ export default function TasksController() {
       state,
       dispatch,
     }),
-    [state, dispatch]
+    [state, dispatch],
   );
   return (
     <tasksControllerContext.Provider value={contextValue}>

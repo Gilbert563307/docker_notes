@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../features/kanboard/controller/TasksController';
+import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../features/kanboard/presentation/TasksController';
 import { useForm } from 'react-hook-form';
 import { TASKS_PRIORITY, TASKS_STATUS } from '../../config';
 import "./css/CollectCreateTask.css";

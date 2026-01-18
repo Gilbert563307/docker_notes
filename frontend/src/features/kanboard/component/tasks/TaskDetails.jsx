@@ -2,12 +2,13 @@
 import React from 'react'
 import StatusButtonComponent from '../../../../shared/components/custom/StatusButtonComponent'
 import PriorityButtonComponent from '../../../../shared/components/custom/PriorityButtonComponent'
+import { TaskDto } from '../../application/dto/TaskDto'
 
 /**
  * TaskDetails component displays detailed information about a task.
  * 
  * @param {Object} props - The component props.
- * @param {import("../../../../types/types").Task} props.task - The task object containing task details.
+ * @param {TaskDto} props.task - The task object containing task details.
  * @param {import("../../../../types/types").customFieldsPayload} props.customFields - The task object containing task details.
  * @param {function} props.setStatus - Callback function to update the task status.
  * @param {function} props.setPriority - Callback function to update the task priority.
@@ -23,15 +24,15 @@ export default function TaskDetails({ task, customFields, setStatus, setPriority
             <div className="details-table">
                 <div className="details-div">
                     <p className="fw-medium">Project</p>
-                    <p>{task?.project_id}</p>
+                    <p>{task?.getProjectId()}</p>
                 </div>
                 <div className="details-div">
                     <p className="fw-medium">Assignee</p>
-                    <p>{task?.assignee.name}</p>
+                    <p>{task?.getAssigneeName()}</p>
                 </div>
                 <div className="details-div">
                     <p className="fw-medium">Reporter</p>
-                    <p>{task?.reporter.name}</p>
+                    <p>{task?.getReporterName()}</p>
                 </div>
                 <div className="details-div">
                     <p className="fw-medium">Status</p>

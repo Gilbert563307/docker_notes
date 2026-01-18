@@ -1,7 +1,7 @@
 import { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet } from "react-router-dom";
 import { ALERT_ACTIONS, ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
-import TasksService from "../service/TasksService";
+import TasksService from "../application/service/TasksService";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
 
 /**

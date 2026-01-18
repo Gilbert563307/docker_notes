@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import {
   KAN_BOARDS_CONTROLLER_ACTIONS,
   useKanBoardsControllerContext,
-} from "../../features/kanboard/controller/KanBoardsController";
+} from "../../features/kanboard/presentation/KanBoardsController";
 
 export default function useGetKanBoardByIdHook() {
   const { kanBoardId } = useParams();

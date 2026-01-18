@@ -1,4 +1,5 @@
-import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../features/kanboard/controller/TasksController';
+import { TaskDto } from '../../features/kanboard/application/dto/TaskDto';
+import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../features/kanboard/presentation/TasksController';
 import usePaginationHook from './usePaginationHook';
 
 /**
@@ -7,7 +8,7 @@ import usePaginationHook from './usePaginationHook';
  * This hook interacts with the TasksController context to fetch and manage the list of tasks.
  * It automatically fetches tasks when the component mounts and provides the current list of tasks.
  *
- * @returns {{tasks: import("../../types/types").Tasks, totalTasks: number, totalPages: number}} tasks - The array of tasks from the state.
+ * @returns {{tasks: Array<TaskDto>, totalTasks: number, totalPages: number}} tasks - The array of tasks from the state.
  */
 export default function useGetTasksHook() {
     const { state, dispatch } = useTasksControllerContext();

@@ -1,5 +1,4 @@
-import React from "react";
-import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
+import { ALERT_TYPES } from "../../../../shared/components/bs5/BS5Alert";
 import {
   DEFAULT_PROJECT_ID,
   DEFAULT_TASKS_ARCHIVE,
@@ -10,17 +9,21 @@ import {
   TASKS_PATH,
   TASKS_PRIORITY,
   TASKS_STATUS,
-} from "../../../config";
-import { useAuthProvider } from "../../../shared/context/AuthProvider";
-import useHelpers from "../../../shared/helpers/useHelpers";
-import FirebaseInterface from "../../../shared/data/FirebaseInterface";
-import { Task } from "../model/Task";
-import { Assignee } from "../model/Assignee";
-import { Reporter } from "../model/Reporter";
+} from "../../../../config";
+import { useAuthProvider } from "../../../../shared/context/AuthProvider";
+import useHelpers from "../../../../shared/helpers/useHelpers";
+import FirebaseInterface from "../../../../shared/data/FirebaseInterface";
+import { Task } from "../../domain/Task";
+import { Assignee } from "../../domain/Assignee";
+import { Reporter } from "../../domain/Reporter";
+import { TasksMapper } from "../mapper/TasksMapper";
+import { TaskDto } from "../dto/TaskDto";
+import FilesService from "../../../../shared/service/FilesService";
 
 export default function TasksService() {
   const { user } = useAuthProvider();
-  const { getSessionFilter, getHowManyFiltersAreActiveByCurrentPath } = useHelpers();
+  const { getSessionFilter, getHowManyFiltersAreActiveByCurrentPath, getCurrentPageNumber } = useHelpers();
+  const { convertHtmlToDocx } = FilesService();
 
   const {
     collectionRef,
@@ -50,7 +53,7 @@ export default function TasksService() {
   /**
    * Creates a new task with default values if not provided in the payload.
    *
-   * @param {import("../../../types/types").createTaskPayload} payload - Task details provided by the user.
+   * @param {import("../../../../types/types").createTaskPayload} payload - Task details provided by the user.
    * @returns {Promise<{created: boolean, message: string, type: number}>} - The result of task creation.
    */
   const createTask = async (payload) => {
@@ -65,15 +68,15 @@ export default function TasksService() {
         payload.description || "",
         payload.status || TASKS_STATUS.TODO,
         payload.priority || TASKS_PRIORITY.LOW,
-        payload.assignee || new Assignee(user.displayName, user.uid).toCreateObject(),
-        payload.reporter || new Reporter(user.displayName, user.uid).toCreateObject(),
+        payload.assignee || new Assignee(user.displayName, user.uid).toJson(),
+        payload.reporter || new Reporter(user.displayName, user.uid).toJson(),
         false,
         currentServerTimestamp,
         currentServerTimestamp,
       );
-     
+
       // Attempt to add the document to the collection
-      const created = await addDoc(collectionRef, task.toCreateObject());
+      const created = await addDoc(collectionRef, task.toJsonWithoutId());
 
       // Return success message if task creation was successful
       return {
@@ -82,7 +85,6 @@ export default function TasksService() {
         type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {
-      console.log(`[createTask]: ${error.message}`);
       // Return error message in case of failure
       return {
         created: false,
@@ -113,7 +115,6 @@ export default function TasksService() {
 
       return totalRecords;
     } catch (error) {
-      console.log(`[getTotalTasksInDatabaseByUserAndFilters]: ${error.message}`);
       return 0;
     }
   };
@@ -288,14 +289,17 @@ export default function TasksService() {
 
   /**
    *
-   * @param {{currentPage: number, searchTearm: string}} payload
-   * @returns {Promise<{results: import("../../../types/types").ListTasks | {},  message: string, type: number }>}
+   * @param {string} searchTearm
+   * @returns {Promise<{results: import("../../../../types/types").ListTasks | {},  message: string, type: number }>}
    */
-  const listTasksBySearchTerm = async (payload) => {
+  const listTasksBySearchTerm = async (searchTearm) => {
     try {
+      //get currentPageNumber
+      const currentPage = getCurrentPageNumber();
+      //create Payload
+      const payload = { currentPage: currentPage, searchTearm: searchTearm };
       return await listTasks(payload);
     } catch (error) {
-      console.log(`[listTasksBySearchTerm]: ${error.message}`);
       return {
         results: { tasks: [], total: 0, pages: 0 },
         message: error.message,
@@ -311,7 +315,7 @@ export default function TasksService() {
    * with a limit on the number of items per page. It includes the document ID in the task data and handles
    * potential errors during the fetch process.
    * @param {{ currentPage: number, itemsPerPage?: number, searchTearm?: string}} payload
-   * @returns {Promise<{results: import("../../../types/types").ListTasks | {},  message: string, type: number }>} A promise that resolves to an object containing the fetched tasks, a message, and an alert type.
+   * @returns {Promise<{results: import("../../../../types/types").ListTasks | {},  message: string, type: number }>} A promise that resolves to an object containing the fetched tasks, a message, and an alert type.
    */
   const listTasks = async (payload) => {
     try {
@@ -322,6 +326,7 @@ export default function TasksService() {
       const querySnapshot = await getDocs(resultsQuery);
 
       const { results } = convertQuerySnapShotDocs(querySnapshot);
+      const tasksDto = TasksMapper.arrayToDtoList(results);
 
       //get total records for pagination
       const totalRecords = await getTotalTasksInDatabaseByUserAndFilters();
@@ -329,12 +334,11 @@ export default function TasksService() {
       const totalPages = getTotalPages(totalRecords);
       //return results
       return {
-        results: { tasks: results, total: totalRecords, pages: totalPages },
+        results: { tasks: tasksDto, total: totalRecords, pages: totalPages },
         message: "",
         type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {
-      console.log(`[listTasks]: ${error.message}`);
       return {
         results: { tasks: [], total: 0, pages: 0 },
         message: error.message,
@@ -345,7 +349,7 @@ export default function TasksService() {
 
   /**
    * @param {{boardId: string}} payload
-   * @returns {Promise<{tasks: import("../../../types/types").Tasks, message: string, type: number}>}
+   * @returns {Promise<{tasks: Array<TaskDto>, message: string, type: number}>}
    */
   const listBoardTasks = async (payload) => {
     try {
@@ -368,13 +372,14 @@ export default function TasksService() {
       const querySnapshot = await getDocs(tasksQuery);
 
       const { results, message, type } = convertQuerySnapShotDocs(querySnapshot);
+      const tasksDto = TasksMapper.arrayToDtoList(results);
+
       return {
-        tasks: results,
+        tasks: tasksDto,
         message: message,
         type: type,
       };
     } catch (error) {
-      console.log(`[listBoardTasks]: ${error.message}`);
       return {
         tasks: [],
         message: error.message,
@@ -385,27 +390,41 @@ export default function TasksService() {
 
   /**
    *
-   * @param {import("../../../types/types").Task} payload
+   * @param {import("../../../../types/types").Task} payload
    * @returns {Promise<{ updated: boolean, message: string, type: number }>}
    */
   const updateTask = async (payload) => {
     try {
-      //manualy updated the updated_at
-      const updatedPayload = { ...payload, updated_at: currentServerTimestamp };
+      const task = new Task(
+        payload.id,
+        payload.project_id,
+        payload.user_uid,
+        payload.title,
+        payload.description,
+        payload.status,
+        payload.priority,
+        new Assignee(payload.assignee.name, payload.assignee.assignee_id),
+        new Reporter(payload.reporter.name, payload.reporter.assignee_id),
+        payload.archived,
+        payload.created_at,
+        payload.updated_at,
+      );
 
-      //get document
-      const task = doc(db, table, payload.id);
+      // //manualy updated the updated_at
+      task.update({ ...payload, updated_at: currentServerTimestamp });
 
-      //update document
-      await updateDoc(task, updatedPayload);
+      // //get document
+      const taskDocument = doc(db, table, payload.id);
+
+      // //update document
+      await updateDoc(taskDocument, task.toJson());
 
       return {
         updated: true,
-        message: "Your task has been succesfully been updated",
+        message: "Your task has been successfully been updated",
         type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {
-      console.log(`[updateTask]: ${error.message}`);
       return {
         updated: false,
         message: error.message,
@@ -417,21 +436,21 @@ export default function TasksService() {
   /**
    * Fetches a task from the database by its ID.
    * @param {string} taskId
-   * @returns {Promise<{task: import("../../../types/types").Task | {}, message: string, type: number}>}
+   * @returns {Promise<{task: TaskDto | Object, message: string, type: number}>}
    */
   const readTask = async (taskId) => {
     try {
       const { document, message, type } = await getDocument(taskId);
+      const taskDto = TasksMapper.toDto(document);
       return {
-        task: document,
+        task: taskDto,
         message: message,
         type: type,
       };
     } catch (error) {
       // Return an error response if the fetch operation fails
-      console.log(`[readTask]: ${error.message}`);
       return {
-        task: {},
+        task: undefined,
         message: error.message,
         type: ALERT_TYPES.DANGER,
       };
@@ -441,7 +460,7 @@ export default function TasksService() {
   /**
    * Archives a task by its ID.
    *
-   * @param {{id: string, archived: boolean}} payload - The ID of the task to be archived.
+   * @param {import("../../../../types/types").Task} payload - The ID of the task to be archived.
    * @returns {Promise<{ archived: boolean, message: string, type: number }>} - A promise that resolves to an object indicating the result of the archiving process.
    */
   const archiveTask = async (payload) => {
@@ -456,7 +475,6 @@ export default function TasksService() {
       };
     } catch (error) {
       // Return an error response if the update operation fails
-      console.log(`[archiveTask]: ${error.message}`);
       return {
         archived: false,
         message: error.message,
@@ -480,7 +498,6 @@ export default function TasksService() {
         type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {
-      console.log(`[deleteTask]: ${error.message}`);
       return {
         deleted: false,
         message: error.message,
@@ -489,14 +506,27 @@ export default function TasksService() {
     }
   }
 
+  /**
+   *
+   * @param {{description: string, filename: string}} payload
+   */
+  async function downloadTask(payload) {
+    return await convertHtmlToDocx(payload);
+  }
+
+  async function getTasks() {
+    return await listTasks({ currentPage: getCurrentPageNumber() });
+  }
+
   return {
     createTask,
-    listTasks,
+    getTasks,
     updateTask,
     readTask,
     archiveTask,
     deleteTask,
     listBoardTasks,
     listTasksBySearchTerm,
+    downloadTask,
   };
 }

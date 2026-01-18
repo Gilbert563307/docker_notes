@@ -1,32 +1,19 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./css/CollectReadTask.css";
 import useHtmlCssHelpers from "../../shared/helpers/useHtmlCssHelpers";
 import QuilTextEditor from "../../shared/components/texteditor/component/QuilTextEditor";
-
+import useGetTaskHook from "../../shared/hooks/useGetTaskHook";
 
 export default function CollectReadTask() {
-  let { state } = useLocation();
+  const { task, state } = useGetTaskHook();
 
   const { getStatusButton } = useHtmlCssHelpers();
-
-  if (state === null || state === undefined) {
-    return (
-      <>
-        <p>No task found</p>
-      </>
-    );
-  }
-
-  /**
-   * @type {import("../../types/types").Task}
-   */
-  const task = state?.task;
 
   return (
     <article className="read-task">
       <div className="read-task-title-div">
-        <p className="fs-1 task-title">{task.title}</p>
+        <p className="fs-1 task-title">{task.getTitle()}</p>
       </div>
       <div className="read-task-div">
         <div className="read-task-description-parent">
@@ -34,19 +21,18 @@ export default function CollectReadTask() {
             <label htmlFor="description" className="form-label ms-2">
               Description
             </label>
-            <QuilTextEditor content={task.description} readOnly={true} />
+            <QuilTextEditor content={task.getDescription()} readOnly={true} />
           </div>
         </div>
         <div>
           <div className="read-task-actions">
-            <div>{getStatusButton(task.status)}</div>
+            <div>{getStatusButton(task.getStatus())}</div>
             <div>
-              <Link to={`/tasks/update/${task.id}`}>
+              <Link to={`/tasks/update/${task.getId()}`}>
                 <i className="fa-sharp fa-light fa-pencil"></i> Change
               </Link>
             </div>
           </div>
-
 
           <div className="tasks-deatils-div border rounded">
             <div className="tasks-deatils-div-details-header">
@@ -57,15 +43,15 @@ export default function CollectReadTask() {
             <div className="details-table">
               <div className="details-div">
                 <p className="fw-medium">Project</p>
-                <p>{task.project_id}</p>
+                <p>{task.getProjectId()}</p>
               </div>
               <div className="details-div">
                 <p className="fw-medium">Assignee</p>
-                <p>{task.assignee.name}</p>
+                <p>{task.getAssigneeName()}</p>
               </div>
               <div className="details-div">
                 <p className="fw-medium">Reporter</p>
-                <p>{task.reporter.name}</p>
+                <p>{task.getReporterName()}</p>
               </div>
             </div>
           </div>
@@ -77,9 +63,7 @@ export default function CollectReadTask() {
               {/* think bout what to show of the tasks */}
               {/* <span className="badge dialogic-badge">Comments</span> */}
             </div>
-            <div>
-
-            </div>
+            <div></div>
           </div>
         </div>
       </div>

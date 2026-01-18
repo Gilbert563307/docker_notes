@@ -1,4 +1,5 @@
 import React from 'react'
+import { TaskDto } from '../features/kanboard/application/dto/TaskDto';
 /**
  * @typedef {Object} Notification
  * @property {string} message 
@@ -42,8 +43,8 @@ import React from 'react'
  * @property {Assignee} assignee - The assignee of the task with name and unique identifier.
  * @property {Reporter} reporter - The reporter of the task with name and unique identifier.
  * @property {Boolean} archived - The archived status.
- * @property {number} created_at - The timestamp when the task was created.
- * @property {number} updated_at - The timestamp when the task was last updated.
+ * @property {Date} created_at - The timestamp when the task was created.
+ * @property {Date} updated_at - The timestamp when the task was last updated.
  */
 
 /**
@@ -57,8 +58,8 @@ import React from 'react'
  * @property {Assignee} [assignee] - The assignee of the task with name and unique identifier.
  * @property {Reporter} [reporter] - The reporter of the task with name and unique identifier.
  * @property {Boolean} [archived] - The archived status.
- * @property {number} [created_at] - The timestamp when the task was created.
- * @property {number} [updated_at] - The timestamp when the task was last updated.
+ * @property {Date} [created_at] - The timestamp when the task was created.
+ * @property {Date} [updated_at] - The timestamp when the task was last updated.
  */
 
 /**
@@ -77,7 +78,7 @@ import React from 'react'
 /**
  * 
  * @typedef {Object} ListTasks
- * @property {Tasks} tasks
+ * @property {Array<TaskDto>} tasks
  * @property {number} total
  * @property {number} pages
  */

@@ -206,7 +206,6 @@ export default function FilesService() {
   async function convertHtmlToDocx(payload) {
     try {
       const { description, filename } = payload;
-      console.log(payload)
 
       const data = await asBlob(description);
       const blob = new Blob([data], {

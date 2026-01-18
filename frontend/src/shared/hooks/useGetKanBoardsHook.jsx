@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { KAN_BOARDS_CONTROLLER_ACTIONS, useKanBoardsControllerContext } from "../../features/kanboard/controller/KanBoardsController";
+import { KAN_BOARDS_CONTROLLER_ACTIONS, useKanBoardsControllerContext } from "../../features/kanboard/presentation/KanBoardsController";
 
 
 export default function useGetKanBoardsHook() {

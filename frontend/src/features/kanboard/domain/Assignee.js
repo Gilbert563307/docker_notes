@@ -13,7 +13,7 @@ export class Assignee {
   }
 
 
-  toCreateObject(){
+  toJson(){
     return {
       name: this.getName(),
       assignee_id: this.getAssigneeId()

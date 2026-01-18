@@ -1,6 +1,6 @@
-import { MAX_KAN_BOARDS } from "../../../config";
-import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
-import FirebaseInterface from "../../../shared/data/FirebaseInterface";
+import { MAX_KAN_BOARDS } from "../../../../config";
+import { ALERT_TYPES } from "../../../../shared/components/bs5/BS5Alert";
+import FirebaseInterface from "../../../../shared/data/FirebaseInterface";
 
 export default function KanBoardsService() {
   const {
@@ -89,7 +89,7 @@ export default function KanBoardsService() {
 
   /**
    *
-   * @param {import("../../../types/types").Board} payload
+   * @param {import("../../../../types/types").Board} payload
    * @returns {Promise<{ updated: boolean, message: string, type: number }>}
    */
   async function updateKanBoard(payload) {
@@ -120,7 +120,7 @@ export default function KanBoardsService() {
 
   /**
    *
-   * @returns {Promise<{ results: Array<import("../../../types/types").Board>, message: string, type: number }>}
+   * @returns {Promise<{ results: Array<import("../../../../types/types").Board>, message: string, type: number }>}
    */
   async function listKanBoards() {
     try {
@@ -182,7 +182,7 @@ export default function KanBoardsService() {
   /**
    *
    * @param {string} id
-   * @returns {Promise<{board: import("../../../types/types").Board, message: string, type: number}>}
+   * @returns {Promise<{board: import("../../../../types/types").Board, message: string, type: number}>}
    */
   async function readKanBoard(id) {
     try {

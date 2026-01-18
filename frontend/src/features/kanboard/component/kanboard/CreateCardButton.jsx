@@ -4,7 +4,7 @@ import BS5Modal, { MODAL_SIZES } from "../../../../shared/components/bs5/BS5Moda
 import {
   BOARD_CONTROLLER_ACTIONS,
   useBoardsControllerContext,
-} from "../../controller/BoardsController";
+} from "../../presentation/BoardsController";
 import { ALERT_TYPES } from "../../../../shared/components/bs5/BS5Alert";
 import { useParams } from "react-router-dom";
 

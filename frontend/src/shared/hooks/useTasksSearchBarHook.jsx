@@ -2,7 +2,7 @@ import React from "react";
 import {
   TASKS_CONTROLLER_ACTIONS,
   useTasksControllerContext,
-} from "../../features/kanboard/controller/TasksController";
+} from "../../features/kanboard/presentation/TasksController";
 import { useDebounce } from "use-debounce";
 import { DEBOUNCE_SECONDS } from "../../config";
 

@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import {
   BOARD_CONTROLLER_ACTIONS,
   useBoardsControllerContext,
-} from "../../features/kanboard/controller/BoardsController";
+} from "../../features/kanboard/presentation/BoardsController";
 
 /**
  *

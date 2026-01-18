@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
-import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../features/kanboard/controller/TasksController';
+import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../features/kanboard/presentation/TasksController';
 import { useParams } from 'react-router-dom';
+import { TaskDto } from '../../features/kanboard/application/dto/TaskDto';
 
 /**
  * Custom hook to fetch and access task data by ID from the TasksController context.
  *
- * @returns {{ task: import("../../types/types").Task,  dispatch: Function }}
+ * @returns {{ task: TaskDto,  dispatch: Function }}
  *   - An object containing the fetched task data or undefined if the task ID is missing or not found.
  *   - The dispatch function from the TasksController context.
  */
@@ -23,5 +24,5 @@ export default function useGetTaskHook() {
     fetchTaskById(taskId);
   }, [taskId]);
 
-  return { task: state?.task, dispatch };
+  return { task: state?.task, dispatch, state: state };
 }

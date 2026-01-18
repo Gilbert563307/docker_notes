@@ -1,17 +1,18 @@
 /* eslint-disable react/prop-types */
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import TaskDetails from "./TaskDetails";
 import DeleteTaskButton from "./buttons/DeleteTaskButton";
 import "../../css/UpdateTaskComponent.css";
-import { TASKS_CONTROLLER_ACTIONS } from "../../controller/TasksController";
+import { TASKS_CONTROLLER_ACTIONS } from "../../presentation/TasksController";
 import { ALERT_TYPES } from "../../../../shared/components/bs5/BS5Alert";
 import QuilTextEditor from "../../../../shared/components/texteditor/component/QuilTextEditor";
+import { TaskDto } from "../../application/dto/TaskDto";
 
 /**
  *
  * @param {object} props
- * @param {import("../../../../types/types").Task} props.task
+ * @param {TaskDto} props.task
  * @param {Function} props.dispatch
  * @returns {JSX.Element}
  */
@@ -24,10 +25,11 @@ export default function UpdateTaskComponent({ task, dispatch }) {
    * @type {[customFieldsPayload, React.Dispatch<React.SetStateAction<customFieldsPayload>>]}
    */
   const [customFields, setCustomFields] = useState({
-    status: task?.status ?? 0, // Provide default values based on your type
-    priority: task?.priority ?? 0, // Adjust to fit your type constraints
-    description: task?.description ?? "",
+    status: 0,
+    priority: 0,
+    description: "",
   });
+
   /**
    *
    * @param {string} field
@@ -56,13 +58,9 @@ export default function UpdateTaskComponent({ task, dispatch }) {
   const {
     register,
     handleSubmit,
-    setError,
+    reset,
     formState: { errors },
-  } = useForm({
-    defaultValues: {
-      title: task.title,
-    },
-  });
+  } = useForm({});
 
   const onSubmit = (data) => {
     //TODO NOT NECESSARY
@@ -71,7 +69,7 @@ export default function UpdateTaskComponent({ task, dispatch }) {
     //     return;
     // }
 
-    const newPayload = { ...task, ...data, ...customFields };
+    const newPayload = { ...task.toJson(), ...data, ...customFields };
     dispatch({ type: TASKS_CONTROLLER_ACTIONS.UPDATE, payload: newPayload });
   };
 
@@ -85,25 +83,33 @@ export default function UpdateTaskComponent({ task, dispatch }) {
         },
       });
     }
-    const localDateString = new Date()
-      .toLocaleDateString()
-      .replaceAll("/", "_");
+    const localDateString = new Date().toLocaleDateString().replaceAll("/", "_");
     dispatch({
       type: TASKS_CONTROLLER_ACTIONS.DOWNLOAD_TASK,
       payload: {
         description: customFields.description,
-        filename: `${task.title}_${task.assignee.name}_${localDateString}`,
+        filename: `${task.getTitle()}_${task.getAssigneeName()}_${localDateString}`,
       },
     });
   };
+
+  useEffect(() => {
+    reset({
+      title: task.getTitle(),
+    });
+    setCustomFields({
+      status: task.getStatus(),
+      priority: task?.getPriority(),
+      description: task?.getDescription(),
+    });
+  }, [task]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <article className="read-task">
         <div className="read-task-title-div update-task-title-div">
           <input
-            className={`form-control fs-1 task-title update-task-title ${
-              errors.title ? "is-invalid" : ""
-            }`}
+            className={`form-control fs-1 task-title update-task-title ${errors.title ? "is-invalid" : ""}`}
             maxLength={255}
             {...register("title", {
               required: "The title cannot be empty",
@@ -118,11 +124,7 @@ export default function UpdateTaskComponent({ task, dispatch }) {
               },
             })}
           />
-          {errors.title && (
-            <div className="invalid-feedback d-block">
-              {errors.title.message}
-            </div>
-          )}
+          {errors.title && <div className="invalid-feedback d-block">{errors.title.message}</div>}
         </div>
         <div className="read-task-div">
           <div className="read-task-description-parent">
@@ -131,15 +133,9 @@ export default function UpdateTaskComponent({ task, dispatch }) {
             </label>
             <QuilTextEditor
               content={customFields.description}
-              saveText={(value) =>
-                handleCustomFieldChange("description", value)
-              }
+              saveText={(value) => handleCustomFieldChange("description", value)}
             />
-            {errors.description && (
-              <div className="invalid-feedback d-block">
-                {errors.description.message}
-              </div>
-            )}
+            {errors.description && <div className="invalid-feedback d-block">{errors.description.message}</div>}
           </div>
           <div className="update-task-grid-2">
             <div className="update-task-grid-buttons">
@@ -163,15 +159,10 @@ export default function UpdateTaskComponent({ task, dispatch }) {
                 </button>
               </div>
 
-              <DeleteTaskButton taskId={task.id} />
+              <DeleteTaskButton taskId={task.getId()} />
             </div>
 
-            <TaskDetails
-              task={task}
-              customFields={customFields}
-              setStatus={setStatus}
-              setPriority={setPriority}
-            />
+            <TaskDetails task={task} customFields={customFields} setStatus={setStatus} setPriority={setPriority} />
           </div>
         </div>
       </article>

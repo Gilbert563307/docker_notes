@@ -1,6 +1,6 @@
 import { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import KanBoardsService from "../service/KanBoardsService";
+import KanBoardsService from "../application/service/KanBoardsService";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
 import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
 

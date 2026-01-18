@@ -4,13 +4,14 @@ import TasksTableRow from './TasksTableRow'
 import "../../css/TasksTable.css";
 import { Link } from 'react-router-dom';
 import { Show } from '../../../../shared/components/custom/Show';
+import { TaskDto } from '../../application/dto/TaskDto';
 
 
 /**
  * Component representing a table of tasks.
  * 
  * @param {Object} props - The properties object.
- * @param {import("../../../../types/types").Task[]} props.tasks - The array of tasks to display.
+ * @param {Array<TaskDto>} props.tasks - The array of tasks to display.
  * @returns {JSX.Element} The rendered TasksTable component.
  */
 export default function TasksTable({ tasks }) {
@@ -51,7 +52,7 @@ export default function TasksTable({ tasks }) {
                         </thead>
                         <tbody>
                             {tasks && tasks.length > 0 && tasks.map((task, index) => (
-                                <TasksTableRow key={task.id || index} task={task} />
+                                <TasksTableRow key={task.getId() || index} task={task} />
                             ))}
                         </tbody>
                     </table>

@@ -4,7 +4,7 @@ import Column from "../../features/kanboard/component/kanboard/Column";
 import useSetPageTitleHook from "../../shared/hooks/useSetPageTitleHook";
 import useGetBoardTasksHook from "../../shared/hooks/useGetBoardTasksHook";
 import { TASKS_BOARD_HEADERS } from "../../config";
-import { BOARD_CONTROLLER_ACTIONS } from "../../features/kanboard/controller/BoardsController";
+import { BOARD_CONTROLLER_ACTIONS } from "../../features/kanboard/presentation/BoardsController";
 import { useParams } from "react-router-dom";
 /**
  * CollectListBoard component displays a board with columns to organize tasks.

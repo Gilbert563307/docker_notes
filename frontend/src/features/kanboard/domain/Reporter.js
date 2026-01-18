@@ -12,7 +12,7 @@ export class Reporter {
     return this.assignee_id;
   }
 
-  toCreateObject() {
+  toJson() {
     return {
       name: this.getName(),
       assignee_id: this.getAssigneeId(),

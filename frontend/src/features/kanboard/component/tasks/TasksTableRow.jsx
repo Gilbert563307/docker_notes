@@ -5,12 +5,13 @@ import useHtmlCssHelpers from "../../../../shared/helpers/useHtmlCssHelpers";
 import { useAuthProvider } from "../../../../shared/context/AuthProvider";
 import BS5TruncateSpan from "../../../../shared/components/bs5/BS5TruncateSpan";
 import ArchiveTaskButton from "./buttons/ArchiveTaskButton";
+import { TaskDto } from "../../application/dto/TaskDto";
 
 /**
  * Renders a single row in the tasks table.
  *
  * @param {Object} props - The props object.
- * @param {import("../../../../types/types").Task} props.task - The task object.
+ * @param {TaskDto} props.task - The task object.
  * @returns {JSX.Element} A JSX element representing a single row in the tasks table.
  */
 export default function TasksTableRow({ task }) {
@@ -38,10 +39,10 @@ export default function TasksTableRow({ task }) {
   );
 
   // Get status and priority badges
-  const Status = getStatusBadge(task.status);
-  const Priority = getPriorityBadge(task.priority);
+  const Status = getStatusBadge(task.getStatus());
+  const Priority = getPriorityBadge(task.getPriority());
 
-  const readTaskUrl = `/tasks/read/${task.id}`;
+  const readTaskUrl = `/tasks/read/${task.getId()}`;
   return (
     <tr className="tasks-table-row">
       <th scope="row">
@@ -51,15 +52,15 @@ export default function TasksTableRow({ task }) {
       </th>
       <td>
         <BS5TruncateSpan
-          title={task.title}
+          title={task.getTitle()}
           content={
             <Link
               to={readTaskUrl}
               state={{ task: task }}
-              title={task.title}
+              title={task.getTitle()}
               className="read-link"
             >
-              {task.title}
+              {task.getTitle()}
             </Link>
           }
           maxWidthToSet="350px"
@@ -70,8 +71,8 @@ export default function TasksTableRow({ task }) {
       {/* <td>{Assignee}</td> */}
       {/* <td>...</td> */}
       {/* <td>...</td> */}
-      <td>{task.created_at.toLocaleString()}</td>
-      <td>{task.updated_at.toLocaleString()}</td>
+      <td>{task.getCreatedAt()}</td>
+      <td>{task.getUpdatedAt()}</td>
       <td>{Assignee}</td>
       <td className="main-table-actions">
         <button>
@@ -80,11 +81,11 @@ export default function TasksTableRow({ task }) {
           </Link>
         </button>
         <button>
-          <Link to={`/tasks/update/${task.id}`}>
+          <Link to={`/tasks/update/${task.getId()}`}>
             <i className="fa-sharp fa-light fa-pencil"></i>
           </Link>
         </button>
-        <ArchiveTaskButton taskId={task.id} isArchived={task.archived} />
+        <ArchiveTaskButton task={task} isArchived={task.getIsArchived()} />
       </td>
     </tr>
   );

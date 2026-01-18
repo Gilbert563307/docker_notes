@@ -1,6 +1,6 @@
 import React from "react";
 
-import { KAN_BOARDS_CONTROLLER_ACTIONS, useKanBoardsControllerContext } from "../../features/kanboard/controller/KanBoardsController";
+import { KAN_BOARDS_CONTROLLER_ACTIONS, useKanBoardsControllerContext } from "../../features/kanboard/presentation/KanBoardsController";
 import KanboardForm from "../../features/kanboard/component/kanboard/KanBoardForm";
 
 export default function CollectListCreateKanBoard() {

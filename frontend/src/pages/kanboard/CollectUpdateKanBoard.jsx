@@ -1,6 +1,6 @@
 import React from "react";
 import KanBoardForm from "../../features/kanboard/component/kanboard/KanBoardForm";
-import { KAN_BOARDS_CONTROLLER_ACTIONS } from "../../features/kanboard/controller/KanBoardsController";
+import { KAN_BOARDS_CONTROLLER_ACTIONS } from "../../features/kanboard/presentation/KanBoardsController";
 import useGetKanBoardByIdHook from "../../shared/hooks/useGetKanBoardByIdHook";
 
 export default function CollectUpdateKanBoard() {
