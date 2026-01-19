@@ -8,7 +8,7 @@ import { TaskDto } from "../dto/TaskDto.js";
 export class TasksMapper {
   /**
    *
-   * @param {Array<import("../../../../types/types.js").Task>} arrayList
+   * @param {Array<Object>} arrayList
    * @returns {Array<TaskDto>}
    */
   static arrayToDtoList(arrayList) {
@@ -17,7 +17,7 @@ export class TasksMapper {
 
   /**
    *
-   * @param {import("../../../../types/types.js").Task} task
+   * @param {Object} task
    * @returns {TaskDto}
    */
   static toDto(task) {
@@ -41,7 +41,7 @@ export class TasksMapper {
    * @param {TaskDto} taskDto
    * @returns {Task}
    */
-  static fromDtoToEntity(taskDto){
+  static fromDtoToEntity(taskDto) {
     return new Task(
       taskDto.getId(),
       taskDto.getProjectId(),
@@ -49,12 +49,33 @@ export class TasksMapper {
       taskDto.getTitle(),
       taskDto.getDescription(),
       taskDto.getStatus(),
-      taskDto.getPriority,
+      taskDto.getPriority(),
       new Assignee(taskDto.getAssigneeName(), taskDto.getAssigneeId()),
-      new Reporter(taskDto.getReporterName(), taskDto.getReporterId()),
+      new Reporter(taskDto.getAssigneeName(), taskDto.getAssigneeId()),
       taskDto.getIsArchived(),
       taskDto.getCreatedAt(),
       taskDto.getUpdatedAt(),
+    );
+  }
+
+  /**
+   *
+   * @param {Task} task
+   */
+  static fromEntityToDto(task) {
+    return new TaskDto(
+      task.getId(),
+      task.getProjectId(),
+      task.getUserUid(),
+      task.getTitle(),
+      task.getDescription(),
+      task.getStatus(),
+      task.getPriority(),
+      task.getAssignee(),
+      task.getReporter(),
+      task.getIsArchived(),
+      task.getCreatedAt(),
+      task.getUpdatedAt(),
     );
   }
 }

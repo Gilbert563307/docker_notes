@@ -1,4 +1,5 @@
-import { TASKS_PRIORITY, TASKS_STATUS } from "../../../config";
+import { FieldValue } from "firebase/firestore";
+import { DEFAULT_PROJECT_ID, TASKS_PRIORITY, TASKS_STATUS } from "../../../config";
 import { Assignee } from "./Assignee";
 import { Reporter } from "./Reporter";
 
@@ -19,6 +20,21 @@ export class Task {
   #created_at;
   #updated_at;
 
+  /** //TODO fix created_at updated_at dates
+   *
+   * @param {string} id
+   * @param {string} project_id
+   * @param {string} user_uid
+   * @param {string} title
+   * @param {string} description
+   * @param {number} status
+   * @param {number} priority
+   * @param {Assignee} assignee
+   * @param {Reporter} reporter
+   * @param {boolean} archived
+   * @param {FieldValue | Date | string} created_at
+   * @param {FieldValue | Date | string} updated_at
+   */
   constructor(
     id,
     project_id,
@@ -107,8 +123,8 @@ export class Task {
       description: this.#description,
       status: this.#status,
       priority: this.#priority,
-      assignee: this.#assignee,
-      reporter: this.#reporter,
+      assignee: this.#assignee.toJson(),
+      reporter: this.#reporter.toJson(),
       archived: this.#archived,
       created_at: this.#created_at,
       updated_at: this.#updated_at,
@@ -123,32 +139,68 @@ export class Task {
       description: this.#description,
       status: this.#status,
       priority: this.#priority,
-      assignee: this.#assignee,
-      reporter: this.#reporter,
+      assignee: this.#assignee.toJson(),
+      reporter: this.#reporter.toJson(),
       archived: this.#archived,
       created_at: this.#created_at,
       updated_at: this.#updated_at,
     };
   }
 
-  /**
-   * LEFT AS-IS (behavior preserved)
+  /** //TODO fix created_at updated_at dates
+   *
+   * @param {string} project_id
+   * @param {string} user_uid
+   * @param {string} title
+   * @param {string} description
+   * @param {number} status
+   * @param {number} priority
+   * @param {Assignee} assignee
+   * @param {Reporter} reporter
+   * @param {boolean} archived
+   * @param {FieldValue | Date | string} created_at
+   * @param {FieldValue | Date | string} updated_at
    */
-  update(data) {
+  update(
+    project_id,
+    user_uid,
+    title,
+    description,
+    status,
+    priority,
+    assignee,
+    reporter,
+    archived,
+    created_at,
+    updated_at,
+  ) {
+    const id = this.#id;
+    const data = {
+      id,
+      project_id,
+      user_uid,
+      title,
+      description,
+      status,
+      priority,
+      assignee,
+      reporter,
+      archived,
+      created_at,
+      updated_at,
+    };
     this.#validate(data);
-
-    if ("id" in data) this.#id = data.id;
-    if ("project_id" in data) this.#project_id = data.project_id;
-    if ("user_uid" in data) this.#user_uid = data.user_uid;
-    if ("title" in data) this.#title = data.title;
-    if ("description" in data) this.#description = data.description;
-    if ("status" in data) this.#status = data.status;
-    if ("priority" in data) this.#priority = data.priority;
-    if ("assignee" in data) this.#assignee = data.assignee;
-    if ("reporter" in data) this.#reporter = data.reporter;
-    if ("archived" in data) this.#archived = data.archived;
-    if ("created_at" in data) this.#created_at = data.created_at;
-    if ("updated_at" in data) this.#updated_at = data.updated_at;
+    this.#project_id = project_id;
+    this.#user_uid = user_uid;
+    this.#title = title;
+    this.#description = description;
+    this.#status = status;
+    this.#priority = priority;
+    this.#assignee = assignee;
+    this.#reporter = reporter;
+    this.#archived = archived;
+    this.#created_at = created_at;
+    this.#updated_at = updated_at;
   }
 
   #validate(data) {
@@ -158,8 +210,17 @@ export class Task {
       throw new Error("Something went wrong while identifying this task. Please try again.");
     }
 
-    if (project_id === undefined || typeof project_id !== "string") {
-      throw new Error("The project information is missing or invalid. Please select a valid project.");
+    //added because before the migration there are alot of tasks who have the default project id
+    if (this.#isUserOnLocalHost()) {
+      if (project_id === undefined || (project_id !== DEFAULT_PROJECT_ID && typeof project_id !== "string")) {
+        throw new Error(
+          "The project information is missing or invalid. Please select a valid project. If you are on localhost, contact the developer",
+        );
+      }
+    } else {
+      if (project_id === undefined || typeof project_id !== "string") {
+        throw new Error("The project information is missing or invalid. Please select a valid project.");
+      }
     }
 
     if (!user_uid || typeof user_uid !== "string") {
@@ -201,5 +262,12 @@ export class Task {
     if (!created_at || !updated_at) {
       throw new Error("We couldn’t determine when this task was created or updated. Please try again.");
     }
+  }
+
+  #isUserOnLocalHost() {
+    if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+      return true;
+    }
+    return false;
   }
 }

@@ -4,6 +4,7 @@ import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from "../../../pr
 import { Show } from "../../../../../shared/components/custom/Show";
 import BS5Modal, { MODAL_SIZES } from "../../../../../shared/components/bs5/BS5Modal";
 import { TaskDto } from "../../../application/dto/TaskDto";
+import { ArchiveTaskDto } from "../../../presentation/dto/ArchiveTaskDto";
 
 /**
  * ArchiveTaskButton Component
@@ -37,8 +38,7 @@ export default function ArchiveTaskButton({ task, isArchived }) {
 
   const archiveTask = () => {
     const archived = isArchived === true ? false : true;
-    const payload = { ...task.toJson(), archived: archived };
-    dispatch({ type: TASKS_CONTROLLER_ACTIONS.ARCHIVE, payload: payload });
+    dispatch({ type: TASKS_CONTROLLER_ACTIONS.ARCHIVE, payload: new ArchiveTaskDto(task, archived) });
     hideArchiveModal();
   };
 

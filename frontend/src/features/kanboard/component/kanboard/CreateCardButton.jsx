@@ -7,6 +7,7 @@ import {
 } from "../../presentation/BoardsController";
 import { ALERT_TYPES } from "../../../../shared/components/bs5/BS5Alert";
 import { useParams } from "react-router-dom";
+import { CreateTaskDto } from "../../presentation/dto/CreateTaskDto";
 
 export default function CreateCardButton({ header }) {
   const { dispatch } = useBoardsControllerContext();
@@ -32,13 +33,8 @@ export default function CreateCardButton({ header }) {
   };
 
   const createTask = () => {
-    const payload = {
-      title: title,
-      description: "",
-    };
-    if (payload === undefined) return;
-    const updatedPayload = { task: payload, boardId: boardId };
-    dispatch({ type: BOARD_CONTROLLER_ACTIONS.CREATE, payload: updatedPayload });
+    if (title === undefined) return;
+    dispatch({ type: BOARD_CONTROLLER_ACTIONS.CREATE, payload: new CreateTaskDto(title, "", null, null, boardId) });
     hideCreateModal();
   };
 

@@ -6,6 +6,8 @@ import { TaskDto } from "../application/dto/TaskDto";
 import { AssigneeDto } from "../application/dto/AssigneeDto";
 import { ReporterDto } from "../application/dto/RepoterDto";
 import { NotificationDto } from "../../notification/application/dto/NotificationDto";
+import { ArchiveTaskDto } from "./dto/ArchiveTaskDto";
+import { CreateTaskDto } from "./dto/CreateTaskDto";
 
 /**
  * @typedef {Object} InitialState
@@ -159,7 +161,7 @@ export default function TasksController() {
 
   /**
    *
-   * @param {{title: string, description: string,  priority: number }} payload
+   * @param {CreateTaskDto} payload
    */
   async function collectCreateTask(payload) {
     const taskCreated = await createTask(payload);
@@ -234,7 +236,7 @@ export default function TasksController() {
 
   /** //TODO MAKE PASS ENTIRE TASK
    *
-   * @param {TaskDto} payload
+   * @param {ArchiveTaskDto} payload
    */
   async function collectArchiveTask(payload) {
     const tbuArchived = await archiveTask(payload);

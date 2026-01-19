@@ -22,6 +22,8 @@ import FilesService from "../../../../shared/service/FilesService";
 import { NotificationDto } from "../../../notification/application/dto/NotificationDto";
 import { AssigneeDto } from "../dto/AssigneeDto";
 import { ReporterDto } from "../dto/RepoterDto";
+import { ArchiveTaskDto } from "../../presentation/dto/ArchiveTaskDto";
+import { CreateTaskDto } from "../../presentation/dto/CreateTaskDto";
 
 const initialTaskDto = new TaskDto(
   null,
@@ -71,7 +73,7 @@ export default function TasksService() {
   /**
    * Creates a new task with default values if not provided in the payload.
    *
-   * @param {import("../../../../types/types").createTaskPayload} payload - Task details provided by the user.
+   * @param {CreateTaskDto} payload - Task details provided by the user.
    * @returns {Promise<{created: boolean, notificationDto: NotificationDto}>} - The result of task creation.
    */
   const createTask = async (payload) => {
@@ -79,15 +81,15 @@ export default function TasksService() {
       // Define default values for the task
 
       const task = new Task(
-        null,
-        payload.project_id || DEFAULT_PROJECT_ID,
+        "",
+        payload.getProjectId() || DEFAULT_PROJECT_ID,
         userUid,
-        payload.title,
-        payload.description || "",
-        payload.status || TASKS_STATUS.TODO,
-        payload.priority || TASKS_PRIORITY.LOW,
-        payload.assignee || new Assignee(user.displayName, user.uid).toJson(),
-        payload.reporter || new Reporter(user.displayName, user.uid).toJson(),
+        payload.getTitle(),
+        payload.getDescription() || "",
+        payload.getStatus() || TASKS_STATUS.TODO,
+        payload.getPriority() || TASKS_PRIORITY.LOW,
+        new Assignee(user.displayName, user.uid),
+        new Reporter(user.displayName, user.uid),
         false,
         currentServerTimestamp,
         currentServerTimestamp,
@@ -396,17 +398,28 @@ export default function TasksService() {
    * @returns {Promise<{ updated: boolean, notificationDto: NotificationDto }>}
    */
   const updateTask = async (payload) => {
-    console.log(payload);
     try {
       const task = TasksMapper.fromDtoToEntity(payload);
 
-      // //manually updated the updated_at
-      task.update({ ...payload, updated_at: currentServerTimestamp });
+      // manually updated the updated_at
+      task.update(
+        task.getProjectId(),
+        task.getUserUid(),
+        task.getTitle(),
+        task.getDescription(),
+        task.getStatus(),
+        task.getPriority(),
+        task.getAssignee(),
+        task.getReporter(),
+        task.getIsArchived(),
+        task.getCreatedAt(),
+        currentServerTimestamp,
+      );
 
-      // //get document
+      // get document
       const taskDocument = doc(db, table, payload.getId());
 
-      // //update document
+      // // //update document
       await updateDoc(taskDocument, task.toJson());
 
       return {
@@ -446,12 +459,26 @@ export default function TasksService() {
   /**
    * Archives a task by its ID.
    *
-   * @param {TaskDto} payload - The ID of the task to be archived.
+   * @param {ArchiveTaskDto} payload - The ID of the task to be archived.
    * @returns {Promise<{ archived: boolean, notificationDto: NotificationDto }>} - A promise that resolves to an object indicating the result of the archiving process.
    */
   const archiveTask = async (payload) => {
     try {
-      const { updated, notificationDto } = await updateTask(payload);
+      const task = TasksMapper.fromDtoToEntity(payload.getTaskDto());
+       task.update(
+        task.getProjectId(),
+        task.getUserUid(),
+        task.getTitle(),
+        task.getDescription(),
+        task.getStatus(),
+        task.getPriority(),
+        task.getAssignee(),
+        task.getReporter(),
+        payload.getIsArchived(),
+        task.getCreatedAt(),
+        task.getUpdatedAt(),
+      );
+      const { updated, notificationDto } = await updateTask(TasksMapper.fromEntityToDto(task));
 
       // Return the result of the update operation
       return {

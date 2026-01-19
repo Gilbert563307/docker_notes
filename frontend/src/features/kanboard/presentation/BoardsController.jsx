@@ -7,6 +7,7 @@ import { TaskDto } from "../application/dto/TaskDto";
 import { AssigneeDto } from "../application/dto/AssigneeDto";
 import { ReporterDto } from "../application/dto/RepoterDto";
 import { UpdateBoardTaskDto } from "./dto/UpdateBoardTaskDto";
+import { CreateTaskDto } from "./dto/CreateTaskDto";
 
 /**
  * @typedef {Object} InitialState
@@ -158,15 +159,14 @@ export default function BoardsController() {
 
   /**
    *
-   * @param {TaskDto} payload
+   * @param {CreateTaskDto} payload
    */
   async function collectCreateBoardTask(payload) {
-    const task = { ...payload.task, project_id: payload.boardId };
 
-    const taskCreated = await createTask(task);
+    const taskCreated = await createTask(payload);
     setNotificationToState(taskCreated.notificationDto);
 
-    const { tasks } = await listBoardTasks({ boardId: payload.boardId });
+    const { tasks } = await listBoardTasks({ boardId: payload.getProjectId() });
 
     // Update state with the created task response
     dispatchAction({

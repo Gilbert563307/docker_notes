@@ -5,7 +5,6 @@ import TaskDetails from "./TaskDetails";
 import DeleteTaskButton from "./buttons/DeleteTaskButton";
 import "../../css/UpdateTaskComponent.css";
 import { TASKS_CONTROLLER_ACTIONS } from "../../presentation/TasksController";
-import { ALERT_TYPES } from "../../../../shared/components/bs5/BS5Alert";
 import QuilTextEditor from "../../../../shared/components/texteditor/component/QuilTextEditor";
 import { TaskDto } from "../../application/dto/TaskDto";
 
@@ -63,14 +62,22 @@ export default function UpdateTaskComponent({ task, dispatch }) {
   } = useForm({});
 
   const onSubmit = (data) => {
-    //TODO NOT NECESSARY
-    // if (customFields.description.length === 0) {
-    //     setError('description', { type: 'custom', message: 'The description cannot be empty' });
-    //     return;
-    // }
-
-    const newPayload = { ...task.toJson(), ...data, ...customFields };
-    dispatch({ type: TASKS_CONTROLLER_ACTIONS.UPDATE, payload: newPayload });
+    const { title } = data;
+    const taskDto = new TaskDto(
+      task.getId(),
+      task.getProjectId(),
+      task.getUserUid(),
+      title,
+      customFields.description,
+      customFields.status,
+      customFields.priority,
+      task.getAssignee(),
+      task.getReporter(),
+      task.getIsArchived(),
+      task.getCreatedAt(),
+      task.getUpdatedAt(),
+    );
+    dispatch({ type: TASKS_CONTROLLER_ACTIONS.UPDATE, payload: taskDto });
   };
 
   const downloadTask = () => {
