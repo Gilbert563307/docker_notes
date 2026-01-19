@@ -6,6 +6,8 @@ import useGetBoardTasksHook from "../../shared/hooks/useGetBoardTasksHook";
 import { TASKS_BOARD_HEADERS } from "../../config";
 import { BOARD_CONTROLLER_ACTIONS } from "../../features/kanboard/presentation/BoardsController";
 import { useParams } from "react-router-dom";
+import { TaskDto } from "../../features/kanboard/application/dto/TaskDto";
+import { UpdateBoardTaskDto } from "../../features/kanboard/presentation/dto/UpdateBoardTaskDto";
 /**
  * CollectListBoard component displays a board with columns to organize tasks.
  * Manages drag-and-drop functionality to update task statuses across columns.
@@ -17,37 +19,26 @@ export default function CollectListBoard() {
   useSetPageTitleHook({ title: "Board" });
   const { boardId } = useParams();
 
-  const { tasks, dispatch } = useGetBoardTasksHook({boardId: boardId});
+  const { tasks, dispatch } = useGetBoardTasksHook({ boardId: boardId });
 
   /**
    * Updates a task in the board state.
    *
-   * @param {import("../../types/types").Task} payload - The task object to update.
+   * @param {} payload - The task object to update.
    */
   const updateTask = useCallback(
     (payload) => {
-      const updatedPayload = { task: payload, boardId: boardId };
-      dispatch({ type: BOARD_CONTROLLER_ACTIONS.UPDATE, payload: updatedPayload });
+      dispatch({ type: BOARD_CONTROLLER_ACTIONS.UPDATE, payload: new UpdateBoardTaskDto(payload, boardId) });
     },
-    [dispatch]
+    [dispatch],
   );
 
-  /**
-   * @type {string}
-   * Stores the ID of the currently dragged item.
-   */
   const [draggingId, setDraggingId] = useState();
-
-  /**
-   * @type {import("../../types/types").Tasks}
-   * Contains the list of task items. Each task has an `id`, `title`, and `status`.
-   */
   const [items, setItems] = useState([]);
 
   // Ref to store the timeout ID for cleanup
   const timeoutRef = useRef(null);
 
-  // Sync `items` with `tasks` when `tasks` is updated
   useEffect(() => {
     if (Array.isArray(tasks) && tasks.length > 0) {
       setItems(tasks);
@@ -70,18 +61,35 @@ export default function CollectListBoard() {
    */
   const handleDragEnter = useCallback(
     (newStatus) => {
-      const oldStatus = items.find((item) => item.id === draggingId)?.status;
+      const oldStatus = items.find((/** @type {TaskDto} */ item) => item.getId() === draggingId)?.getStatus();
 
+      let tbuTask = null;
+      // @ts-ignore
       setItems((prevItems) =>
-        prevItems.map((item) => {
-          // Check if the current item is the one being dragged
-          if (item.id === draggingId) {
+        prevItems.map((/** @type {TaskDto} */ item) => {
+          // // Check if the current item is the one being dragged
+          if (item.getId() === draggingId) {
             // Return the updated item with new status
-            return { ...item, status: newStatus };
+            const taskDto = new TaskDto(
+              item.getId(),
+              item.getProjectId(),
+              item.getUserUid(),
+              item.getTitle(),
+              item.getDescription(),
+              newStatus,
+              item.getPriority(),
+              item.getAssignee(),
+              item.getReporter(),
+              item.getIsArchived(),
+              item.getCreatedAt(),
+              item.getUpdatedAt(),
+            );
+            tbuTask = taskDto;
+            return taskDto;
           }
           // Return the unchanged item
           return item;
-        })
+        }),
       );
 
       // Clear any existing timeout to prevent duplicate calls
@@ -92,12 +100,9 @@ export default function CollectListBoard() {
       //return ealry if the status is the same
       if (newStatus === oldStatus) return;
 
-      // Create a task update payload with the dragged item and new status
-      const updatedTask = { id: draggingId, status: newStatus };
-
       // Set a new timeout to call updateTask with the updated task
       timeoutRef.current = setTimeout(() => {
-        updateTask(updatedTask);
+        updateTask(tbuTask);
       }, 1000);
 
       // Cleanup timeout on unmount
@@ -107,7 +112,7 @@ export default function CollectListBoard() {
         }
       };
     },
-    [draggingId, updateTask]
+    [draggingId, updateTask],
   ); // Dependencies needed for handleDragEnter
 
   return (

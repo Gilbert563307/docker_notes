@@ -1,6 +1,7 @@
 import React, { createRef, useEffect, useState } from "react";
 import { notificationObserver } from "../observer/NotificationObserver";
 import "../css/notificationv4.css";
+import { NotificationDto } from "../application/dto/NotificationDto";
 
 export const NOTIFICATION_TYPES = {
   INFO: 0,
@@ -43,12 +44,12 @@ export default function NotificationV4() {
    * Will be called as a callback function because this class subscribed to the notification observer
    * Then the data will be passes as an array with
    *
-   * @param {Array<{message: string, type: number}>} data
+   * @param {Array<NotificationDto>} data
    */
   function next(data) {
     if (data.length === 1) {
       const notification = data[0];
-      setNotification(notification);
+      setNotification(notification.toJson());
       articleRef.current?.focus();
     }
   }
@@ -70,7 +71,7 @@ export default function NotificationV4() {
       aria-atomic="true"
       tabIndex={-1}
       ref={articleRef}
-      className={`notification ${notification.message != "" ? "show": "hide"}  ${getTypeClasses(notification.type)} `}
+      className={`notification ${notification.message != "" ? "show" : "hide"}  ${getTypeClasses(notification.type)} `}
     >
       <button className="close-btn" title="Close" onClick={closeNotification}>
         ×

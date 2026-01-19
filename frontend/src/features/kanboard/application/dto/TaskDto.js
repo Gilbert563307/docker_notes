@@ -15,9 +15,20 @@ export class TaskDto {
   #created_at;
   #updated_at;
 
+  //TODO FIND OUT ABOUT THESE TYPES created_at updated_at
   /**
-   *  @param {AssigneeDto} assignee - Assigned user object
-   * @param {ReporterDto} reporter - Reporting user object
+   * @param {string} id - The unique identifier for the task.
+   * @param {string} project_id - The unique identifier for the project.
+   * @param {string} user_uid - The unique identifier for the user.
+   * @param {string} title - The title of the task.
+   * @param {string} description - The description of the task.
+   * @param {number} status - The status of the task.
+   * @param {number} priority - The priority level of the task.
+   * @param {AssigneeDto} assignee - The assignee of the task with name and unique identifier.
+   * @param {ReporterDto} reporter - The reporter of the task with name and unique identifier.
+   * @param {Boolean} archived - The archived status.
+   * @param {Date | string} created_at - The timestamp when the task was created. 
+   * @param {Date | string} updated_at - The timestamp when the task was last updated.
    */
   constructor(
     id,
@@ -76,7 +87,7 @@ export class TaskDto {
   }
 
   /**
-   * 
+   *
    * @returns {AssigneeDto}
    */
   getAssignee() {
@@ -91,8 +102,16 @@ export class TaskDto {
     return this.#reporter.getName();
   }
 
-   /**
-   * 
+  getAssigneeId() {
+    return this.#assignee.getAssigneeId();
+  }
+
+  getReporterId() {
+    return this.#reporter.getAssigneeId();
+  }
+
+  /**
+   *
    * @returns {ReporterDto}
    */
   getReporter() {
@@ -103,19 +122,22 @@ export class TaskDto {
     return this.#archived;
   }
 
+  /**
+   *
+   * @returns {string}
+   */
   getCreatedAt() {
     return this.#created_at.toLocaleString();
   }
 
+  /**
+   *
+   * @returns {string}
+   */
   getUpdatedAt() {
     return this.#updated_at.toLocaleString();
   }
 
-  /**
-   * Convert task to a plain object.
-   *
-   * @returns {import("../../../../types/types.js").Task} JSON representation of the task
-   */
   toJson() {
     return {
       id: this.#id,

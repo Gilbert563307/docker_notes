@@ -1,11 +1,13 @@
+/* eslint-disable react/prop-types */
 import React, { useEffect } from "react";
 import "../../css/kanboardform.css";
 import { useForm } from "react-hook-form";
+import { KanBoardDto } from "../../application/dto/KanBoardDto";
 
 /**
  * @param {Object} props - Component props
  * @param {(data: { name: string, color: string }) => void} props.onSubmit
- * @param {import("../../../../types/types").Board} props.board
+ * @param {KanBoardDto} props.board
  * @param {string} props.submitButtonValue Text displayed inside the submit button.
  * @returns {JSX.Element} A form UI for creating or editing a Kanban board.
  */
@@ -29,8 +31,8 @@ export default function KanBoardForm({ onSubmit, board, submitButtonValue }) {
   //https://react-hook-form.com/docs/useform#defaultValues
   useEffect(() => {
     reset({
-      name: board.name,
-      color: board.color,
+      name: board.getName(),
+      color: board.getColor(),
     });
   }, [board]);
 

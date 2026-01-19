@@ -2,13 +2,16 @@ import { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import KanBoardsService from "../application/service/KanBoardsService";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
-import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
+import { KanBoardDto } from "../application/dto/KanBoardDto";
+import { NotificationDto } from "../../notification/application/dto/NotificationDto";
 
 /**
  * @typedef {Object} InitialState
- * @property {Array<import('../../../types/types').Board>} boards
- * @property {import('../../../types/types').Board} board
+ * @property {Array<KanBoardDto>} boards
+ * @property {KanBoardDto} board
  */
+
+const initialBoardDto = new KanBoardDto(null, null, null, null, null, null, null, null);
 
 /**
  *
@@ -16,7 +19,7 @@ import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
  */
 const initialState = {
   boards: [],
-  board: {},
+  board: initialBoardDto,
 };
 
 export const KAN_BOARDS_CONTROLLER_ACTIONS = {
@@ -90,40 +93,28 @@ export default function KanBoardsController() {
   const [state, dispatchAction] = useReducer(reducer, initialState);
 
   function closeAlert() {
-    notificationObserver.addData({ message: "", type: 0 });
+    notificationObserver.addData(new NotificationDto("", 0));
   }
 
   /**
    *
-   * @param {{message: string, type: number}} object
-   * @returns {Function | void}
+   * @param {NotificationDto} notificationDto
+   * @returns {void}
    */
-  function setNotificationToState(object) {
-    if (object.message === "") return;
-    notificationObserver.addData(object);
-  }
-
-  /**
-   * Sets error to the state and dispatches notification.
-   * @param {Error} error - The error object.
-   */
-  function setErrorToState(error) {
-    notificationObserver.addData({ message: error.message, type: ALERT_TYPES.DANGER });
+  function setNotificationToState(notificationDto) {
+    if (notificationDto.getMessage() === "") return;
+    notificationObserver.addData(notificationDto);
   }
 
   async function collectListKanBoards() {
-    try {
-      const kanBoards = await listKanBoards();
-      setNotificationToState(kanBoards);
+    const kanBoards = await listKanBoards();
+    setNotificationToState(kanBoards.notificationDto);
 
-      // Update state with the   response
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_KAN_BOARDS,
-        payload: kanBoards.results,
-      });
-    } catch (error) {
-      setErrorToState(error);
-    }
+    // Update state with the   response
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_KAN_BOARDS,
+      payload: kanBoards.results,
+    });
   }
 
   /**
@@ -131,18 +122,14 @@ export default function KanBoardsController() {
    * @param {string} kanBoardId
    */
   async function collectReadKanBoard(kanBoardId) {
-    try {
-      const kanBoard = await readKanBoard(kanBoardId);
-      setNotificationToState(kanBoard);
+    const kanBoard = await readKanBoard(kanBoardId);
+    setNotificationToState(kanBoard.notificationDto);
 
-      // Update state with the response
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_KAN_BOARD,
-        payload: kanBoard.board,
-      });
-    } catch (error) {
-      setErrorToState(error);
-    }
+    // Update state with the response
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_KAN_BOARD,
+      payload: kanBoard.board,
+    });
   }
 
   async function refreshKanBoardList() {
@@ -156,32 +143,24 @@ export default function KanBoardsController() {
    * @param {{name: string, color: string }} payload
    */
   async function collectCreateKanBoard(payload) {
-    try {
-      const kanBoardCreated = await createKanBoard(payload);
+    const kanBoardCreated = await createKanBoard(payload);
 
-      // Update state with the created  response
-      setNotificationToState(kanBoardCreated);
+    // Update state with the created  response
+    setNotificationToState(kanBoardCreated.notificationDto);
 
-      navigate("/kanboards");
-    } catch (error) {
-      setErrorToState(error);
-    }
+    navigate("/kanboards");
   }
 
   /**
    *
-   * @param {import("../../../types/types").Board} payload
+   * @param {KanBoardDto} payload
    */
   async function collectUpdateKanBoard(payload) {
-    try {
-      const kanBoardUpdated = await updateKanBoard(payload);
+    const kanBoardUpdated = await updateKanBoard(payload);
 
-      // Update state with the created  response
-      setNotificationToState(kanBoardUpdated);
-      navigate("/kanboards");
-    } catch (error) {
-      setErrorToState(error);
-    }
+    // Update state with the created  response
+    setNotificationToState(kanBoardUpdated.notificationDto);
+    navigate("/kanboards");
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -215,7 +194,7 @@ export default function KanBoardsController() {
       }
     } catch (error) {
       // Close loader in case of error
-      setErrorToState(error);
+      setNotificationToState(new NotificationDto(error.message, 1));
       console.log(`KanBoardsController: error ${error}`);
     }
   }

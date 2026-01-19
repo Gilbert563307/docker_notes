@@ -32,16 +32,6 @@ export default function CreateCardButton({ header }) {
   };
 
   const createTask = () => {
-    if (title === "") {
-      dispatch({
-        type: BOARD_CONTROLLER_ACTIONS.SET_NOTIFICATION,
-        payload: {
-          message: "The title cannot be empty",
-          type: ALERT_TYPES.DANGER,
-        },
-      });
-      return;
-    }
     const payload = {
       title: title,
       description: "",

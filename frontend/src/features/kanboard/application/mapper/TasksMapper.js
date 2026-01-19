@@ -1,3 +1,6 @@
+import { Assignee } from "../../domain/Assignee.js";
+import { Reporter } from "../../domain/Reporter.js";
+import { Task } from "../../domain/Task.js";
 import { AssigneeDto } from "../dto/AssigneeDto.js";
 import { ReporterDto } from "../dto/RepoterDto.js";
 import { TaskDto } from "../dto/TaskDto.js";
@@ -31,6 +34,27 @@ export class TasksMapper {
       task.archived,
       task.created_at,
       task.updated_at,
+    );
+  }
+
+  /**
+   * @param {TaskDto} taskDto
+   * @returns {Task}
+   */
+  static fromDtoToEntity(taskDto){
+    return new Task(
+      taskDto.getId(),
+      taskDto.getProjectId(),
+      taskDto.getUserUid(),
+      taskDto.getTitle(),
+      taskDto.getDescription(),
+      taskDto.getStatus(),
+      taskDto.getPriority,
+      new Assignee(taskDto.getAssigneeName(), taskDto.getAssigneeId()),
+      new Reporter(taskDto.getReporterName(), taskDto.getReporterId()),
+      taskDto.getIsArchived(),
+      taskDto.getCreatedAt(),
+      taskDto.getUpdatedAt(),
     );
   }
 }

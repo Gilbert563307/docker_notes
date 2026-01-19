@@ -19,6 +19,24 @@ import { Reporter } from "../../domain/Reporter";
 import { TasksMapper } from "../mapper/TasksMapper";
 import { TaskDto } from "../dto/TaskDto";
 import FilesService from "../../../../shared/service/FilesService";
+import { NotificationDto } from "../../../notification/application/dto/NotificationDto";
+import { AssigneeDto } from "../dto/AssigneeDto";
+import { ReporterDto } from "../dto/RepoterDto";
+
+const initialTaskDto = new TaskDto(
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  new AssigneeDto(null, null),
+  new ReporterDto(null, null),
+  null,
+  null,
+  null,
+);
 
 export default function TasksService() {
   const { user } = useAuthProvider();
@@ -54,7 +72,7 @@ export default function TasksService() {
    * Creates a new task with default values if not provided in the payload.
    *
    * @param {import("../../../../types/types").createTaskPayload} payload - Task details provided by the user.
-   * @returns {Promise<{created: boolean, message: string, type: number}>} - The result of task creation.
+   * @returns {Promise<{created: boolean, notificationDto: NotificationDto}>} - The result of task creation.
    */
   const createTask = async (payload) => {
     try {
@@ -81,15 +99,13 @@ export default function TasksService() {
       // Return success message if task creation was successful
       return {
         created: Boolean(created),
-        message: "Your task has been created",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("Your task has been created", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       // Return error message in case of failure
       return {
         created: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   };
@@ -121,7 +137,7 @@ export default function TasksService() {
 
   /**
    *
-   * @returns {{filters: Array<number>, message: string, type: number}}
+   * @returns {{filters: Array<number>, notificationDto: NotificationDto}}
    */
   const getActiveStatusFilters = () => {
     try {
@@ -133,23 +149,20 @@ export default function TasksService() {
       // Return successful response with active status filters.
       return {
         filters: results,
-        message: "",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
-      console.log(`[getActiveStatusFilters]: ${error.message}`);
       // On error, return a response with error message and danger alert type.
       return {
         filters: [],
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   };
 
   /**
    *
-   * @returns {{names: Array<string>, message: string, type: number}}
+   * @returns {{names: Array<string>, notificationDto: NotificationDto}}
    */
   const getActiveFiltersNamesOnTaskPath = () => {
     try {
@@ -160,8 +173,7 @@ export default function TasksService() {
       if (allActiveFilters.length === 0) {
         return {
           names: [],
-          message: "",
-          type: ALERT_TYPES.SUCCESS,
+          notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
         };
       }
 
@@ -170,22 +182,20 @@ export default function TasksService() {
 
       return {
         names: activeStatusTasksNames,
-        message: "",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       // On error, return a response with error message and danger alert type.
       return {
         names: [],
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   };
 
   /**
    *
-   * @returns {{filters: Array<number>, message: string, type: number}}
+   * @returns {{filters: Array<number>, notificationDto: NotificationDto}}
    */
   const getActivePriorityFilters = () => {
     try {
@@ -197,23 +207,20 @@ export default function TasksService() {
       // Return successful response with active status filters.
       return {
         filters: results,
-        message: "",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
-      console.log(`[getActivePriorityFilters]: ${error.message}`);
       // On error, return a response with error message and danger alert type.
       return {
         filters: [],
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   };
 
   /**
    * @param {{searchTearm?: string}} payload
-   * @returns {{queryItems: Array<Query> | Array, message: string, type: number}}
+   * @returns {{queryItems: Array<Query> | Array, notificationDto: NotificationDto}}
    */
   const getTasksQueryClauses = (payload = {}) => {
     try {
@@ -243,15 +250,12 @@ export default function TasksService() {
 
       return {
         queryItems: queryItems,
-        message: "",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
-      console.log(`[getTasksQueryClauses]: ${error.message}`);
       return {
         queryItems: [],
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   };
@@ -260,7 +264,7 @@ export default function TasksService() {
    * Generates a Firestore query to fetch tasks for the current page.
    *
    * @param {{currentPage: number, itemsPerPage?: number, searchTearm?: string }} payload - The current page number for pagination.
-   * @returns {Promise<{resultsQuery: Query | null, message: string, type: number}>} The Firestore query to fetch tasks for the specified page.
+   * @returns {Promise<{resultsQuery: Query | null, notificationDto: NotificationDto}>} The Firestore query to fetch tasks for the specified page.
    */
   const getTasksQuery = async (payload) => {
     try {
@@ -273,16 +277,28 @@ export default function TasksService() {
 
       // If the current page is the first page, create a query limited by the items per page
       if (currentPage === 1) {
-        return fetchResultsOnPageOne(queryItems, itemsPerPage);
+        const { resultsQuery, type, message } = fetchResultsOnPageOne(queryItems, itemsPerPage);
+        return {
+          resultsQuery: resultsQuery,
+          notificationDto: new NotificationDto(message, type),
+        };
       }
 
-      return fetchPaginatedResults(currentPage, payload, itemsPerPage, queryItems);
+      const { resultsQuery, type, message } = await fetchPaginatedResults(
+        currentPage,
+        payload,
+        itemsPerPage,
+        queryItems,
+      );
+
+      return {
+        resultsQuery: resultsQuery,
+        notificationDto: new NotificationDto(message, type),
+      };
     } catch (error) {
-      console.log(`[getTasksQuery]: ${error.message}`);
       return {
         resultsQuery: null,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   };
@@ -290,22 +306,12 @@ export default function TasksService() {
   /**
    *
    * @param {string} searchTearm
-   * @returns {Promise<{results: import("../../../../types/types").ListTasks | {},  message: string, type: number }>}
+   * @returns {Promise<{results: import("../../../../types/types").ListTasks,  notificationDto: NotificationDto }>}
    */
   const listTasksBySearchTerm = async (searchTearm) => {
-    try {
-      //get currentPageNumber
-      const currentPage = getCurrentPageNumber();
-      //create Payload
-      const payload = { currentPage: currentPage, searchTearm: searchTearm };
-      return await listTasks(payload);
-    } catch (error) {
-      return {
-        results: { tasks: [], total: 0, pages: 0 },
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
-      };
-    }
+    //get currentPageNumber
+    const currentPage = getCurrentPageNumber();
+    return await listTasks({ currentPage: currentPage, searchTearm: searchTearm });
   };
 
   /**
@@ -315,7 +321,7 @@ export default function TasksService() {
    * with a limit on the number of items per page. It includes the document ID in the task data and handles
    * potential errors during the fetch process.
    * @param {{ currentPage: number, itemsPerPage?: number, searchTearm?: string}} payload
-   * @returns {Promise<{results: import("../../../../types/types").ListTasks | {},  message: string, type: number }>} A promise that resolves to an object containing the fetched tasks, a message, and an alert type.
+   * @returns {Promise<{results: import("../../../../types/types").ListTasks,  notificationDto: NotificationDto }>} A promise that resolves to an object containing the fetched tasks, a message, and an alert type.
    */
   const listTasks = async (payload) => {
     try {
@@ -335,21 +341,19 @@ export default function TasksService() {
       //return results
       return {
         results: { tasks: tasksDto, total: totalRecords, pages: totalPages },
-        message: "",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       return {
         results: { tasks: [], total: 0, pages: 0 },
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   };
 
   /**
    * @param {{boardId: string}} payload
-   * @returns {Promise<{tasks: Array<TaskDto>, message: string, type: number}>}
+   * @returns {Promise<{tasks: Array<TaskDto>, notificationDto: NotificationDto}>}
    */
   const listBoardTasks = async (payload) => {
     try {
@@ -376,59 +380,43 @@ export default function TasksService() {
 
       return {
         tasks: tasksDto,
-        message: message,
-        type: type,
+        notificationDto: new NotificationDto(message, type),
       };
     } catch (error) {
       return {
         tasks: [],
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   };
 
   /**
    *
-   * @param {import("../../../../types/types").Task} payload
-   * @returns {Promise<{ updated: boolean, message: string, type: number }>}
+   * @param {TaskDto} payload
+   * @returns {Promise<{ updated: boolean, notificationDto: NotificationDto }>}
    */
   const updateTask = async (payload) => {
+    console.log(payload);
     try {
-      const task = new Task(
-        payload.id,
-        payload.project_id,
-        payload.user_uid,
-        payload.title,
-        payload.description,
-        payload.status,
-        payload.priority,
-        new Assignee(payload.assignee.name, payload.assignee.assignee_id),
-        new Reporter(payload.reporter.name, payload.reporter.assignee_id),
-        payload.archived,
-        payload.created_at,
-        payload.updated_at,
-      );
+      const task = TasksMapper.fromDtoToEntity(payload);
 
-      // //manualy updated the updated_at
+      // //manually updated the updated_at
       task.update({ ...payload, updated_at: currentServerTimestamp });
 
       // //get document
-      const taskDocument = doc(db, table, payload.id);
+      const taskDocument = doc(db, table, payload.getId());
 
       // //update document
       await updateDoc(taskDocument, task.toJson());
 
       return {
         updated: true,
-        message: "Your task has been successfully been updated",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("Your task has been successfully been updated", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       return {
         updated: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   };
@@ -436,7 +424,7 @@ export default function TasksService() {
   /**
    * Fetches a task from the database by its ID.
    * @param {string} taskId
-   * @returns {Promise<{task: TaskDto | Object, message: string, type: number}>}
+   * @returns {Promise<{task: TaskDto | Object, notificationDto: NotificationDto}>}
    */
   const readTask = async (taskId) => {
     try {
@@ -444,15 +432,13 @@ export default function TasksService() {
       const taskDto = TasksMapper.toDto(document);
       return {
         task: taskDto,
-        message: message,
-        type: type,
+        notificationDto: new NotificationDto(message, type),
       };
     } catch (error) {
       // Return an error response if the fetch operation fails
       return {
-        task: undefined,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        task: initialTaskDto,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   };
@@ -460,25 +446,23 @@ export default function TasksService() {
   /**
    * Archives a task by its ID.
    *
-   * @param {import("../../../../types/types").Task} payload - The ID of the task to be archived.
-   * @returns {Promise<{ archived: boolean, message: string, type: number }>} - A promise that resolves to an object indicating the result of the archiving process.
+   * @param {TaskDto} payload - The ID of the task to be archived.
+   * @returns {Promise<{ archived: boolean, notificationDto: NotificationDto }>} - A promise that resolves to an object indicating the result of the archiving process.
    */
   const archiveTask = async (payload) => {
     try {
-      const { updated, message, type } = await updateTask(payload);
+      const { updated, notificationDto } = await updateTask(payload);
 
       // Return the result of the update operation
       return {
         archived: updated,
-        message: message,
-        type: type,
+        notificationDto: notificationDto,
       };
     } catch (error) {
       // Return an error response if the update operation fails
       return {
         archived: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   };
@@ -486,7 +470,7 @@ export default function TasksService() {
   /**
    *
    * @param {string} taskId
-   * @returns {Promise<{ deleted: boolean, message: string, type: number }>}
+   * @returns {Promise<{ deleted: boolean, notificationDto: NotificationDto }>}
    */
   async function deleteTask(taskId) {
     try {
@@ -494,14 +478,12 @@ export default function TasksService() {
       const deleted = await deleteDoc(taskRef);
       return {
         deleted: Boolean(deleted),
-        message: "Your task has been deleted",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("Your task has been deleted", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       return {
         deleted: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }

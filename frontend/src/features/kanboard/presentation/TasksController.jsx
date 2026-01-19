@@ -1,12 +1,11 @@
 import React, { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { ALERT_ACTIONS, ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
 import TasksService from "../application/service/TasksService";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
 import { TaskDto } from "../application/dto/TaskDto";
 import { AssigneeDto } from "../application/dto/AssigneeDto";
 import { ReporterDto } from "../application/dto/RepoterDto";
-
+import { NotificationDto } from "../../notification/application/dto/NotificationDto";
 
 /**
  * @typedef {Object} InitialState
@@ -137,33 +136,16 @@ export default function TasksController() {
 
   /**
    *
-   * @param {{message: string, type: number}} object
-   * @returns {void | null}
+   * @param {NotificationDto} notificationDto
+   * @returns {void}
    */
-  function setNotificationToState(object) {
-    if (object.message === "") return;
-    // Set the message
-    notificationObserver.addData(object);
-  }
-
-  /**
-   * Sets error to the state and dispatches notification.
-   * @param {Error} error - The error object.
-   */
-  function setErrorToState(error) {
-    notificationObserver.addData({ message: error.message, type: ALERT_TYPES.DANGER });
+  function setNotificationToState(notificationDto) {
+    if (notificationDto.getMessage() === "") return;
+    notificationObserver.addData(notificationDto);
   }
 
   function closeAlert() {
-    notificationObserver.addData({ message: "", type: 0 });
-  }
-
-  /**
-   *
-   * @param {{ message: string, type: number }} notification
-   */
-  function collectSetNotification(notification) {
-    setNotificationToState(notification);
+    notificationObserver.addData(new NotificationDto("", 0));
   }
 
   /**
@@ -180,68 +162,56 @@ export default function TasksController() {
    * @param {{title: string, description: string,  priority: number }} payload
    */
   async function collectCreateTask(payload) {
-    try {
-      const taskCreated = await createTask(payload);
+    const taskCreated = await createTask(payload);
 
-      // Update state with the created task response
-      setNotificationToState(taskCreated);
+    // Update state with the created task response
+    setNotificationToState(taskCreated.notificationDto);
 
-      //reftech tasks afte creating one
-      //TODO get state and remogve that task with that uuid no need to refesh or make all to api
-      // await refreshTasksList(); //REMOVED BECAUSEWHEN U NAVIGATE TO TASKS THE TASKS IS ALLREADY THERE
+    //reftech tasks afte creating one
+    //TODO get state and remogve that task with that uuid no need to refesh or make all to api
+    // await refreshTasksList(); //REMOVED BECAUSEWHEN U NAVIGATE TO TASKS THE TASKS IS ALLREADY THERE
 
-      //navugate to tasks page
-      navigate("/tasks");
-    } catch (error) {
-      setErrorToState(error);
-    }
+    //navugate to tasks page
+    navigate("/tasks");
   }
 
   /**
    *
    */
   async function collectListTasks() {
-    try {
-      const tasks = await getTasks();
-      setNotificationToState(tasks);
+    const tasks = await getTasks();
+    setNotificationToState(tasks.notificationDto);
 
-      // Update state with the created task response
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_TASKS,
-        payload: tasks.results,
-      });
+    // Update state with the created task response
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_TASKS,
+      payload: tasks.results,
+    });
 
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_TASK,
-        payload: initialTaskDto,
-      });
-    } catch (error) {
-      setErrorToState(error);
-    }
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_TASK,
+      payload: initialTaskDto,
+    });
   }
 
   /**
    *
-   * @param {import("../../../types/types").Task} payload
+   * @param {TaskDto} payload
    */
   async function collectUpdateTask(payload) {
-    try {
-      const tbuTask = await updateTask(payload);
+    const tbuTask = await updateTask(payload);
 
-      // Update state with the created task response
-      setNotificationToState(tbuTask);
+    // Update state with the created task response
+    setNotificationToState(tbuTask.notificationDto);
 
-      // // get the updated task content
-      // const results = await readTask(payload.id);
+    // // get the updated task content
+    // const results = await readTask(payload.id);
 
-      // // set taskt to state;
-      // dispatchAction({
-      //   type: REDUCER_ACTIONS.SET_TASK,
-      //   payload: results.task,
-      // });
-    } catch (error) {
-      setErrorToState(error);
-    }
+    // // set taskt to state;
+    // dispatchAction({
+    //   type: REDUCER_ACTIONS.SET_TASK,
+    //   payload: results.task,
+    // });
   }
 
   /**
@@ -249,38 +219,30 @@ export default function TasksController() {
    * @param {string} taskId
    */
   async function collectReadTask(taskId) {
-    try {
-      // try to find the task in the current state;
-      const results = await readTask(taskId);
+    // try to find the task in the current state;
+    const results = await readTask(taskId);
 
-      // Update state with the created task response
-      setNotificationToState(results);
+    // Update state with the created task response
+    setNotificationToState(results.notificationDto);
 
-      // set taskt to state;
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_TASK,
-        payload: results.task,
-      });
-    } catch (error) {
-      setErrorToState(error);
-    }
+    // set taskt to state;
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_TASK,
+      payload: results.task,
+    });
   }
 
   /** //TODO MAKE PASS ENTIRE TASK
    *
-   * @param {import("../../../types/types").Task} payload
+   * @param {TaskDto} payload
    */
   async function collectArchiveTask(payload) {
-    try {
-      const tbuArchived = await archiveTask(payload);
+    const tbuArchived = await archiveTask(payload);
 
-      setNotificationToState(tbuArchived);
+    setNotificationToState(tbuArchived.notificationDto);
 
-      //reftech tasks after archive this one
-      await refreshTasksList();
-    } catch (error) {
-      setErrorToState(error);
-    }
+    //reftech tasks after archive this one
+    await refreshTasksList();
   }
 
   /**
@@ -288,19 +250,15 @@ export default function TasksController() {
    * @param {string} taskId
    */
   async function collectDeleteTask(taskId) {
-    try {
-      const tbuDeleted = await deleteTask(taskId);
+    const tbuDeleted = await deleteTask(taskId);
 
-      setNotificationToState(tbuDeleted);
+    setNotificationToState(tbuDeleted.notificationDto);
 
-      //reftech tasks after archive this one
-      await refreshTasksList();
+    //reftech tasks after archive this one
+    await refreshTasksList();
 
-      //navugate to tasks page
-      navigate("/tasks");
-    } catch (error) {
-      setErrorToState(error);
-    }
+    //navugate to tasks page
+    navigate("/tasks");
   }
 
   /**
@@ -308,12 +266,8 @@ export default function TasksController() {
    * @param {{description: string, filename: string}} payload
    */
   async function collectDownloadTask(payload) {
-    try {
-      const downloaded = await downloadTask(payload);
-      setNotificationToState(downloaded);
-    } catch (error) {
-      setErrorToState(error);
-    }
+    const downloaded = await downloadTask(payload);
+    setNotificationToState(downloaded.notificationDto);
   }
 
   /**
@@ -321,18 +275,14 @@ export default function TasksController() {
    * @param {string} searchTearm
    */
   async function collectListTasksBySearchTerm(searchTearm) {
-    try {
-      const tasks = await listTasksBySearchTerm(searchTearm);
-      setNotificationToState(tasks);
+    const tasks = await listTasksBySearchTerm(searchTearm);
+    setNotificationToState(tasks.notificationDto);
 
-      // Update state with the created task response
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_TASKS,
-        payload: tasks.results,
-      });
-    } catch (error) {
-      setErrorToState(error);
-    }
+    // Update state with the created task response
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_TASKS,
+      payload: tasks.results,
+    });
   }
 
   /**
@@ -357,9 +307,6 @@ export default function TasksController() {
         case TASKS_CONTROLLER_ACTIONS.READ:
           await collectReadTask(action?.payload);
           break;
-        case TASKS_CONTROLLER_ACTIONS.SET_NOTIFICATION:
-          collectSetNotification(action?.payload);
-          break;
         case TASKS_CONTROLLER_ACTIONS.ARCHIVE:
           await collectArchiveTask(action?.payload);
           break;
@@ -372,7 +319,7 @@ export default function TasksController() {
         case TASKS_CONTROLLER_ACTIONS.SEARCH_TASKS_BY_SEARCH_TERM:
           await collectListTasksBySearchTerm(action?.payload);
           break;
-        case ALERT_ACTIONS.CLOSE_ALERT:
+        case "CLOSE_ALERT":
           closeAlert();
           break;
         default:
@@ -380,7 +327,7 @@ export default function TasksController() {
           break;
       }
     } catch (error) {
-      setErrorToState(error);
+      setNotificationToState(new NotificationDto(error.message, 1));
       console.log(`TasksController: error ${error}`);
     }
   }

@@ -1,22 +1,41 @@
 import { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet } from "react-router-dom";
-import { ALERT_ACTIONS, ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
 import TasksService from "../application/service/TasksService";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
+import { NotificationDto } from "../../notification/application/dto/NotificationDto";
+import { TaskDto } from "../application/dto/TaskDto";
+import { AssigneeDto } from "../application/dto/AssigneeDto";
+import { ReporterDto } from "../application/dto/RepoterDto";
+import { UpdateBoardTaskDto } from "./dto/UpdateBoardTaskDto";
 
 /**
  * @typedef {Object} InitialState
- * @property {import("../../../types/types").Task | Object} task - The current task.
- * @property {import("../../../types/types").Tasks | []} tasks - The list of tasks.
+ * @property {TaskDto} task - The current task.
+ * @property {Array<TaskDto>} tasks - The list of tasks.
  */
+
+const initialTaskDto = new TaskDto(
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  null,
+  new AssigneeDto(null, null),
+  new ReporterDto(null, null),
+  null,
+  null,
+  null,
+)
 
 /**
  * Initial state for the tasks controller.
  * @type {InitialState}
  */
 const initialState = {
-  task: {},
-  tasks: []
+  task: initialTaskDto,
+  tasks: [],
 };
 
 /**
@@ -33,8 +52,7 @@ export const BOARD_CONTROLLER_ACTIONS = {
   CREATE: "CREATE_TASK",
   READ: "READ_TASK",
   UPDATE: "UPDATE_TASK",
-  ARCHIVE: "ARCHIVE_TASK",
-  SET_NOTIFICATION: "SET_NOTIFICATION"
+  ARCHIVE: "ARCHIVE_TASK"
 };
 
 /**
@@ -48,7 +66,7 @@ const boardsControllerContext = createContext(
   /** @type {ContextValue} */ ({
     state: initialState,
     dispatch: () => {},
-  })
+  }),
 );
 
 /**
@@ -69,7 +87,7 @@ export default function BoardsController() {
 
   const REDUCER_ACTIONS = {
     SET_TASKS: "SET_TASKS", //Action type for setting multiple task's.
-    SET_TASK: "SET_TASK" //Action type for setting a task.
+    SET_TASK: "SET_TASK", //Action type for setting a task.
   };
 
   /**
@@ -100,97 +118,61 @@ export default function BoardsController() {
 
   /**
    *
-   * @param {{message: string, type: number}} object
-   * @returns {void | null}
+   * @param {NotificationDto} notificationDto
+   * @returns {void}
    */
-  function setNotificationToState(object) {
-    if (object.message === "") return;
-    notificationObserver.addData(object);
+  function setNotificationToState(notificationDto) {
+    if (notificationDto.getMessage() === "") return;
+    notificationObserver.addData(notificationDto);
   }
 
-  /**
-   * Sets error to the state and dispatches notification.
-   * @param {Error} error - The error object.
-   */
-  function setErrorToState(error) {
-    notificationObserver.addData({ message: error.message, type: ALERT_TYPES.DANGER });
+  function closeAlert() {
+    notificationObserver.addData(new NotificationDto("", 0));
   }
 
-   function closeAlert() {
-    notificationObserver.addData({ message: "", type: 0 });
-  }
-
-  /**
-   *
-   * @param {{ message: string, type: number }} notification
-   */
-  function collectSetNotification(notification) {
-    setNotificationToState(notification);
-  }
-
+ 
   /**
    * @param {{boardId: string}} payload
    */
   async function collectListBoardTasks(payload) {
-    try {
-      const response = await listBoardTasks(payload);
-      setNotificationToState(response);
+    const response = await listBoardTasks(payload);
+    setNotificationToState(response.notificationDto);
 
-      // Update state with the created task response
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_TASKS,
-        payload: response.tasks,
-      });
-    } catch (error) {
-      setErrorToState(error);
-    }
+    // Update state with the created task response
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_TASKS,
+      payload: response.tasks,
+    });
   }
 
   /**
    *
-   * @param {{task:import("../../../types/types").Task, boardId: string }} payload
+   * @param {UpdateBoardTaskDto} payload
    */
   async function collectUpdateBoardTask(payload) {
-    try {
-      
-      const taskPayload = payload.task;
-      const tbuTask = await updateTask(taskPayload);
+    const tbuTask = await updateTask(payload.getTaskDto());
 
-      if (tbuTask.type != ALERT_TYPES.SUCCESS) {
-        // Update state with the created task response
-        setNotificationToState(tbuTask);
-      }
-      await collectListBoardTasks({ boardId: payload.boardId });
-    } catch (error) {
-      setErrorToState(error);
-    }
+    setNotificationToState(tbuTask.notificationDto);
+    await collectListBoardTasks({ boardId: payload.getBoardId() });
   }
 
   /**
    *
-   * @param {{task: import("../../../types/types").createTaskPayload, boardId: string}} payload
+   * @param {TaskDto} payload
    */
   async function collectCreateBoardTask(payload) {
-    try {
-      const task = {...payload.task, project_id: payload.boardId};
+    const task = { ...payload.task, project_id: payload.boardId };
 
-      const taskCreated = await createTask(task);
+    const taskCreated = await createTask(task);
+    setNotificationToState(taskCreated.notificationDto);
 
-      if (taskCreated.type === ALERT_TYPES.DANGER) {
-        // Update state with the created task response
-        setNotificationToState(taskCreated);
-      }
+    const { tasks } = await listBoardTasks({ boardId: payload.boardId });
 
-      const { tasks } = await listBoardTasks({ boardId: payload.boardId });
-
-      // Update state with the created task response
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_TASKS,
-        payload: tasks,
-      });
-    } catch (error) {
-      setErrorToState(error);
-    }
+    // Update state with the created task response
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_TASKS,
+      payload: tasks,
+    });
   }
 
   /**
@@ -199,11 +181,8 @@ export default function BoardsController() {
    * @returns {Promise<void>} - A Promise that resolves when the operation is completed.
    */
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  async function dispatch(
-    /** @type {{ type: string; payload?: any; }} */ action
-  ) {
+  async function dispatch(/** @type {{ type: string; payload?: any; }} */ action) {
     try {
-
       // Handle different action types
       switch (action.type) {
         case BOARD_CONTROLLER_ACTIONS.LIST:
@@ -217,11 +196,7 @@ export default function BoardsController() {
           await collectCreateBoardTask(action?.payload);
           return;
 
-        case BOARD_CONTROLLER_ACTIONS.SET_NOTIFICATION:
-          collectSetNotification(action?.payload);
-          return;
-
-        case ALERT_ACTIONS.CLOSE_ALERT:
+        case "CLOSE_ALERT":
           closeAlert();
           return;
         default:
@@ -230,9 +205,9 @@ export default function BoardsController() {
       }
     } catch (error) {
       // Close loader in case of error
-      setErrorToState(error);
+      setNotificationToState(new NotificationDto(error.message, 1));
       console.log(`BoardsController: error ${error}`);
-    } 
+    }
   }
 
   /** @returns {ContextValue} */
@@ -241,7 +216,7 @@ export default function BoardsController() {
       state,
       dispatch,
     }),
-    [state, dispatch]
+    [state, dispatch],
   );
 
   return (

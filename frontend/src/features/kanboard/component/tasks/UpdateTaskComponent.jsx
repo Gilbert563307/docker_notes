@@ -74,15 +74,16 @@ export default function UpdateTaskComponent({ task, dispatch }) {
   };
 
   const downloadTask = () => {
-    if (customFields.description === "") {
-      return dispatch({
-        type: TASKS_CONTROLLER_ACTIONS.SET_NOTIFICATION,
-        payload: {
-          message: "Download failed: The file is empty",
-          type: ALERT_TYPES.INFO,
-        },
-      });
-    }
+    //todo set this into the domain logic
+    // if (customFields.description === "") {
+    //   return dispatch({
+    //     type: TASKS_CONTROLLER_ACTIONS.SET_NOTIFICATION,
+    //     payload: {
+    //       message: "Download failed: The file is empty",
+    //       type: ALERT_TYPES.INFO,
+    //     },
+    //   });
+    // }
     const localDateString = new Date().toLocaleDateString().replaceAll("/", "_");
     dispatch({
       type: TASKS_CONTROLLER_ACTIONS.DOWNLOAD_TASK,

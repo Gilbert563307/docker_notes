@@ -1,6 +1,12 @@
 import { MAX_KAN_BOARDS } from "../../../../config";
 import { ALERT_TYPES } from "../../../../shared/components/bs5/BS5Alert";
 import FirebaseInterface from "../../../../shared/data/FirebaseInterface";
+import { NotificationDto } from "../../../notification/application/dto/NotificationDto";
+import { KanBoard } from "../../domain/KanBoard";
+import { KanBoardDto } from "../dto/KanBoardDto";
+import { KanBoardMapper } from "../mapper/KanBoardMapper";
+
+const initialBoardDto = new KanBoardDto(null, null, null, null, null, null, null, null);
 
 export default function KanBoardsService() {
   const {
@@ -22,6 +28,10 @@ export default function KanBoardsService() {
     getDocument,
   } = FirebaseInterface({ table: "kanboards" });
 
+  /**
+   *
+   * @returns {Promise<{max: boolean, notificationDto: NotificationDto}>}
+   */
   async function doesUserHaveMaxKanBoards() {
     try {
       const q = query(collectionRef, where("user_uid", "==", userUid));
@@ -29,18 +39,17 @@ export default function KanBoardsService() {
       const count = snapshot.data().count;
 
       const maximumReached = count >= MAX_KAN_BOARDS;
+      const message = maximumReached
+        ? `You have reached the maximum number of Kanboards (${MAX_KAN_BOARDS}).`
+        : `You have created ${count} out of ${MAX_KAN_BOARDS} Kanboards.`;
       return {
         max: maximumReached,
-        message: maximumReached
-          ? `You have reached the maximum number of Kanboards (${MAX_KAN_BOARDS}).`
-          : `You have created ${count} out of ${MAX_KAN_BOARDS} Kanboards.`,
-        type: maximumReached ? ALERT_TYPES.DANGER : ALERT_TYPES.INFO,
+        notificationDto: new NotificationDto(message, maximumReached ? ALERT_TYPES.DANGER : ALERT_TYPES.INFO),
       };
     } catch (error) {
       return {
         max: true,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
@@ -48,7 +57,7 @@ export default function KanBoardsService() {
   /**
    *
    * @param {{name: string, color: string}} payload
-   * @returns {Promise<{ created: boolean, message: string, type: number }>}
+   * @returns {Promise<{ created: boolean, notificationDto: NotificationDto }>}
    */
   async function createKanBoard(payload) {
     try {
@@ -57,70 +66,64 @@ export default function KanBoardsService() {
       if (maxKanBoardsCreated.max) {
         return {
           created: false,
-          message: maxKanBoardsCreated.message,
-          type: ALERT_TYPES.DANGER,
+          notificationDto: maxKanBoardsCreated.notificationDto,
         };
       }
 
-      const defaultValues = {
-        name: payload.name,
-        user_uid: userUid,
-        archived: false,
-        color: payload.color,
-        collaborative: false,
-        created_at: currentServerTimestamp,
-        updated_at: currentServerTimestamp,
-      };
+      const kanBoard = new KanBoard(
+        "",
+        userUid,
+        payload.name,
+        payload.color,
+        false,
+        false,
+        currentServerTimestamp,
+        currentServerTimestamp,
+      );
 
-      const created = addDoc(collectionRef, defaultValues);
+      const created = addDoc(collectionRef, kanBoard.toJsonWithoutId());
       return {
         created: Boolean(created),
-        message: "Your kan board has been created",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("Your kan board has been created", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       return {
         created: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
 
   /**
    *
-   * @param {import("../../../../types/types").Board} payload
-   * @returns {Promise<{ updated: boolean, message: string, type: number }>}
+   * @param {KanBoardDto} payload
+   * @returns {Promise<{ updated: boolean, notificationDto: NotificationDto }>}
    */
   async function updateKanBoard(payload) {
     try {
-      //manualy updated the updated_at
-      const updatedPayload = { ...payload, updated_at: currentServerTimestamp };
+      const kanBoard = KanBoardMapper.fromDtoToEntity(payload);
+      kanBoard.update({ ...payload.toJson(), updated_at: currentServerTimestamp });
 
       //get document
-      const kanban = doc(db, table, payload.id);
+      const kanban = doc(db, table, payload.getId());
 
       //update document
-      await updateDoc(kanban, updatedPayload);
-
+      await updateDoc(kanban, kanBoard.toJson());
       return {
         updated: true,
-        message: "Your kanban has been succesfully been updated",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("Your kanban has been succesfully been updated", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
-      console.log(`[updateKanBoard]: ${error.message}`);
       return {
         updated: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
 
   /**
    *
-   * @returns {Promise<{ results: Array<import("../../../../types/types").Board>, message: string, type: number }>}
+   * @returns {Promise<{ results: Array<KanBoardDto>, notificationDto: NotificationDto }>}
    */
   async function listKanBoards() {
     try {
@@ -136,18 +139,16 @@ export default function KanBoardsService() {
       const querySnapshot = await getDocs(kanBoardsQuery);
 
       const { results, message, type } = convertQuerySnapShotDocs(querySnapshot);
+      const kanBoards = KanBoardMapper.arrayToDtoList(results);
 
       return {
-        results: results,
-        message: message,
-        type: type,
+        results: kanBoards,
+        notificationDto: new NotificationDto(message, type),
       };
     } catch (error) {
-      console.log(`[listKanBoards]: ${error.message}`);
       return {
         results: [],
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
@@ -156,25 +157,23 @@ export default function KanBoardsService() {
    *
    *
    * @param {{id: string, archived: boolean}} payload -
-   * @returns {Promise<{ archived: boolean, message: string, type: number }>} -
+   * @returns {Promise<{ archived: boolean, notificationDto: NotificationDto }>} -
    * */
   async function archiveKanBoard(payload) {
     try {
-      const { updated, message, type } = await updateKanBoard(payload);
+      //TODO FIX PAYLOAD
+      const { updated, notificationDto } = await updateKanBoard(payload);
 
       // Return the result of the update operation
       return {
         archived: updated,
-        message: message,
-        type: type,
+        notificationDto: notificationDto,
       };
     } catch (error) {
       // Return an error response if the update operation fails
-      console.log(`[archiveKanBoard]: ${error.message}`);
       return {
         archived: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
@@ -182,21 +181,19 @@ export default function KanBoardsService() {
   /**
    *
    * @param {string} id
-   * @returns {Promise<{board: import("../../../../types/types").Board, message: string, type: number}>}
+   * @returns {Promise<{board: KanBoardDto, notificationDto: NotificationDto}>}
    */
   async function readKanBoard(id) {
     try {
       const { document, message, type } = await getDocument(id);
       return {
-        board: document,
-        message: message,
-        type: type,
+        board: KanBoardMapper.toDto(document),
+        notificationDto: new NotificationDto(message, type),
       };
     } catch (error) {
       return {
-        board: {},
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        board: initialBoardDto,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }

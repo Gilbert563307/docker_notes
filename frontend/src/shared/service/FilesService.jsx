@@ -2,12 +2,10 @@ import React from "react";
 import { ALERT_TYPES } from "../components/bs5/BS5Alert";
 import { asBlob } from "html-docx-js-typescript";
 import { Query } from "firebase/firestore";
-import {
-  DEFAULT_FILES_ARCHIVE,
-  FILES_ARCHIVED_SESSION_FILTER,
-} from "../../config";
+import { DEFAULT_FILES_ARCHIVE, FILES_ARCHIVED_SESSION_FILTER } from "../../config";
 import useHelpers from "../helpers/useHelpers";
 import FirebaseInterface from "../data/FirebaseInterface";
+import { NotificationDto } from "../../features/notification/application/dto/NotificationDto";
 
 export default function FilesService() {
   const {
@@ -43,9 +41,7 @@ export default function FilesService() {
    */
   function getFilesQueryClauses(payload) {
     try {
-      const archived =
-        getSessionFilter(FILES_ARCHIVED_SESSION_FILTER) ||
-        DEFAULT_FILES_ARCHIVE;
+      const archived = getSessionFilter(FILES_ARCHIVED_SESSION_FILTER) || DEFAULT_FILES_ARCHIVE;
 
       let queryItems = [
         where("user_uid", "==", userUid),
@@ -55,10 +51,7 @@ export default function FilesService() {
 
       if (payload && payload.searchTearm && payload.searchTearm != "") {
         const { searchTearm } = payload;
-        queryItems = [
-          ...queryItems,
-          ...getSearchQueryByFieldName("name", searchTearm),
-        ];
+        queryItems = [...queryItems, ...getSearchQueryByFieldName("name", searchTearm)];
       }
 
       if (payload && payload.folderId && payload.folderId != "") {
@@ -112,12 +105,7 @@ export default function FilesService() {
         return fetchResultsOnPageOne(queryItems, itemsPerPage);
       }
 
-      return fetchPaginatedResults(
-        currentPage,
-        payload,
-        itemsPerPage,
-        queryItems
-      );
+      return fetchPaginatedResults(currentPage, payload, itemsPerPage, queryItems);
     } catch (error) {
       return {
         resultsQuery: null,
@@ -137,9 +125,7 @@ export default function FilesService() {
       const totalRecords = totalRecordsSnapShot.data().count;
       return totalRecords;
     } catch (error) {
-      console.log(
-        `[getTotalTasksInDatabaseByUserAndFilters]: ${error.message}`
-      );
+      console.log(`[getTotalTasksInDatabaseByUserAndFilters]: ${error.message}`);
       return 0;
     }
   }
@@ -201,7 +187,7 @@ export default function FilesService() {
   /**
    *
    * @param {{description: string, filename: string}} payload
-   * @returns {Promise<{downloaded: Boolean, message: string, type: number}>}
+   * @returns {Promise<{downloaded: Boolean, notificationDto: NotificationDto}>}
    */
   async function convertHtmlToDocx(payload) {
     try {
@@ -227,15 +213,13 @@ export default function FilesService() {
       URL.revokeObjectURL(url);
       return {
         downloaded: true,
-        message: "",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       console.log(`[convertHtmlToDocx] ${error.message}`);
       return {
         downloaded: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
@@ -268,10 +252,7 @@ export default function FilesService() {
       if (!response.ok) {
         // Handle HTTP error responses
         const errorResponse = await response.json();
-        console.error(
-          `[uploadFilesToBackendServer] Backend Error:`,
-          errorResponse
-        );
+        console.error(`[uploadFilesToBackendServer] Backend Error:`, errorResponse);
         return {
           uploaded: false,
           message: JSON.stringify(errorResponse),
@@ -306,10 +287,7 @@ export default function FilesService() {
    */
   async function updateDocRefIfExists(fileName) {
     try {
-      const checkFileQuery = query(
-        collectionRef,
-        where("name", "==", fileName)
-      );
+      const checkFileQuery = query(collectionRef, where("name", "==", fileName));
       const querySnapshot = await getDocs(checkFileQuery);
 
       const updates = [];
@@ -366,17 +344,13 @@ export default function FilesService() {
 
       //check if the file already exits in firebase
       //update the updated_at only do not save the entire file as a newly addec collection in firebase
-      const results = await Promise.all(
-        payload.files.map((file) => updateDocRefIfExists(file.name))
-      );
+      const results = await Promise.all(payload.files.map((file) => updateDocRefIfExists(file.name)));
 
       // Extract the `documentUpdated` values
       const updatedDocuments = results.map((result) => result.documentUpdated);
 
       //filter out the docsname that you do not want to updae
-      const payloadToSave = payload.files.filter(
-        (f) => !updatedDocuments.includes(f.name)
-      );
+      const payloadToSave = payload.files.filter((f) => !updatedDocuments.includes(f.name));
 
       //loop through data to  get the filename
       payloadToSave.forEach((file /** @type {File}  */) => {
@@ -471,10 +445,7 @@ export default function FilesService() {
       if (!response.ok) {
         // Handle HTTP error responses
         const errorResponse = await response.json();
-        console.error(
-          `[deleteFileFromBackendServer] Backend Error:`,
-          errorResponse
-        );
+        console.error(`[deleteFileFromBackendServer] Backend Error:`, errorResponse);
         return {
           deleted: false,
           message: JSON.stringify(errorResponse),
@@ -517,9 +488,7 @@ export default function FilesService() {
       const { id, ...restPayload } = payload;
       const updatedPayload = { ...restPayload, user_uid: userUid };
 
-      const deletedFromServer = await deleteFileFromBackendServer(
-        updatedPayload
-      );
+      const deletedFromServer = await deleteFileFromBackendServer(updatedPayload);
       if (!deletedFromServer.deleted) return deletedFromServer;
 
       const fileRTef = doc(db, table, id);

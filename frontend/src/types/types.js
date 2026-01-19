@@ -1,51 +1,9 @@
 import React from 'react'
 import { TaskDto } from '../features/kanboard/application/dto/TaskDto';
-/**
- * @typedef {Object} Notification
- * @property {string} message 
- * @property {number} type 
- * 
- */
 
-/**
- * @typedef {Object} User
- * @property {string} displayName 
- * @property {string} photoURL 
- * @property {string} token 
- * @property {string} [uid] 
- * @property {string} [email] 
- * 
- */
+//TODO change to reporter_id in FUTURE
 
-/**
- * @typedef {Object} Assignee
- * @property {string} name 
- * @property {string} assignee_id 
- * 
- */
 
-/**
- * @typedef {Object} Reporter
- * @property {string} name - 
- * @property {string} assignee_id || TODO change to reporter_id in FUTURE
- * 
- */
-
-/**
- * @typedef {Object} Task
- * @property {string} id - The unique identifier for the task.
- * @property {string} project_id - The unique identifier for the project.
- * @property {string} user_uid - The unique identifier for the user.
- * @property {string} title - The title of the task.
- * @property {string} description - The description of the task.
- * @property {number} status - The status of the task.
- * @property {number} priority - The priority level of the task.
- * @property {Assignee} assignee - The assignee of the task with name and unique identifier.
- * @property {Reporter} reporter - The reporter of the task with name and unique identifier.
- * @property {Boolean} archived - The archived status.
- * @property {Date} created_at - The timestamp when the task was created.
- * @property {Date} updated_at - The timestamp when the task was last updated.
- */
 
 /**
  * @typedef {Object} createTaskPayload
@@ -62,10 +20,7 @@ import { TaskDto } from '../features/kanboard/application/dto/TaskDto';
  * @property {Date} [updated_at] - The timestamp when the task was last updated.
  */
 
-/**
- * 
- * @typedef {Array<Task>} Tasks
- */
+
 /**
  * 
  * @typedef {Object} customFieldsPayload
@@ -155,17 +110,7 @@ import { TaskDto } from '../features/kanboard/application/dto/TaskDto';
  */
 
 
-/**
- * @typedef {Object} Board
- * @property {string} id
- * @property {string} user_uid
- * @property {string} name
- * @property {string} color
- * @property {boolean} archived
- * @property {boolean} collaborative
- * @property {string} created_at
- * @property {string} updated_at
- */
+
 
 export default function types() {
     return null;
