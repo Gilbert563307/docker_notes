@@ -1,11 +1,14 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
-import AuthService from '../../features/auth/service/AuthService';
-import useCookieStorageHook from '../hooks/useCookieStorageHook';
+import React, { createContext, useContext, useMemo, useState } from "react";
+import AuthService from "../../features/auth/service/AuthService";
+import useCookieStorageHook from "../hooks/useCookieStorageHook";
+import { UserDto } from "../../features/auth/application/dto/UserDto";
+
+const initialStateUser = new UserDto(null, null, null, null, null);
 
 /**
  * Context for managing user authentication state and actions.
  * @typedef {Object} AuthContextType
- * @property {import("../../types/types").User} user - The authenticated user object.
+ * @property {UserDto} user - The authenticated user object.
  * @property {Function} login - Function to perform user login.
  * @property {Function} logout - Function to perform user logout.
  */
@@ -17,21 +20,14 @@ import useCookieStorageHook from '../hooks/useCookieStorageHook';
  * @returns {React.Context<AuthContextType>} AuthProviderContext - Context provider for authentication.
  */
 const AuthProviderContext = createContext({
-  user: {
-    displayName: "",
-    photoURL: "",
-    token: "",
-    uid: undefined,
-    email: undefined
-  },
-  login: () => { },
-  logout: () => { },
+  user: initialStateUser,
+  login: () => {},
+  logout: () => {},
 });
-
 
 export const AUTH_STORAGE_KEYS = {
   USER: "USER",
-}
+};
 
 /**
  * Custom hook to access authentication context and functions.
@@ -41,7 +37,7 @@ export const useAuthProvider = () => {
   const authContext = useContext(AuthProviderContext);
 
   if (!authContext) {
-    throw new Error('useAuthProvider must be used within an AuthProvider');
+    throw new Error("useAuthProvider must be used within an AuthProvider");
   }
 
   return authContext;
@@ -58,27 +54,35 @@ export default function AuthProvider({ children }) {
   const { SignUserOut } = AuthService();
 
   const { createCookie, readCookie, deleteCookie } = useCookieStorageHook();
+
+  /**
+   * 
+   * @returns {UserDto | null}
+   */
   const getUserFromCookie = () => {
     try {
       const cookieData = readCookie(AUTH_STORAGE_KEYS.USER);
-      return cookieData ? JSON.parse(cookieData) : null;
+
+      const userDto = cookieData ? JSON.parse(cookieData) : null;
+      if (userDto === null) return null;
+      return new UserDto(userDto.uid, userDto.displayName, userDto.email, userDto.photoURL, userDto.token);
     } catch (error) {
       console.error("Failed to parse user data:", error);
       return null;
     }
-  }
+  };
 
   const [user, setUser] = useState(getUserFromCookie());
 
   /**
    * Simulates user login action.
    * In a real implementation, this function would handle authentication logic.
-   * @param {import("../../types/types").User} userObject 
+   * @param {UserDto} userDto
    */
-  const login = (userObject) => {
+  const login = (userDto) => {
     //save the state token so that we can later check for it;
-    createCookie(AUTH_STORAGE_KEYS.USER, JSON.stringify(userObject), 1, "/");
-    setUser(userObject);
+    createCookie(AUTH_STORAGE_KEYS.USER, JSON.stringify(userDto.toJson()), 1, "/");
+    setUser(userDto);
   };
 
   /**
@@ -86,7 +90,7 @@ export default function AuthProvider({ children }) {
    * In a real implementation, this function would handle logout logic.
    */
   const logout = () => {
-    deleteCookie(AUTH_STORAGE_KEYS.USER)
+    deleteCookie(AUTH_STORAGE_KEYS.USER);
     setUser(null); // Clear authenticated user
     SignUserOut(); // Sign user out of firebase
     localStorage.clear(); //Clear all localstorage items stored
@@ -100,9 +104,5 @@ export default function AuthProvider({ children }) {
     return { user, login, logout };
   }, [user]);
 
-  return (
-    <AuthProviderContext.Provider value={contextValue}>
-      {children}
-    </AuthProviderContext.Provider>
-  );
+  return <AuthProviderContext.Provider value={contextValue}>{children}</AuthProviderContext.Provider>;
 }

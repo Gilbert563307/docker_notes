@@ -19,7 +19,7 @@ export default function DefaultLayout() {
       <aside className="aside-navigation">
         <article className="aside-article-header">
           <h1 className="stats-tracker-h1">Tasks - Tracker</h1>
-          <p ><span className='text-body-secondary user-welcome'>Welcome,</span> <b className="fw-medium user-name">{user?.displayName}</b> </p>
+          <p ><span className='text-body-secondary user-welcome'>Welcome,</span> <b className="fw-medium user-name">{user?.getDisplayName()}</b> </p>
           <NavBar />
         </article>
       </aside>

@@ -61,7 +61,7 @@ export default function MainController() {
   return (
     <MainControllerContext.Provider value={contextValue}>
       <NotificationV4/>
-      {user != null && Object.keys(user).length > 0 ? (
+      {user != null ? (
         <ThemeContext.Provider value={{ darkTheme, lightTheme }}>
           <DefaultLayout />
         </ThemeContext.Provider>

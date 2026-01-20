@@ -2,6 +2,7 @@ import React from "react";
 
 import { KAN_BOARDS_CONTROLLER_ACTIONS, useKanBoardsControllerContext } from "../../features/kanboard/presentation/KanBoardsController";
 import KanboardForm from "../../features/kanboard/component/kanboard/KanBoardForm";
+import { KanBoardDto } from "../../features/kanboard/application/dto/KanBoardDto";
 
 export default function CollectListCreateKanBoard() {
   const { dispatch } = useKanBoardsControllerContext();
@@ -15,6 +16,6 @@ export default function CollectListCreateKanBoard() {
   };
 
   return (                          
-    <KanboardForm onSubmit={onSubmit} board={{name: "", color: ""}} submitButtonValue="create" />
+    <KanboardForm onSubmit={onSubmit} board={new KanBoardDto(null, null, null, null, null, null, null, null)} submitButtonValue="create" />
   );
 }

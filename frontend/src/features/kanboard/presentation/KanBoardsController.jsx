@@ -195,7 +195,6 @@ export default function KanBoardsController() {
     } catch (error) {
       // Close loader in case of error
       setNotificationToState(new NotificationDto(error.message, 1));
-      console.log(`KanBoardsController: error ${error}`);
     }
   }
 

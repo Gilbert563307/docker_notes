@@ -30,11 +30,11 @@ export default function TasksTableRow({ task }) {
   const Assignee = (
     <span>
       <img
-        src={user?.photoURL}
+        src={user?.getPhotoURL()}
         alt="Logo"
         className="linked-user-logo d-inline-block align-text-top border rounded-pill"
       />{" "}
-      {user.displayName}
+      {user.getDisplayName()}
     </span>
   );
 
