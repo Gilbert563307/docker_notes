@@ -147,6 +147,7 @@ export default function FirebaseInterface({ table }) {
           document.data().updated_at === null
         ) {
 
+          //TODO CHECK IF I NEED TO DO THIS AND WHY NOT USE SERVER TIME STAMP
           const dateNow = Date.now();
           return {
             ...document.data(),
