@@ -4,23 +4,6 @@ import { TaskDto } from '../features/kanboard/application/dto/TaskDto';
 //TODO change to reporter_id in FUTURE
 
 
-
-/**
- * @typedef {Object} createTaskPayload
- * @property {string} [id] - The unique identifier for the task.
- * @property {string} title - The title of the task.
- * @property {string} [project_id] - The unique identifier for the project.
- * @property {string} [description] - The description of the task.
- * @property {number} [status] - The status of the task.
- * @property {number} [priority] - The priority level of the task.
- * @property {Assignee} [assignee] - The assignee of the task with name and unique identifier.
- * @property {Reporter} [reporter] - The reporter of the task with name and unique identifier.
- * @property {Boolean} [archived] - The archived status.
- * @property {Date} [created_at] - The timestamp when the task was created.
- * @property {Date} [updated_at] - The timestamp when the task was last updated.
- */
-
-
 /**
  * 
  * @typedef {Object} customFieldsPayload
