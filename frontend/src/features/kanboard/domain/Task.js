@@ -1,4 +1,4 @@
-import { FieldValue } from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 import { DEFAULT_PROJECT_ID, TASKS_PRIORITY, TASKS_STATUS } from "../../../config";
 import { Assignee } from "./Assignee";
 import { Reporter } from "./Reporter";
@@ -32,8 +32,8 @@ export class Task {
    * @param {Assignee} assignee
    * @param {Reporter} reporter
    * @param {boolean} archived
-   * @param {FieldValue | Date | string} created_at
-   * @param {FieldValue | Date | string} updated_at
+   * @param {Timestamp} created_at
+   * @param {Timestamp} updated_at
    */
   constructor(
     id,
@@ -114,6 +114,15 @@ export class Task {
     return this.#updated_at;
   }
 
+  //TODO implement if needed
+  getReadAbleCreatedAt(){
+    return this.#created_at.toDate().toLocaleDateString();
+  }
+
+  getReadAbleUpdatedAt(){
+    return this.#created_at.toDate().toLocaleDateString();
+  }
+
   toJson() {
     return {
       id: this.#id,
@@ -158,8 +167,8 @@ export class Task {
    * @param {Assignee} assignee
    * @param {Reporter} reporter
    * @param {boolean} archived
-   * @param {FieldValue | Date | string} created_at
-   * @param {FieldValue | Date | string} updated_at
+   * @param {Timestamp} created_at
+   * @param {Timestamp} updated_at
    */
   update(
     project_id,

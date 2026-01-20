@@ -71,8 +71,8 @@ export default function TasksTableRow({ task }) {
       {/* <td>{Assignee}</td> */}
       {/* <td>...</td> */}
       {/* <td>...</td> */}
-      <td>{task.getCreatedAt()}</td>
-      <td>{task.getUpdatedAt()}</td>
+      <td>{task.getUserLocaleCreatedAt()}</td>
+      <td>{task.getUserLocaleUpdatedAt()}</td>
       <td>{Assignee}</td>
       <td className="main-table-actions">
         <button>
