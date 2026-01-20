@@ -1,10 +1,7 @@
 backend/.env
 backend/venv
-backend/__pycache__
 frontend/.env
 backend/service_account_key.json
-
-
 frontend/.env.production
 backend/.env.production
 frontend/.env
