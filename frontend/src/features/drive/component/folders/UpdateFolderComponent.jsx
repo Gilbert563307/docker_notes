@@ -2,7 +2,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import "../../css/UpdateFolderComponent.css";
 import DeleteFolderButton from "./DeleteFolderButton";
-import { FOLDERS_CONTROLLER_ACTIONS } from "../../controller/FoldersController";
+import { FOLDERS_CONTROLLER_ACTIONS } from "../../presentation/FoldersController";
 
 export default function UpdateFolderComponent({ folder, dispatch }) {
   const {

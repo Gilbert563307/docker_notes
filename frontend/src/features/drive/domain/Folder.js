@@ -1,4 +1,16 @@
+import { Timestamp } from "firebase/firestore";
+
 export class Folder {
+  /**
+   * 
+   * @param {string} id 
+   * @param {string} user_uid 
+   * @param {string} name 
+   * @param {string} color 
+   * @param {boolean} archived 
+   * @param {Timestamp} created_at 
+   * @param {Timestamp} updated_at 
+   */
   constructor(id, user_uid, name, color, archived, created_at, updated_at) {
     this.id = id;
     this.user_uid = user_uid;
@@ -51,8 +63,7 @@ export class Folder {
   }
 
   /** Update one or more fields */
-  update(data = {}) {
-    Object.assign(this, data);
-    // this.updated_at = new Date().toISOString();
+  update() {
+    throw new Error("method needs to be implemented")
   }
 }

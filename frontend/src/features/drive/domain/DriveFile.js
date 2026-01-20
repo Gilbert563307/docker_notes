@@ -1,14 +1,18 @@
+import { Timestamp } from "firebase/firestore";
+
 export class DriveFile {
-  constructor(
-    id,
-    name,
-    folder_id,
-    size,
-    type,
-    archived,
-    created_at,
-    updated_at
-  ) {
+  /**
+   * 
+   * @param {string} id 
+   * @param {string} name 
+   * @param {string} folder_id 
+   * @param {number} size 
+   * @param {string} type 
+   * @param {boolean} archived 
+   * @param {Timestamp} created_at
+   * @param {Timestamp} updated_at 
+   */
+  constructor(id, name, folder_id, size, type, archived, created_at, updated_at) {
     this.id = id;
     this.name = name;
     this.folder_id = folder_id;
@@ -19,7 +23,6 @@ export class DriveFile {
     this.updated_at = updated_at;
   }
 
-  // ===== Getters =====
   getId() {
     return this.id;
   }
@@ -67,8 +70,7 @@ export class DriveFile {
   }
 
   /** Update one or more fields */
-  update(data = {}) {
-    Object.assign(this, data);
-    // this.updated_at = new Date().toISOString();
+  update() {
+    throw new Error("method needs to be implemented");
   }
 }

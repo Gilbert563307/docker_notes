@@ -2,7 +2,7 @@ import React from "react";
 
 import { useDebounce } from "use-debounce";
 import { DEBOUNCE_SECONDS } from "../../config";
-import { FOLDERS_CONTROLLER_ACTIONS, useFoldersControllerContext } from "../../features/drive/controller/FoldersController";
+import { FOLDERS_CONTROLLER_ACTIONS, useFoldersControllerContext } from "../../features/drive/presentation/FoldersController";
 
 /**
  * A custom React hook for handling task search functionality.
