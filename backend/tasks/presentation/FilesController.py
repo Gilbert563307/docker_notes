@@ -4,11 +4,8 @@ from config.constants import (
     MAX_FILE_UPLOAD_SIZE,
 )
 
-
 from tasks.application.service.FilesService import FilesService
-
 from pydantic import BaseModel
-
 
 # Define the request body model
 class FileRequest(BaseModel):
@@ -61,7 +58,7 @@ async def create_upload_files(
     return {"message": "Success", "data": {"uploaded_files": uploaded_files}}
 
 
-@files_router.post("/delete")
+@files_router.delete("/delete")
 async def delete_file(request: FileRequest):
     if not request.user_uid:
         raise HTTPException(status_code=400, detail="The user uid cannot be empty")
@@ -73,10 +70,10 @@ async def delete_file(request: FileRequest):
         raise HTTPException(status_code=404, detail="File not found or could not be deleted")
 
 
-@files_router.post("/get")
-async def get_file_to_download(request: FileRequest):
-    if not request.user_uid:
+@files_router.get("{filename}/{user_uid}")
+async def get_file_to_download(filename: str, user_uid: str):
+    if not user_uid:
         raise HTTPException(status_code=400, detail="The user uid cannot be empty")
-    file_to_download = FilesService.get_download_file(request.user_uid, request.filename)
+    file_to_download = FilesService.get_download_file(user_uid, filename)
     if file_to_download is None:
         raise HTTPException(status_code=404, detail="File not found") 

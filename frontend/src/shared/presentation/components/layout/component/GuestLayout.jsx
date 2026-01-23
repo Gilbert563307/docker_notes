@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import NotificationV4 from "../../../../features/notification/component/NotificationV4";
+import NotificationV4 from "../../../../../features/notification/component/NotificationV4";
 
 export default function GuestLayout() {
   return (

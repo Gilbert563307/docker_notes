@@ -1,7 +1,7 @@
 import React from "react";
 import { createBrowserRouter } from "react-router-dom";
 import AuthProvider from "./shared/context/AuthProvider";
-import MainController from "./shared/controller/MainController";
+import MainController from "./shared/presentation/controller/MainController";
 import ProtectedRoute from "./utils/router/ProtectedRoute";
 import LandingPage from "./pages/LandingPage";
 import BoardsController from "./features/kanboard/presentation/BoardsController";

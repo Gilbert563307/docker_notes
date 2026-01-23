@@ -1,5 +1,5 @@
 import React from "react";
-import BS5Preloader from "../components/bs5/BS5Preloader";
+import BS5Preloader from "../presentation/components/bs5/BS5Preloader";
 
 /**
  * Custom hook for managing Bootstrap 5 preloader state.

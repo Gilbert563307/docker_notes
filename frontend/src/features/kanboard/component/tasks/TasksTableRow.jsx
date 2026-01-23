@@ -3,7 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import useHtmlCssHelpers from "../../../../shared/helpers/useHtmlCssHelpers";
 import { useAuthProvider } from "../../../../shared/context/AuthProvider";
-import BS5TruncateSpan from "../../../../shared/components/bs5/BS5TruncateSpan";
+import BS5TruncateSpan from "../../../../shared/presentation/components/bs5/BS5TruncateSpan";
 import ArchiveTaskButton from "./buttons/ArchiveTaskButton";
 import { TaskDto } from "../../application/dto/TaskDto";
 

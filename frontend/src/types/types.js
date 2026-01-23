@@ -1,5 +1,6 @@
 import React from 'react'
 import { TaskDto } from '../features/kanboard/application/dto/TaskDto';
+import { DriveFileDto } from '../features/drive/application/dto/DriveFileDto';
 
 //TODO change to reporter_id in FUTURE
 
@@ -34,17 +35,6 @@ import { TaskDto } from '../features/kanboard/application/dto/TaskDto';
  * @typedef {Array<TaskBoardHeader>} TaskBoardHeaders 
  */
 
-/**
- * @typedef {Object} DriveFile
- * @property {string} id
- * @property {string} name
- * @property {string} folder_id
- * @property {number} size
- * @property {string} type
- * @property {boolean} archived
- * @property {string} created_at
- * @property {string} updated_at
- */
 
 /**
  * @typedef {Object} Folder
@@ -55,11 +45,6 @@ import { TaskDto } from '../features/kanboard/application/dto/TaskDto';
  * @property {boolean} archived
  * @property {string} created_at
  * @property {string} updated_at
- */
-
-/**
- * 
- * @typedef {Array<DriveFile>} DriveFiles 
  */
 
 /**
@@ -83,16 +68,13 @@ import { TaskDto } from '../features/kanboard/application/dto/TaskDto';
  * @typedef {Array<Session>} Sessions
  */
 
-
 /**
  * 
  * @typedef {Object} FilesResponse
- * @property {DriveFiles} files
+ * @property {Array<DriveFileDto>} files
  * @property {number} total
  * @property {number} pages
  */
-
-
 
 
 export default function types() {

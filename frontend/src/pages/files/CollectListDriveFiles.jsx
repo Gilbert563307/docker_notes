@@ -3,7 +3,7 @@ import useSetPageTitleHook from "../../shared/hooks/useSetPageTitleHook";
 import { Link } from "react-router-dom";
 import useGetFilesHook from "../../shared/hooks/useGetFilesHook";
 import RepositoryTable from "../../features/drive/component/drive/RepositoryTable";
-import BS5PaginationV2 from "../../shared/components/bs5/BS5PaginationV2";
+import BS5PaginationV2 from "../../shared/presentation/components/bs5/BS5PaginationV2";
 import DriveSearchBar from "../../features/drive/component/drive/DriveSearchBar";
 
 export default function CollectListDriveFiles() {

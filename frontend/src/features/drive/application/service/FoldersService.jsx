@@ -1,6 +1,6 @@
 import React from "react";
 import { DEFAULT_FOLDERS_ARCHIVE, FOLDERS_ARCHIVED_SESSION_FILTER, MAX_FOLDERS_TO_FETCH } from "../../../../config";
-import { ALERT_TYPES } from "../../../../shared/components/bs5/BS5Alert";
+import { ALERT_TYPES } from "../../../../shared/presentation/components/bs5/BS5Alert";
 import useHelpers from "../../../../shared/helpers/useHelpers";
 import { Query } from "firebase/firestore";
 import FirebaseInterface from "../../../../shared/data/FirebaseInterface";

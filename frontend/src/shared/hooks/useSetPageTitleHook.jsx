@@ -1,5 +1,5 @@
 import React from 'react';
-import { useMainControllerContext } from '../controller/MainController';
+import { useMainControllerContext } from '../presentation/controller/MainController';
 
 /**
  * Custom hook to set the page title using the MainController context.

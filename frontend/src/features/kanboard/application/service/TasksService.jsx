@@ -1,4 +1,4 @@
-import { ALERT_TYPES } from "../../../../shared/components/bs5/BS5Alert";
+import { ALERT_TYPES } from "../../../../shared/presentation/components/bs5/BS5Alert";
 import {
   DEFAULT_PROJECT_ID,
   DEFAULT_TASKS_ARCHIVE,
@@ -18,7 +18,7 @@ import { Assignee } from "../../domain/Assignee";
 import { Reporter } from "../../domain/Reporter";
 import { TasksMapper } from "../mapper/TasksMapper";
 import { TaskDto } from "../dto/TaskDto";
-import FilesService from "../../../../shared/service/FilesService";
+import FilesService from "../../../../shared/application/service/FilesService";
 import { NotificationDto } from "../../../notification/application/dto/NotificationDto";
 import { AssigneeDto } from "../dto/AssigneeDto";
 import { ReporterDto } from "../dto/RepoterDto";

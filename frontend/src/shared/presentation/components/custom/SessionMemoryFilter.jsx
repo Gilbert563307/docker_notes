@@ -6,8 +6,8 @@ import {
   DEFAULT_PAGE_NUMBER,
   PAGE_NUMBER,
   SESSION_FILTERS_ARRAY_CONFIG_NAME,
-} from "../../../config";
-import useHelpers from "../../helpers/useHelpers";
+} from "../../../../config";
+import useHelpers from "../../../helpers/useHelpers";
 import BS5Switch from "../bs5/BS5Switch";
 
 /**

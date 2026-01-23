@@ -3,6 +3,7 @@ import React from "react";
 import { useDebounce } from "use-debounce";
 import { DEBOUNCE_SECONDS } from "../../config";
 import { DRIVE_CONTROLLER_ACTIONS, useDriveControllerContext } from "../../features/drive/presentation/DriveController";
+import { ListFilesBySearchTermDto } from "../../features/drive/presentation/dto/ListFilesBySearchTermDto";
 
 /**
  * @param {Object} props - The props object.
@@ -24,7 +25,7 @@ export default function useDriveSearchBarHook({ searchValue }) {
     const fetchTasksBySearchTerm = () => {
       dispatch({
         type: DRIVE_CONTROLLER_ACTIONS.SEARCH_FILES_BY_SEARCH_TERM,
-        payload: debounceSearchInput,
+        payload: new ListFilesBySearchTermDto(debounceSearchInput),
       });
     };
     fetchTasksBySearchTerm();

@@ -82,9 +82,22 @@ export class DriveFile {
   }
 
   /** Return object representation */
-  toString() {
+  toJson() {
     return {
       id: this.#id,
+      name: this.#name,
+      folder_id: this.#folder_id,
+      user_uid: this.#user_uid,
+      size: this.#size,
+      type: this.#type,
+      archived: this.#archived,
+      created_at: this.#created_at,
+      updated_at: this.#updated_at,
+    };
+  }
+
+  toJsonWithoutId() {
+    return {
       name: this.#name,
       folder_id: this.#folder_id,
       user_uid: this.#user_uid,
@@ -126,7 +139,10 @@ export class DriveFile {
     }
     //TODO FINISH VALIDATION
     if (size) {
-      throw new Error(`File size ${size}`);
+      const MAX_FILE_UPLOAD_SIZE = 100 * 1024 * 1024; //# 100MB
+      if (size > MAX_FILE_UPLOAD_SIZE) {
+        throw new Error(`File size to large. Maximum size is 100MB`);
+      }
     }
 
     if (!type || typeof type !== "string") {

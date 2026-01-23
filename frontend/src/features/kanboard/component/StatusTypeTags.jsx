@@ -1,6 +1,6 @@
 import React from 'react'
 import { STATUS_FILTER_TYPE_TAGS } from '../../../config';
-import SessionMemoryFilter from '../../../shared/components/custom/SessionMemoryFilter';
+import SessionMemoryFilter from '../../../shared/presentation/components/custom/SessionMemoryFilter';
 
 export default function StatusTypeTags() {
     return (

@@ -6,7 +6,7 @@ import useGetFoldersHook from "../../shared/hooks/useGetFoldersHook";
 import FoldersSearchBar from "../../features/drive/component/folders/FoldersSearchBar";
 import FilterFoldersButton from "../../features/drive/component/folders/FilterFoldersButton";
 import FoldersTable from "../../features/drive/component/folders/FoldersTable";
-import BS5PaginationV2 from "../../shared/components/bs5/BS5PaginationV2";
+import BS5PaginationV2 from "../../shared/presentation/components/bs5/BS5PaginationV2";
 
 export default function CollectListFolders() {
   useSetPageTitleHook({ title: "Folders " });

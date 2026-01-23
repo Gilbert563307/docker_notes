@@ -1,11 +1,12 @@
 import React from 'react'
 import RepositoryTableRow from './RepositoryTableRow';
+import { DriveFileDto } from '../../application/dto/DriveFileDto';
 
 
 /**
  * 
  * @param {Object} props - The properties object.
- * @param {import("../../../../types/types").DriveFiles} props.files - 
+ * @param {Array<DriveFileDto>} props.files - 
  * @returns {JSX.Element} The rendered  component.
  */
 export default function RepositoryTable({ files }) {
@@ -43,7 +44,7 @@ export default function RepositoryTable({ files }) {
           {files &&
             files.length > 0 &&
             files.map((file, index) => (
-              <RepositoryTableRow key={file.id || index} file={file} />
+              <RepositoryTableRow key={file.getId() || index} file={file} />
             ))}
         </tbody>
       </table>

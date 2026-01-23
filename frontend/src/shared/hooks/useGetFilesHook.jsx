@@ -2,10 +2,11 @@ import React from 'react'
 
 import usePaginationHook from './usePaginationHook';
 import { DRIVE_CONTROLLER_ACTIONS, useDriveControllerContext } from '../../features/drive/presentation/DriveController';
+import { DriveFileDto } from '../../features/drive/application/dto/DriveFileDto';
 
 /**
  * 
- * @returns {{files: import("../../types/types").DriveFiles, total: number, pages: number}}
+ * @returns {{files: Array<DriveFileDto>, total: number, pages: number}}
  */
 export default function useGetFilesHook() {
     const { state, dispatch } = useDriveControllerContext();

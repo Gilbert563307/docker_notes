@@ -3,7 +3,7 @@ import React from 'react'
 import TasksTableRow from './TasksTableRow'
 import "../../css/TasksTable.css";
 import { Link } from 'react-router-dom';
-import { Show } from '../../../../shared/components/custom/Show';
+import { Show } from '../../../../shared/presentation/components/custom/Show';
 import { TaskDto } from '../../application/dto/TaskDto';
 
 

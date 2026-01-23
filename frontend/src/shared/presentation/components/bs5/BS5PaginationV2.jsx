@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from "react";
 import ReactPaginate from "react-paginate";
-import { PAGE_NUMBER } from "../../../config";
+import { PAGE_NUMBER } from "../../../../config";
 import { useSearchParams } from "react-router-dom";
 import { Show } from "../custom/Show";
-import useHelpers from "../../helpers/useHelpers";
+import useHelpers from "../../../helpers/useHelpers";
 
 /**
  * Will only display the page numbers when the total page numbers is greater than 1

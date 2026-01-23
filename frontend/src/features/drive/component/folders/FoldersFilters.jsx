@@ -1,6 +1,6 @@
 import React from "react";
 import { FOLDERS_ARCHIVED_SESSION_FILTER } from "../../../../config";
-import SessionMemoryFilter from "../../../../shared/components/custom/SessionMemoryFilter";
+import SessionMemoryFilter from "../../../../shared/presentation/components/custom/SessionMemoryFilter";
 
 export default function FoldersFilters() {
   return (

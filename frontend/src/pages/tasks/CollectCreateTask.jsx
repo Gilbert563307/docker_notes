@@ -6,7 +6,7 @@ import {
 import { useForm } from "react-hook-form";
 import { TASKS_PRIORITY, TASKS_STATUS } from "../../config";
 import "./css/CollectCreateTask.css";
-import QuilTextEditor from "../../shared/components/texteditor/component/QuilTextEditor";
+import QuilTextEditor from "../../shared/presentation/components/texteditor/component/QuilTextEditor";
 import DrodownOptions from "../../features/kanboard/component/tasks/DrodownOptions";
 import { CreateTaskDto } from "../../features/kanboard/presentation/dto/CreateTaskDto";
 

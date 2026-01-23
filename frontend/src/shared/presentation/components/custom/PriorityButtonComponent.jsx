@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
-import { TASKS_PRIORITY, TASKS_STATUS } from '../../../config';
-import useHtmlCssHelpers from '../../helpers/useHtmlCssHelpers';
+import { TASKS_PRIORITY, TASKS_STATUS } from '../../../../config';
+import useHtmlCssHelpers from '../../../helpers/useHtmlCssHelpers';
 
 /**
  * @param {Object} props - The component props.

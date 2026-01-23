@@ -1,6 +1,6 @@
 import React from "react";
 import "../../../assets/css/components/NotificationV3.css";
-import BS5Alert, { ALERT_ACTIONS } from "../../../shared/components/bs5/BS5Alert";
+import BS5Alert, { ALERT_ACTIONS } from "../../../shared/presentation/components/bs5/BS5Alert";
 
 /**
  * A reusable notification component that listens to a specified controller context.

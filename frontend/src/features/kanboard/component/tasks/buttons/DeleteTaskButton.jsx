@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../../presentation/TasksController';
-import { Show } from '../../../../../shared/components/custom/Show';
-import BS5Modal, { MODAL_SIZES } from '../../../../../shared/components/bs5/BS5Modal';
+import { Show } from '../../../../../shared/presentation/components/custom/Show';
+import BS5Modal, { MODAL_SIZES } from '../../../../../shared/presentation/components/bs5/BS5Modal';
 
 export default function DeleteTaskButton({ taskId }) {
     const { dispatch } = useTasksControllerContext();

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import FilesService from "../../../shared/service/FilesService";
+import FilesService from "../../../shared/application/service/FilesService";
 import useHelpers from "../../../shared/helpers/useHelpers";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
 import { NotificationDto } from "../../notification/application/dto/NotificationDto";
@@ -10,7 +10,7 @@ import { UploadFilesDto } from "./dto/UploadFilesDto";
 import { ArchiveFileDto } from "./dto/ArchiveFileDto";
 import { DeleteFileDto } from "./dto/DeleteFileDto";
 import { DownloadFileDto } from "./dto/DownloadFileDto";
-import { ListFilesBySearchTerm, ListFilesBySearchTermDto } from "./dto/ListFilesBySearchTermDto";
+import { ListFilesBySearchTermDto } from "./dto/ListFilesBySearchTermDto";
 
 /**
  * @typedef {Object} InitialState
@@ -20,7 +20,6 @@ import { ListFilesBySearchTerm, ListFilesBySearchTermDto } from "./dto/ListFiles
  */
 
 const initialDriveFileDto = new DriveFileDto(null, null, null, null, null, null, null, null);
-
 const initialFolderDto = new FolderDto(null, null, null, null, null, null, null);
 
 /**

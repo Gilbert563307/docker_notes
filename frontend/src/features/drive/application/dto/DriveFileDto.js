@@ -2,6 +2,7 @@ export class DriveFileDto {
   #id;
   #name;
   #folder_id;
+  #user_uid;
   #size;
   #type;
   #archived;
@@ -13,16 +14,18 @@ export class DriveFileDto {
    * @param {string} id
    * @param {string} name
    * @param {string} folder_id
+   * @param {string} user_uid
    * @param {number} size
    * @param {string} type
    * @param {boolean} archived
    * @param {*} created_at
    * @param {*} updated_at
    */
-  constructor(id, name, folder_id, size, type, archived, created_at, updated_at) {
+  constructor(id, name, folder_id, user_uid, size, type, archived, created_at, updated_at) {
     this.#id = id;
     this.#name = name;
     this.#folder_id = folder_id;
+    this.#user_uid = user_uid;
     this.#size = size;
     this.#type = type;
     this.#archived = archived;
@@ -42,6 +45,11 @@ export class DriveFileDto {
     return this.#folder_id;
   }
 
+  
+  getUserUId() {
+    return this.#user_uid;
+  }
+
   getSize() {
     return this.#size;
   }
@@ -55,11 +63,11 @@ export class DriveFileDto {
   }
 
   getCreatedAt() {
-    return this.#created_at;
+    return this.#created_at.toLocaleString();
   }
 
   getUpdatedAt() {
-    return this.#updated_at;
+    return this.#updated_at.toLocaleString();
   }
 
   /** Return object representation */

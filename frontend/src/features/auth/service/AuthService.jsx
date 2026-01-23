@@ -1,5 +1,5 @@
 import React from "react";
-import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
+import { ALERT_TYPES } from "../../../shared/presentation/components/bs5/BS5Alert";
 import { auth, googleProvider, githubProvider } from "../../../database/firebaseConfig";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { SHA256 } from "crypto-js";

@@ -1,10 +1,10 @@
 import React, { createContext, useMemo, useState, useContext } from "react";
-import { useAuthProvider } from "../context/AuthProvider";
-import { ThemeContext } from "../context/ThemeContext";
-import ThemeService from "../service/ThemeService";
 import DefaultLayout from "../components/layout/component/DefaultLayout";
 import GuestLayout from "../components/layout/component/GuestLayout";
-import NotificationV4 from "../../features/notification/component/NotificationV4";
+import { useAuthProvider } from "../../context/AuthProvider";
+import ThemeService from "../../application/service/ThemeService";
+import NotificationV4 from "../../../features/notification/component/NotificationV4";
+import { ThemeContext } from "../../context/ThemeContext";
 
 /**
  * Initial state for the MainController.

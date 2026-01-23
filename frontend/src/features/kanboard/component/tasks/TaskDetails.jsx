@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React from 'react'
-import StatusButtonComponent from '../../../../shared/components/custom/StatusButtonComponent'
-import PriorityButtonComponent from '../../../../shared/components/custom/PriorityButtonComponent'
+import StatusButtonComponent from '../../../../shared/presentation/components/custom/StatusButtonComponent'
+import PriorityButtonComponent from '../../../../shared/presentation/components/custom/PriorityButtonComponent'
 import { TaskDto } from '../../application/dto/TaskDto'
 
 /**

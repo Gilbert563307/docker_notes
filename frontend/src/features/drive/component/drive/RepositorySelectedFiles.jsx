@@ -1,5 +1,5 @@
 import React from "react";
-import BS5TruncateSpan from "../../../../shared/components/bs5/BS5TruncateSpan";
+import BS5TruncateSpan from "../../../../shared/presentation/components/bs5/BS5TruncateSpan";
 
 /**
  *

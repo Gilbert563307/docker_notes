@@ -1,5 +1,5 @@
 # Max file size in bytes (50MB in this case)
-MAX_FILE_UPLOAD_SIZE = 50 * 1024 * 1024  # 50MB
+MAX_FILE_UPLOAD_SIZE = 100 * 1024 * 1024  # 50MB
 
 # Allowed MIME types (images, PDFs, text files, documents)
 ALLOWED_UPLOAD_MIME_TYPES = [

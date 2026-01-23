@@ -1,5 +1,5 @@
 import React from "react";
-import { ALERT_ACTIONS } from "../../../shared/components/bs5/BS5Alert";
+import { ALERT_ACTIONS } from "../../../shared/presentation/components/bs5/BS5Alert";
 import FirebaseInterface from "../../../shared/data/FirebaseInterface";
 
 export default function SessionService() {

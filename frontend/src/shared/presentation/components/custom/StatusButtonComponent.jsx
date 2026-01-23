@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
-import { TASKS_STATUS } from '../../../config';
-import useHtmlCssHelpers from '../../helpers/useHtmlCssHelpers';
+import { TASKS_STATUS } from '../../../../config';
+import useHtmlCssHelpers from '../../../helpers/useHtmlCssHelpers';
 
 /**
  * StatusButtonComponent renders a button with a dropdown to select task status.

@@ -5,7 +5,7 @@ import {
   AVAILABLE_ITEMS_PER_PAGE,
   ITEMS_PER_PAGE,
   PAGE_NUMBER,
-} from "../../../config";
+} from "../../../../config";
 
 /**
  * 

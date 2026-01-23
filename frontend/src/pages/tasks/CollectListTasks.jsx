@@ -3,7 +3,7 @@ import useSetPageTitleHook from "../../shared/hooks/useSetPageTitleHook";
 import "./css/CollectListTasks.css";
 import useGetTasksHook from "../../shared/hooks/useGetTasksHook";
 import { Link } from "react-router-dom";
-import BS5PaginationV2 from "../../shared/components/bs5/BS5PaginationV2";
+import BS5PaginationV2 from "../../shared/presentation/components/bs5/BS5PaginationV2";
 import TasksTable from "../../features/kanboard/component/tasks/TasksTable";
 import TasksSearchBar from "../../features/kanboard/component/tasks/TasksSearchBar";
 import FilterTasksButton from "../../features/kanboard/component/tasks/buttons/FilterTasksButton";

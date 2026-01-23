@@ -1,8 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from '../../../presentation/TasksController';
 import useHelpers from '../../../../../shared/helpers/useHelpers';
-import { Show } from '../../../../../shared/components/custom/Show';
-import BS5Modal, { MODAL_SIZES } from '../../../../../shared/components/bs5/BS5Modal';
+import { Show } from '../../../../../shared/presentation/components/custom/Show';
+import BS5Modal, { MODAL_SIZES } from '../../../../../shared/presentation/components/bs5/BS5Modal';
 import TasksFilters from '../TasksFilters';
 // import "../../../../assets/css/components/DialogicFilterButton.css";
 

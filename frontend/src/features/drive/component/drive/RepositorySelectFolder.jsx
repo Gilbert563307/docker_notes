@@ -1,7 +1,7 @@
 import React from "react";
 import useGetDriveFoldersHook from "../../../../shared/hooks/useGetDriveFoldersHook";
 import { DEFAULT_SELECT_FOLDER_MESSAGE } from "../../../../config";
-import { Show } from "../../../../shared/components/custom/Show";
+import { Show } from "../../../../shared/presentation/components/custom/Show";
 
 /**
  *

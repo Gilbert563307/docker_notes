@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Show } from "../../../../shared/components/custom/Show";
-import BS5Modal, { MODAL_SIZES } from "../../../../shared/components/bs5/BS5Modal";
+import { Show } from "../../../../shared/presentation/components/custom/Show";
+import BS5Modal, { MODAL_SIZES } from "../../../../shared/presentation/components/bs5/BS5Modal";
 import {
   BOARD_CONTROLLER_ACTIONS,
   useBoardsControllerContext,
 } from "../../presentation/BoardsController";
-import { ALERT_TYPES } from "../../../../shared/components/bs5/BS5Alert";
+import { ALERT_TYPES } from "../../../../shared/presentation/components/bs5/BS5Alert";
 import { useParams } from "react-router-dom";
 import { CreateTaskDto } from "../../presentation/dto/CreateTaskDto";
 

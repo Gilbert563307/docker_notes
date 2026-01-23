@@ -1,5 +1,5 @@
 import React from 'react'
-import SessionMemoryFilter from '../../../../shared/components/custom/SessionMemoryFilter';
+import SessionMemoryFilter from '../../../../shared/presentation/components/custom/SessionMemoryFilter';
 import { TASKS_ARCHIVED_SESSION_FILTER } from '../../../../config';
 import StatusTypeTags from '../StatusTypeTags';
 import PriorityTypeTags from '../PriorityTypeTags';

@@ -1,18 +1,20 @@
 import React from "react";
-import { ALERT_TYPES } from "../components/bs5/BS5Alert";
+import { ALERT_TYPES } from "../../presentation/components/bs5/BS5Alert";
 import { asBlob } from "html-docx-js-typescript";
 import { Query } from "firebase/firestore";
-import { DEFAULT_FILES_ARCHIVE, FILES_ARCHIVED_SESSION_FILTER } from "../../config";
-import useHelpers from "../helpers/useHelpers";
-import FirebaseInterface from "../data/FirebaseInterface";
-import { NotificationDto } from "../../features/notification/application/dto/NotificationDto";
-import FoldersService from "../../features/drive/application/service/FoldersService";
-import { UploadFilesDto } from "../../features/drive/presentation/dto/UploadFilesDto";
-import { ListFilesBySearchTermDto } from "../../features/drive/presentation/dto/ListFilesBySearchTermDto";
-import { DownloadFileDto } from "../../features/drive/presentation/dto/DownloadFileDto";
-import { DeleteFileFromBackendServerDto } from "../../features/drive/presentation/dto/DeleteFileFromBackendServerDto";
-import { DeleteFileDto } from "../../features/drive/presentation/dto/DeleteFileDto";
-import { DriveFile } from "../../features/drive/domain/DriveFile";
+import { DEFAULT_FILES_ARCHIVE, FILES_ARCHIVED_SESSION_FILTER } from "../../../config";
+import useHelpers from "../../helpers/useHelpers";
+import FirebaseInterface from "../../data/FirebaseInterface";
+import { NotificationDto } from "../../../features/notification/application/dto/NotificationDto";
+import FoldersService from "../../../features/drive/application/service/FoldersService";
+import { UploadFilesDto } from "../../../features/drive/presentation/dto/UploadFilesDto";
+import { ListFilesBySearchTermDto } from "../../../features/drive/presentation/dto/ListFilesBySearchTermDto";
+import { DownloadFileDto } from "../../../features/drive/presentation/dto/DownloadFileDto";
+import { DeleteFileFromBackendServerDto } from "../../../features/drive/presentation/dto/DeleteFileFromBackendServerDto";
+import { DeleteFileDto } from "../../../features/drive/presentation/dto/DeleteFileDto";
+import { DriveFile } from "../../../features/drive/domain/DriveFile";
+import { DriveFilesMapper } from "../../../features/drive/application/mapper/DriveFilesMapper";
+import { ArchiveFileDto } from "../../../features/drive/presentation/dto/ArchiveFileDto";
 
 export default function FilesService() {
   const {
@@ -80,23 +82,12 @@ export default function FilesService() {
   }
 
   /**
-   * @typedef {Object} getFilesTasksQueryResponse
-   * @property {Query | null} resultsQuery
-   * @property {string} message
-   * @property {number} type
-   */
-
-  /**
-   * @typedef {Promise<getFilesTasksQueryResponse> | getFilesTasksQueryResponse} GetFilesTasksQueryResponseType
-   */
-
-  /**
    * Generates a Firestore query to fetch tasks for the current page.
    *
    *@param {{currentPage: number, itemsPerPage?: number, searchTearm?: string }} payload
-   * @returns {GetFilesTasksQueryResponseType} The Firestore query to fetch tasks for the specified page.
+   * @returns {Promise<{resultsQuery: Query | null, notificationDto: NotificationDto}>} The Firestore query to fetch tasks for the specified page.
    */
-  function getFilesTasksQuery(payload) {
+  async function getFilesTasksQuery(payload) {
     try {
       // Destructure the vars
       const { currentPage } = payload;
@@ -107,10 +98,22 @@ export default function FilesService() {
 
       // If the current page is the first page, create a query limited by the items per page
       if (currentPage === 1) {
-        return fetchResultsOnPageOne(queryItems, itemsPerPage);
+        const { resultsQuery, message, type } = fetchResultsOnPageOne(queryItems, itemsPerPage);
+        return {
+          resultsQuery: resultsQuery,
+          notificationDto: new NotificationDto(message, type),
+        };
       }
-
-      return fetchPaginatedResults(currentPage, payload, itemsPerPage, queryItems);
+      const { resultsQuery, message, type } = await fetchPaginatedResults(
+        currentPage,
+        payload,
+        itemsPerPage,
+        queryItems,
+      );
+      return {
+        resultsQuery: resultsQuery,
+        notificationDto: new NotificationDto(message, type),
+      };
     } catch (error) {
       return {
         resultsQuery: null,
@@ -121,8 +124,7 @@ export default function FilesService() {
 
   async function getTotalTasksInDatabaseByUserAndFilters() {
     try {
-      const payload = { searchTearm: "" };
-      const { queryItems } = getFilesQueryClauses(payload);
+      const { queryItems } = getFilesQueryClauses({ searchTearm: "" });
 
       const totalQuery = query(collectionRef, ...queryItems);
       const totalRecordsSnapShot = await getCountFromServer(totalQuery);
@@ -136,7 +138,7 @@ export default function FilesService() {
   /**
    *
    * @param {{ currentPage: number, itemsPerPage?: number, searchTearm?: string, folderId?: string }} payload
-   * @returns {Promise<{results: import("../../types/types").FilesResponse,  notificationDto: NotificationDto }>}
+   * @returns {Promise<{results: import("../../../types/types").FilesResponse,  notificationDto: NotificationDto }>}
    */
   async function _listFiles(payload) {
     try {
@@ -147,16 +149,16 @@ export default function FilesService() {
       const querySnapshot = await getDocs(resultsQuery);
 
       const { results } = convertQuerySnapShotDocs(querySnapshot);
+      const driveFilesDto = DriveFilesMapper.arrayToDtoList(results);
 
       //get total records for pagination
       const totalRecords = await getTotalTasksInDatabaseByUserAndFilters();
-      //get total pages for paginartion
+      //get total pages for pagination
       const totalPages = getTotalPages(totalRecords);
 
-      //return results
       return {
-        results: { files: results, total: totalRecords, pages: totalPages },
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.SUCCESS),
+        results: { files: driveFilesDto, total: totalRecords, pages: totalPages },
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       return {
@@ -231,11 +233,11 @@ export default function FilesService() {
   async function uploadFilesToBackendServer(payload) {
     const formData = new FormData();
 
-    formData.append("folder_id", payload.folderId);
+    formData.append("folder_id", payload.getFolderId());
     formData.append("user_uid", userUid);
 
     // Append files to FormData
-    payload.files.forEach((file) => {
+    payload.getFiles().forEach((file) => {
       formData.append(`files`, file, file.name);
     });
 
@@ -268,7 +270,6 @@ export default function FilesService() {
       console.error(`[uploadFilesToBackendServer] ${error.message}`);
       return {
         uploaded: false,
-
         notificationDto: new NotificationDto(
           error.message || "An error occurred during file upload.",
           ALERT_TYPES.DANGER,
@@ -296,14 +297,22 @@ export default function FilesService() {
 
         if (oldData.name === fileName) {
           documentUpdated = fileName;
-          const newData = {
-            ...oldData,
-            updated_at: currentServerTimestamp,
-          };
+
+          const driveFile = new DriveFile(
+            oldData.id,
+            oldData.name,
+            oldData.folder_id,
+            oldData.user_uid,
+            oldData.size,
+            oldData.type,
+            oldData.archived,
+            oldData.created_at,
+            currentServerTimestamp,
+          );
 
           // Only update if data has changed
-          const docRef = doc(db, table, document.id);
-          updates.push(updateDoc(docRef, newData));
+          const docRef = doc(db, table, driveFile.getId());
+          updates.push(updateDoc(docRef, driveFile.toJson()));
         }
       });
 
@@ -350,22 +359,6 @@ export default function FilesService() {
 
       //loop through data to  get the filename
       payloadToSave.forEach((file /** @type {File}  */) => {
-        /**
-         * @type {import("../../types/types").DriveFile}
-         */
-        const fileToUploadPayload = {
-          name: file.name,
-          folder_id: payload.folderId,
-          user_uid: userUid,
-          size: file.size,
-          type: file.type,
-          archived: false,
-          // @ts-ignore
-          created_at: currentServerTimestamp,
-          // @ts-ignore
-          updated_at: currentServerTimestamp,
-        };
-
         const driveFile = new DriveFile(
           "",
           file.name,
@@ -374,16 +367,16 @@ export default function FilesService() {
           file.size,
           file.type,
           false,
-          currentServerTimestamp
+          currentServerTimestamp,
           currentServerTimestamp
         );
 
         //create doc ref
         const docRef = doc(collectionRef);
-        batch.set(docRef, fileToUploadPayload);
+        batch.set(docRef, driveFile.toJsonWithoutId());
       });
 
-      //add all data to firebase db
+      // //add all data to firebase db
       const uploaded = await batch.commit();
 
       return {
@@ -400,16 +393,16 @@ export default function FilesService() {
 
   /**
    *
-   * @param {{id: string, archived: boolean }} payload
+   * @param {ArchiveFileDto} payload
    * @returns {Promise<{ archived: boolean, notificationDto: NotificationDto }>}
    */
   async function archiveFile(payload) {
     try {
       //manualy updated the updated_at
-      const updatedPayload = { ...payload, updated_at: currentServerTimestamp };
+      const updatedPayload = { id: payload.getId(), updated_at: currentServerTimestamp };
 
       //get document
-      const file = doc(db, table, payload.id);
+      const file = doc(db, table, payload.getId());
 
       //update document
       await updateDoc(file, updatedPayload);
@@ -417,7 +410,6 @@ export default function FilesService() {
       return {
         archived: true,
         notificationDto: new NotificationDto("Your file has been succesfully been archived", ALERT_TYPES.SUCCESS),
-        type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {
       return {
@@ -436,7 +428,7 @@ export default function FilesService() {
   async function deleteFileFromBackendServer(payload) {
     try {
       const response = await fetch(`${BACKEND_URL}files/delete`, {
-        method: "POST",
+        method: "DELETE",
         body: JSON.stringify(payload.toJSON()),
         headers: {
           Accept: "application/json",
@@ -468,8 +460,7 @@ export default function FilesService() {
 
       return {
         deleted: true,
-        message: "File deleted successfully.",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("File deleted successfully.", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       return {
@@ -486,8 +477,9 @@ export default function FilesService() {
    */
   async function deleteFile(payload) {
     try {
-      
-      const deletedFromServer = await deleteFileFromBackendServer(new DeleteFileFromBackendServerDto(userUid, payload.getFilename()));
+      const deletedFromServer = await deleteFileFromBackendServer(
+        new DeleteFileFromBackendServerDto(userUid, payload.getFilename()),
+      );
       if (!deletedFromServer.deleted) return deletedFromServer;
 
       const fileRTef = doc(db, table, payload.getId());
@@ -512,11 +504,8 @@ export default function FilesService() {
    */
   async function downloadFile(payload) {
     try {
-      const updatedPayload = { ...payload.toJson(), user_uid: userUid };
-
-      const response = await fetch(`${BACKEND_URL}files/get`, {
-        method: "POST",
-        body: JSON.stringify(updatedPayload),
+      const response = await fetch(`${BACKEND_URL}files/${payload.getFilename()}/${userUid}`, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           "x-token": X_TOKEN,
@@ -559,7 +548,7 @@ export default function FilesService() {
   }
 
   async function listFilesBySearchTerm(payload) {
-    return await _listFiles({ currentPage:  getCurrentPageNumber(), searchTearm: payload.getSearchTerm() });
+    return await _listFiles({ currentPage: getCurrentPageNumber(), searchTearm: payload.getSearchTerm() });
   }
 
   async function listFilesByFolderId() {

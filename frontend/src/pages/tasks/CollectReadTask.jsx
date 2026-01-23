@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import "./css/CollectReadTask.css";
 import useHtmlCssHelpers from "../../shared/helpers/useHtmlCssHelpers";
-import QuilTextEditor from "../../shared/components/texteditor/component/QuilTextEditor";
+import QuilTextEditor from "../../shared/presentation/components/texteditor/component/QuilTextEditor";
 import useGetTaskHook from "../../shared/hooks/useGetTaskHook";
 
 export default function CollectReadTask() {

@@ -1,14 +1,16 @@
+/* eslint-disable react/prop-types */
 import React from "react";
-import BS5TruncateSpan from "../../../../shared/components/bs5/BS5TruncateSpan";
+import BS5TruncateSpan from "../../../../shared/presentation/components/bs5/BS5TruncateSpan";
 // import ArchiveFileButton from "./buttons/ArchiveFileButton";
 import DeleteFileButton from "./buttons/DeleteFileButton";
 import { DRIVE_CONTROLLER_ACTIONS, useDriveControllerContext } from "../../presentation/DriveController";
-
+import { DownloadFileDto } from "../../presentation/dto/DownloadFileDto";
+import { DriveFileDto } from "../../application/dto/DriveFileDto";
 
 /**
  *
  * @param {Object} props - The props object.
- * @param {import("../../../../types/types").DriveFile} props.file -
+ * @param {DriveFileDto} props.file -
  * @returns {JSX.Element} The rendered component.
  */
 export default function RepositoryTableRow({ file }) {
@@ -16,9 +18,10 @@ export default function RepositoryTableRow({ file }) {
   function downloadFile() {
     dispatch({
       type: DRIVE_CONTROLLER_ACTIONS.DOWNLOAD_FILE,
-      payload: { filename: file.name },
+      payload: new DownloadFileDto(file.getName()),
     });
   }
+
 
   return (
     <tr className="repository-table-row">
@@ -28,18 +31,15 @@ export default function RepositoryTableRow({ file }) {
         </div>
       </th>
       <td>
-        <BS5TruncateSpan content={file.name} maxWidthToSet="350px" />
+        <BS5TruncateSpan content={file.getName()} maxWidthToSet="350px" />
       </td>
-      <td>{file.created_at.toLocaleString()}</td>
-      <td>{file.updated_at.toLocaleString()}</td>
+      <td>{file.getCreatedAt()}</td>
+      <td>{file.getUpdatedAt()}</td>
       <td className="main-table-actions">
         <button>
           <i className="fa-light fa-download" onClick={downloadFile}></i>
         </button>
-        <DeleteFileButton
-          fileId={file.id}
-          filename={file.name}
-        ></DeleteFileButton>
+        <DeleteFileButton fileId={file.getId()} filename={file.getName()}></DeleteFileButton>
         {/* <ArchiveFileButton
           fileId={file.id}
           isArchived={file.archived}

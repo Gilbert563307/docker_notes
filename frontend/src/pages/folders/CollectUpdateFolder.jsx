@@ -1,7 +1,7 @@
 import React from "react";
 import useGetFolderHook from "../../shared/hooks/useGetFolderHook";
 import UpdateFolderComponent from "../../features/drive/component/folders/UpdateFolderComponent";
-import { Show } from "../../shared/components/custom/Show";
+import { Show } from "../../shared/presentation/components/custom/Show";
 
 export default function CollectUpdateFolder() {
   const { folder, dispatch } = useGetFolderHook();

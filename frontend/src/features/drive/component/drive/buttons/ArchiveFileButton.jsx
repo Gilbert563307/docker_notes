@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import {
-  DRIVE_CONTROLLER_ACTIONS,
-  useDriveControllerContext,
-} from "../../../../../controller/DriveController";
-import { Show } from "../../../../../shared/components/custom/Show";
-import BS5Modal, { MODAL_SIZES } from "../../../../../shared/components/bs5/BS5Modal";
+
+import { Show } from "../../../../../shared/presentation/components/custom/Show";
+import BS5Modal, { MODAL_SIZES } from "../../../../../shared/presentation/components/bs5/BS5Modal";
+import { ArchiveFileDto } from "../../../presentation/dto/ArchiveFileDto";
+import { DRIVE_CONTROLLER_ACTIONS, useDriveControllerContext } from "../../../presentation/DriveController";
 
 export default function ArchiveFileButton({ fileId, isArchived }) {
   const { dispatch } = useDriveControllerContext();
@@ -20,8 +19,7 @@ export default function ArchiveFileButton({ fileId, isArchived }) {
 
   const archiveTask = () => {
     const archived = isArchived === true ? false : true;
-    const payload = { id: fileId, archived: archived };
-    dispatch({ type: DRIVE_CONTROLLER_ACTIONS.ARCHIVE, payload: payload });
+    dispatch({ type: DRIVE_CONTROLLER_ACTIONS.ARCHIVE, payload: new ArchiveFileDto(fileId, archived) });
     hideArchiveModal();
   };
 

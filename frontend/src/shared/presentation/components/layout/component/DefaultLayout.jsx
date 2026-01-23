@@ -1,9 +1,9 @@
 import React from 'react'
 import { Outlet } from 'react-router-dom'
 import "../css/DefaultLayout.css";
-import { useAuthProvider } from '../../../context/AuthProvider';
+import { useAuthProvider } from '../../../../context/AuthProvider';
 import { useMainControllerContext } from '../../../controller/MainController';
-import NavBar from '../../../../features/navbar/component/NavBar';
+import NavBar from '../../../../../features/navbar/component/NavBar';
 
 /**
  * 

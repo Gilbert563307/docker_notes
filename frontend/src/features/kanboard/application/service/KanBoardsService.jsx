@@ -1,5 +1,5 @@
 import { MAX_KAN_BOARDS } from "../../../../config";
-import { ALERT_TYPES } from "../../../../shared/components/bs5/BS5Alert";
+import { ALERT_TYPES } from "../../../../shared/presentation/components/bs5/BS5Alert";
 import FirebaseInterface from "../../../../shared/data/FirebaseInterface";
 import { NotificationDto } from "../../../notification/application/dto/NotificationDto";
 import { KanBoard } from "../../domain/KanBoard";

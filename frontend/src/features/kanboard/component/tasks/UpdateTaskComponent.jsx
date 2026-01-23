@@ -5,7 +5,7 @@ import TaskDetails from "./TaskDetails";
 import DeleteTaskButton from "./buttons/DeleteTaskButton";
 import "../../css/UpdateTaskComponent.css";
 import { TASKS_CONTROLLER_ACTIONS } from "../../presentation/TasksController";
-import QuilTextEditor from "../../../../shared/components/texteditor/component/QuilTextEditor";
+import QuilTextEditor from "../../../../shared/presentation/components/texteditor/component/QuilTextEditor";
 import { TaskDto } from "../../application/dto/TaskDto";
 
 /**
