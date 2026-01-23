@@ -117,13 +117,11 @@ export default function TasksController() {
   function reducer(state, action) {
     switch (action.type) {
       case REDUCER_ACTIONS.SET_TASKS:
-        // console.log('Setting tasks:', action.payload);
         return {
           ...state,
           tasks: action.payload,
         };
       case REDUCER_ACTIONS.SET_TASK:
-        // console.log('Setting task:', action.payload);
         return {
           ...state,
           task: action.payload,
@@ -325,12 +323,12 @@ export default function TasksController() {
           closeAlert();
           break;
         default:
+          //TODO FIND A LOGGER 
           console.log(`TasksController: No action type found ${action.type}`);
           break;
       }
     } catch (error) {
       setNotificationToState(new NotificationDto(error.message, 1));
-      console.log(`TasksController: error ${error}`);
     }
   }
 

@@ -91,10 +91,15 @@ export default function SettingsController() {
           break;
       }
     } catch (error) {
+<<<<<<< HEAD
       // Close loader in case of error
       setNotificationToState(new NotificationDto(error.message, 1));
       console.log(`SettingsController: error ${error}`);
     }
+=======
+       setNotificationToState(new NotificationDto(error.message, 1));
+    } 
+>>>>>>> cc0767cc1be8f7f6a472b24b1b3448556a861ebe
   }
 
   /** @returns {ContextValue} */

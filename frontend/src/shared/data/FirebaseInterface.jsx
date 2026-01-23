@@ -36,10 +36,10 @@ export default function FirebaseInterface({ table }) {
   const { getUrlParams } = useHelpers();
   const { user } = useAuthProvider();
   const collectionRef = collection(db, table);
-  const userUid = user ? user.uid : null;
+  const userUid = user ? user.getUid() : null;
   const currentServerTimestamp = serverTimestamp();
   const BACKEND_URL = import.meta.env.VITE_APP_BACKEND_URL;
-  const X_TOKEN = user ? user.token : null;
+  const X_TOKEN = user ? user.getToken() : null;
 
   /**
    * @param {{ seconds: number, nanoseconds: number } } object
@@ -147,6 +147,7 @@ export default function FirebaseInterface({ table }) {
           document.data().updated_at === null
         ) {
 
+          //TODO CHECK IF I NEED TO DO THIS AND WHY NOT USE SERVER TIME STAMP
           const dateNow = Date.now();
           return {
             ...document.data(),

@@ -11,10 +11,10 @@ export default function BS5Navbar() {
             <div className="container-fluid">
                 <a className="navbar-brand" href="#">
                     <div className='d-flex gap-1'>
-                        <img src={user?.photoURL} alt="Logo" width="50" height="50" className="d-inline-block align-text-top border rounded-pill" />
+                        <img src={user?.getPhotoURL()} alt="Logo" width="50" height="50" className="d-inline-block align-text-top border rounded-pill" />
                         <div>
                             <p className='text-body-secondary mb-0 fs-6'>Hello,</p>
-                            <h5>{user.displayName}</h5>
+                            <h5>{user.getDisplayName()}</h5>
                         </div>
                     </div>
 

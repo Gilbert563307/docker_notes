@@ -1,3 +1,4 @@
+import { Timestamp } from "firebase/firestore";
 import { ALLOWED_UPLOAD_FILE_TYPES } from "../../../config";
 
 export class DriveFile {
@@ -20,8 +21,8 @@ export class DriveFile {
    * @param {number} size
    * @param {string} type
    * @param {boolean} archived
-   * @param {*} created_at
-   * @param {*} updated_at
+   * @param {Timestamp} created_at
+   * @param {Timestamp} updated_at
    */
   constructor(id, name, folder_id, user_uid, size, type, archived, created_at, updated_at) {
     this.#validate({
@@ -60,7 +61,6 @@ export class DriveFile {
     return this.#user_uid;
   }
 
-
   getSize() {
     return this.#size;
   }
@@ -98,7 +98,7 @@ export class DriveFile {
 
   /** Update one or more fields */
   update(name, folder_id, size, type, archived, created_at, updated_at) {
-    throw new Error("METHOD NOT CREATED");
+    throw new Error("method needs to be implemented");
     this.#validate({ id, name, folder_id, size, type, archived });
   }
 

@@ -27,7 +27,7 @@ export class TaskDto {
    * @param {AssigneeDto} assignee - The assignee of the task with name and unique identifier.
    * @param {ReporterDto} reporter - The reporter of the task with name and unique identifier.
    * @param {Boolean} archived - The archived status.
-   * @param {Date | string} created_at - The timestamp when the task was created. 
+   * @param {Date | string} created_at - The timestamp when the task was created.
    * @param {Date | string} updated_at - The timestamp when the task was last updated.
    */
   constructor(
@@ -122,11 +122,19 @@ export class TaskDto {
     return this.#archived;
   }
 
+  getCreatedAt() {
+    return this.#created_at;
+  }
+
+  getUpdatedAt() {
+    return this.#updated_at;
+  }
+
   /**
    *
    * @returns {string}
    */
-  getCreatedAt() {
+  getUserLocaleCreatedAt() {
     return this.#created_at.toLocaleString();
   }
 
@@ -134,8 +142,8 @@ export class TaskDto {
    *
    * @returns {string}
    */
-  getUpdatedAt() {
-    return this.#updated_at.toLocaleString();
+  getUserLocaleUpdatedAt() {
+    return this.#created_at.toLocaleString();
   }
 
   toJson() {

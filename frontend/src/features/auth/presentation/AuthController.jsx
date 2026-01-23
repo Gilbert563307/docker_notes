@@ -4,6 +4,7 @@ import { useAuthProvider } from "../../../shared/context/AuthProvider";
 import AuthService from "../service/AuthService";
 import AuthControllerContext, { initialState } from "../../../shared/context/AuthControllerContext";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
+import { NotificationDto } from "../../notification/application/dto/NotificationDto";
 
 /**
  * @typedef {Object} AuthControllerActions
@@ -31,44 +32,41 @@ export default function AuthController() {
   const { LoginWithGoogle, LoginWithGithub } = AuthService();
 
   /**
-   * Sets error notification to state.
-   * @param {import("../../../types/types").Notification} notificationObject - Object containing error message and type.
+   *
+   * @param {NotificationDto} notificationDto
+   * @returns {void}
    */
-  function setMessageToState(notificationObject) {
-    if (Object.keys(notificationObject).length === 0 || notificationObject.message === "") return;
-    notificationObserver.addData({message: notificationObject.message, type: notificationObject.type});
+  function setNotificationToState(notificationDto) {
+    if (notificationDto.getMessage() === "") return;
+    notificationObserver.addData(notificationDto);
+  }
+
+  function closeAlert() {
+    notificationObserver.addData(new NotificationDto("", 0));
   }
 
   /**
    * Handles login with Google authentication.
    */
   async function collectLoginWithGoogle() {
-    try {
-      const response = await LoginWithGoogle();
-      if (response.login === false || Object.keys(response.user).length === 0) return;
-      login(response.user);
-    } catch (error) {
-      setMessageToState(error);
+    const response = await LoginWithGoogle();
+    if (response.login === false) {
+      setNotificationToState(response.notificationDto);
+      return;
     }
+    login(response.user);
   }
 
   async function collectLoginWithGithub() {
-    try {
-      const response = await LoginWithGithub();
-      if (response.login === false || Object.keys(response.user).length === 0) {
-        setMessageToState(response);
-      }
-      login(response.user);
-    } catch (error) {
-      setMessageToState(error);
+    const response = await LoginWithGithub();
+    if (response.login === false) {
+      setNotificationToState(response.notificationDto);
+      return;
     }
+    login(response.user);
   }
 
-  function closeAlert() {
-    notificationObserver.addData({ message: "", type: 0 });
-  }
-
-   /**
+  /**
    * Reducer function for handling state updates in AuthController.
    * @param {Object} state - Current state.
    * @param {Object} action - Action object containing type and payload.

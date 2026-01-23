@@ -22,7 +22,7 @@ import CollectReadFolder from "./pages/folders/CollectReadFolder";
 import KanBoardsController from "./features/kanboard/presentation/KanBoardsController";
 import CollectListKanBoards from "./pages/kanboard/CollectListKanBoards";
 import GuestRoute from "./utils/router/GuestRoute";
-import AuthController from "./features/auth/controller/AuthController";
+import AuthController from "./features/auth/presentation/AuthController";
 import CollectListAuth from "./pages/auth/CollectListAuth";
 import SettingsController from "./features/settings/controller/SettingsController";
 import CollectListSettings from "./pages/settings/CollectListSettings";

@@ -30,11 +30,11 @@ export default function TasksTableRow({ task }) {
   const Assignee = (
     <span>
       <img
-        src={user?.photoURL}
+        src={user?.getPhotoURL()}
         alt="Logo"
         className="linked-user-logo d-inline-block align-text-top border rounded-pill"
       />{" "}
-      {user.displayName}
+      {user.getDisplayName()}
     </span>
   );
 
@@ -71,8 +71,8 @@ export default function TasksTableRow({ task }) {
       {/* <td>{Assignee}</td> */}
       {/* <td>...</td> */}
       {/* <td>...</td> */}
-      <td>{task.getCreatedAt()}</td>
-      <td>{task.getUpdatedAt()}</td>
+      <td>{task.getUserLocaleCreatedAt()}</td>
+      <td>{task.getUserLocaleUpdatedAt()}</td>
       <td>{Assignee}</td>
       <td className="main-table-actions">
         <button>

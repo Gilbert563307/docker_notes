@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import { Show } from "../../../../../shared/components/custom/Show";
 import BS5Modal, { MODAL_SIZES } from "../../../../../shared/components/bs5/BS5Modal";
 import { DRIVE_CONTROLLER_ACTIONS, useDriveControllerContext } from "../../../presentation/DriveController";
+<<<<<<< HEAD
 import { DeleteFileDto } from "../../../presentation/dto/DeleteFileDto";
+=======
+>>>>>>> cc0767cc1be8f7f6a472b24b1b3448556a861ebe
 
 /**
  *
