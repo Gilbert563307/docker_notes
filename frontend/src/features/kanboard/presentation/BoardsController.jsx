@@ -204,7 +204,6 @@ export default function BoardsController() {
           return;
       }
     } catch (error) {
-      // Close loader in case of error
       setNotificationToState(new NotificationDto(error.message, 1));
       console.log(`BoardsController: error ${error}`);
     }

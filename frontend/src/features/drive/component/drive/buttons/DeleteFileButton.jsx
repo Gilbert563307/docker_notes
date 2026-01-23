@@ -1,14 +1,15 @@
 import React, { useState } from "react";
 import { Show } from "../../../../../shared/components/custom/Show";
 import BS5Modal, { MODAL_SIZES } from "../../../../../shared/components/bs5/BS5Modal";
-import { DRIVE_CONTROLLER_ACTIONS, useDriveControllerContext } from "../../../controller/DriveController";
+import { DRIVE_CONTROLLER_ACTIONS, useDriveControllerContext } from "../../../presentation/DriveController";
+import { DeleteFileDto } from "../../../presentation/dto/DeleteFileDto";
 
 /**
- * 
- * @param {Object} props 
+ *
+ * @param {Object} props
  * @param {string} props.fileId
  * @param {string} props.filename
- * @returns 
+ * @returns
  */
 export default function DeleteFileButton({ fileId, filename }) {
   const { dispatch } = useDriveControllerContext();
@@ -25,16 +26,15 @@ export default function DeleteFileButton({ fileId, filename }) {
   function deleteFile() {
     dispatch({
       type: DRIVE_CONTROLLER_ACTIONS.DELETE,
-      payload: { id: fileId, filename: filename },
+      payload: new DeleteFileDto(fileId, filename),
     });
     hideArchiveModal();
   }
 
   const modalContent = (
     <p>
-      Deleting this file will permanently remove it from your active file list.
-      You will no longer be able to access it unless it has been backed up or
-      archived elsewhere. Please confirm if you wish to proceed.
+      Deleting this file will permanently remove it from your active file list. You will no longer be able to access it
+      unless it has been backed up or archived elsewhere. Please confirm if you wish to proceed.
     </p>
   );
 

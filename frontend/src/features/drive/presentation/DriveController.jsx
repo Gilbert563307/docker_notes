@@ -1,23 +1,33 @@
 import React, { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import FilesService from "../../../shared/service/FilesService";
-import FoldersService from "../service/FoldersService";
 import useHelpers from "../../../shared/helpers/useHelpers";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
-import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
+import { NotificationDto } from "../../notification/application/dto/NotificationDto";
+import { DriveFileDto } from "../application/dto/DriveFileDto";
+import { FolderDto } from "../application/dto/FolderDto";
+import { UploadFilesDto } from "./dto/UploadFilesDto";
+import { ArchiveFileDto } from "./dto/ArchiveFileDto";
+import { DeleteFileDto } from "./dto/DeleteFileDto";
+import { DownloadFileDto } from "./dto/DownloadFileDto";
+import { ListFilesBySearchTerm, ListFilesBySearchTermDto } from "./dto/ListFilesBySearchTermDto";
 
 /**
  * @typedef {Object} InitialState
- * @property {import("../../../types/types").DriveFile | Object} file
- * @property { {files: import("../../../types/types").DriveFiles | [], total: number, pages: number} } files
- * @property {import("../../../types/types").Folders | [] } folders
+ * @property {DriveFileDto} file
+ * @property { {files: Array<DriveFileDto>, total: number, pages: number} } files
+ * @property {Array<FolderDto> } folders
  */
+
+const initialDriveFileDto = new DriveFileDto(null, null, null, null, null, null, null, null);
+
+const initialFolderDto = new FolderDto(null, null, null, null, null, null, null);
 
 /**
  * @type {InitialState}
  */
 const initialState = {
-  file: {},
+  file: initialDriveFileDto,
   files: { files: [], total: 0, pages: 0 },
   folders: [],
 };
@@ -47,7 +57,7 @@ export const DRIVE_CONTROLLER_ACTIONS = {
   DELETE: "DELETE",
   DOWNLOAD_FILE: "DOWNLOAD_FILE",
   SEARCH_FILES_BY_SEARCH_TERM: "SEARCH_FILES_BY_SEARCH_TERM",
-  SET_NOTIFICATION: "SET_NOTIFICATION"
+  SET_NOTIFICATION: "SET_NOTIFICATION",
 };
 
 /**
@@ -75,12 +85,9 @@ export function useDriveControllerContext() {
 }
 
 export default function DriveController() {
-  //import the methods and loader component from our custom component
-  const { getCurrentPageNumber } = useHelpers();
+  const { listDriveFiles, uploadFiles, archiveFile, deleteFile, downloadFile, listFilesBySearchTerm, getDriveFolders } =
+    FilesService();
 
-  const { listFiles, uploadFiles, archiveFile, deleteFile, downloadFile, listFilesBySearchTerm } = FilesService();
-
-  const { getFolders } = FoldersService();
   const navigate = useNavigate();
 
   const REDUCER_ACTIONS = {
@@ -120,153 +127,109 @@ export default function DriveController() {
   // Defining the state and the dispatchAction using the useReducer hook
   const [state, dispatchAction] = useReducer(reducer, initialState);
 
-  function closeAlert() {
-    notificationObserver.addData({ message: "", type: 0 });
-  }
-
   /**
    *
-   * @param {{message: string, type: number}} object
-   * @returns {void | null}
+   * @param {NotificationDto} notificationDto
+   * @returns {void}
    */
-  function setNotificationToState(object) {
-    if (object.message === "") return;
-    notificationObserver.addData(object);
+  function setNotificationToState(notificationDto) {
+    if (notificationDto.getMessage() === "") return;
+    notificationObserver.addData(notificationDto);
   }
 
-  /**
-   * Sets error to the state and dispatches notification.
-   * @param {Error} error - The error object.
-   */
-  function setErrorToState(error) {
-    notificationObserver.addData({ message: error.message, type: ALERT_TYPES.DANGER });
+  function closeAlert() {
+    notificationObserver.addData(new NotificationDto("", 0));
   }
 
   async function collectListFiles() {
-    try {
-      //get currentPageNumber
-      const currentPage = getCurrentPageNumber();
-      const payload = { currentPage: currentPage };
-      const files = await listFiles(payload);
+    const files = await listDriveFiles();
 
-      // Update state with the created task response
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_FILES,
-        payload: files.results,
-      });
+    // Update state with the created task response
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_FILES,
+      payload: files.results,
+    });
 
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_FILE,
-        payload: {},
-      });
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_FILE,
+      payload: initialDriveFileDto,
+    });
 
-      setNotificationToState(files);
-    } catch (error) {
-      setErrorToState(error);
-    }
+    setNotificationToState(files.notificationDto);
   }
 
   async function collectListDriveFolders() {
-    try {
-      const results = await getFolders();
+    const results = await getDriveFolders();
 
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_FOLDERS,
-        payload: results.folders,
-      });
-      //set message if there is any
-      setNotificationToState(results);
-    } catch (error) {
-      setErrorToState(error);
-    }
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_FOLDERS,
+      payload: results.folders,
+    });
+    //set message if there is any
+    setNotificationToState(results.notificationDto);
   }
 
   /**
    *
-   * @param {{files: Array<File>, folderId: string}} payload
+   * @param {UploadFilesDto} payload
    */
   async function collectUploadFiles(payload) {
-    try {
-      const results = await uploadFiles(payload);
+    const results = await uploadFiles(payload);
 
-      //set message if there is any
-      setNotificationToState(results);
+    //set message if there is any
+    setNotificationToState(results.notificationDto);
 
-      //navugate to files page
-      navigate("/drive");
-    } catch (error) {
-      setErrorToState(error);
-    }
+    //navugate to files page
+    navigate("/drive");
   }
 
   /**
    *
-   * @param {{id: string, archived: boolean }} payload
+   * @param {ArchiveFileDto} payload
    */
   async function collectArchiveFile(payload) {
-    try {
-      const tbuArchived = await archiveFile(payload);
+    const tbuArchived = await archiveFile(payload);
 
-      setNotificationToState(tbuArchived);
+    setNotificationToState(tbuArchived.notificationDto);
 
-      //reftech files after archive this one
-      await collectListFiles();
-    } catch (error) {
-      setErrorToState(error);
-    }
+    //reftech files after archive this one
+    await collectListFiles();
   }
 
   /**
    *
-   * @param {{id: string, filename: string }} payload
+   * @param {DeleteFileDto} payload
    */
   async function collectDeleteFile(payload) {
-    try {
-      const tbuDeleted = await deleteFile(payload);
-      setNotificationToState(tbuDeleted);
+    const tbuDeleted = await deleteFile(payload);
+    setNotificationToState(tbuDeleted.notificationDto);
 
-      //reftech files after archive this one
-      await collectListFiles();
-    } catch (error) {
-      setErrorToState(error);
-    }
+    //reftech files after archive this one
+    await collectListFiles();
   }
 
   /**
    *
-   * @param {{filename: string }} payload
+   * @param {DownloadFileDto} payload
    */
   async function collectDownloadFile(payload) {
-    try {
-      const downloaded = await downloadFile(payload);
-      setNotificationToState(downloaded);
-    } catch (error) {
-      setErrorToState(error);
-    }
+    const downloaded = await downloadFile(payload);
+    setNotificationToState(downloaded.notificationDto);
   }
 
   /**
    *
-   * @param {string} searchTearm
+   * @param {ListFilesBySearchTermDto} payload
    */
-  async function collectListFilesBySearchTerm(searchTearm) {
-    try {
-      //get currentPageNumber
-      const currentPage = getCurrentPageNumber();
-      //create Payload
-      const payload = { currentPage: currentPage, searchTearm: searchTearm };
+  async function collectListFilesBySearchTerm(payload) {
+    const files = await listFilesBySearchTerm(payload);
+    setNotificationToState(files.notificationDto);
 
-      const files = await listFilesBySearchTerm(payload);
-      setNotificationToState(files);
-
-      // Update state with the created task response
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_FILES,
-        payload: files.results,
-      });
-    } catch (error) {
-      setErrorToState(error);
-    }
+    // Update state with the created task response
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_FILES,
+      payload: files.results,
+    });
   }
 
   /**
@@ -277,7 +240,6 @@ export default function DriveController() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   async function dispatch(/** @type {{ type: string; payload?: any; }} */ action) {
     try {
-      // Show loader while processing action
 
       // Handle different action types
       switch (action.type) {
@@ -314,8 +276,7 @@ export default function DriveController() {
           return;
       }
     } catch (error) {
-      // Close loader in case of error
-      setErrorToState(error);
+      setNotificationToState(new NotificationDto(error.message, 1));
       console.error(`DriveController: error ${error}`);
     }
   }

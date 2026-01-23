@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 
 import useHelpers from "../../../../shared/helpers/useHelpers";
-import { FOLDERS_CONTROLLER_ACTIONS, useFoldersControllerContext } from "../../controller/FoldersController";
+import { FOLDERS_CONTROLLER_ACTIONS, useFoldersControllerContext } from "../../presentation/FoldersController";
 import { Show } from "../../../../shared/components/custom/Show";
 import BS5Modal, { MODAL_SIZES } from "../../../../shared/components/bs5/BS5Modal";
 import FoldersFilters from "./FoldersFilters";

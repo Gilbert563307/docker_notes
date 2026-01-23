@@ -1,7 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import "./css/CollectCreateFolder.css";
-import { FOLDERS_CONTROLLER_ACTIONS, useFoldersControllerContext } from "../../features/drive/controller/FoldersController";
+import { FOLDERS_CONTROLLER_ACTIONS, useFoldersControllerContext } from "../../features/drive/presentation/FoldersController";
 
 export default function CollectCreateFolder() {
   const { dispatch } = useFoldersControllerContext();

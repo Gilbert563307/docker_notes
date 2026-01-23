@@ -1,7 +1,7 @@
-import  { createContext, useContext, useMemo, useReducer } from "react";
+import { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet } from "react-router-dom";
-import { ALERT_ACTIONS, ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
+import { NotificationDto } from "../../notification/application/dto/NotificationDto";
 
 /**
  * @typedef {Object} InitialState
@@ -11,9 +11,7 @@ import { notificationObserver } from "../../notification/observer/NotificationOb
  * Initial state for the tasks controller.
  * @type {InitialState}
  */
-const initialState = {
-  
-};
+const initialState = {};
 
 /**
  * @typedef {Object} ContextValue
@@ -26,7 +24,7 @@ const settingsControllerContext = createContext(
   /** @type {ContextValue} */ ({
     state: initialState,
     dispatch: () => {},
-  })
+  }),
 );
 
 /**
@@ -43,8 +41,6 @@ export function useSettingsControllerContext() {
 }
 
 export default function SettingsController() {
-
-
   /**
    * Reducer function for managing state changes.
    * @param {InitialState} state - Current state.
@@ -62,16 +58,17 @@ export default function SettingsController() {
   const [state, dispatchAction] = useReducer(reducer, initialState);
 
   /**
-   * Sets error to the state and dispatches notification.
-   * @param {Error} error - The error object.
+   *
+   * @param {NotificationDto} notificationDto
+   * @returns {void}
    */
-  function setErrorToState(error) {
-    notificationObserver.addData({ message: error.message, type: ALERT_TYPES.DANGER })
-   
+  function setNotificationToState(notificationDto) {
+    if (notificationDto.getMessage() === "") return;
+    notificationObserver.addData(notificationDto);
   }
 
   function closeAlert() {
-    notificationObserver.addData({ message: "", type: 0 })
+    notificationObserver.addData(new NotificationDto("", 0));
   }
 
   /**
@@ -80,29 +77,23 @@ export default function SettingsController() {
    * @returns {Promise<void>} - A Promise that resolves when the operation is completed.
    */
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  async function dispatch(
-    /** @type {{ type: string; payload?: any; }} */ action
-  ) {
+  async function dispatch(/** @type {{ type: string; payload?: any; }} */ action) {
     try {
       // Show loader while processing action
 
       // Handle different action types
       switch (action.type) {
-        case ALERT_ACTIONS.CLOSE_ALERT:
+        case "CLOSE_ALERT":
           closeAlert();
           break;
         default:
-          console.log(
-            `SettingsController: No action type found ${action.type}`
-          );
+          console.log(`SettingsController: No action type found ${action.type}`);
           break;
       }
     } catch (error) {
       // Close loader in case of error
-      setErrorToState(error);
+      setNotificationToState(new NotificationDto(error.message, 1));
       console.log(`SettingsController: error ${error}`);
-    } finally {
-      // Close loader after action processing
     }
   }
 
@@ -112,7 +103,7 @@ export default function SettingsController() {
       state,
       dispatch,
     }),
-    [state, dispatch]
+    [state, dispatch],
   );
   return (
     <settingsControllerContext.Provider value={contextValue}>

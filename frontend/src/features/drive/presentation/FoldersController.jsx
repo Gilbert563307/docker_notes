@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 import FilesService from "../../../shared/service/FilesService";
-import FoldersService from "../service/FoldersService";
+import FoldersService from "../application/service/FoldersService";
 import useHelpers from "../../../shared/helpers/useHelpers";
 import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";

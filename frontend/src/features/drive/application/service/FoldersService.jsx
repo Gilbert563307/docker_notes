@@ -1,13 +1,10 @@
 import React from "react";
-import {
-  DEFAULT_FOLDERS_ARCHIVE,
-  FOLDERS_ARCHIVED_SESSION_FILTER,
-  MAX_FOLDERS_TO_FETCH,
-} from "../../../config";
-import { ALERT_TYPES } from "../../../shared/components/bs5/BS5Alert";
-import useHelpers from "../../../shared/helpers/useHelpers";
+import { DEFAULT_FOLDERS_ARCHIVE, FOLDERS_ARCHIVED_SESSION_FILTER, MAX_FOLDERS_TO_FETCH } from "../../../../config";
+import { ALERT_TYPES } from "../../../../shared/components/bs5/BS5Alert";
+import useHelpers from "../../../../shared/helpers/useHelpers";
 import { Query } from "firebase/firestore";
-import FirebaseInterface from "../../../shared/data/FirebaseInterface";
+import FirebaseInterface from "../../../../shared/data/FirebaseInterface";
+import { NotificationDto } from "../../../notification/application/dto/NotificationDto";
 
 export default function FoldersService() {
   const {
@@ -39,14 +36,12 @@ export default function FoldersService() {
 
   /**
    * @param {{searchTearm?: string}} payload
-   * @returns {{queryItems: Array<Query> | Array, message: string, type: number}}
+   * @returns {{queryItems: Array<Query> | Array, notificationDto: NotificationDto}}
    */
   function getFoldersQueryClauses(payload = {}) {
     try {
       // Get the session archived filter
-      const foldersArchived =
-        getSessionFilter(FOLDERS_ARCHIVED_SESSION_FILTER) ||
-        DEFAULT_FOLDERS_ARCHIVE;
+      const foldersArchived = getSessionFilter(FOLDERS_ARCHIVED_SESSION_FILTER) || DEFAULT_FOLDERS_ARCHIVE;
 
       let queryItems = [
         where("user_uid", "==", userUid),
@@ -56,23 +51,18 @@ export default function FoldersService() {
 
       if (payload.searchTearm && payload.searchTearm != "") {
         const { searchTearm } = payload;
-        queryItems = [
-          ...queryItems,
-          ...getSearchQueryByFieldName("name", searchTearm),
-        ];
+        queryItems = [...queryItems, ...getSearchQueryByFieldName("name", searchTearm)];
       }
 
       return {
         queryItems: queryItems,
-        message: "",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       console.log(`[getFoldersQueryClauses]: ${error.message}`);
       return {
         queryItems: [],
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
@@ -97,12 +87,7 @@ export default function FoldersService() {
         return fetchResultsOnPageOne(queryItems, itemsPerPage);
       }
 
-      return fetchPaginatedResults(
-        currentPage,
-        payload,
-        itemsPerPage,
-        queryItems
-      );
+      return fetchPaginatedResults(currentPage, payload, itemsPerPage, queryItems);
     } catch (error) {
       return {
         resultsQuery: null,
@@ -123,9 +108,7 @@ export default function FoldersService() {
 
       return totalRecords;
     } catch (error) {
-      console.log(
-        `[getTotalFoldersInDatabaseByUserAndFilters]: ${error.message}`
-      );
+      console.log(`[getTotalFoldersInDatabaseByUserAndFilters]: ${error.message}`);
       return 0;
     }
   }
@@ -133,7 +116,7 @@ export default function FoldersService() {
   /**
    * @typedef {Object} listFoldersResponse
    * @property {Object} results
-   * @property {import("../../../types/types").DriveFiles} results.folders
+   * @property {import("../../../../types/types").DriveFiles} results.folders
    * @property {number} results.total
    * @property {number} results.pages
    * @property {number} type
@@ -186,7 +169,7 @@ export default function FoldersService() {
 
   /**
    *
-   * @returns {Promise<{folders: any, message: string, type: number}>}
+   * @returns {Promise<{folders: any, notificationDto: NotificationDto}>}
    */
   async function getFolders() {
     try {
@@ -194,7 +177,7 @@ export default function FoldersService() {
         collectionRef,
         where("user_uid", "==", userUid),
         orderBy("created_at", "desc"),
-        limit(MAX_FOLDERS_TO_FETCH)
+        limit(MAX_FOLDERS_TO_FETCH),
       );
 
       const querySnapshot = await getDocs(foldersQuery);
@@ -202,14 +185,12 @@ export default function FoldersService() {
       const response = convertQuerySnapShotDocs(querySnapshot);
       return {
         folders: response.results,
-        message: response.message,
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto(response.message, ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       return {
         folders: [],
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
@@ -248,7 +229,7 @@ export default function FoldersService() {
   async function createFolder(payload) {
     try {
       /**
-       * @type {import("../../../types/types").Folder}
+       * @type {import("../../../../types/types").Folder}
        */
       const defaultValues = {
         user_uid: userUid,
@@ -285,7 +266,7 @@ export default function FoldersService() {
   /**
    * Fetches a task from the database by its ID.
    * @param {string} folderId
-   * @returns {Promise<{folder: import("../../../types/types").Folder | {}, message: string, type: number}>}
+   * @returns {Promise<{folder: import("../../../../types/types").Folder | {}, message: string, type: number}>}
    */
   async function readFolder(folderId) {
     try {
@@ -308,7 +289,7 @@ export default function FoldersService() {
 
   /**
    *
-   * @param {import("../../../types/types").Folder} payload
+   * @param {import("../../../../types/types").Folder} payload
    * @returns {Promise<{ updated: boolean, message: string, type: number }>}
    */
   async function updateFolder(payload) {

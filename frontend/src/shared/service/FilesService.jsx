@@ -6,6 +6,12 @@ import { DEFAULT_FILES_ARCHIVE, FILES_ARCHIVED_SESSION_FILTER } from "../../conf
 import useHelpers from "../helpers/useHelpers";
 import FirebaseInterface from "../data/FirebaseInterface";
 import { NotificationDto } from "../../features/notification/application/dto/NotificationDto";
+import FoldersService from "../../features/drive/application/service/FoldersService";
+import { UploadFilesDto } from "../../features/drive/presentation/dto/UploadFilesDto";
+import { ListFilesBySearchTermDto } from "../../features/drive/presentation/dto/ListFilesBySearchTermDto";
+import { DownloadFileDto } from "../../features/drive/presentation/dto/DownloadFileDto";
+import { DeleteFileFromBackendServerDto } from "../../features/drive/presentation/dto/DeleteFileFromBackendServerDto";
+import { DeleteFileDto } from "../../features/drive/presentation/dto/DeleteFileDto";
 
 export default function FilesService() {
   const {
@@ -34,10 +40,11 @@ export default function FilesService() {
     fetchPaginatedResults,
   } = FirebaseInterface({ table: "files" });
 
-  const { getSessionFilter } = useHelpers();
+  const { getSessionFilter, getCurrentPageNumber } = useHelpers();
+  const { getFolders } = FoldersService();
   /**
    * @param {{searchTearm?: string, folderId?: string}} payload
-   * @returns {{queryItems: Array<Query> | Array, message: string, type: number}}
+   * @returns {{queryItems: Array<Query> | Array, notificationDto: NotificationDto}}
    */
   function getFilesQueryClauses(payload) {
     try {
@@ -61,15 +68,12 @@ export default function FilesService() {
 
       return {
         queryItems: queryItems,
-        message: "",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
-      console.log(`[getFilessQueryClauses]: ${error.message}`);
       return {
         queryItems: [],
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
@@ -109,8 +113,7 @@ export default function FilesService() {
     } catch (error) {
       return {
         resultsQuery: null,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
@@ -125,7 +128,6 @@ export default function FilesService() {
       const totalRecords = totalRecordsSnapShot.data().count;
       return totalRecords;
     } catch (error) {
-      console.log(`[getTotalTasksInDatabaseByUserAndFilters]: ${error.message}`);
       return 0;
     }
   }
@@ -133,9 +135,9 @@ export default function FilesService() {
   /**
    *
    * @param {{ currentPage: number, itemsPerPage?: number, searchTearm?: string, folderId?: string }} payload
-   * @returns {Promise<{results: import("../../types/types").FilesResponse,  message: string, type: number }>}
+   * @returns {Promise<{results: import("../../types/types").FilesResponse,  notificationDto: NotificationDto }>}
    */
-  async function listFiles(payload) {
+  async function _listFiles(payload) {
     try {
       // Construct the query to get all tasks for the current user UID with a
       const { resultsQuery } = await getFilesTasksQuery(payload);
@@ -153,15 +155,12 @@ export default function FilesService() {
       //return results
       return {
         results: { files: results, total: totalRecords, pages: totalPages },
-        message: "",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
-      console.log(`[listFiles]: ${error.message}`);
       return {
         results: { files: [], total: 0, pages: 0 },
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
@@ -216,7 +215,6 @@ export default function FilesService() {
         notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
-      console.log(`[convertHtmlToDocx] ${error.message}`);
       return {
         downloaded: false,
         notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
@@ -226,8 +224,8 @@ export default function FilesService() {
   /**
    * Upload files to the backend server
    *
-   * @param {{files: Array<File>, folderId: string}} payload
-   * @returns {Promise<{uploaded: boolean, message: string, type: number}>}
+   * @param {UploadFilesDto} payload
+   * @returns {Promise<{uploaded: boolean, notificationDto: NotificationDto}>}
    */
   async function uploadFilesToBackendServer(payload) {
     const formData = new FormData();
@@ -252,11 +250,9 @@ export default function FilesService() {
       if (!response.ok) {
         // Handle HTTP error responses
         const errorResponse = await response.json();
-        console.error(`[uploadFilesToBackendServer] Backend Error:`, errorResponse);
         return {
           uploaded: false,
-          message: JSON.stringify(errorResponse),
-          type: ALERT_TYPES.DANGER,
+          notificationDto: new NotificationDto(JSON.stringify(errorResponse), ALERT_TYPES.DANGER),
         };
       }
 
@@ -265,15 +261,17 @@ export default function FilesService() {
 
       return {
         uploaded: true,
-        message: "Files uploaded successfully.",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("Files uploaded successfully.", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       console.error(`[uploadFilesToBackendServer] ${error.message}`);
       return {
         uploaded: false,
-        message: error.message || "An error occurred during file upload.",
-        type: ALERT_TYPES.DANGER,
+
+        notificationDto: new NotificationDto(
+          error.message || "An error occurred during file upload.",
+          ALERT_TYPES.DANGER,
+        ),
       };
     }
   }
@@ -283,7 +281,7 @@ export default function FilesService() {
    * It first checks if the file is already submitted into the firebase db;
    * If so then it updates the updated_at timestamp for that specific document with that names;
    * @param {string} fileName
-   * @returns {Promise<{documentUpdated: string, updated: boolean, message: string, type: number}>}
+   * @returns {Promise<{documentUpdated: string, updated: boolean, notificationDto: NotificationDto}>}
    */
   async function updateDocRefIfExists(fileName) {
     try {
@@ -314,24 +312,21 @@ export default function FilesService() {
       return {
         documentUpdated: documentUpdated,
         updated: true,
-        message: "",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
-      console.error(`[updateDocRefIfExists] ${error.message}`);
       return {
         documentUpdated: "",
         updated: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
 
   /**
    *
-   * @param {{files: Array<File>, folderId: string}} payload
-   * @returns {Promise<{uploaded: Boolean, message: string, type: number}>}
+   * @param {UploadFilesDto} payload
+   * @returns {Promise<{uploaded: Boolean, notificationDto: NotificationDto}>}
    */
   async function uploadFiles(payload) {
     try {
@@ -344,7 +339,7 @@ export default function FilesService() {
 
       //check if the file already exits in firebase
       //update the updated_at only do not save the entire file as a newly addec collection in firebase
-      const results = await Promise.all(payload.files.map((file) => updateDocRefIfExists(file.name)));
+      const results = await Promise.all(payload.getFiles().map((file) => updateDocRefIfExists(file.name)));
 
       // Extract the `documentUpdated` values
       const updatedDocuments = results.map((result) => result.documentUpdated);
@@ -380,15 +375,12 @@ export default function FilesService() {
 
       return {
         uploaded: Boolean(uploaded),
-        message: "",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
-      console.log(`[uploadFiles] ${error.message}`);
       return {
         uploaded: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
@@ -396,7 +388,7 @@ export default function FilesService() {
   /**
    *
    * @param {{id: string, archived: boolean }} payload
-   * @returns {Promise<{ archived: boolean, message: string, type: number }>}
+   * @returns {Promise<{ archived: boolean, notificationDto: NotificationDto }>}
    */
   async function archiveFile(payload) {
     try {
@@ -411,15 +403,13 @@ export default function FilesService() {
 
       return {
         archived: true,
-        message: "Your file has been succesfully been archived",
+        notificationDto: new NotificationDto("Your file has been succesfully been archived", ALERT_TYPES.SUCCESS),
         type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {
-      console.log(`[archiveFile] ${error.message}`);
       return {
         archived: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
@@ -427,14 +417,14 @@ export default function FilesService() {
   /**
    * Upload files to the backend server
    *
-   * @param {{user_uid: string, filename: string}} payload
-   * @returns {Promise<{deleted: boolean, message: string, type: number}>}
+   * @param {DeleteFileFromBackendServerDto} payload
+   * @returns {Promise<{deleted: boolean, notificationDto: NotificationDto}>}
    */
   async function deleteFileFromBackendServer(payload) {
     try {
       const response = await fetch(`${BACKEND_URL}files/delete`, {
         method: "POST",
-        body: JSON.stringify(payload),
+        body: JSON.stringify(payload.toJSON()),
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
@@ -445,11 +435,9 @@ export default function FilesService() {
       if (!response.ok) {
         // Handle HTTP error responses
         const errorResponse = await response.json();
-        console.error(`[deleteFileFromBackendServer] Backend Error:`, errorResponse);
         return {
           deleted: false,
-          message: JSON.stringify(errorResponse),
-          type: ALERT_TYPES.DANGER,
+          notificationDto: new NotificationDto(JSON.stringify(errorResponse), ALERT_TYPES.DANGER),
         };
       }
 
@@ -458,8 +446,10 @@ export default function FilesService() {
       if (!data.deleted) {
         return {
           deleted: false,
-          message: data?.message || "An error occurred during file deletion.",
-          type: ALERT_TYPES.DANGER,
+          notificationDto: new NotificationDto(
+            data?.message || "An error occurred during file deletion.",
+            ALERT_TYPES.DANGER,
+          ),
         };
       }
 
@@ -469,54 +459,47 @@ export default function FilesService() {
         type: ALERT_TYPES.SUCCESS,
       };
     } catch (error) {
-      console.log(`[deleteFileFromBackendServer] ${error.message}`);
       return {
         deleted: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
 
   /**
    *
-   * @param {{id: string, filename: string }} payload
-   * @returns {Promise<{ deleted: boolean, message: string, type: number }>}
+   * @param {DeleteFileDto} payload
+   * @returns {Promise<{ deleted: boolean, notificationDto: NotificationDto }>}
    */
   async function deleteFile(payload) {
     try {
-      const { id, ...restPayload } = payload;
-      const updatedPayload = { ...restPayload, user_uid: userUid };
-
-      const deletedFromServer = await deleteFileFromBackendServer(updatedPayload);
+      
+      const deletedFromServer = await deleteFileFromBackendServer(new DeleteFileFromBackendServerDto(userUid, payload.getFilename()));
       if (!deletedFromServer.deleted) return deletedFromServer;
 
-      const fileRTef = doc(db, table, id);
+      const fileRTef = doc(db, table, payload.getId());
       const deleted = await deleteDoc(fileRTef);
 
       return {
         deleted: Boolean(deleted),
-        message: "Your file has been deleted",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("Your file has been deleted", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
-      console.log(`[deleteFile] ${error.message}`);
       return {
         deleted: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
 
   /**
    *
-   * @param {{filename: string }} payload
-   * @returns {Promise<{ downloaded: boolean, message: string, type: number }>}
+   * @param {DownloadFileDto} payload
+   * @returns {Promise<{ downloaded: boolean, notificationDto: NotificationDto }>}
    */
   async function downloadFile(payload) {
     try {
-      const updatedPayload = { ...payload, user_uid: userUid };
+      const updatedPayload = { ...payload.toJson(), user_uid: userUid };
 
       const response = await fetch(`${BACKEND_URL}files/get`, {
         method: "POST",
@@ -531,8 +514,7 @@ export default function FilesService() {
         const data = await response.json();
         return {
           downloaded: false,
-          message: JSON.stringify(data),
-          type: ALERT_TYPES.DANGER,
+          notificationDto: new NotificationDto(JSON.stringify(data), ALERT_TYPES.DANGER),
         };
       }
 
@@ -543,7 +525,7 @@ export default function FilesService() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = payload.filename;
+      link.download = payload.getFilename();
       document.body.appendChild(link);
 
       // Trigger the download and clean up
@@ -553,63 +535,41 @@ export default function FilesService() {
 
       return {
         downloaded: true,
-        message: "",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
-      console.log(`[downloadFile] #${error.message}`);
       return {
         downloaded: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
 
-  /**
-   *
-   * @param {{currentPage: number, searchTearm: string}} payload
-   * @returns {Promise<{results: import("../../types/types").FilesResponse,  message: string, type: number }>}
-   */
   async function listFilesBySearchTerm(payload) {
-    try {
-      return await listFiles(payload);
-    } catch (error) {
-      console.log(`[listFilesBySearchTerm]: ${error.message}`);
-      return {
-        results: { files: [], total: 0, pages: 0 },
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
-      };
-    }
+    return await _listFiles({ currentPage:  getCurrentPageNumber(), searchTearm: payload.getSearchTerm() });
   }
 
-  /**
-   *
-   * @param {{currentPage: number, folderId: string}} payload
-   * @returns {Promise<{results: import("../../types/types").FilesResponse,  message: string, type: number }>}
-   */
-  async function listFilesByFolderId(payload) {
-    try {
-      return await listFiles(payload);
-    } catch (error) {
-      console.log(`[listFilesByFolderId]: ${error.message}`);
-      return {
-        results: { files: [], total: 0, pages: 0 },
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
-      };
-    }
+  async function listFilesByFolderId() {
+    return await _listFiles({ currentPage: getCurrentPageNumber() });
+  }
+
+  async function getDriveFolders() {
+    return await getFolders();
+  }
+
+  async function listDriveFiles() {
+    return await _listFiles({ currentPage: getCurrentPageNumber() });
   }
 
   return {
     convertHtmlToDocx,
-    listFiles,
+    listDriveFiles,
     uploadFiles,
     archiveFile,
     deleteFile,
     downloadFile,
     listFilesBySearchTerm,
     listFilesByFolderId,
+    getDriveFolders,
   };
 }

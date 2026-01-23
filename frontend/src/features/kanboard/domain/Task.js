@@ -58,6 +58,7 @@ export class Task {
       priority,
       assignee,
       reporter,
+      archived,
       created_at,
       updated_at,
     });
@@ -204,7 +205,8 @@ export class Task {
   }
 
   #validate(data) {
-    const { id, project_id, user_uid, title, status, priority, assignee, reporter, created_at, updated_at } = data;
+    const { id, project_id, user_uid, title, status, priority, assignee, reporter, archived, created_at, updated_at } =
+      data;
 
     if (id == null || typeof id !== "string") {
       throw new Error("Something went wrong while identifying this task. Please try again.");
@@ -257,6 +259,10 @@ export class Task {
 
     if (!reporter || typeof reporter !== "object") {
       throw new Error("The reporter information is missing. Please try again.");
+    }
+
+    if (archived === null || archived === undefined || typeof archived !== "boolean") {
+      throw new Error("The archive information is missing. Please try again.");
     }
 
     if (!created_at || !updated_at) {
