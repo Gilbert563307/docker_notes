@@ -12,6 +12,7 @@ import { ListFilesBySearchTermDto } from "../../features/drive/presentation/dto/
 import { DownloadFileDto } from "../../features/drive/presentation/dto/DownloadFileDto";
 import { DeleteFileFromBackendServerDto } from "../../features/drive/presentation/dto/DeleteFileFromBackendServerDto";
 import { DeleteFileDto } from "../../features/drive/presentation/dto/DeleteFileDto";
+import { DriveFile } from "../../features/drive/domain/DriveFile";
 
 export default function FilesService() {
   const {
@@ -345,7 +346,7 @@ export default function FilesService() {
       const updatedDocuments = results.map((result) => result.documentUpdated);
 
       //filter out the docsname that you do not want to updae
-      const payloadToSave = payload.files.filter((f) => !updatedDocuments.includes(f.name));
+      const payloadToSave = payload.getFiles().filter((f) => !updatedDocuments.includes(f.name));
 
       //loop through data to  get the filename
       payloadToSave.forEach((file /** @type {File}  */) => {
@@ -364,6 +365,18 @@ export default function FilesService() {
           // @ts-ignore
           updated_at: currentServerTimestamp,
         };
+
+        const driveFile = new DriveFile(
+          "",
+          file.name,
+          payload.getFolderId(),
+          userUid,
+          file.size,
+          file.type,
+          false,
+          currentServerTimestamp
+          currentServerTimestamp
+        );
 
         //create doc ref
         const docRef = doc(collectionRef);
