@@ -560,8 +560,8 @@ export default function FilesService() {
     return await _listFiles({ currentPage: getCurrentPageNumber(), searchTearm: payload.getSearchTerm() });
   }
 
-  async function listFilesByFolderId() {
-    return await _listFiles({ currentPage: getCurrentPageNumber() });
+  async function listFilesByFolderId(folderId) {
+    return await _listFiles({ currentPage: getCurrentPageNumber(), folderId: folderId });
   }
 
   async function getDriveFolders() {

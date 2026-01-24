@@ -1,7 +1,11 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import "./css/CollectCreateFolder.css";
-import { FOLDERS_CONTROLLER_ACTIONS, useFoldersControllerContext } from "../../features/drive/presentation/FoldersController";
+import {
+  FOLDERS_CONTROLLER_ACTIONS,
+  useFoldersControllerContext,
+} from "../../features/drive/presentation/FoldersController";
+import { CreateFolderDto } from "../../features/drive/presentation/dto/CreateFolderDto";
 
 export default function CollectCreateFolder() {
   const { dispatch } = useFoldersControllerContext();
@@ -16,15 +20,12 @@ export default function CollectCreateFolder() {
 
   const onSubmit = (data) => {
     reset();
-    dispatch({ type: FOLDERS_CONTROLLER_ACTIONS.CREATE, payload: data });
+    dispatch({ type: FOLDERS_CONTROLLER_ACTIONS.CREATE, payload: new CreateFolderDto(data.name, data.color) });
   };
 
   return (
     <article className="create-folder-article">
-      <form
-        className="d-flex flex-column g-3"
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <form className="d-flex flex-column g-3" onSubmit={handleSubmit(onSubmit)}>
         {/* start name  */}
         <div className="col-12 mb-2">
           <label htmlFor="name" className="form-label">
@@ -32,9 +33,7 @@ export default function CollectCreateFolder() {
           </label>
           <input
             type="text"
-            className={`form-control ${
-              errors.name && errors.name.type ? "is-invalid" : ""
-            }`}
+            className={`form-control ${errors.name && errors.name.type ? "is-invalid" : ""}`}
             id="name"
             aria-describedby="name"
             maxLength={255}
@@ -50,11 +49,7 @@ export default function CollectCreateFolder() {
               },
             })}
           />
-          {errors.name && (
-            <div className="invalid-feedback d-block">
-              {errors.name.message}
-            </div>
-          )}
+          {errors.name && <div className="invalid-feedback d-block">{errors.name.message}</div>}
         </div>
         {/* end name  */}
 
@@ -75,12 +70,7 @@ export default function CollectCreateFolder() {
         {/* end color picker */}
 
         <div className="col-12 mt-3">
-          <input
-            type="submit"
-            name="submit"
-            value="Create"
-            className="add-task-button task-btn-plain"
-          ></input>
+          <input type="submit" name="submit" value="Create" className="add-task-button task-btn-plain"></input>
         </div>
       </form>
     </article>

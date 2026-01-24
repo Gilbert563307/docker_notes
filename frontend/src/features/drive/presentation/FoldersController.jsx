@@ -1,24 +1,30 @@
 import { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
-import FilesService from "../../../shared/application/service/FilesService";
 import FoldersService from "../application/service/FoldersService";
 import useHelpers from "../../../shared/helpers/useHelpers";
-import { ALERT_TYPES } from "../../../shared/presentation/components/bs5/BS5Alert";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
+import { FolderDto } from "../application/dto/FolderDto";
+import { DriveFileDto } from "../application/dto/DriveFileDto";
+import { NotificationDto } from "../../notification/application/dto/NotificationDto";
+import { CreateFolderDto } from "./dto/CreateFolderDto";
+import { UpdateFolderDto } from "./dto/UpdateFolderDto";
+import { ArchiveFolderDto } from "./dto/ArchiveFolderDto";
+
+const initialFolderDto = new FolderDto(null, null, null, null, null, null, null);
 
 /**
  * @typedef {Object} InitialState
- * @property {import("../../../types/types").Folder | {}} folder
- * @property {{files: import("../../../types/types").DriveFiles | [], total: number, pages: number} } files
- * @property {{folders: import("../../../types/types").Folders | [],  total: number, pages: number} } folders
+ * @property {FolderDto} folder
+ * @property {{files: Array<DriveFileDto> | [], total: number, pages: number} } files
+ * @property {{folders: Array<FolderDto>,  total: number, pages: number} } folders
  */
 
 /**
  * @type {InitialState}
  */
 const initialState = {
-  folder: {},
+  folder: initialFolderDto,
   files: { files: [], total: 0, pages: 0 },
   folders: { folders: [], total: 0, pages: 0 },
 };
@@ -69,10 +75,16 @@ export function useFoldersControllerContext() {
 }
 
 export default function FoldersController() {
-  const { getCurrentPageNumber } = useHelpers();
-  const { listFolders, archiveFolder, createFolder, readFolder, updateFolder, deleteFolder } = FoldersService();
-
-  const { listFilesByFolderId } = FilesService();
+  const {
+    listFolders,
+    listFoldersBySearchTerm,
+    archiveFolder,
+    createFolder,
+    readFolder,
+    updateFolder,
+    deleteFolder,
+    getFilesByFolderId,
+  } = FoldersService();
 
   const navigate = useNavigate();
 
@@ -112,26 +124,18 @@ export default function FoldersController() {
   // Defining the state and the dispatchAction using the useReducer hook
   const [state, dispatchAction] = useReducer(reducer, initialState);
 
-  function closeAlert() {
-    notificationObserver.addData({ message: "", type: 0 });
-  }
-
   /**
    *
-   * @param {{message: string, type: number}} object
-   * @returns {Function | void}
+   * @param {NotificationDto} notificationDto
+   * @returns {void}
    */
-  function setNotificationToState(object) {
-    if (object.message === "") return;
-    notificationObserver.addData(object);
+  function setNotificationToState(notificationDto) {
+    if (notificationDto.getMessage() === "") return;
+    notificationObserver.addData(notificationDto);
   }
 
-  /**
-   * Sets error to the state and dispatches notification.
-   * @param {Error} error - The error object.
-   */
-  function setErrorToState(error) {
-    notificationObserver.addData({ message: error.message, type: ALERT_TYPES.DANGER });
+  function closeAlert() {
+    notificationObserver.addData(new NotificationDto("", 0));
   }
 
   /**
@@ -139,45 +143,32 @@ export default function FoldersController() {
    * @param {string} searchTearm
    */
   async function collectListFoldersBySearchTerm(searchTearm) {
-    try {
-      //get currentPageNumber
-      const currentPage = getCurrentPageNumber();
-      //create Payload
-      const payload = { currentPage: currentPage, searchTearm: searchTearm };
+    const folders = await listFoldersBySearchTerm(searchTearm);
+    setNotificationToState(folders);
 
-      const folders = await listFolders(payload);
-      setNotificationToState(folders);
-
-      // Update state with the created task response
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_FOLDERS,
-        payload: folders.results,
-      });
-    } catch (error) {
-      setErrorToState(error);
-    }
+    // Update state with the created task response
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_FOLDERS,
+      payload: folders.results,
+    });
   }
 
   /**
    *
-   * @param {{name: string, color: string }} payload
+   * @param {CreateFolderDto} payload
    */
   async function collectCreateFolder(payload) {
-    try {
-      const folderCreated = await createFolder(payload);
+    const folderCreated = await createFolder(payload);
 
-      // Update state with the created task response
-      setNotificationToState(folderCreated);
+    // Update state with the created task response
+    setNotificationToState(folderCreated);
 
-      //refresh  after creating one
-      //TODO get state and remogve that task with that uuid no need to refesh or make all to api
-      await collectListFolders();
+    //refresh  after creating one
+    //TODO get state and remogve that task with that uuid no need to refesh or make all to api
+    await collectListFolders();
 
-      //navugate to tasks page
-      navigate("/folders");
-    } catch (error) {
-      setErrorToState(error);
-    }
+    //navugate to tasks page
+    navigate("/folders");
   }
 
   /**
@@ -185,42 +176,34 @@ export default function FoldersController() {
    * @param {string} folderId
    */
   async function collectReadFolder(folderId) {
-    try {
-      const results = await readFolder(folderId);
+    const results = await readFolder(folderId);
 
-      setNotificationToState(results);
+    setNotificationToState(results);
 
-      // set taskt to state;
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_FOLDER,
-        payload: results.folder,
-      });
-    } catch (error) {
-      setErrorToState(error);
-    }
+    // set taskt to state;
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_FOLDER,
+      payload: results.folder,
+    });
   }
 
   /**
    *
-   * @param {import("../../../types/types").Folder} payload
+   * @param {UpdateFolderDto} payload
    */
   async function CollectUpdateFolder(payload) {
-    try {
-      const tbu = await updateFolder(payload);
+    const tbu = await updateFolder(payload);
 
-      setNotificationToState(tbu);
+    setNotificationToState(tbu);
 
-      // get the updated task content
-      const results = await readFolder(payload.id);
+    // get the updated task content
+    const results = await readFolder(payload.id);
 
-      // set taskt to state;
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_FOLDER,
-        payload: results.folder,
-      });
-    } catch (error) {
-      setErrorToState(error);
-    }
+    // set taskt to state;
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_FOLDER,
+      payload: results.folder,
+    });
   }
 
   /**
@@ -228,19 +211,15 @@ export default function FoldersController() {
    * @param {string} folderId
    */
   async function collectDeleteFolder(folderId) {
-    try {
-      const tbuDeleted = await deleteFolder(folderId);
+    const tbuDeleted = await deleteFolder(folderId);
 
-      setNotificationToState(tbuDeleted);
+    setNotificationToState(tbuDeleted);
 
-      //reftech folders after archive this one
-      await collectListFolders;
+    //reftech folders after archive this one
+    await collectListFolders;
 
-      //navigate to tasks page
-      navigate("/folders");
-    } catch (error) {
-      setErrorToState(error);
-    }
+    //navigate to tasks page
+    navigate("/folders");
   }
 
   /**
@@ -248,21 +227,37 @@ export default function FoldersController() {
    * @param {string} folderId
    */
   async function collectListFilesByFolderId(folderId) {
-    try {
-      const response = await listFilesByFolderId({
-        currentPage: getCurrentPageNumber(),
-        folderId: folderId,
-      });
+    const response = await getFilesByFolderId(folderId);
 
-      setNotificationToState(response);
+    setNotificationToState(response);
 
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_FILES,
-        payload: response.results,
-      });
-    } catch (error) {
-      setErrorToState(error);
-    }
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_FILES,
+      payload: response.results,
+    });
+  }
+
+  async function collectListFolders() {
+    const folders = await listFolders();
+
+    // Update state with the created task response
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_FOLDERS,
+      payload: folders.results,
+    });
+  }
+
+  /**
+   *
+   * @param {ArchiveFolderDto} payload
+   */
+  async function collectArchiveFolder(payload) {
+    const tbuArchived = await archiveFolder(payload);
+
+    setNotificationToState(tbuArchived);
+
+    //reftech tasks after archive this one
+    await collectListFolders();
   }
 
   /**
@@ -319,45 +314,8 @@ export default function FoldersController() {
           return;
       }
     } catch (error) {
-      // Close loader in case of error
-      setErrorToState(error);
+      setNotificationToState(new NotificationDto(error.message, 1));
       console.error(`FoldersController: error ${error}`);
-    }
-  }
-
-  async function collectListFolders() {
-    try {
-      //get currentPageNumber
-      const currentPage = getCurrentPageNumber();
-      //create Payload
-      const payload = { currentPage: currentPage };
-
-      const folders = await listFolders(payload);
-
-      // Update state with the created task response
-      dispatchAction({
-        type: REDUCER_ACTIONS.SET_FOLDERS,
-        payload: folders.results,
-      });
-    } catch (error) {
-      setErrorToState(error);
-    }
-  }
-
-  /**
-   *
-   * @param {{id: string, archived: boolean}} payload
-   */
-  async function collectArchiveFolder(payload) {
-    try {
-      const tbuArchived = await archiveFolder(payload);
-
-      setNotificationToState(tbuArchived);
-
-      //reftech tasks after archive this one
-      await collectListFolders();
-    } catch (error) {
-      setErrorToState(error);
     }
   }
 

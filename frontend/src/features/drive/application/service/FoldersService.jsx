@@ -5,6 +5,13 @@ import useHelpers from "../../../../shared/helpers/useHelpers";
 import { Query } from "firebase/firestore";
 import FirebaseInterface from "../../../../shared/data/FirebaseInterface";
 import { NotificationDto } from "../../../notification/application/dto/NotificationDto";
+import FilesService from "../../../../shared/application/service/FilesService";
+import { FoldersMapper } from "../mapper/FoldersMapper";
+import { FolderDto } from "../dto/FolderDto";
+import { CreateFolderDto } from "../../presentation/dto/CreateFolderDto";
+import { Folder } from "../../domain/Folder";
+
+const initialFolderDto = new FolderDto(null, null, null, null, null, null, null);
 
 export default function FoldersService() {
   const {
@@ -32,7 +39,8 @@ export default function FoldersService() {
     deleteDoc,
   } = FirebaseInterface({ table: "folders" });
 
-  const { getSessionFilter } = useHelpers();
+  const { listFilesByFolderId } = FilesService();
+  const { getSessionFilter, getCurrentPageNumber } = useHelpers();
 
   /**
    * @param {{searchTearm?: string}} payload
@@ -70,7 +78,7 @@ export default function FoldersService() {
   /**
    *
    * @param {{currentPage: number, itemsPerPage?: number, searchTearm?: string }} payload
-   * @returns {Promise<{resultsQuery: Query | null, message: string, type: number}>} The Firestore query to fetch tasks for the specified page.
+   * @returns {Promise<{resultsQuery: Query | null, notificationDto: NotificationDto}>} The Firestore query to fetch tasks for the specified page.
    *
    */
   async function getFoldersQuery(payload) {
@@ -91,8 +99,7 @@ export default function FoldersService() {
     } catch (error) {
       return {
         resultsQuery: null,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
@@ -108,36 +115,39 @@ export default function FoldersService() {
 
       return totalRecords;
     } catch (error) {
-      console.log(`[getTotalFoldersInDatabaseByUserAndFilters]: ${error.message}`);
       return 0;
     }
+  }
+
+  async function listFoldersBySearchTerm(searchTearm) {
+    //get currentPageNumber
+    const currentPage = getCurrentPageNumber();
+    return await _listFolders({ currentPage: currentPage, searchTearm: searchTearm });
   }
 
   /**
    * @typedef {Object} listFoldersResponse
    * @property {Object} results
-   * @property {import("../../../../types/types").DriveFiles} results.folders
-   * @property {number} results.total
+   * @property {Array<FolderDto>} results.folders
    * @property {number} results.pages
-   * @property {number} type
-   * @property {string} message
+   * @property {number} results.total
+   * @property {NotificationDto} notificationDto
    */
 
   /**
    * @param {{ currentPage: number, itemsPerPage?: number, searchTearm?: string}} payload
    * @returns {Promise<listFoldersResponse>}
    */
-  async function listFolders(payload) {
+  async function _listFolders(payload) {
     try {
       // Construct the query to get all tasks for the current user UID with a
-      const { resultsQuery, message, type } = await getFoldersQuery(payload);
+      const { resultsQuery, notificationDto } = await getFoldersQuery(payload);
 
       //check if query is null
       if (!resultsQuery) {
         return {
           results: { folders: [], total: 0, pages: 0 },
-          message: message,
-          type: type,
+          notificationDto,
         };
       }
 
@@ -152,24 +162,22 @@ export default function FoldersService() {
       const totalPages = getTotalPages(totalRecords);
 
       //return results
+      const foldersDtos = FoldersMapper.arrayToDtoList(results);
       return {
-        results: { folders: results, total: totalRecords, pages: totalPages },
-        message: "",
-        type: ALERT_TYPES.SUCCESS,
+        results: { folders: foldersDtos, total: totalRecords, pages: totalPages },
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
-      console.log(`[listFolders]: ${error.message}`);
       return {
         results: { folders: [], total: 0, pages: 0 },
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
 
   /**
    *
-   * @returns {Promise<{folders: any, notificationDto: NotificationDto}>}
+   * @returns {Promise<{folders: Array<FolderDto>, notificationDto: NotificationDto}>}
    */
   async function getFolders() {
     try {
@@ -183,8 +191,9 @@ export default function FoldersService() {
       const querySnapshot = await getDocs(foldersQuery);
 
       const response = convertQuerySnapShotDocs(querySnapshot);
+      const foldersDtos = FoldersMapper.arrayToDtoList(response.results);
       return {
-        folders: response.results,
+        folders: foldersDtos,
         notificationDto: new NotificationDto(response.message, ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
@@ -198,67 +207,56 @@ export default function FoldersService() {
   /**
    *
    * @param {{id: string, archived: boolean}} payload -
-   * @returns {Promise<{ archived: boolean, message: string, type: number }>} - A promise that resolves to an object indicating the result of the archiving process.
+   * @returns {Promise<{ archived: boolean, notificationDto: NotificationDto }>} - A promise that resolves to an object indicating the result of the archiving process.
    */
   async function archiveFolder(payload) {
     try {
-      const { updated, message, type } = await updateFolder(payload);
+      const { updated, notificationDto } = await updateFolder(payload);
 
       // Return the result of the update operation
       return {
         archived: updated,
-        message: message,
-        type: type,
+        notificationDto,
       };
     } catch (error) {
       // Return an error response if the update operation fails
-      console.log(`[archiveFolder]: ${error.message}`);
       return {
         archived: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
 
   /**
    *
-   * @param {{name: string, color: string}} payload
-   * @returns {Promise<{created: boolean, message: string, type: number}>} -
+   * @param {CreateFolderDto} payload
+   * @returns {Promise<{created: boolean, notificationDto: NotificationDto}>} -
    */
   async function createFolder(payload) {
     try {
-      /**
-       * @type {import("../../../../types/types").Folder}
-       */
-      const defaultValues = {
-        user_uid: userUid,
-        archived: false,
-        // @ts-ignore
-        created_at: currentServerTimestamp,
-        // @ts-ignore
-        updated_at: currentServerTimestamp,
-      };
-
-      // Merge payload with defaults, giving precedence to user-provided values
-      const payloadToSave = { ...defaultValues, ...payload };
+      const folder = new Folder(
+        "",
+        userUid,
+        payload.getName(),
+        payload.getColor(),
+        false,
+        currentServerTimestamp,
+        currentServerTimestamp,
+      );
 
       // Attempt to add the document to the collection
-      const created = await addDoc(collectionRef, payloadToSave);
+      const created = await addDoc(collectionRef, folder.toJsonWithoutId());
 
       // Return success message if task creation was successful
       return {
         created: Boolean(created),
-        message: "Your folder has been created",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("Your folder has been created", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
-      console.log(`[createFolder]: ${error.message}`);
       // Return error message in case of failure
       return {
         created: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
@@ -266,23 +264,21 @@ export default function FoldersService() {
   /**
    * Fetches a task from the database by its ID.
    * @param {string} folderId
-   * @returns {Promise<{folder: import("../../../../types/types").Folder | {}, message: string, type: number}>}
+   * @returns {Promise<{folder: FolderDto, notificationDto: NotificationDto}>}
    */
   async function readFolder(folderId) {
     try {
       const { document, message, type } = await getDocument(folderId);
+      const folderDto = FoldersMapper.toDto(document);
       return {
-        folder: document,
-        message: message,
-        type: type,
+        folder: folderDto,
+        notificationDto: new NotificationDto(message, type),
       };
     } catch (error) {
       // Return an error response if the fetch operation fails
-      console.log(`[readFolder]: ${error.message}`);
       return {
-        folder: {},
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        folder: initialFolderDto,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
@@ -290,7 +286,7 @@ export default function FoldersService() {
   /**
    *
    * @param {import("../../../../types/types").Folder} payload
-   * @returns {Promise<{ updated: boolean, message: string, type: number }>}
+   * @returns {Promise<{ updated: boolean, notificationDto: NotificationDto }>}
    */
   async function updateFolder(payload) {
     try {
@@ -305,15 +301,13 @@ export default function FoldersService() {
 
       return {
         updated: true,
-        message: "Your folder has been succesfully been updated",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("Your folder has been succesfully been updated", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       console.log(`[updateFolder]: ${error.message}`);
       return {
         updated: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
   }
@@ -321,7 +315,7 @@ export default function FoldersService() {
   /**
    *
    * @param {string} folderId
-   * @returns {Promise<{ deleted: boolean, message: string, type: number }>}
+   * @returns {Promise<{ deleted: boolean, notificationDto: NotificationDto }>}
    */
   async function deleteFolder(folderId) {
     try {
@@ -329,17 +323,26 @@ export default function FoldersService() {
       const deleted = await deleteDoc(ref);
       return {
         deleted: Boolean(deleted),
-        message: "Your folder has been deleted",
-        type: ALERT_TYPES.SUCCESS,
+        notificationDto: new NotificationDto("Your folder has been deleted", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
-      console.log(`[deleteTask]: ${error.message}`);
       return {
         deleted: false,
-        message: error.message,
-        type: ALERT_TYPES.DANGER,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
+  }
+
+  /**
+   *
+   * @param {string} folderId
+   */
+  async function getFilesByFolderId(folderId) {
+    return listFilesByFolderId(folderId);
+  }
+
+  async function listFolders() {
+    return _listFolders({ currentPage: getCurrentPageNumber() });
   }
 
   return {
@@ -350,5 +353,7 @@ export default function FoldersService() {
     readFolder,
     updateFolder,
     deleteFolder,
+    getFilesByFolderId,
+    listFoldersBySearchTerm,
   };
 }

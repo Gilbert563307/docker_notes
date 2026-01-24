@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { FOLDERS_CONTROLLER_ACTIONS, useFoldersControllerContext } from "../../features/drive/presentation/FoldersController";
-
+import { FolderDto } from "../../features/drive/application/dto/FolderDto";
 
 /**
  *
- * @returns {{folder: import("../../types/types").Folder | {}, dispatch: Function}}
+ * @returns {{folder: FolderDto, dispatch: Function}}
  */
 export default function useGetFolderHook() {
   const { folderId } = useParams();

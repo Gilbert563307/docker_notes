@@ -76,6 +76,17 @@ export class Folder {
     };
   }
 
+  toJsonWithoutId() {
+    return {
+      user_uid: this.#user_uid,
+      name: this.#name,
+      color: this.#color,
+      archived: this.#archived,
+      created_at: this.#created_at,
+      updated_at: this.#updated_at,
+    };
+  }
+
   /** Update one or more fields */
   update(name, color, archived, updated_at) {
     this.#validate({
