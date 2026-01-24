@@ -1,7 +1,6 @@
 import React, { useState, useRef } from "react";
 import { ALLOWED_UPLOAD_FILE_TYPES } from "../../config";
 import { DRIVE_CONTROLLER_ACTIONS, useDriveControllerContext } from "../../features/drive/presentation/DriveController";
-import { ALERT_TYPES } from "../../shared/presentation/components/bs5/BS5Alert";
 import RepositorySelectFolder from "../../features/drive/component/drive/RepositorySelectFolder";
 import { Show } from "../../shared/presentation/components/custom/Show";
 import RepositorySelectedFiles from "../../features/drive/component/drive/RepositorySelectedFiles";
@@ -23,7 +22,7 @@ export default function CollectUploadFile() {
     event.preventDefault();
     const droppedFiles = Array.from(event.dataTransfer.files);
     const acceptedFiles = droppedFiles.filter((file) =>
-      ALLOWED_UPLOAD_FILE_TYPES.includes(file.name.split(".").pop().toLowerCase()),
+      ALLOWED_UPLOAD_FILE_TYPES.includes(file.type || file.name.split(".").pop().toLowerCase()),
     );
 
     setUploadedFiles([...uploadedFiles, ...acceptedFiles]);
@@ -46,7 +45,7 @@ export default function CollectUploadFile() {
   function handleFileSelect(event) {
     const selectedFiles = Array.from(event.target.files);
     const acceptedFiles = selectedFiles.filter((file) =>
-      ALLOWED_UPLOAD_FILE_TYPES.includes(file.name.split(".").pop().toLowerCase()),
+      ALLOWED_UPLOAD_FILE_TYPES.includes(file.type || file.name.split(".").pop().toLowerCase()),
     );
     setUploadedFiles([...uploadedFiles, ...acceptedFiles]);
   }
@@ -71,27 +70,19 @@ export default function CollectUploadFile() {
 
   function uploadFiles() {
     //TODO CHECK IF THE VALIDATION IN THE DTO IS BEING ACCEPTED otherwise uncomment
-    // if (uploadedFiles.length === 0) {
-    //   dispatch({
-    //     type: DRIVE_CONTROLLER_ACTIONS.SET_NOTIFICATION,
-    //     payload: {
-    //       message: "You must select at least 1 file.",
-    //       type: ALERT_TYPES.DANGER,
-    //     },
-    //   });
-    //   return;
-    // }
+    if (uploadedFiles.length === 0) {
+      dispatch({
+        type: DRIVE_CONTROLLER_ACTIONS.FILE_NOT_SELECTED_TO_UPLOAD,
+      });
+      return;
+    }
 
-    // if (selectedFolderIdRef.current === null) {
-    //   dispatch({
-    //     type: DRIVE_CONTROLLER_ACTIONS.SET_NOTIFICATION,
-    //     payload: {
-    //       message: "You must select at least 1 folder to upload the file(s) into.",
-    //       type: ALERT_TYPES.DANGER,
-    //     },
-    //   });
-    //   return;
-    // }
+    if (selectedFolderIdRef.current === null) {
+      dispatch({
+        type: DRIVE_CONTROLLER_ACTIONS.FOLDER_NOT_SELECTED_TO_UPLOAD,
+      });
+      return;
+    }
 
     dispatch({
       type: DRIVE_CONTROLLER_ACTIONS.UPLOAD_FILES,

@@ -11,6 +11,7 @@ import { ArchiveFileDto } from "./dto/ArchiveFileDto";
 import { DeleteFileDto } from "./dto/DeleteFileDto";
 import { DownloadFileDto } from "./dto/DownloadFileDto";
 import { ListFilesBySearchTermDto } from "./dto/ListFilesBySearchTermDto";
+import { ALERT_TYPES } from "../../../shared/presentation/components/bs5/BS5Alert";
 
 /**
  * @typedef {Object} InitialState
@@ -57,6 +58,8 @@ export const DRIVE_CONTROLLER_ACTIONS = {
   DOWNLOAD_FILE: "DOWNLOAD_FILE",
   SEARCH_FILES_BY_SEARCH_TERM: "SEARCH_FILES_BY_SEARCH_TERM",
   SET_NOTIFICATION: "SET_NOTIFICATION",
+  FILE_NOT_SELECTED_TO_UPLOAD: "FILE_NOT_SELECTED_TO_UPLOAD",
+  FOLDER_NOT_SELECTED_TO_UPLOAD: "FOLDER_NOT_SELECTED_TO_UPLOAD",
 };
 
 /**
@@ -178,8 +181,10 @@ export default function DriveController() {
     //set message if there is any
     setNotificationToState(results.notificationDto);
 
-    //navugate to files page
-    navigate("/drive");
+    if (results.uploaded === true) {
+      //navigate to files page
+      navigate("/drive");
+    }
   }
 
   /**
@@ -239,7 +244,6 @@ export default function DriveController() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   async function dispatch(/** @type {{ type: string; payload?: any; }} */ action) {
     try {
-
       // Handle different action types
       switch (action.type) {
         case DRIVE_CONTROLLER_ACTIONS.LIST:
@@ -268,6 +272,12 @@ export default function DriveController() {
           break;
         case DRIVE_CONTROLLER_ACTIONS.SET_NOTIFICATION:
           setNotificationToState(action?.payload);
+          break;
+        case DRIVE_CONTROLLER_ACTIONS.FILE_NOT_SELECTED_TO_UPLOAD:
+          setNotificationToState(new NotificationDto("You must select at least 1 file.", ALERT_TYPES.INFO));
+          break;
+        case DRIVE_CONTROLLER_ACTIONS.FOLDER_NOT_SELECTED_TO_UPLOAD:
+          setNotificationToState(new NotificationDto("You must select at least 1 folder to upload the file(s) into.", ALERT_TYPES.INFO));
           break;
 
         default:

@@ -155,7 +155,7 @@ export class DriveFile {
 
     if (type) {
       if (!ALLOWED_UPLOAD_FILE_TYPES.includes(type)) {
-        throw new Error("File type not supported. Supported file types: PDF, DOCX, DOC, TXT, MD. ");
+        throw new Error(`File type not supported. Supported file types: PDF, DOCX, DOC, TXT, MD. ${type}}`);
       }
     }
   }

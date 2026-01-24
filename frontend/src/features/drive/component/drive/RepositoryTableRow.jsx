@@ -6,6 +6,7 @@ import DeleteFileButton from "./buttons/DeleteFileButton";
 import { DRIVE_CONTROLLER_ACTIONS, useDriveControllerContext } from "../../presentation/DriveController";
 import { DownloadFileDto } from "../../presentation/dto/DownloadFileDto";
 import { DriveFileDto } from "../../application/dto/DriveFileDto";
+import ArchiveFileButton from "./buttons/ArchiveFileButton";
 
 /**
  *
@@ -41,8 +42,8 @@ export default function RepositoryTableRow({ file }) {
         </button>
         <DeleteFileButton fileId={file.getId()} filename={file.getName()}></DeleteFileButton>
         {/* <ArchiveFileButton
-          fileId={file.id}
-          isArchived={file.archived}
+          fileId={file.getId()}
+          isArchived={file.getIsArchived()}
         ></ArchiveFileButton> */}
       </td>
     </tr>

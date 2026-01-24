@@ -65,7 +65,7 @@ async def delete_file(request: FileRequest):
 
     file_deleted = FilesService.delete_file(request.user_uid, request.filename)
     if file_deleted:
-        return {"message": "File deleted successfully"}
+        return {"message": "File deleted successfully", "deleted": True}
     else:
         raise HTTPException(status_code=404, detail="File not found or could not be deleted")
 

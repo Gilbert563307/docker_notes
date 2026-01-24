@@ -16,6 +16,7 @@ import { DriveFile } from "../../../features/drive/domain/DriveFile";
 import { DriveFilesMapper } from "../../../features/drive/application/mapper/DriveFilesMapper";
 import { ArchiveFileDto } from "../../../features/drive/presentation/dto/ArchiveFileDto";
 
+
 export default function FilesService() {
   const {
     getTheCurrentItemsPerPage,
@@ -289,33 +290,30 @@ export default function FilesService() {
     try {
       const checkFileQuery = query(collectionRef, where("name", "==", fileName));
       const querySnapshot = await getDocs(checkFileQuery);
+      const { results } = convertQuerySnapShotDocs(querySnapshot);
 
       const updates = [];
       let documentUpdated = "";
-      querySnapshot.forEach((document) => {
-        const oldData = document.data();
 
-        if (oldData.name === fileName) {
+      results.forEach((document) => {
+        if (document.name === fileName) {
           documentUpdated = fileName;
-
           const driveFile = new DriveFile(
-            oldData.id,
-            oldData.name,
-            oldData.folder_id,
-            oldData.user_uid,
-            oldData.size,
-            oldData.type,
-            oldData.archived,
-            oldData.created_at,
+            document.id,
+            document.name,
+            document.folder_id,
+            document.user_uid,
+            document.size,
+            document.type,
+            document.archived,
+            document.created_at,
             currentServerTimestamp,
           );
-
           // Only update if data has changed
           const docRef = doc(db, table, driveFile.getId());
-          updates.push(updateDoc(docRef, driveFile.toJson()));
+          updates.push(updateDoc(docRef, driveFile.toJsonWithoutId()));
         }
       });
-
       // Wait for all updates to complete
       await Promise.all(updates);
 
@@ -336,10 +334,34 @@ export default function FilesService() {
   /**
    *
    * @param {UploadFilesDto} payload
+   * @returns {Array<DriveFile>}
+   */
+  function getDriveFilesToUpload(payload) {
+    return payload.getFiles().map((file) => {
+      return new DriveFile(
+        "",
+        file.name,
+        payload.getFolderId(),
+        userUid,
+        file.size,
+        file.type || file.name.split(".").pop().toLowerCase(),
+        false,
+        currentServerTimestamp,
+        currentServerTimestamp,
+      );
+    });
+  }
+
+  /**
+   *
+   * @param {UploadFilesDto} payload
    * @returns {Promise<{uploaded: Boolean, notificationDto: NotificationDto}>}
    */
   async function uploadFiles(payload) {
     try {
+      //convert files to driveFiles
+      const driveFiles = getDriveFilesToUpload(payload);
+
       //upload the files to the backend server
       const uploadedToServer = await uploadFilesToBackendServer(payload);
       if (!uploadedToServer.uploaded) return uploadedToServer;
@@ -354,33 +376,21 @@ export default function FilesService() {
       // Extract the `documentUpdated` values
       const updatedDocuments = results.map((result) => result.documentUpdated);
 
-      //filter out the docsname that you do not want to updae
-      const payloadToSave = payload.getFiles().filter((f) => !updatedDocuments.includes(f.name));
+      //filter out the doc same that you do not want to updatee
+      const payloadToSave = driveFiles.filter((driveFile) => !updatedDocuments.includes(driveFile.getName()));
 
       //loop through data to  get the filename
-      payloadToSave.forEach((file /** @type {File}  */) => {
-        const driveFile = new DriveFile(
-          "",
-          file.name,
-          payload.getFolderId(),
-          userUid,
-          file.size,
-          file.type,
-          false,
-          currentServerTimestamp,
-          currentServerTimestamp
-        );
-
+      payloadToSave.forEach((driveFile) => {
         //create doc ref
         const docRef = doc(collectionRef);
         batch.set(docRef, driveFile.toJsonWithoutId());
       });
 
-      // //add all data to firebase db
-      const uploaded = await batch.commit();
+      // add all data to firebase db
+      await batch.commit();
 
       return {
-        uploaded: Boolean(uploaded),
+        uploaded: true,
         notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
@@ -398,8 +408,8 @@ export default function FilesService() {
    */
   async function archiveFile(payload) {
     try {
-      //manualy updated the updated_at
-      const updatedPayload = { id: payload.getId(), updated_at: currentServerTimestamp };
+      //manualy updated the updated_at & archive do not use drive domain here because that is unnecessary for performance
+      const updatedPayload = { id: payload.getId(), archived: true, updated_at: currentServerTimestamp };
 
       //get document
       const file = doc(db, table, payload.getId());
@@ -409,7 +419,7 @@ export default function FilesService() {
 
       return {
         archived: true,
-        notificationDto: new NotificationDto("Your file has been succesfully been archived", ALERT_TYPES.SUCCESS),
+        notificationDto: new NotificationDto("Your file has been successfully been archived", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       return {
@@ -481,7 +491,6 @@ export default function FilesService() {
         new DeleteFileFromBackendServerDto(userUid, payload.getFilename()),
       );
       if (!deletedFromServer.deleted) return deletedFromServer;
-
       const fileRTef = doc(db, table, payload.getId());
       const deleted = await deleteDoc(fileRTef);
 

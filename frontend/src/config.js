@@ -98,7 +98,14 @@ export const PRIORITY_FILTER_TYPE_TAGS = [
 //LANDING PAGE router
 export const LANDING_PAGE_ROUTE = "/kanboards";
 
-export const ALLOWED_UPLOAD_FILE_TYPES = ["pdf", "docx", "doc", "txt", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "md"];
+export const ALLOWED_UPLOAD_FILE_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "text/plain",
+  "text/markdown",
+  "md",
+];
 
 export const DEFAULT_SELECT_FOLDER_MESSAGE = "Select the folder to upload files to";
 
