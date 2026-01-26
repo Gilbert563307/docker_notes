@@ -1,7 +1,7 @@
 
 import { initializeApp } from "firebase/app";
 import { GoogleAuthProvider, GithubAuthProvider, getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, initializeFirestore, persistentLocalCache } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -16,6 +16,10 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// Defaults to single-tab persistence if no tab manager is specified.
+initializeFirestore(app, {localCache: persistentLocalCache(/*settings*/{})});
+
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
