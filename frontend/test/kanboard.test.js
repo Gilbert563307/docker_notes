@@ -1,6 +1,6 @@
 import assert from "node:assert";
 import { KanBoard } from "../src/features/kanboard/domain/KanBoard";
-                
+
 describe("KanBoard domain", () => {
   it("should expose correct domain data via getters", () => {
     // Arrange (test data)
@@ -13,16 +13,7 @@ describe("KanBoard domain", () => {
     const createdAt = "2025-20-12";
     const updatedAt = "2025-20-12";
 
-    const kanBoard = new KanBoard(
-      id,
-      userUid,
-      name,
-      color,
-      isArchived,
-      isCollaborative,
-      createdAt,
-      updatedAt
-    );
+    const kanBoard = new KanBoard(id, userUid, name, color, isArchived, isCollaborative, createdAt, updatedAt);
 
     // Assert
     assert.strictEqual(kanBoard.getId(), id);
@@ -35,3 +26,4 @@ describe("KanBoard domain", () => {
     assert.strictEqual(kanBoard.getUpdatedAt(), updatedAt);
   });
 });
+

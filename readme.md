@@ -47,7 +47,7 @@ Note: need python 3.13 dor development
 * **GitHub Access Token**:
   Paste your [personal access token (PAT)](https://github.com/settings/tokens)
 
-  > ⚠️ This token **expires every 30 days** if using fine-grained tokens. You may need to generate a new one periodically.
+  >  This token **expires every 30 days** if using fine-grained tokens. You may need to generate a new one periodically.
   > Required permissions:
   >
   > * `contents` (**read/write**)
@@ -86,3 +86,10 @@ Note: need python 3.13 dor development
 * Click **"Deploy the Stack"**.
 
 
+
+
+---- 
+Tests
+1. create a test file ending on filename.tests.js
+2. run : npm run test
+3. docs https://mochajs.org/

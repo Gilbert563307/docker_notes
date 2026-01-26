@@ -116,11 +116,11 @@ export class Task {
   }
 
   //TODO implement if needed
-  getReadAbleCreatedAt(){
+  getReadAbleCreatedAt() {
     return this.#created_at.toDate().toLocaleDateString();
   }
 
-  getReadAbleUpdatedAt(){
+  getReadAbleUpdatedAt() {
     return this.#created_at.toDate().toLocaleDateString();
   }
 
@@ -280,6 +280,10 @@ export class Task {
   }
 
   #isUserOnLocalHost() {
+    if (typeof location === "undefined") {
+      return false; // Node / tests
+    }
+
     if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
       return true;
     }
