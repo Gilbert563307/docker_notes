@@ -1,6 +1,24 @@
+import { Folder } from "../../domain/Folder";
 import { FolderDto } from "../dto/FolderDto";
 
 export class FoldersMapper {
+
+  /**
+   * 
+   * @param {FolderDto} payload 
+   * @returns {Folder}
+   */
+  static fromDtoToEntity(payload) {
+    return new Folder(
+        payload.getId(),
+        payload.getUserUid(),
+        payload.getName(),
+        payload.getColor(),  
+        payload.getIsArchived(),
+        payload.getCreatedAt(),
+        payload.getUpdatedAt(),
+    );
+  }
   /**
    *
    * @param {Array<Object>} arrayList

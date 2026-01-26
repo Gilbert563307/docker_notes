@@ -2,7 +2,7 @@ import React from "react";
 import { ALERT_TYPES } from "../../presentation/components/bs5/BS5Alert";
 import { asBlob } from "html-docx-js-typescript";
 import { Query } from "firebase/firestore";
-import { DEFAULT_FILES_ARCHIVE, FILES_ARCHIVED_SESSION_FILTER } from "../../../config";
+import { DEFAULT_FILES_ARCHIVE, FILES_ARCHIVED_SESSION_FILTER, MAX_FOLDERS_TO_FETCH } from "../../../config";
 import useHelpers from "../../helpers/useHelpers";
 import FirebaseInterface from "../../data/FirebaseInterface";
 import { NotificationDto } from "../../../features/notification/application/dto/NotificationDto";
@@ -15,7 +15,7 @@ import { DeleteFileDto } from "../../../features/drive/presentation/dto/DeleteFi
 import { DriveFile } from "../../../features/drive/domain/DriveFile";
 import { DriveFilesMapper } from "../../../features/drive/application/mapper/DriveFilesMapper";
 import { ArchiveFileDto } from "../../../features/drive/presentation/dto/ArchiveFileDto";
-
+import { FoldersMapper } from "../../../features/drive/application/mapper/FoldersMapper";
 
 export default function FilesService() {
   const {
@@ -26,7 +26,7 @@ export default function FilesService() {
     getSearchQueryByFieldName,
     query,
     collectionRef,
-    // limit,
+    limit,
     getDocs,
     convertQuerySnapShotDocs,
     getCountFromServer,
@@ -42,44 +42,37 @@ export default function FilesService() {
     currentServerTimestamp,
     fetchResultsOnPageOne,
     fetchPaginatedResults,
+    getTable,
   } = FirebaseInterface({ table: "files" });
 
   const { getSessionFilter, getCurrentPageNumber } = useHelpers();
-  const { getFolders } = FoldersService();
+
   /**
    * @param {{searchTearm?: string, folderId?: string}} payload
-   * @returns {{queryItems: Array<Query> | Array, notificationDto: NotificationDto}}
+   * @returns {{queryItems: Array<any> }}
    */
   function getFilesQueryClauses(payload) {
-    try {
-      const archived = getSessionFilter(FILES_ARCHIVED_SESSION_FILTER) || DEFAULT_FILES_ARCHIVE;
+    const archived = getSessionFilter(FILES_ARCHIVED_SESSION_FILTER) || DEFAULT_FILES_ARCHIVE;
 
-      let queryItems = [
-        where("user_uid", "==", userUid),
-        where("archived", "==", archived),
-        orderBy("created_at", "desc"),
-      ];
+    let queryItems = [
+      where("user_uid", "==", userUid),
+      where("archived", "==", archived),
+      orderBy("created_at", "desc"),
+    ];
 
-      if (payload && payload.searchTearm && payload.searchTearm != "") {
-        const { searchTearm } = payload;
-        queryItems = [...queryItems, ...getSearchQueryByFieldName("name", searchTearm)];
-      }
-
-      if (payload && payload.folderId && payload.folderId != "") {
-        const { folderId } = payload;
-        queryItems = [...queryItems, where("folder_id", "==", folderId)];
-      }
-
-      return {
-        queryItems: queryItems,
-        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
-      };
-    } catch (error) {
-      return {
-        queryItems: [],
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
-      };
+    if (payload && payload.searchTearm && payload.searchTearm != "") {
+      const { searchTearm } = payload;
+      queryItems = [...queryItems, ...getSearchQueryByFieldName("name", searchTearm)];
     }
+
+    if (payload && payload.folderId && payload.folderId != "") {
+      const { folderId } = payload;
+      queryItems = [...queryItems, where("folder_id", "==", folderId)];
+    }
+
+    return {
+      queryItems: queryItems,
+    };
   }
 
   /**
@@ -492,10 +485,10 @@ export default function FilesService() {
       );
       if (!deletedFromServer.deleted) return deletedFromServer;
       const fileRTef = doc(db, table, payload.getId());
-      const deleted = await deleteDoc(fileRTef);
+      await deleteDoc(fileRTef);
 
       return {
-        deleted: Boolean(deleted),
+        deleted: true,
         notificationDto: new NotificationDto("Your file has been deleted", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
@@ -565,7 +558,28 @@ export default function FilesService() {
   }
 
   async function getDriveFolders() {
-    return await getFolders();
+    try {
+      const foldersQuery = query(
+        getTable("folders"),
+        where("user_uid", "==", userUid),
+        orderBy("created_at", "desc"),
+        limit(MAX_FOLDERS_TO_FETCH),
+      );
+
+      const querySnapshot = await getDocs(foldersQuery);
+
+      const response = convertQuerySnapShotDocs(querySnapshot);
+      const foldersDtos = FoldersMapper.arrayToDtoList(response.results);
+      return {
+        folders: foldersDtos,
+        notificationDto: new NotificationDto(response.message, ALERT_TYPES.SUCCESS),
+      };
+    } catch (error) {
+      return {
+        folders: [],
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+      };
+    }
   }
 
   async function listDriveFiles() {

@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import "../../css/kanboardform.css";
 import { useForm } from "react-hook-form";
 import { KanBoardDto } from "../../application/dto/KanBoardDto";
+import DeleteKanBoardButton from "./DeleteKanBoardButton";
 
 /**
  * @param {Object} props - Component props
@@ -22,7 +23,7 @@ export default function KanBoardForm({ onSubmit, board, submitButtonValue }) {
   } = useForm({
     defaultValues: {
       name: "",
-      color: "",
+      color: "#000000", //back default colour
     },
     values,
   });
@@ -32,7 +33,7 @@ export default function KanBoardForm({ onSubmit, board, submitButtonValue }) {
   useEffect(() => {
     reset({
       name: board.getName(),
-      color: board.getColor(),
+      color: board.getColor() || "#000000",
     });
   }, [board]);
 
@@ -81,8 +82,20 @@ export default function KanBoardForm({ onSubmit, board, submitButtonValue }) {
         </div>
         {/* end color picker */}
         <div className="col-12 mt-3">
-          <input type="submit" name="submit" value={submitButtonValue} className="add-task-button task-btn-plain"></input>
+          <input
+            type="submit"
+            name="submit"
+            value={submitButtonValue}
+            className="add-task-button task-btn-plain"
+          ></input>
         </div>
+        {board.getId() ? (
+          <div className="kanboard-float-end">
+            <DeleteKanBoardButton kanBoardId={board.getId()} />
+          </div>
+        ) : (
+          ""
+        )}
       </form>
     </article>
   );

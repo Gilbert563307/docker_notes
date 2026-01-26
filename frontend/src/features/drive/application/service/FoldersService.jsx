@@ -10,6 +10,7 @@ import { FoldersMapper } from "../mapper/FoldersMapper";
 import { FolderDto } from "../dto/FolderDto";
 import { CreateFolderDto } from "../../presentation/dto/CreateFolderDto";
 import { Folder } from "../../domain/Folder";
+import { ArchiveFolderDto } from "../../presentation/dto/ArchiveFolderDto";
 
 const initialFolderDto = new FolderDto(null, null, null, null, null, null, null);
 
@@ -92,10 +93,23 @@ export default function FoldersService() {
 
       // If the current page is the first page, create a query limited by the items per page
       if (currentPage === 1) {
-        return fetchResultsOnPageOne(queryItems, itemsPerPage);
+        const { resultsQuery, message, type } = fetchResultsOnPageOne(queryItems, itemsPerPage);
+        return {
+          resultsQuery: resultsQuery,
+          notificationDto: new NotificationDto(message, type),
+        };
       }
 
-      return fetchPaginatedResults(currentPage, payload, itemsPerPage, queryItems);
+      const { resultsQuery, message, type } = await fetchPaginatedResults(
+        currentPage,
+        payload,
+        itemsPerPage,
+        queryItems,
+      );
+      return {
+        resultsQuery: resultsQuery,
+        notificationDto: new NotificationDto(message, type),
+      };
     } catch (error) {
       return {
         resultsQuery: null,
@@ -206,7 +220,7 @@ export default function FoldersService() {
 
   /**
    *
-   * @param {{id: string, archived: boolean}} payload -
+   * @param {ArchiveFolderDto} payload -
    * @returns {Promise<{ archived: boolean, notificationDto: NotificationDto }>} - A promise that resolves to an object indicating the result of the archiving process.
    */
   async function archiveFolder(payload) {
@@ -243,7 +257,7 @@ export default function FoldersService() {
         currentServerTimestamp,
         currentServerTimestamp,
       );
-
+    
       // Attempt to add the document to the collection
       const created = await addDoc(collectionRef, folder.toJsonWithoutId());
 
@@ -285,19 +299,19 @@ export default function FoldersService() {
 
   /**
    *
-   * @param {import("../../../../types/types").Folder} payload
+   * @param {FolderDto} payload
    * @returns {Promise<{ updated: boolean, notificationDto: NotificationDto }>}
    */
   async function updateFolder(payload) {
     try {
-      //manualy updated the updated_at
-      const updatedPayload = { ...payload, updated_at: currentServerTimestamp };
-
+      const folder = FoldersMapper.fromDtoToEntity(payload);
+      
+      folder.update(folder.getName(), folder.getColor(), folder.getIsArchived(), currentServerTimestamp);
       //get document
-      const folder = doc(db, table, payload.id);
+      const document = doc(db, table, folder.getId());
 
       //update document
-      await updateDoc(folder, updatedPayload);
+      await updateDoc(document, folder.toJsonWithoutId());
 
       return {
         updated: true,

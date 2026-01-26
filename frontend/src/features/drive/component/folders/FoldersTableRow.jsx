@@ -1,12 +1,14 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 import { Link } from "react-router-dom";
 import BS5TruncateSpan from "../../../../shared/presentation/components/bs5/BS5TruncateSpan";
 import ArchiveFolderButton from "./ArchiveFolderButton";
+import { FolderDto } from "../../application/dto/FolderDto";
 
 /**
  *
  * @param {Object} props - The properties object.
- * @param {import("../../../../types/types").Folder } props.folder -
+ * @param {FolderDto } props.folder -
  * @returns {JSX.Element} The rendered  component.
  */
 export default function FoldersTableRow({ folder }) {
@@ -22,41 +24,40 @@ export default function FoldersTableRow({ folder }) {
           <span>
             <i
               className="fa-duotone fa-solid fa-folder"
-              style={{ color: folder.color }}
+              style={{ color: folder.getColor() }}
             ></i>
           </span>
 
           <BS5TruncateSpan
-            title={`${folder.name} folder`}
+            title={`${folder.getName()} folder`}
             content={
               <Link
-                to={`/folders/read/${folder.id}`}
+                to={`/folders/read/${folder.getId()}`}
                 state={{ folder: folder }}
                 className="read-link"
               >
-                {folder.name}
+                {folder.getName()}
               </Link>
             }
             maxWidthToSet="350px"
           />
         </div>
       </td>
-      <td>{folder.created_at.toLocaleString()}</td>
-      <td>{folder.updated_at.toLocaleString()}</td>
+      <td>{folder.getCreatedAt().toLocaleString()}</td>
+      <td>{folder.getUpdatedAt().toLocaleString()}</td>
       <td className="main-table-actions">
         <button>
-          <Link to={`/folders/read/${folder.id}`} state={{ folder: folder }}>
+          <Link to={`/folders/read/${folder.getId()}`} state={{ folder: folder.toJson() }}>
             <i className="fa-light fa-magnifying-glass"></i>
           </Link>
         </button>
         <button>
-          <Link to={`/folders/update/${folder.id}`}>
+          <Link to={`/folders/update/${folder.getId()}`}>
             <i className="fa-sharp fa-light fa-pencil"></i>
           </Link>
         </button>
         <ArchiveFolderButton
-          folderId={folder.id}
-          isArchived={folder.archived}
+          folder={folder}
         ></ArchiveFolderButton>
       </td>
     </tr>

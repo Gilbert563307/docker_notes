@@ -144,7 +144,7 @@ export default function FoldersController() {
    */
   async function collectListFoldersBySearchTerm(searchTearm) {
     const folders = await listFoldersBySearchTerm(searchTearm);
-    setNotificationToState(folders);
+    setNotificationToState(folders.notificationDto);
 
     // Update state with the created task response
     dispatchAction({
@@ -161,7 +161,7 @@ export default function FoldersController() {
     const folderCreated = await createFolder(payload);
 
     // Update state with the created task response
-    setNotificationToState(folderCreated);
+    setNotificationToState(folderCreated.notificationDto);
 
     //refresh  after creating one
     //TODO get state and remogve that task with that uuid no need to refesh or make all to api
@@ -178,7 +178,7 @@ export default function FoldersController() {
   async function collectReadFolder(folderId) {
     const results = await readFolder(folderId);
 
-    setNotificationToState(results);
+    setNotificationToState(results.notificationDto);
 
     // set taskt to state;
     dispatchAction({
@@ -194,16 +194,19 @@ export default function FoldersController() {
   async function CollectUpdateFolder(payload) {
     const tbu = await updateFolder(payload);
 
-    setNotificationToState(tbu);
+    setNotificationToState(tbu.notificationDto);
 
-    // get the updated task content
-    const results = await readFolder(payload.id);
+    //navigate to tasks page
+    navigate("/folders");
 
-    // set taskt to state;
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_FOLDER,
-      payload: results.folder,
-    });
+    // get the updated task content TODO UNCOMMENT WHEN NEDEED
+    // const results = await readFolder(payload.getId());
+
+    // set task to state;
+    // dispatchAction({
+    //   type: REDUCER_ACTIONS.SET_FOLDER,
+    //   payload: results.folder,
+    // });
   }
 
   /**
@@ -213,7 +216,7 @@ export default function FoldersController() {
   async function collectDeleteFolder(folderId) {
     const tbuDeleted = await deleteFolder(folderId);
 
-    setNotificationToState(tbuDeleted);
+    setNotificationToState(tbuDeleted.notificationDto);
 
     //reftech folders after archive this one
     await collectListFolders;
@@ -229,7 +232,7 @@ export default function FoldersController() {
   async function collectListFilesByFolderId(folderId) {
     const response = await getFilesByFolderId(folderId);
 
-    setNotificationToState(response);
+    setNotificationToState(response.notificationDto);
 
     dispatchAction({
       type: REDUCER_ACTIONS.SET_FILES,
@@ -254,7 +257,7 @@ export default function FoldersController() {
   async function collectArchiveFolder(payload) {
     const tbuArchived = await archiveFolder(payload);
 
-    setNotificationToState(tbuArchived);
+    setNotificationToState(tbuArchived.notificationDto);
 
     //reftech tasks after archive this one
     await collectListFolders();

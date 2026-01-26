@@ -61,7 +61,7 @@ export function useKanBoardsControllerContext() {
 }
 
 export default function KanBoardsController() {
-  const { listKanBoards, createKanBoard, readKanBoard, updateKanBoard } = KanBoardsService();
+  const { listKanBoards, createKanBoard, readKanBoard, updateKanBoard, deleteKanBoard } = KanBoardsService();
   const navigate = useNavigate();
 
   /**
@@ -163,6 +163,19 @@ export default function KanBoardsController() {
     navigate("/kanboards");
   }
 
+  /**
+   *
+   * @param {number} payload
+   */
+  async function collectDeleteKanBoard(payload) {
+    const kanBoarddeleted = await deleteKanBoard(payload);
+    setNotificationToState(kanBoarddeleted.notificationDto);
+
+    if (kanBoarddeleted.deleted) {
+      navigate("/kanboards");
+    }
+  }
+
   // eslint-disable-next-line react-hooks/exhaustive-deps
   async function dispatch(/** @type {{ type: string; payload?: any; }} */ action) {
     try {
@@ -183,6 +196,10 @@ export default function KanBoardsController() {
 
         case KAN_BOARDS_CONTROLLER_ACTIONS.UPDATE:
           await collectUpdateKanBoard(action.payload);
+          break;
+
+        case KAN_BOARDS_CONTROLLER_ACTIONS.DELETE:
+          await collectDeleteKanBoard(action.payload);
           break;
 
         case "CLOSE_ALERT":

@@ -64,7 +64,7 @@ export class Folder {
   }
 
   /** Return object representation */
-  toString() {
+  toJson() {
     return {
       id: this.#id,
       user_uid: this.#user_uid,
@@ -92,9 +92,9 @@ export class Folder {
     this.#validate({
       id: this.#id,
       user_uid: this.#user_uid,
-      name: name ?? this.#name,
-      color: color ?? this.#color,
-      archived: archived ?? this.#archived,
+      name: name,
+      color: color,
+      archived: archived,
     });
 
     this.#name = name;

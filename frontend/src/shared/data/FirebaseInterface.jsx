@@ -19,6 +19,7 @@ import {
   endAt,
   writeBatch,
   Query,
+  CollectionReference,
 } from "firebase/firestore";
 import { ref, uploadBytes } from "firebase/storage";
 import useHelpers from "../helpers/useHelpers";
@@ -46,12 +47,10 @@ export default function FirebaseInterface({ table }) {
    * @returns { Date | null }
    */
   const convertTimeStampToDate = (object) => {
-    try {
-      return new Timestamp(object.seconds, object.nanoseconds).toDate();
-    } catch (error) {
-      console.error(`[convertTimeStampToDate] ${error.message}`);
-      return null;
+    if (object.nanoseconds === null || object.seconds === null) {
+      throw new Error("Something went wrong while converting time stamp to date");
     }
+    return new Timestamp(object.seconds, object.nanoseconds).toDate();
   };
 
   /**
@@ -62,9 +61,7 @@ export default function FirebaseInterface({ table }) {
    */
   const getTotalPages = (totalRecords) => {
     // Get the user-set items per page.
-    const size = parseInt(
-      getUrlParams(ITEMS_PER_PAGE) || DEFAULT_ITEMS_PER_PAGE
-    );
+    const size = parseInt(getUrlParams(ITEMS_PER_PAGE) || DEFAULT_ITEMS_PER_PAGE);
 
     // Calculate the total number of pages.
     const pages = (totalRecords + size - 1) / size;
@@ -90,48 +87,13 @@ export default function FirebaseInterface({ table }) {
    * @returns {Array}
    */
   const getSearchQueryByFieldName = (fieldName, searchText) => {
-    try {
-      if (!searchText) return [];
+    if (!searchText) return [];
 
-      const startText = searchText;
-      const endText = startText + "\uf8ff";
+    const startText = searchText;
+    const endText = startText + "\uf8ff";
 
-      return [
-        where(fieldName, ">=", startText),
-        where(fieldName, "<=", endText),
-      ];
-    } catch (error) {
-      console.error(`[getSearchQuery]: ${error.message}`);
-      return [];
-    }
+    return [where(fieldName, ">=", startText), where(fieldName, "<=", endText)];
   };
-
-  /**
-   *
-   * @param {number} seconds
-   * @param {number} nanoseconds
-   * @returns {{date: null | Date, error: string, type: number} }
-   */
-  function convertFirebaseTimestampToDate(seconds, nanoseconds) {
-    try {
-      const date = convertTimeStampToDate({
-        seconds: seconds,
-        nanoseconds: nanoseconds,
-      });
-
-      return {
-        date: date,
-        error: "",
-        type: ALERT_TYPES.SUCCESS,
-      };
-    } catch (error) {
-      return {
-        date: null,
-        error: error.message(),
-        type: ALERT_TYPES.DANGER,
-      };
-    }
-  }
 
   const convertQuerySnapShotDocs = (querySnapshot) => {
     try {
@@ -142,11 +104,7 @@ export default function FirebaseInterface({ table }) {
         // the value may temporarily return as null if fetched immediately.
         // To avoid this, wait a few seconds before fetching the updated data.
 
-        if (
-          document.data().created_at === null ||
-          document.data().updated_at === null
-        ) {
-
+        if (document.data().created_at === null || document.data().updated_at === null) {
           //TODO CHECK IF I NEED TO DO THIS AND WHY NOT USE SERVER TIME STAMP
           const dateNow = Date.now();
           return {
@@ -197,23 +155,13 @@ export default function FirebaseInterface({ table }) {
    * @param {Array} queryItems
    * @returns {Promise<{resultsQuery: Query | null, message: string, type: number}>}
    */
-  async function fetchPaginatedResults(
-    currentPage,
-    payload,
-    itemsPerPage,
-    queryItems
-  ) {
+  async function fetchPaginatedResults(currentPage, payload, itemsPerPage, queryItems) {
     try {
       // Calculate the limit for fetching documents up to the current page
-      const newPageLimit =
-        currentPage * (payload?.itemsPerPage || itemsPerPage);
+      const newPageLimit = currentPage * (payload?.itemsPerPage || itemsPerPage);
 
       // Fetch tasks limited by the new page limit
-      const allDocsLimitedByThePageNumber = query(
-        collectionRef,
-        ...queryItems,
-        limit(newPageLimit)
-      );
+      const allDocsLimitedByThePageNumber = query(collectionRef, ...queryItems, limit(newPageLimit));
 
       // Get document snapshots for the calculated limit clause
       const documentSnapshots = await getDocs(allDocsLimitedByThePageNumber);
@@ -229,12 +177,7 @@ export default function FirebaseInterface({ table }) {
       }
 
       // Return a query that starts after the last visible document of the previous page
-      const resultsQuery = query(
-        collectionRef,
-        ...queryItems,
-        startAfter(startFromDocument),
-        limit(itemsPerPage)
-      );
+      const resultsQuery = query(collectionRef, ...queryItems, startAfter(startFromDocument), limit(itemsPerPage));
       return {
         resultsQuery: resultsQuery,
         message: "",
@@ -257,11 +200,7 @@ export default function FirebaseInterface({ table }) {
    */
   function fetchResultsOnPageOne(queryItems, itemsPerPage) {
     try {
-      const resultsQuery = query(
-        collectionRef,
-        ...queryItems,
-        limit(itemsPerPage)
-      );
+      const resultsQuery = query(collectionRef, ...queryItems, limit(itemsPerPage));
       return {
         resultsQuery: resultsQuery,
         message: "",
@@ -317,6 +256,15 @@ export default function FirebaseInterface({ table }) {
     }
   }
 
+  /**
+   *
+   * @param {string} tableName
+   * @returns {CollectionReference}
+   */
+  function getTable(tableName) {
+    return collection(db, tableName);
+  }
+
   return {
     collectionRef,
     getDocs,
@@ -353,5 +301,6 @@ export default function FirebaseInterface({ table }) {
     fetchPaginatedResults,
     fetchResultsOnPageOne,
     getDocument,
+    getTable,
   };
 }

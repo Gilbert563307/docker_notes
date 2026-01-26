@@ -131,7 +131,7 @@ export default function CollectUploadFile() {
             <div className="upload-file-drop-zone-content">
               <p>Choose a file or drag & drop it here</p>
               <p className="upload-file-info-text upload-supported-file-types">
-                Supported file types: PDF, DOCX, DOC, TXT, MD. Maximum file size: 50MB.
+                Supported file types: PDF, DOCX, DOC, TXT, MD. Maximum file size: 100MB.
               </p>
             </div>
             <div className="upload-file-browse-btn-container">

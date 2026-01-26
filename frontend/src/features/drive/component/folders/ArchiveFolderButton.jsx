@@ -1,18 +1,20 @@
+/* eslint-disable react/prop-types */
 import React, { useId, useState } from "react";
 import { FOLDERS_CONTROLLER_ACTIONS, useFoldersControllerContext } from "../../presentation/FoldersController";
 import { Show } from "../../../../shared/presentation/components/custom/Show";
 import BS5Modal, { MODAL_SIZES } from "../../../../shared/presentation/components/bs5/BS5Modal";
+import { FolderDto } from "../../application/dto/FolderDto";
+import { ArchiveFolderDto } from "../../presentation/dto/ArchiveFolderDto";
 
 /**
  *
  *
  * @param {Object} props - The props object.
- * @param {string} props.folderId
- * @param {boolean} props.isArchived
+ * @param {FolderDto} props.folder
  *
  * @returns {JSX.Element} The rendered component.
  */
-export default function ArchiveFolderButton({ folderId, isArchived }) {
+export default function ArchiveFolderButton({ folder }) {
   const { dispatch } = useFoldersControllerContext();
   const modalId = useId();
   const [modal, setModal] = useState(false);
@@ -26,28 +28,39 @@ export default function ArchiveFolderButton({ folderId, isArchived }) {
   };
 
   const archiveFolder = () => {
-    const archived = isArchived === true ? false : true;
-    const payload = { id: folderId, archived: archived };
-    dispatch({ type: FOLDERS_CONTROLLER_ACTIONS.ARCHIVE, payload: payload });
+    const archived = folder.getIsArchived() === true ? false : true;
+    dispatch({
+      type: FOLDERS_CONTROLLER_ACTIONS.ARCHIVE,
+      payload: new ArchiveFolderDto(
+        folder.getId(),
+        folder.getUserUid(),
+        folder.getName(),
+        folder.getColor(),
+        archived,
+        folder.getCreatedAt(),
+        folder.getUpdatedAt(),
+      ),
+    });
     closeModal();
   };
 
-  const modalContent = isArchived ? (
+  const modalContent = folder.getIsArchived() ? (
     <p>
       Restoring this folder will move it back to your active folders list. You can archive it again later if needed.
     </p>
   ) : (
     <p>
-      Archiving will move the folder to the archive and it will no longer be visible in your active folders list. You can restore it from the archive later if needed.
+      Archiving will move the folder to the archive and it will no longer be visible in your active folders list. You
+      can restore it from the archive later if needed.
     </p>
   );
 
-  const modalTitle = isArchived
+  const modalTitle = folder.getIsArchived()
     ? "Are you sure you want to restore this folder ?"
     : "Are you sure you want to archive this folder ?";
 
-  const saveChangesTitle = isArchived ? "Restore" : "Archive";
-  const saveChangesClass = isArchived ? 3 : 4;
+  const saveChangesTitle = folder.getIsArchived() ? "Restore" : "Archive";
+  const saveChangesClass = folder.getIsArchived() ? 3 : 4;
 
   return (
     <React.Fragment>

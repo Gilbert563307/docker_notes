@@ -71,7 +71,7 @@ export class DriveFileDto {
   }
 
   /** Return object representation */
-  toString() {
+  toJson() {
     return {
       id: this.#id,
       name: this.#name,

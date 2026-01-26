@@ -15,7 +15,7 @@ export default function KanBoardsService() {
     query,
     limit,
     where,
-    orderBy,
+    // orderBy,
     getDocs,
     currentServerTimestamp,
     convertQuerySnapShotDocs,
@@ -23,6 +23,7 @@ export default function KanBoardsService() {
     doc,
     table,
     db,
+    deleteDoc,
     updateDoc,
     getCountFromServer,
     getDocument,
@@ -197,5 +198,25 @@ export default function KanBoardsService() {
       };
     }
   }
-  return { listKanBoards, createKanBoard, updateKanBoard, archiveKanBoard, readKanBoard };
+
+  /**
+   *
+   * @param {number} kanBoardId
+   */
+  async function deleteKanBoard(kanBoardId) {
+    try {
+      const kanBoardRef = doc(db, table, kanBoardId);
+      deleteDoc(kanBoardRef);
+      return {
+        deleted: true,
+        notificationDto: new NotificationDto("Your kanboard has been deleted", ALERT_TYPES.SUCCESS),
+      };
+    } catch (error) {
+      return {
+        deleted: false,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+      };
+    }
+  }
+  return { listKanBoards, createKanBoard, updateKanBoard, archiveKanBoard, readKanBoard, deleteKanBoard };
 }

@@ -56,7 +56,7 @@ export class FolderDto {
   }
 
   /** Return object representation */
-  toString() {
+  toJson() {
     return {
       id: this.#id,
       user_uid: this.#user_uid,

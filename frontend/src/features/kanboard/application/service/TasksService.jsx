@@ -465,7 +465,7 @@ export default function TasksService() {
   const archiveTask = async (payload) => {
     try {
       const task = TasksMapper.fromDtoToEntity(payload.getTaskDto());
-       task.update(
+      task.update(
         task.getProjectId(),
         task.getUserUid(),
         task.getTitle(),
@@ -502,9 +502,9 @@ export default function TasksService() {
   async function deleteTask(taskId) {
     try {
       const taskRef = doc(db, table, taskId);
-      const deleted = await deleteDoc(taskRef);
+      await deleteDoc(taskRef);
       return {
-        deleted: Boolean(deleted),
+        deleted: true,
         notificationDto: new NotificationDto("Your task has been deleted", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {

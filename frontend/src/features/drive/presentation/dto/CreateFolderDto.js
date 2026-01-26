@@ -2,9 +2,14 @@ export class CreateFolderDto {
   #name;
   #color;
 
+  /**
+   * 
+   * @param {string} name 
+   * @param {string} color 
+   */
   constructor(name, color) {
     this.#name = name;
-    this.#name = color;
+    this.#color = color;
   }
 
   getName(){

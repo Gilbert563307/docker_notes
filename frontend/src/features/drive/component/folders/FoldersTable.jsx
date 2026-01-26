@@ -1,10 +1,11 @@
 import React from "react";
 import FoldersTableRow from "./FoldersTableRow";
+import { FolderDto } from "../../application/dto/FolderDto";
 
 /**
  *
  * @param {Object} props - The properties object.
- * @param {import("../../../../types/types").Folders } props.folders -
+ * @param {Array<FolderDto> } props.folders -
  * @returns {JSX.Element} The rendered  component.
  */
 export default function FoldersTable({ folders }) {
@@ -60,7 +61,7 @@ export default function FoldersTable({ folders }) {
         {folders &&
           folders.length > 0 &&
           folders.map((folder, index) => (
-            <FoldersTableRow key={folder.id || index} folder={folder} />
+            <FoldersTableRow key={folder.getId() || index} folder={folder} />
           ))}
       </tbody>
     </table>

@@ -1,32 +1,55 @@
-import React from "react";
+/* eslint-disable react/prop-types */
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import "../../css/UpdateFolderComponent.css";
 import DeleteFolderButton from "./DeleteFolderButton";
 import { FOLDERS_CONTROLLER_ACTIONS } from "../../presentation/FoldersController";
+import { FolderDto } from "../../application/dto/FolderDto";
+import { UpdateFolderDto } from "../../presentation/dto/UpdateFolderDto";
 
+/**
+ *
+ * @param {Object} props
+ * @param {FolderDto} props.folder
+ * @param {Function} props.dispatch
+ * @returns {JSX.Element}
+ */
 export default function UpdateFolderComponent({ folder, dispatch }) {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
-  } = useForm({
-    defaultValues: {
-      name: folder.name,
-      color: folder.color,
-    },
-  });
+  } = useForm();
+
+  //https://react-hook-form.com/docs/useform/reset
+  //https://react-hook-form.com/docs/useform#defaultValues
+  useEffect(() => {
+    reset({
+      name: folder.getName(),
+      color: folder.getColor(),
+    });
+  }, [folder]);
 
   function onSubmit(data) {
-    const newPayload = { ...folder, ...data };
-    dispatch({ type: FOLDERS_CONTROLLER_ACTIONS.UPDATE, payload: newPayload });
+    const { color, name } = data;
+    dispatch({
+      type: FOLDERS_CONTROLLER_ACTIONS.UPDATE,
+      payload: new UpdateFolderDto(
+        folder.getId(),
+        folder.getUserUid(),
+        name,
+        color,
+        folder.getIsArchived(),
+        folder.getCreatedAt(),
+        folder.getUpdatedAt(),
+      ),
+    });
   }
 
   return (
     <article className="create-folder-article">
-      <form
-        className="d-flex flex-column g-3"
-        onSubmit={handleSubmit(onSubmit)}
-      >
+      <form className="d-flex flex-column g-3" onSubmit={handleSubmit(onSubmit)}>
         {/* start name  */}
         <div className="col-12 mb-2">
           <label htmlFor="name" className="form-label">
@@ -34,9 +57,7 @@ export default function UpdateFolderComponent({ folder, dispatch }) {
           </label>
           <input
             type="text"
-            className={`form-control ${
-              errors.name && errors.name.type ? "is-invalid" : ""
-            }`}
+            className={`form-control ${errors.name && errors.name.type ? "is-invalid" : ""}`}
             id="name"
             aria-describedby="name"
             maxLength={255}
@@ -52,11 +73,7 @@ export default function UpdateFolderComponent({ folder, dispatch }) {
               },
             })}
           />
-          {errors.name && (
-            <div className="invalid-feedback d-block">
-              {errors.name.message}
-            </div>
-          )}
+          {errors.name && <div className="invalid-feedback d-block">{errors.name.message}</div>}
         </div>
         {/* end name  */}
 
@@ -77,14 +94,9 @@ export default function UpdateFolderComponent({ folder, dispatch }) {
 
         <div className="update-folder-component-actions">
           <div className="">
-            <input
-              type="submit"
-              name="submit"
-              value="Update"
-              className="add-task-button task-btn-plain"
-            ></input>
+            <input type="submit" name="submit" value="Update" className="add-task-button task-btn-plain"></input>
           </div>
-          <DeleteFolderButton folderId={folder.id} />
+          <DeleteFolderButton folderId={folder.getId()} />
         </div>
       </form>
     </article>
