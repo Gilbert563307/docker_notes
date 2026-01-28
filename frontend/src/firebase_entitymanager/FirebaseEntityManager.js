@@ -15,6 +15,8 @@ import {
   getDocs,
   limit,
   startAfter,
+  addDoc,
+  getCountFromServer,
 } from "firebase/firestore";
 
 export class FirebaseEntityManager {
@@ -165,17 +167,6 @@ export class FirebaseEntityManager {
     return collection(this.#database, name);
   }
 
-  /**
-   * @param {{ seconds: number, nanoseconds: number } } object
-   * @returns { Date }
-   */
-  #convertTimeStampToDate(object) {
-    if (object.nanoseconds === null || object.seconds === null) {
-      throw new Error("Something went wrong while converting time stamp to date");
-    }
-    return new Timestamp(object.seconds, object.nanoseconds).toDate();
-  }
-
   async #getPaginatedCollectionQuery(currentPage, itemsPerPage, queryItems) {
     // Calculate the limit for fetching documents up to the current page
     const newPageLimit = currentPage * itemsPerPage;
@@ -200,9 +191,40 @@ export class FirebaseEntityManager {
   }
 
   /**
+   * 
+   * @param {Object} document 
+   * @returns {void}
+   */
+  async createDocument(document) {
+    await addDoc(this.#collectionRef, document);
+  }
+
+  /**
+   * 
+   * @param {Array<any>} queryItems 
+   * @returns {Promise<number>}
+   */
+  async countDocumentsByQuery(queryItems) {
+    const totalQuery = query(this.#collectionRef, ...queryItems);
+    const totalRecordsSnapShot = await getCountFromServer(totalQuery);
+    return totalRecordsSnapShot.data().count;
+  }
+
+  /**
+   * @param {{ seconds: number, nanoseconds: number } } object
+   * @returns { Date }
+   */
+  #convertTimeStampToDate(object) {
+    if (object.nanoseconds === null || object.seconds === null) {
+      throw new Error("Something went wrong while converting time stamp to date");
+    }
+    return new Timestamp(object.seconds, object.nanoseconds).toDate();
+  }
+
+  /**
    * METHOD STILL IN DEVELOPMENT
-   * @param {*} querySnapshot 
-   * @returns 
+   * @param {*} querySnapshot
+   * @returns
    */
   #convertQuerySnapShotDocs(querySnapshot) {
     return querySnapshot.docs.map((doc) => {

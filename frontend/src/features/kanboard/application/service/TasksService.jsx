@@ -24,6 +24,10 @@ import { AssigneeDto } from "../dto/AssigneeDto";
 import { ReporterDto } from "../dto/RepoterDto";
 import { ArchiveTaskDto } from "../../presentation/dto/ArchiveTaskDto";
 import { CreateTaskDto } from "../../presentation/dto/CreateTaskDto";
+import { FirebaseEntityManager } from "../../../../firebase_entitymanager/FirebaseEntityManager";
+import { db } from "../../../../database/firebaseConfig";
+import FirebaseInterfaceV2 from "../../../../shared/data/FirebaseInterfaceV2";
+import { Query } from "firebase/firestore";
 
 const initialTaskDto = new TaskDto(
   null,
@@ -40,35 +44,39 @@ const initialTaskDto = new TaskDto(
   null,
 );
 
+const entityManager = new FirebaseEntityManager("tasks", db);
+
 export default function TasksService() {
   const { user } = useAuthProvider();
-  const { getSessionFilter, getHowManyFiltersAreActiveByCurrentPath, getCurrentPageNumber } = useHelpers();
+  const { getSessionFilter, getHowManyFiltersAreActiveByCurrentPath, getCurrentPageNumber, getTheCurrentItemsPerPage } = useHelpers();
   const { convertHtmlToDocx } = FilesService();
 
-  const {
-    collectionRef,
-    userUid,
-    addDoc,
-    query,
-    where,
-    getDocs,
-    limit,
-    getCountFromServer,
-    getTotalPages,
-    getTheCurrentItemsPerPage,
-    currentServerTimestamp,
-    orderBy,
-    doc,
-    db,
-    table,
-    updateDoc,
-    deleteDoc,
-    getSearchQueryByFieldName,
-    convertQuerySnapShotDocs,
-    fetchResultsOnPageOne,
-    fetchPaginatedResults,
-    getDocument,
-  } = FirebaseInterface({ table: "tasks" });
+  // const {
+  //   collectionRef,
+  //   userUid,
+  //   addDoc,
+  //   query,
+  //   where,
+  //   getDocs,
+  //   limit,
+  //   getCountFromServer,
+  //   getTotalPages,
+  //   getTheCurrentItemsPerPage,
+  //   currentServerTimestamp,
+  //   orderBy,
+  //   doc,
+  //   db,
+  //   table,
+  //   updateDoc,
+  //   deleteDoc,
+  //   getSearchQueryByFieldName,
+  //   convertQuerySnapShotDocs,
+  //   fetchResultsOnPageOne,
+  //   fetchPaginatedResults,
+  //   getDocument,
+  // } = FirebaseInterface({ table: "tasks" });
+
+  const { userUid, BACKEND_URL, X_TOKE } = FirebaseInterfaceV2();
 
   /**
    * Creates a new task with default values if not provided in the payload.
@@ -79,10 +87,10 @@ export default function TasksService() {
   const createTask = async (payload) => {
     try {
       // Define default values for the task
-
+      const currentServerTimestamp = entityManager.getCurrentServerTimestamp();
       const task = new Task(
         "",
-        payload.getProjectId() || DEFAULT_PROJECT_ID,
+        payload.getProjectId() || DEFAULT_PROJECT_ID.toString(),
         userUid,
         payload.getTitle(),
         payload.getDescription() || "",
@@ -96,11 +104,11 @@ export default function TasksService() {
       );
 
       // Attempt to add the document to the collection
-      const created = await addDoc(collectionRef, task.toJsonWithoutId());
+      entityManager.createDocument(task.toJsonWithoutId());
 
       // Return success message if task creation was successful
       return {
-        created: Boolean(created),
+        created: true,
         notificationDto: new NotificationDto("Your task has been created", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
@@ -124,21 +132,16 @@ export default function TasksService() {
    */
   const getTotalTasksInDatabaseByUserAndFilters = async () => {
     try {
-      const { queryItems } = getTasksQueryClauses();
-
       // Get total records from server according to where clause set by the user
-      const totalQuery = query(collectionRef, ...queryItems);
-      const totalRecordsSnapShot = await getCountFromServer(totalQuery);
-      const totalRecords = totalRecordsSnapShot.data().count;
-
-      return totalRecords;
+      const { queryItems } = getTasksQueryClauses();
+      return await entityManager.countDocumentsByQuery(queryItems);
     } catch (error) {
       return 0;
     }
   };
 
   /**
-   *
+   * TODO refactor
    * @returns {{filters: Array<number>, notificationDto: NotificationDto}}
    */
   const getActiveStatusFilters = () => {
@@ -233,21 +236,21 @@ export default function TasksService() {
       const priorityFilters = getActivePriorityFilters();
 
       let queryItems = [
-        where("user_uid", "==", userUid),
-        where("archived", "==", tasksArchived),
-        orderBy("created_at", "desc"),
+        entityManager.whereQuery("user_uid", "==", userUid),
+        entityManager.whereQuery("archived", "==", tasksArchived),
+        entityManager.orderByQuery("created_at", "desc"),
       ];
       if (statusFilters.filters.length > 0) {
-        queryItems = [...queryItems, where("status", "in", statusFilters.filters)];
+        queryItems = [...queryItems, entityManager.whereQuery("status", "in", statusFilters.filters)];
       }
 
       if (priorityFilters.filters.length > 0) {
-        queryItems = [...queryItems, where("priority", "in", priorityFilters.filters)];
+        queryItems = [...queryItems, entityManager.whereQuery("priority", "in", priorityFilters.filters)];
       }
 
       if (payload.searchTearm && payload.searchTearm != "") {
         const { searchTearm } = payload;
-        queryItems = [...queryItems, ...getSearchQueryByFieldName("title", searchTearm)];
+        queryItems = [...queryItems, ...entityManager.getSearchQueryByFieldName("title", searchTearm)];
       }
 
       return {
@@ -277,21 +280,8 @@ export default function TasksService() {
       const itemsPerPage = getTheCurrentItemsPerPage();
       const { queryItems } = getTasksQueryClauses(payload);
 
-      // If the current page is the first page, create a query limited by the items per page
-      if (currentPage === 1) {
-        const { resultsQuery, type, message } = fetchResultsOnPageOne(queryItems, itemsPerPage);
-        return {
-          resultsQuery: resultsQuery,
-          notificationDto: new NotificationDto(message, type),
-        };
-      }
-
-      const { resultsQuery, type, message } = await fetchPaginatedResults(
-        currentPage,
-        payload,
-        itemsPerPage,
-        queryItems,
-      );
+  
+      const resultsQuery = await entityManager.getPaginatedDocumentsByQueryItems(queryItems, currentPage, itemsPerPage)
 
       return {
         resultsQuery: resultsQuery,

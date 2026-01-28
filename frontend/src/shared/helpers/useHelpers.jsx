@@ -274,6 +274,18 @@ export default function useHelpers() {
     );
   }
 
+   /**
+   * Retrieves the current number of items per page.
+   *
+   * This function retrieves the number of items per page from the URL parameters.
+   * If the parameter is not found or is invalid, it falls back to the default value.
+   *
+   * @returns {number} The current number of items per page.
+   */
+  function getTheCurrentItemsPerPage (){
+    return parseInt(getUrlParams(ITEMS_PER_PAGE) || DEFAULT_ITEMS_PER_PAGE);
+  }
+
   return {
     convertToDutchDateFormat,
     formatToDutchStringDate,
@@ -294,5 +306,6 @@ export default function useHelpers() {
     getAllActiveSessionFilters,
     getItemsPerPage,
     getHowManyFiltersAreActiveByCurrentPath,
+    getTheCurrentItemsPerPage,
   };
 }
