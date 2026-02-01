@@ -1,4 +1,4 @@
-import { ALERT_TYPES } from "../../../../shared/presentation/components/bs5/BS5Alert";
+import { ALERT_ACTIONS, ALERT_TYPES } from "../../../../shared/presentation/components/bs5/BS5Alert";
 import {
   DEFAULT_PROJECT_ID,
   DEFAULT_TASKS_ARCHIVE,
@@ -24,10 +24,10 @@ import { AssigneeDto } from "../dto/AssigneeDto";
 import { ReporterDto } from "../dto/RepoterDto";
 import { ArchiveTaskDto } from "../../presentation/dto/ArchiveTaskDto";
 import { CreateTaskDto } from "../../presentation/dto/CreateTaskDto";
-import { FirebaseEntityManager } from "../../../../firebase_entitymanager/FirebaseEntityManager";
-import { db } from "../../../../database/firebaseConfig";
 import FirebaseInterfaceV2 from "../../../../shared/data/FirebaseInterfaceV2";
 import { Query } from "firebase/firestore";
+import { CollectionManager } from "../../../../firebase_entitymanager/CollectionManager";
+import { db } from "../../../../database/firebaseConfig";
 
 const initialTaskDto = new TaskDto(
   null,
@@ -44,11 +44,12 @@ const initialTaskDto = new TaskDto(
   null,
 );
 
-const entityManager = new FirebaseEntityManager("tasks", db);
+const collectionManager = new CollectionManager("tasks", db);
 
 export default function TasksService() {
   const { user } = useAuthProvider();
-  const { getSessionFilter, getHowManyFiltersAreActiveByCurrentPath, getCurrentPageNumber, getTheCurrentItemsPerPage } = useHelpers();
+  const { getSessionFilter, getHowManyFiltersAreActiveByCurrentPath, getCurrentPageNumber, getTheCurrentItemsPerPage } =
+    useHelpers();
   const { convertHtmlToDocx } = FilesService();
 
   // const {
@@ -76,7 +77,7 @@ export default function TasksService() {
   //   getDocument,
   // } = FirebaseInterface({ table: "tasks" });
 
-  const { userUid, BACKEND_URL, X_TOKE } = FirebaseInterfaceV2();
+  const { userUid, BACKEND_URL, X_TOKEN, getTotalPages } = FirebaseInterfaceV2();
 
   /**
    * Creates a new task with default values if not provided in the payload.
@@ -87,7 +88,7 @@ export default function TasksService() {
   const createTask = async (payload) => {
     try {
       // Define default values for the task
-      const currentServerTimestamp = entityManager.getCurrentServerTimestamp();
+      const currentServerTimestamp = collectionManager.getCurrentServerTimestamp();
       const task = new Task(
         "",
         payload.getProjectId() || DEFAULT_PROJECT_ID.toString(),
@@ -104,7 +105,7 @@ export default function TasksService() {
       );
 
       // Attempt to add the document to the collection
-      entityManager.createDocument(task.toJsonWithoutId());
+      collectionManager.createDocument(task.toJsonWithoutId());
 
       // Return success message if task creation was successful
       return {
@@ -134,7 +135,7 @@ export default function TasksService() {
     try {
       // Get total records from server according to where clause set by the user
       const { queryItems } = getTasksQueryClauses();
-      return await entityManager.countDocumentsByQuery(queryItems);
+      return await collectionManager.countDocumentsByQuery(queryItems);
     } catch (error) {
       return 0;
     }
@@ -236,21 +237,21 @@ export default function TasksService() {
       const priorityFilters = getActivePriorityFilters();
 
       let queryItems = [
-        entityManager.whereQuery("user_uid", "==", userUid),
-        entityManager.whereQuery("archived", "==", tasksArchived),
-        entityManager.orderByQuery("created_at", "desc"),
+        collectionManager.whereQuery("user_uid", "==", userUid),
+        collectionManager.whereQuery("archived", "==", tasksArchived),
+        collectionManager.orderByQuery("created_at", "desc"),
       ];
       if (statusFilters.filters.length > 0) {
-        queryItems = [...queryItems, entityManager.whereQuery("status", "in", statusFilters.filters)];
+        queryItems = [...queryItems, collectionManager.whereQuery("status", "in", statusFilters.filters)];
       }
 
       if (priorityFilters.filters.length > 0) {
-        queryItems = [...queryItems, entityManager.whereQuery("priority", "in", priorityFilters.filters)];
+        queryItems = [...queryItems, collectionManager.whereQuery("priority", "in", priorityFilters.filters)];
       }
 
       if (payload.searchTearm && payload.searchTearm != "") {
         const { searchTearm } = payload;
-        queryItems = [...queryItems, ...entityManager.getSearchQueryByFieldName("title", searchTearm)];
+        queryItems = [...queryItems, ...collectionManager.getSearchQueryByFieldName("title", searchTearm)];
       }
 
       return {
@@ -269,9 +270,9 @@ export default function TasksService() {
    * Generates a Firestore query to fetch tasks for the current page.
    *
    * @param {{currentPage: number, itemsPerPage?: number, searchTearm?: string }} payload - The current page number for pagination.
-   * @returns {Promise<{resultsQuery: Query | null, notificationDto: NotificationDto}>} The Firestore query to fetch tasks for the specified page.
+   * @returns {Promise<{documents: Array<any>, notificationDto: NotificationDto}>} The Firestore query to fetch tasks for the specified page.
    */
-  const getTasksQuery = async (payload) => {
+  const getTasksByQuery = async (payload) => {
     try {
       // Destructure the vars
       const { currentPage } = payload;
@@ -280,16 +281,19 @@ export default function TasksService() {
       const itemsPerPage = getTheCurrentItemsPerPage();
       const { queryItems } = getTasksQueryClauses(payload);
 
-  
-      const resultsQuery = await entityManager.getPaginatedDocumentsByQueryItems(queryItems, currentPage, itemsPerPage)
+      const documents = await collectionManager.getPaginatedDocumentsByQueryItems(
+        queryItems,
+        currentPage,
+        itemsPerPage,
+      );
 
       return {
-        resultsQuery: resultsQuery,
-        notificationDto: new NotificationDto(message, type),
+        documents: documents,
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       return {
-        resultsQuery: null,
+        documents: [],
         notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
@@ -317,14 +321,8 @@ export default function TasksService() {
    */
   const listTasks = async (payload) => {
     try {
-      // Construct the query to get all tasks for the current user UID with a
-      const { resultsQuery } = await getTasksQuery(payload);
-
-      // Execute the query to get the tasks.
-      const querySnapshot = await getDocs(resultsQuery);
-
-      const { results } = convertQuerySnapShotDocs(querySnapshot);
-      const tasksDto = TasksMapper.arrayToDtoList(results);
+      const results = await getTasksByQuery(payload);
+      const tasksDto = TasksMapper.arrayToDtoList(results.documents);
 
       //get total records for pagination
       const totalRecords = await getTotalTasksInDatabaseByUserAndFilters();
@@ -355,24 +353,20 @@ export default function TasksService() {
       //THIS IS FOR WHE THE MAIN DEV I STILL HAS TASKS ON THE DEFAULT PROJECT ID
       const boardId = payload.boardId === "0" ? 0 : payload.boardId;
 
-      const tasksQuery = query(
-        collectionRef,
-        where("user_uid", "==", userUid),
+      const query = collectionManager.createQuery([
+        collectionManager.whereQuery("user_uid", "==", userUid),
         // where("archived", "==", tasksArchived),
-        where("project_id", "==", boardId),
-        orderBy("updated_at", "desc"),
-        limit(MAX_BOARD_ITEMS),
-      );
+        collectionManager.whereQuery("project_id", "==", boardId),
+        collectionManager.orderByQuery("updated_at", "desc"),
+        collectionManager.limitByQuery(MAX_BOARD_ITEMS),
+      ]);
 
-      // Execute the query to get the tasks.
-      const querySnapshot = await getDocs(tasksQuery);
-
-      const { results, message, type } = convertQuerySnapShotDocs(querySnapshot);
+      const results = await collectionManager.getDocumentsByQuery(query);
       const tasksDto = TasksMapper.arrayToDtoList(results);
 
       return {
         tasks: tasksDto,
-        notificationDto: new NotificationDto(message, type),
+        notificationDto: new NotificationDto("", ALERT_TYPES.PRIMARY),
       };
     } catch (error) {
       return {
@@ -403,17 +397,12 @@ export default function TasksService() {
         task.getReporter(),
         task.getIsArchived(),
         task.getCreatedAt(),
-        currentServerTimestamp,
+        collectionManager.getCurrentServerTimestamp(),
       );
 
-      // get document
-      const taskDocument = doc(db, table, payload.getId());
-
-      // // //update document
-      await updateDoc(taskDocument, task.toJson());
-
+      const updated = await collectionManager.updateDocument(task.getId(), task.toJsonWithoutId())
       return {
-        updated: true,
+        updated: updated,
         notificationDto: new NotificationDto("Your task has been successfully been updated", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
@@ -431,11 +420,11 @@ export default function TasksService() {
    */
   const readTask = async (taskId) => {
     try {
-      const { document, message, type } = await getDocument(taskId);
+      const document = await collectionManager.getDocument(taskId)
       const taskDto = TasksMapper.toDto(document);
       return {
         task: taskDto,
-        notificationDto: new NotificationDto(message, type),
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       // Return an error response if the fetch operation fails
@@ -468,12 +457,11 @@ export default function TasksService() {
         task.getCreatedAt(),
         task.getUpdatedAt(),
       );
-      const { updated, notificationDto } = await updateTask(TasksMapper.fromEntityToDto(task));
+      const updated = await collectionManager.updateDocument(task.getId(),TasksMapper.fromEntityToDto(task));
 
-      // Return the result of the update operation
       return {
         archived: updated,
-        notificationDto: notificationDto,
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       // Return an error response if the update operation fails
@@ -491,10 +479,9 @@ export default function TasksService() {
    */
   async function deleteTask(taskId) {
     try {
-      const taskRef = doc(db, table, taskId);
-      await deleteDoc(taskRef);
+      const deleted = await collectionManager.deleteDocument(taskId);
       return {
-        deleted: true,
+        deleted: deleted,
         notificationDto: new NotificationDto("Your task has been deleted", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {

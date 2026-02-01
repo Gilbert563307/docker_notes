@@ -2,12 +2,10 @@ import {
   collection,
   CollectionReference,
   Firestore,
-  DocumentData,
   serverTimestamp,
   FieldValue,
   Timestamp,
   doc,
-  getDoc,
   where,
   orderBy,
   query,
@@ -15,11 +13,11 @@ import {
   getDocs,
   limit,
   startAfter,
-  addDoc,
   getCountFromServer,
 } from "firebase/firestore";
+import { CrudCollectionManager } from "./CrudCollectionManager";
 
-export class FirebaseEntityManager {
+export class CollectionManager extends CrudCollectionManager {
   #collectionName;
   #collectionRef;
   #database;
@@ -30,6 +28,7 @@ export class FirebaseEntityManager {
    * @param {Firestore} database
    */
   constructor(collectionName, database) {
+    super(database, collectionName);
     this.#collectionName = collectionName;
     this.#database = database;
 
@@ -39,7 +38,7 @@ export class FirebaseEntityManager {
 
   /**
    *
-   * @returns {CollectionReference<DocumentData, DocumentData>}
+   
    */
   getCollectionReference() {
     return this.#collectionRef;
@@ -47,7 +46,7 @@ export class FirebaseEntityManager {
 
   /**
    *
-   * @returns {FieldValue}
+   * @returns {Timestamp}
    */
   getCurrentServerTimestamp() {
     return serverTimestamp();
@@ -59,22 +58,6 @@ export class FirebaseEntityManager {
 
   getDatabase() {
     return this.#database;
-  }
-
-  async getDocument(documentId) {
-    // Get a reference to the document in the database
-    const reference = doc(this.#database, this.#collectionName, documentId);
-
-    // Fetch the document snapshot
-    const snapshot = await getDoc(reference);
-
-    // Check if the document exists
-    if (!snapshot.exists()) {
-      throw new Error("An error occurred while fetching the document.");
-    }
-
-    // Get the document data and assign document id to it also
-    return { ...snapshot.data(), id: documentId };
   }
 
   /**
@@ -110,9 +93,19 @@ export class FirebaseEntityManager {
 
   /**
    *
+   * @param {number} limitNumber
+   * @returns
+   */
+  limitByQuery(limitNumber) {
+    return limit(limitNumber);
+  }
+
+  /**
+   *
    * @param {Array<any>} queryItems
    * @param {number} page
    * @param {number} itemsPerPage
+   * @returns {Array<any>}
    */
   async getPaginatedDocumentsByQueryItems(queryItems, page, itemsPerPage) {
     if (queryItems === null || queryItems === undefined) {
@@ -130,8 +123,9 @@ export class FirebaseEntityManager {
     let resultsQuery;
     if (page === 1) {
       resultsQuery = query(this.#collectionRef, ...queryItems, limit(itemsPerPage));
+    } else {
+      resultsQuery = await this.#getPaginatedCollectionQuery(page, itemsPerPage, queryItems);
     }
-    resultsQuery = await this.#getPaginatedCollectionQuery(page, itemsPerPage, queryItems);
 
     // Execute the query to get the tasks.
     const querySnapshot = await getDocs(resultsQuery);
@@ -190,18 +184,10 @@ export class FirebaseEntityManager {
     return query(this.#collectionRef, ...queryItems, startAfter(startFromDocument), limit(itemsPerPage));
   }
 
+  
   /**
-   * 
-   * @param {Object} document 
-   * @returns {void}
-   */
-  async createDocument(document) {
-    await addDoc(this.#collectionRef, document);
-  }
-
-  /**
-   * 
-   * @param {Array<any>} queryItems 
+   *
+   * @param {Array<any>} queryItems
    * @returns {Promise<number>}
    */
   async countDocumentsByQuery(queryItems) {
@@ -209,6 +195,21 @@ export class FirebaseEntityManager {
     const totalRecordsSnapShot = await getCountFromServer(totalQuery);
     return totalRecordsSnapShot.data().count;
   }
+
+  /**
+   * //TODO GE THE REQUEST TYPE
+   * @param {any} queryItems
+   */
+  createQuery(queryItems) {
+    return query(this.#collectionRef, ...queryItems);
+  }
+
+  async getDocumentsByQuery(query) {
+    const querySnapshot = await getDocs(query);
+    return this.#convertQuerySnapShotDocs(querySnapshot);
+  }
+
+ 
 
   /**
    * @param {{ seconds: number, nanoseconds: number } } object
@@ -224,7 +225,7 @@ export class FirebaseEntityManager {
   /**
    * METHOD STILL IN DEVELOPMENT
    * @param {*} querySnapshot
-   * @returns
+   * @returns {Array<any>}
    */
   #convertQuerySnapShotDocs(querySnapshot) {
     return querySnapshot.docs.map((doc) => {
