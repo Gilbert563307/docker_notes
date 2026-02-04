@@ -10,7 +10,6 @@ import {
   TASKS_PRIORITY,
   TASKS_STATUS,
 } from "../../../../config";
-import { useAuthProvider } from "../../../../shared/context/AuthProvider";
 import useHelpers from "../../../../shared/helpers/useHelpers";
 import FirebaseInterface from "../../../../shared/data/FirebaseInterface";
 import { Task } from "../../domain/Task";
@@ -28,6 +27,9 @@ import FirebaseInterfaceV2 from "../../../../shared/data/FirebaseInterfaceV2";
 import { Query } from "firebase/firestore";
 import { CollectionManager } from "../../../../firebase_entitymanager/CollectionManager";
 import { db } from "../../../../database/firebaseConfig";
+import { ListTasksDto } from "./dto/ListTasksDto";
+import { GetTasksQueryClausesDto } from "./dto/GetTasksQueryClausesDto";
+import { TasksQueries } from "../../domain/TasksQueries";
 
 const initialTaskDto = new TaskDto(
   null,
@@ -47,9 +49,13 @@ const initialTaskDto = new TaskDto(
 const collectionManager = new CollectionManager("tasks", db);
 
 export default function TasksService() {
-  const { user } = useAuthProvider();
-  const { getSessionFilter, getHowManyFiltersAreActiveByCurrentPath, getCurrentPageNumber, getTheCurrentItemsPerPage } =
-    useHelpers();
+  const {
+    getSessionFilter,
+    getHowManyFiltersAreActiveByCurrentPath,
+    getCurrentPageNumber,
+    getTheCurrentItemsPerPage,
+    getTotalPages,
+  } = useHelpers();
   const { convertHtmlToDocx } = FilesService();
 
   // const {
@@ -77,7 +83,7 @@ export default function TasksService() {
   //   getDocument,
   // } = FirebaseInterface({ table: "tasks" });
 
-  const { userUid, BACKEND_URL, X_TOKEN, getTotalPages } = FirebaseInterfaceV2();
+  const { userUid, user, BACKEND_URL, X_TOKEN } = FirebaseInterfaceV2();
 
   /**
    * Creates a new task with default values if not provided in the payload.
@@ -128,13 +134,14 @@ export default function TasksService() {
    * It then returns the total count of tasks.
    *
    * @async
+   * @param {ListTasksDto} payload
    * @returns {Promise<number>} A promise that resolves to the total count of tasks.
    * @throws {Error} If there's an error while retrieving the total count of tasks.
    */
-  const getTotalTasksInDatabaseByUserAndFilters = async () => {
+  const getTotalTasksInDatabaseByUserAndFilters = async (payload) => {
     try {
       // Get total records from server according to where clause set by the user
-      const { queryItems } = getTasksQueryClauses();
+      const { queryItems } = getTasksQueryClauses(new GetTasksQueryClausesDto(payload.getSearchTerm()));
       return await collectionManager.countDocumentsByQuery(queryItems);
     } catch (error) {
       return 0;
@@ -225,10 +232,10 @@ export default function TasksService() {
   };
 
   /**
-   * @param {{searchTearm?: string}} payload
-   * @returns {{queryItems: Array<Query> | Array, notificationDto: NotificationDto}}
+   *
+   * @param {GetTasksQueryClausesDto} payload
    */
-  const getTasksQueryClauses = (payload = {}) => {
+  function getTasksQueryClauses(payload) {
     try {
       // Get the session archived filter
       const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
@@ -236,26 +243,32 @@ export default function TasksService() {
       const statusFilters = getActiveStatusFilters();
       const priorityFilters = getActivePriorityFilters();
 
-      let queryItems = [
+      const baseQueryItems = [
         collectionManager.whereQuery("user_uid", "==", userUid),
         collectionManager.whereQuery("archived", "==", tasksArchived),
         collectionManager.orderByQuery("created_at", "desc"),
       ];
+
+      // @ts-ignore
+      const tasksQuerys = new TasksQueries(baseQueryItems);
+
       if (statusFilters.filters.length > 0) {
-        queryItems = [...queryItems, collectionManager.whereQuery("status", "in", statusFilters.filters)];
+        tasksQuerys.addQueryItem(collectionManager.whereQuery("status", "in", statusFilters.filters));
       }
 
       if (priorityFilters.filters.length > 0) {
-        queryItems = [...queryItems, collectionManager.whereQuery("priority", "in", priorityFilters.filters)];
+        tasksQuerys.addQueryItem(collectionManager.whereQuery("priority", "in", priorityFilters.filters));
       }
 
-      if (payload.searchTearm && payload.searchTearm != "") {
-        const { searchTearm } = payload;
-        queryItems = [...queryItems, ...collectionManager.getSearchQueryByFieldName("title", searchTearm)];
+      if (payload.getSearchTerm() && payload.getSearchTerm() != "") {
+        const searchTerm = payload.getSearchTerm()?.trim();
+        tasksQuerys.addQueryItem(collectionManager.getSearchQueryBeforeFieldName("title", searchTerm));
+        tasksQuerys.addQueryItem(collectionManager.getSearchQueryAfterFieldName("title", searchTerm));
       }
+
 
       return {
-        queryItems: queryItems,
+        queryItems: tasksQuerys.getQueryItems(),
         notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
@@ -264,27 +277,22 @@ export default function TasksService() {
         notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
-  };
+  }
 
   /**
    * Generates a Firestore query to fetch tasks for the current page.
    *
-   * @param {{currentPage: number, itemsPerPage?: number, searchTearm?: string }} payload - The current page number for pagination.
+   * @param {ListTasksDto} payload - The current page number for pagination.
    * @returns {Promise<{documents: Array<any>, notificationDto: NotificationDto}>} The Firestore query to fetch tasks for the specified page.
    */
   const getTasksByQuery = async (payload) => {
     try {
-      // Destructure the vars
-      const { currentPage } = payload;
-
-      // Get the number of items to be displayed per page
-      const itemsPerPage = getTheCurrentItemsPerPage();
-      const { queryItems } = getTasksQueryClauses(payload);
+      const { queryItems } = getTasksQueryClauses(new GetTasksQueryClausesDto(payload.getSearchTerm()));
 
       const documents = await collectionManager.getPaginatedDocumentsByQueryItems(
         queryItems,
-        currentPage,
-        itemsPerPage,
+        payload.getCurrentPage(),
+        payload.getItemsPerPage(),
       );
 
       return {
@@ -305,9 +313,7 @@ export default function TasksService() {
    * @returns {Promise<{results: import("../../../../types/types").ListTasks,  notificationDto: NotificationDto }>}
    */
   const listTasksBySearchTerm = async (searchTearm) => {
-    //get currentPageNumber
-    const currentPage = getCurrentPageNumber();
-    return await listTasks({ currentPage: currentPage, searchTearm: searchTearm });
+    return await listTasks(new ListTasksDto(getCurrentPageNumber(), getTheCurrentItemsPerPage(), searchTearm));
   };
 
   /**
@@ -316,7 +322,7 @@ export default function TasksService() {
    * This function queries the Firestore collection to retrieve tasks associated with the current user's UID,
    * with a limit on the number of items per page. It includes the document ID in the task data and handles
    * potential errors during the fetch process.
-   * @param {{ currentPage: number, itemsPerPage?: number, searchTearm?: string}} payload
+   * @param {ListTasksDto} payload
    * @returns {Promise<{results: import("../../../../types/types").ListTasks,  notificationDto: NotificationDto }>} A promise that resolves to an object containing the fetched tasks, a message, and an alert type.
    */
   const listTasks = async (payload) => {
@@ -325,7 +331,8 @@ export default function TasksService() {
       const tasksDto = TasksMapper.arrayToDtoList(results.documents);
 
       //get total records for pagination
-      const totalRecords = await getTotalTasksInDatabaseByUserAndFilters();
+      const totalRecords = await getTotalTasksInDatabaseByUserAndFilters(payload);
+
       //get total pages for pagination
       const totalPages = getTotalPages(totalRecords);
       //return results
@@ -400,7 +407,7 @@ export default function TasksService() {
         collectionManager.getCurrentServerTimestamp(),
       );
 
-      const updated = await collectionManager.updateDocument(task.getId(), task.toJsonWithoutId())
+      const updated = await collectionManager.updateDocument(task.getId(), task.toJsonWithoutId());
       return {
         updated: updated,
         notificationDto: new NotificationDto("Your task has been successfully been updated", ALERT_TYPES.SUCCESS),
@@ -420,7 +427,7 @@ export default function TasksService() {
    */
   const readTask = async (taskId) => {
     try {
-      const document = await collectionManager.getDocument(taskId)
+      const document = await collectionManager.readDocument(taskId);
       const taskDto = TasksMapper.toDto(document);
       return {
         task: taskDto,
@@ -457,7 +464,7 @@ export default function TasksService() {
         task.getCreatedAt(),
         task.getUpdatedAt(),
       );
-      const updated = await collectionManager.updateDocument(task.getId(),TasksMapper.fromEntityToDto(task));
+      const updated = await collectionManager.updateDocument(task.getId(), TasksMapper.fromEntityToDto(task));
 
       return {
         archived: updated,
@@ -501,7 +508,7 @@ export default function TasksService() {
   }
 
   async function getTasks() {
-    return await listTasks({ currentPage: getCurrentPageNumber() });
+    return await listTasks(new ListTasksDto(getCurrentPageNumber(), getTheCurrentItemsPerPage(), undefined));
   }
 
   return {

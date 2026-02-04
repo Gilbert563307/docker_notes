@@ -50,9 +50,7 @@ export default function useHelpers() {
     }
 
     //If there filters check if the given param name is the filters session array
-    const matchingFilter = allActiveFilters.find(
-      (obj) => obj.name === paramName
-    );
+    const matchingFilter = allActiveFilters.find((obj) => obj.name === paramName);
 
     //If the matching filter.value is true return true | null  will be turned into false by person who is calling this function is.
     return matchingFilter ? matchingFilter.value : null;
@@ -105,13 +103,7 @@ export default function useHelpers() {
    * @returns {string}  - Returns "is-invalid" if conditions are met else just an empty string.
    */
   function checkForInvalidFields(errors, index, fieldName) {
-    if (
-      index &&
-      errors &&
-      errors[index] &&
-      errors[index].fieldName &&
-      errors[index].fieldName.type
-    ) {
+    if (index && errors && errors[index] && errors[index].fieldName && errors[index].fieldName.type) {
       return "is-invalid";
     } else if (!index && errors.fieldName && errors.fieldName.type) {
       return "is-invalid";
@@ -180,9 +172,7 @@ export default function useHelpers() {
    * @returns {string| number}
    */
   function getLastVisitedPage() {
-    const lastVisitedPageNumber = sessionStorage.getItem(
-      LAST_VISITED_PAGE_NUMBER_KEY
-    );
+    const lastVisitedPageNumber = sessionStorage.getItem(LAST_VISITED_PAGE_NUMBER_KEY);
     if (!lastVisitedPageNumber) return 1;
     return lastVisitedPageNumber;
   }
@@ -211,9 +201,7 @@ export default function useHelpers() {
   function isTheCurrentFilterActive(filterToCheck) {
     const currentFilterToCheckName = filterToCheck;
     const allFilters = getAllSessionFilters();
-    const matchingFilter = allFilters.find(
-      (element) => currentFilterToCheckName === element.name
-    );
+    const matchingFilter = allFilters.find((element) => currentFilterToCheckName === element.name);
     return matchingFilter ? matchingFilter.value : false;
   }
 
@@ -225,10 +213,7 @@ export default function useHelpers() {
     //delete the page page number because when we get all the existing url params without deleting the old one, it would keep on appending
     //the page number const with a new number &..&...&, so thats why we delete the one before
     searchParams.delete(PAGE_NUMBER);
-    setSearchParams([
-      ...searchParams.entries(),
-      [PAGE_NUMBER, pageNumber.toString()],
-    ]);
+    setSearchParams([...searchParams.entries(), [PAGE_NUMBER, pageNumber.toString()]]);
   }
 
   /**
@@ -239,10 +224,7 @@ export default function useHelpers() {
    */
   function setCustomSearchParamToSessionMemory(customSearchParam, valueToSet) {
     searchParams.delete(customSearchParam);
-    setSearchParams([
-      ...searchParams.entries(),
-      [customSearchParam, valueToSet.toString()],
-    ]);
+    setSearchParams([...searchParams.entries(), [customSearchParam, valueToSet.toString()]]);
     return true;
   }
 
@@ -269,12 +251,10 @@ export default function useHelpers() {
    */
   function getHowManyFiltersAreActiveByCurrentPath(pathName = "") {
     const currentPathName = pathName != "" ? pathName : getCurrentPathName();
-    return getAllActiveSessionFilters().filter(
-      (obj) => obj.value === true && obj.pathname === currentPathName
-    );
+    return getAllActiveSessionFilters().filter((obj) => obj.value === true && obj.pathname === currentPathName);
   }
 
-   /**
+  /**
    * Retrieves the current number of items per page.
    *
    * This function retrieves the number of items per page from the URL parameters.
@@ -282,11 +262,28 @@ export default function useHelpers() {
    *
    * @returns {number} The current number of items per page.
    */
-  function getTheCurrentItemsPerPage (){
+  function getTheCurrentItemsPerPage() {
     return parseInt(getUrlParams(ITEMS_PER_PAGE) || DEFAULT_ITEMS_PER_PAGE);
   }
 
+  /**
+   * Calculates the total number of pages based on the total number of records and items per page.
+   *
+   * @param {number} totalRecords - The total number of records.
+   * @returns {number} The total number of pages.
+   */
+  function getTotalPages(totalRecords) {
+    // Get the user-set items per page.
+    const size = parseInt(getUrlParams(ITEMS_PER_PAGE) || DEFAULT_ITEMS_PER_PAGE);
+
+    // Calculate the total number of pages.
+    const pages = (totalRecords + size - 1) / size;
+    return parseInt(pages);
+  }
+
+
   return {
+    getTotalPages,
     convertToDutchDateFormat,
     formatToDutchStringDate,
     checkForInvalidFields,

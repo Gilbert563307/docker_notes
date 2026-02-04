@@ -20,7 +20,7 @@ export class CrudCollectionManager {
     await addDoc(this.#collectionRef, document);
   }
 
-  async getDocument(documentId) {
+  async readDocument(documentId) {
     // Get a reference to the document in the database
     const reference = doc(this.#database, this.#collectionName, documentId);
 

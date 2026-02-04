@@ -16,7 +16,9 @@ import {
   getCountFromServer,
 } from "firebase/firestore";
 import { CrudCollectionManager } from "./CrudCollectionManager";
+import { PageAble } from "./domain/PageAble";
 
+const FIRST_PAGE = 1;
 export class CollectionManager extends CrudCollectionManager {
   #collectionName;
   #collectionRef;
@@ -46,7 +48,7 @@ export class CollectionManager extends CrudCollectionManager {
 
   /**
    *
-   * @returns {Timestamp}
+   * @returns {FieldValue}
    */
   getCurrentServerTimestamp() {
     return serverTimestamp();
@@ -105,26 +107,20 @@ export class CollectionManager extends CrudCollectionManager {
    * @param {Array<any>} queryItems
    * @param {number} page
    * @param {number} itemsPerPage
-   * @returns {Array<any>}
+   * @returns {Promise<Array<any>>}
    */
   async getPaginatedDocumentsByQueryItems(queryItems, page, itemsPerPage) {
-    if (queryItems === null || queryItems === undefined) {
-      throw new Error("Query array is missing");
-    }
-
-    if (page === null || page === undefined || typeof page !== "number") {
-      throw new Error("Page number is missing");
-    }
-
-    if (itemsPerPage === null || itemsPerPage === undefined || typeof itemsPerPage !== "number") {
-      throw new Error("Page size is missing");
-    }
+    const pageAble = new PageAble(queryItems, page, itemsPerPage);
 
     let resultsQuery;
-    if (page === 1) {
-      resultsQuery = query(this.#collectionRef, ...queryItems, limit(itemsPerPage));
+    if (pageAble.getPage() === FIRST_PAGE) {
+      resultsQuery = query(this.#collectionRef, ...pageAble.getQueryItems(), limit(pageAble.getItemsPerPage()));
     } else {
-      resultsQuery = await this.#getPaginatedCollectionQuery(page, itemsPerPage, queryItems);
+      resultsQuery = await this.#getPaginatedCollectionQuery(
+        pageAble.getPage(),
+        pageAble.getItemsPerPage(),
+        pageAble.getQueryItems(),
+      );
     }
 
     // Execute the query to get the tasks.
@@ -141,15 +137,30 @@ export class CollectionManager extends CrudCollectionManager {
    *
    * @param {string} fieldName
    * @param {string} searchText
-   * @returns {Array<Query>}
+   * @returns {QueryFieldFilterConstraint}
    */
-  getSearchQueryByFieldName(fieldName, searchText) {
-    if (!searchText) return [];
+  getSearchQueryBeforeFieldName(fieldName, searchText) {
+    if (!fieldName) {
+      throw new Error("Field name required");
+    }
+    const startText = searchText;
+    return where(fieldName, ">=", startText);
+  }
+
+  /**
+   *
+   * @param {string} fieldName
+   * @param {string} searchText
+   * @returns {QueryFieldFilterConstraint}
+   */
+  getSearchQueryAfterFieldName(fieldName, searchText) {
+    if (!fieldName) {
+      throw new Error("Field name required");
+    }
 
     const startText = searchText;
     const endText = startText + "\uf8ff";
-
-    return [where(fieldName, ">=", startText), where(fieldName, "<=", endText)];
+    return where(fieldName, "<=", endText);
   }
 
   /**
@@ -184,7 +195,6 @@ export class CollectionManager extends CrudCollectionManager {
     return query(this.#collectionRef, ...queryItems, startAfter(startFromDocument), limit(itemsPerPage));
   }
 
-  
   /**
    *
    * @param {Array<any>} queryItems
@@ -208,8 +218,6 @@ export class CollectionManager extends CrudCollectionManager {
     const querySnapshot = await getDocs(query);
     return this.#convertQuerySnapShotDocs(querySnapshot);
   }
-
- 
 
   /**
    * @param {{ seconds: number, nanoseconds: number } } object
