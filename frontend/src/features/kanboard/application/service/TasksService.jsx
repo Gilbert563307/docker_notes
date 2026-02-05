@@ -1,4 +1,4 @@
-import { ALERT_ACTIONS, ALERT_TYPES } from "../../../../shared/presentation/components/bs5/BS5Alert";
+import { ALERT_TYPES } from "../../../../shared/presentation/components/bs5/BS5Alert";
 import {
   DEFAULT_PROJECT_ID,
   DEFAULT_TASKS_ARCHIVE,
@@ -11,7 +11,6 @@ import {
   TASKS_STATUS,
 } from "../../../../config";
 import useHelpers from "../../../../shared/helpers/useHelpers";
-import FirebaseInterface from "../../../../shared/data/FirebaseInterface";
 import { Task } from "../../domain/Task";
 import { Assignee } from "../../domain/Assignee";
 import { Reporter } from "../../domain/Reporter";
@@ -24,12 +23,11 @@ import { ReporterDto } from "../dto/RepoterDto";
 import { ArchiveTaskDto } from "../../presentation/dto/ArchiveTaskDto";
 import { CreateTaskDto } from "../../presentation/dto/CreateTaskDto";
 import FirebaseInterfaceV2 from "../../../../shared/data/FirebaseInterfaceV2";
-import { Query } from "firebase/firestore";
-import { CollectionManager } from "../../../../firebase_entitymanager/CollectionManager";
 import { db } from "../../../../database/firebaseConfig";
 import { ListTasksDto } from "./dto/ListTasksDto";
 import { GetTasksQueryClausesDto } from "./dto/GetTasksQueryClausesDto";
 import { TasksQueries } from "../../domain/TasksQueries";
+import { CollectionManager } from "../../../../firebase_entity_manager/CollectionManager";
 
 const initialTaskDto = new TaskDto(
   null,
@@ -57,33 +55,7 @@ export default function TasksService() {
     getTotalPages,
   } = useHelpers();
   const { convertHtmlToDocx } = FilesService();
-
-  // const {
-  //   collectionRef,
-  //   userUid,
-  //   addDoc,
-  //   query,
-  //   where,
-  //   getDocs,
-  //   limit,
-  //   getCountFromServer,
-  //   getTotalPages,
-  //   getTheCurrentItemsPerPage,
-  //   currentServerTimestamp,
-  //   orderBy,
-  //   doc,
-  //   db,
-  //   table,
-  //   updateDoc,
-  //   deleteDoc,
-  //   getSearchQueryByFieldName,
-  //   convertQuerySnapShotDocs,
-  //   fetchResultsOnPageOne,
-  //   fetchPaginatedResults,
-  //   getDocument,
-  // } = FirebaseInterface({ table: "tasks" });
-
-  const { userUid, user, BACKEND_URL, X_TOKEN } = FirebaseInterfaceV2();
+  const { userUid, user } = FirebaseInterfaceV2();
 
   /**
    * Creates a new task with default values if not provided in the payload.
@@ -266,7 +238,6 @@ export default function TasksService() {
         tasksQuerys.addQueryItem(collectionManager.getSearchQueryAfterFieldName("title", searchTerm));
       }
 
-
       return {
         queryItems: tasksQuerys.getQueryItems(),
         notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
@@ -288,7 +259,6 @@ export default function TasksService() {
   const getTasksByQuery = async (payload) => {
     try {
       const { queryItems } = getTasksQueryClauses(new GetTasksQueryClausesDto(payload.getSearchTerm()));
-
       const documents = await collectionManager.getPaginatedDocumentsByQueryItems(
         queryItems,
         payload.getCurrentPage(),
