@@ -1,16 +1,23 @@
-import { addDoc, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
-import { QueryConstraintCollectionManager } from "./QueryConstraintCollectionManager";
+import { addDoc, collection, deleteDoc, doc, Firestore, getDoc, updateDoc } from "firebase/firestore";
+import { QueryConstraintCollectionManager } from "./QueryConstraintCollectionManager.js";
 
 export class CrudCollectionManager extends QueryConstraintCollectionManager {
   #collectionName;
   #collectionRef;
   #database;
 
+  /**
+   * 
+   * @param {Firestore} database 
+   * @param {string} collectionName 
+   */
   constructor(database, collectionName) {
     super(database, collectionName);
     this.#database = database;
 
     this.#collectionName = collectionName;
+    //init config
+    this.#collectionRef = collection(this.#database, this.#collectionName);
   }
 
   /**

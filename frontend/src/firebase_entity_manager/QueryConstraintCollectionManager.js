@@ -1,9 +1,14 @@
-import { limit, orderBy, QueryFieldFilterConstraint, where } from "firebase/firestore";
+import { Firestore, limit, orderBy, QueryFieldFilterConstraint, where } from "firebase/firestore";
 
 export class QueryConstraintCollectionManager {
   #collectionName;
   #database;
 
+  /**
+   * 
+   * @param {Firestore} database 
+   * @param {*} collectionName 
+   */
   constructor(database, collectionName) {
     this.#database = database;
     this.#collectionName = collectionName;
