@@ -55,6 +55,22 @@ export class FolderDto {
     return this.#updated_at;
   }
 
+  /**
+   *
+   * @returns {string}
+   */
+  getUserLocaleCreatedAt() {
+    return this.#created_at.toDate().toLocaleString();
+  }
+
+  /**
+   *
+   * @returns {string}
+   */
+  getUserLocaleUpdatedAt() {
+    return this.#created_at.toDate().toLocaleString();
+  }
+
   /** Return object representation */
   toJson() {
     return {

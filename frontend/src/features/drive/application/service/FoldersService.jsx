@@ -2,8 +2,6 @@ import React from "react";
 import { DEFAULT_FOLDERS_ARCHIVE, FOLDERS_ARCHIVED_SESSION_FILTER, MAX_FOLDERS_TO_FETCH } from "../../../../config";
 import { ALERT_TYPES } from "../../../../shared/presentation/components/bs5/BS5Alert";
 import useHelpers from "../../../../shared/helpers/useHelpers";
-import { Query } from "firebase/firestore";
-import FirebaseInterface from "../../../../shared/data/FirebaseInterface";
 import { NotificationDto } from "../../../notification/application/dto/NotificationDto";
 import FilesService from "../../../../shared/application/service/FilesService";
 import { FoldersMapper } from "../mapper/FoldersMapper";
@@ -11,132 +9,78 @@ import { FolderDto } from "../dto/FolderDto";
 import { CreateFolderDto } from "../../presentation/dto/CreateFolderDto";
 import { Folder } from "../../domain/Folder";
 import { ArchiveFolderDto } from "../../presentation/dto/ArchiveFolderDto";
+import { CollectionManager } from "../../../../firebase_entity_manager/CollectionManager";
+import { db } from "../../../../database/firebaseConfig";
+import { GetFoldersQueryClauses } from "../dto/GetFoldersQueryClausesDto";
+import FirebaseInterfaceV2 from "../../../../shared/data/FirebaseInterfaceV2";
+import { FoldersQueries } from "../../domain/FoldersQueries";
+import { GetFoldersDto } from "../dto/GetFoldersDto";
 
 const initialFolderDto = new FolderDto(null, null, null, null, null, null, null);
 
+const collectionManager = new CollectionManager("folders", db);
 export default function FoldersService() {
-  const {
-    collectionRef,
-    userUid,
-    query,
-    where,
-    getDocs,
-    limit,
-    orderBy,
-    convertQuerySnapShotDocs,
-    getTheCurrentItemsPerPage,
-    getSearchQueryByFieldName,
-    fetchResultsOnPageOne,
-    fetchPaginatedResults,
-    getTotalPages,
-    getCountFromServer,
-    currentServerTimestamp,
-    updateDoc,
-    doc,
-    db,
-    table,
-    addDoc,
-    getDocument,
-    deleteDoc,
-  } = FirebaseInterface({ table: "folders" });
-
+  const { userUid } = FirebaseInterfaceV2();
   const { listFilesByFolderId } = FilesService();
-  const { getSessionFilter, getCurrentPageNumber } = useHelpers();
+  const { getSessionFilter, getCurrentPageNumber, getTotalPages, getTheCurrentItemsPerPage } = useHelpers();
 
   /**
-   * @param {{searchTearm?: string}} payload
-   * @returns {{queryItems: Array<Query> | Array, notificationDto: NotificationDto}}
+   *
+   * @param {GetFoldersQueryClauses} payload
    */
-  function getFoldersQueryClauses(payload = {}) {
-    try {
-      // Get the session archived filter
-      const foldersArchived = getSessionFilter(FOLDERS_ARCHIVED_SESSION_FILTER) || DEFAULT_FOLDERS_ARCHIVE;
+  function getFoldersQueryClauses(payload) {
+    // Get the session archived filter
+    const foldersArchived = getSessionFilter(FOLDERS_ARCHIVED_SESSION_FILTER) || DEFAULT_FOLDERS_ARCHIVE;
 
-      let queryItems = [
-        where("user_uid", "==", userUid),
-        where("archived", "==", foldersArchived),
-        orderBy("created_at", "desc"),
-      ];
+    const baseQueryItems = [
+      collectionManager.whereQuery("user_uid", "==", userUid),
+      collectionManager.whereQuery("archived", "==", foldersArchived),
+      collectionManager.orderByQuery("created_at", "desc"),
+    ];
 
-      if (payload.searchTearm && payload.searchTearm != "") {
-        const { searchTearm } = payload;
-        queryItems = [...queryItems, ...getSearchQueryByFieldName("name", searchTearm)];
-      }
+    const foldersQuerys = new FoldersQueries(baseQueryItems);
 
-      return {
-        queryItems: queryItems,
-        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
-      };
-    } catch (error) {
-      console.log(`[getFoldersQueryClauses]: ${error.message}`);
-      return {
-        queryItems: [],
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
-      };
+    if (payload.getSearchTerm() && payload.getSearchTerm() != "") {
+      const searchTerm = payload.getSearchTerm()?.trim();
+      foldersQuerys.addQueryItem(collectionManager.getSearchQueryBeforeFieldName("name", searchTerm));
+      foldersQuerys.addQueryItem(collectionManager.getSearchQueryAfterFieldName("name", searchTerm));
     }
+
+    return foldersQuerys.getQueryItems();
   }
 
   /**
    *
-   * @param {{currentPage: number, itemsPerPage?: number, searchTearm?: string }} payload
-   * @returns {Promise<{resultsQuery: Query | null, notificationDto: NotificationDto}>} The Firestore query to fetch tasks for the specified page.
+   * @param {GetFoldersDto} payload
+   * @returns {Promise<Array<Object>>} The Firestore query to fetch tasks for the specified page.
    *
    */
-  async function getFoldersQuery(payload) {
-    try {
-      // Destructure the vars
-      const { currentPage } = payload;
-
-      // Get the number of items to be displayed per page
-      const itemsPerPage = getTheCurrentItemsPerPage();
-      const { queryItems } = getFoldersQueryClauses(payload);
-
-      // If the current page is the first page, create a query limited by the items per page
-      if (currentPage === 1) {
-        const { resultsQuery, message, type } = fetchResultsOnPageOne(queryItems, itemsPerPage);
-        return {
-          resultsQuery: resultsQuery,
-          notificationDto: new NotificationDto(message, type),
-        };
-      }
-
-      const { resultsQuery, message, type } = await fetchPaginatedResults(
-        currentPage,
-        payload,
-        itemsPerPage,
-        queryItems,
-      );
-      return {
-        resultsQuery: resultsQuery,
-        notificationDto: new NotificationDto(message, type),
-      };
-    } catch (error) {
-      return {
-        resultsQuery: null,
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
-      };
-    }
+  async function getFoldersByQuery(payload) {
+    const queryItems = getFoldersQueryClauses(new GetFoldersQueryClauses(payload.getSearchTerm()));
+    return await collectionManager.getPaginatedDocumentsByQueryItems(
+      queryItems,
+      payload.getCurrentPage(),
+      payload.getItemsPerPage(),
+    );
   }
 
-  async function getTotalFoldersInDatabaseByUserAndFilters() {
-    try {
-      const { queryItems } = getFoldersQueryClauses();
-
-      // Get total records from server according to where clause set by the user
-      const totalQuery = query(collectionRef, ...queryItems);
-      const totalRecordsSnapShot = await getCountFromServer(totalQuery);
-      const totalRecords = totalRecordsSnapShot.data().count;
-
-      return totalRecords;
-    } catch (error) {
-      return 0;
-    }
+  /**
+   *
+   * @param {GetFoldersDto} payload
+   * @returns {Promise<number>}
+   */
+  async function getTotalFoldersInDatabaseByUserAndFilters(payload) {
+    const queryItems = getFoldersQueryClauses(new GetFoldersQueryClauses(payload.getSearchTerm()));
+    return await collectionManager.countDocumentsByQuery(queryItems);
   }
 
+  /**
+   *
+   * @param {string} searchTearm
+   * @returns {Promise<listFoldersResponse>}
+   */
   async function listFoldersBySearchTerm(searchTearm) {
-    //get currentPageNumber
-    const currentPage = getCurrentPageNumber();
-    return await _listFolders({ currentPage: currentPage, searchTearm: searchTearm });
+    return await _listFolders(new GetFoldersDto(getCurrentPageNumber(), getTheCurrentItemsPerPage(), searchTearm));
   }
 
   /**
@@ -149,29 +93,17 @@ export default function FoldersService() {
    */
 
   /**
-   * @param {{ currentPage: number, itemsPerPage?: number, searchTearm?: string}} payload
+   * @param {GetFoldersDto} payload
    * @returns {Promise<listFoldersResponse>}
    */
   async function _listFolders(payload) {
     try {
       // Construct the query to get all tasks for the current user UID with a
-      const { resultsQuery, notificationDto } = await getFoldersQuery(payload);
-
-      //check if query is null
-      if (!resultsQuery) {
-        return {
-          results: { folders: [], total: 0, pages: 0 },
-          notificationDto,
-        };
-      }
-
-      // Execute the query to get the tasks.
-      const querySnapshot = await getDocs(resultsQuery);
-
-      const { results } = convertQuerySnapShotDocs(querySnapshot);
+      const results = await getFoldersByQuery(payload);
 
       //get total records for pagination
-      const totalRecords = await getTotalFoldersInDatabaseByUserAndFilters();
+      const totalRecords = await getTotalFoldersInDatabaseByUserAndFilters(payload);
+
       //get total pages for pagination
       const totalPages = getTotalPages(totalRecords);
 
@@ -195,17 +127,13 @@ export default function FoldersService() {
    */
   async function getFolders() {
     try {
-      const foldersQuery = query(
-        collectionRef,
-        where("user_uid", "==", userUid),
-        orderBy("created_at", "desc"),
-        limit(MAX_FOLDERS_TO_FETCH),
-      );
-
-      const querySnapshot = await getDocs(foldersQuery);
-
-      const response = convertQuerySnapShotDocs(querySnapshot);
-      const foldersDtos = FoldersMapper.arrayToDtoList(response.results);
+      const foldersQueries = [
+        collectionManager.whereQuery("user_uid", "==", userUid),
+        collectionManager.orderByQuery("created_at", "desc"),
+        collectionManager.limitByQuery(MAX_FOLDERS_TO_FETCH),
+      ];
+      const results = await collectionManager.getAllDocumentsByQuery(foldersQueries);
+      const foldersDtos = FoldersMapper.arrayToDtoList(results);
       return {
         folders: foldersDtos,
         notificationDto: new NotificationDto(response.message, ALERT_TYPES.SUCCESS),
@@ -254,16 +182,14 @@ export default function FoldersService() {
         payload.getName(),
         payload.getColor(),
         false,
-        currentServerTimestamp,
-        currentServerTimestamp,
+        collectionManager.getCurrentServerTimestamp(),
+        collectionManager.getCurrentServerTimestamp(),
       );
-    
-      // Attempt to add the document to the collection
-      const created = await addDoc(collectionRef, folder.toJsonWithoutId());
 
+      await collectionManager.createDocument(folder.toJsonWithoutId());
       // Return success message if task creation was successful
       return {
-        created: Boolean(created),
+        created: true,
         notificationDto: new NotificationDto("Your folder has been created", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
@@ -282,11 +208,11 @@ export default function FoldersService() {
    */
   async function readFolder(folderId) {
     try {
-      const { document, message, type } = await getDocument(folderId);
+      const document = await collectionManager.readDocument(folderId);
       const folderDto = FoldersMapper.toDto(document);
       return {
         folder: folderDto,
-        notificationDto: new NotificationDto(message, type),
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       // Return an error response if the fetch operation fails
@@ -305,14 +231,15 @@ export default function FoldersService() {
   async function updateFolder(payload) {
     try {
       const folder = FoldersMapper.fromDtoToEntity(payload);
-      
-      folder.update(folder.getName(), folder.getColor(), folder.getIsArchived(), currentServerTimestamp);
-      //get document
-      const document = doc(db, table, folder.getId());
 
-      //update document
-      await updateDoc(document, folder.toJsonWithoutId());
+      folder.update(
+        folder.getName(),
+        folder.getColor(),
+        folder.getIsArchived(),
+        collectionManager.getCurrentServerTimestamp(),
+      );
 
+      await collectionManager.updateDocument(folder.getId(), folder.toJsonWithoutId());
       return {
         updated: true,
         notificationDto: new NotificationDto("Your folder has been succesfully been updated", ALERT_TYPES.SUCCESS),
@@ -333,10 +260,10 @@ export default function FoldersService() {
    */
   async function deleteFolder(folderId) {
     try {
-      const ref = doc(db, table, folderId);
-      const deleted = await deleteDoc(ref);
+      await collectionManager.deleteDocument(folderId);
+
       return {
-        deleted: Boolean(deleted),
+        deleted: true,
         notificationDto: new NotificationDto("Your folder has been deleted", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
@@ -356,7 +283,7 @@ export default function FoldersService() {
   }
 
   async function listFolders() {
-    return _listFolders({ currentPage: getCurrentPageNumber() });
+    return await _listFolders(new GetFoldersDto(getCurrentPageNumber(), getTheCurrentItemsPerPage(), ""));
   }
 
   return {

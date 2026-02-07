@@ -43,7 +43,6 @@ const initialTaskDto = new TaskDto(
   null,
   null,
 );
-
 const collectionManager = new CollectionManager("tasks", db);
 
 export default function TasksService() {
@@ -108,16 +107,11 @@ export default function TasksService() {
    * @async
    * @param {ListTasksDto} payload
    * @returns {Promise<number>} A promise that resolves to the total count of tasks.
-   * @throws {Error} If there's an error while retrieving the total count of tasks.
    */
   const getTotalTasksInDatabaseByUserAndFilters = async (payload) => {
-    try {
-      // Get total records from server according to where clause set by the user
-      const { queryItems } = getTasksQueryClauses(new GetTasksQueryClausesDto(payload.getSearchTerm()));
-      return await collectionManager.countDocumentsByQuery(queryItems);
-    } catch (error) {
-      return 0;
-    }
+    // Get total records from server according to where clause set by the user
+    const queryItems = getTasksQueryClauses(new GetTasksQueryClausesDto(payload.getSearchTerm()));
+    return await collectionManager.countDocumentsByQuery(queryItems);
   };
 
   /**
@@ -206,48 +200,39 @@ export default function TasksService() {
   /**
    *
    * @param {GetTasksQueryClausesDto} payload
+   * @returns {Array<any>}
    */
   function getTasksQueryClauses(payload) {
-    try {
-      // Get the session archived filter
-      const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
+    // Get the session archived filter
+    const tasksArchived = getSessionFilter(TASKS_ARCHIVED_SESSION_FILTER) || DEFAULT_TASKS_ARCHIVE;
 
-      const statusFilters = getActiveStatusFilters();
-      const priorityFilters = getActivePriorityFilters();
+    const statusFilters = getActiveStatusFilters();
+    const priorityFilters = getActivePriorityFilters();
 
-      const baseQueryItems = [
-        collectionManager.whereQuery("user_uid", "==", userUid),
-        collectionManager.whereQuery("archived", "==", tasksArchived),
-        collectionManager.orderByQuery("created_at", "desc"),
-      ];
+    const baseQueryItems = [
+      collectionManager.whereQuery("user_uid", "==", userUid),
+      collectionManager.whereQuery("archived", "==", tasksArchived),
+      collectionManager.orderByQuery("created_at", "desc"),
+    ];
 
-      // @ts-ignore
-      const tasksQuerys = new TasksQueries(baseQueryItems);
+    // @ts-ignore
+    const tasksQuerys = new TasksQueries(baseQueryItems);
 
-      if (statusFilters.filters.length > 0) {
-        tasksQuerys.addQueryItem(collectionManager.whereQuery("status", "in", statusFilters.filters));
-      }
-
-      if (priorityFilters.filters.length > 0) {
-        tasksQuerys.addQueryItem(collectionManager.whereQuery("priority", "in", priorityFilters.filters));
-      }
-
-      if (payload.getSearchTerm() && payload.getSearchTerm() != "") {
-        const searchTerm = payload.getSearchTerm()?.trim();
-        tasksQuerys.addQueryItem(collectionManager.getSearchQueryBeforeFieldName("title", searchTerm));
-        tasksQuerys.addQueryItem(collectionManager.getSearchQueryAfterFieldName("title", searchTerm));
-      }
-
-      return {
-        queryItems: tasksQuerys.getQueryItems(),
-        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
-      };
-    } catch (error) {
-      return {
-        queryItems: [],
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
-      };
+    if (statusFilters.filters.length > 0) {
+      tasksQuerys.addQueryItem(collectionManager.whereQuery("status", "in", statusFilters.filters));
     }
+
+    if (priorityFilters.filters.length > 0) {
+      tasksQuerys.addQueryItem(collectionManager.whereQuery("priority", "in", priorityFilters.filters));
+    }
+
+    if (payload.getSearchTerm() && payload.getSearchTerm() != "") {
+      const searchTerm = payload.getSearchTerm()?.trim();
+      tasksQuerys.addQueryItem(collectionManager.getSearchQueryBeforeFieldName("title", searchTerm));
+      tasksQuerys.addQueryItem(collectionManager.getSearchQueryAfterFieldName("title", searchTerm));
+    }
+
+    return tasksQuerys.getQueryItems();
   }
 
   /**
@@ -258,7 +243,7 @@ export default function TasksService() {
    */
   const getTasksByQuery = async (payload) => {
     try {
-      const { queryItems } = getTasksQueryClauses(new GetTasksQueryClausesDto(payload.getSearchTerm()));
+      const queryItems = getTasksQueryClauses(new GetTasksQueryClausesDto(payload.getSearchTerm()));
       const documents = await collectionManager.getPaginatedDocumentsByQueryItems(
         queryItems,
         payload.getCurrentPage(),

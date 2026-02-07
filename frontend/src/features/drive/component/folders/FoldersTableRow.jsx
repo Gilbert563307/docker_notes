@@ -43,8 +43,8 @@ export default function FoldersTableRow({ folder }) {
           />
         </div>
       </td>
-      <td>{folder.getCreatedAt().toLocaleString()}</td>
-      <td>{folder.getUpdatedAt().toLocaleString()}</td>
+      <td>{folder.getUserLocaleCreatedAt()}</td>
+      <td>{folder.getUserLocaleUpdatedAt()}</td>
       <td className="main-table-actions">
         <button>
           <Link to={`/folders/read/${folder.getId()}`} state={{ folder: folder.toJson() }}>

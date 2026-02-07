@@ -101,28 +101,40 @@ export class KanBoard {
   }
 
   /** Update one or more fields */
-  update(data = {}) {
-    this.#validate(data);
-
-    if (data.user_uid !== undefined) this.#user_uid = data.user_uid;
-    if (data.name !== undefined) this.#name = data.name;
-    if (data.color !== undefined) this.#color = data.color;
-    if (data.archived !== undefined) this.#archived = data.archived;
-    if (data.collaborative !== undefined) this.#collaborative = data.collaborative;
-    if (data.updated_at !== undefined) this.#updated_at = data.updated_at;
-  }
-
-  #validate(data) {
-    const {
-      id,
-      user_uid,
+  /**
+   * @param {string} name
+   * @param {string} color
+   * @param {boolean} archived
+   * @param {boolean} collaborative
+   * @param {any} created_at
+   * @param {any} updated_at
+   */
+  update(name, color, archived, collaborative, created_at, updated_at) {
+    const data = {
+      id: this.#id,
+      user_uid: this.#user_uid,
       name,
       color,
       archived,
       collaborative,
       created_at,
       updated_at,
-    } = data;
+    };
+    this.#validate(data);
+
+    if (name !== undefined) this.#name = name;
+    if (color !== undefined) this.#color = color;
+    if (archived !== undefined) this.#archived = archived;
+    if (collaborative !== undefined) this.#collaborative = collaborative;
+    if (updated_at !== undefined) this.#updated_at = updated_at;
+  }
+
+  /**
+   *
+   * @param {Object} data
+   */
+  #validate(data) {
+    const { id, user_uid, name, color, archived, collaborative, created_at, updated_at } = data;
 
     if (id === undefined || id === null || typeof id !== "string") {
       throw new Error("Board id is required and must be a string.");

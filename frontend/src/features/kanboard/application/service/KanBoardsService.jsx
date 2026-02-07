@@ -1,58 +1,30 @@
 import { MAX_KAN_BOARDS } from "../../../../config";
 import { ALERT_TYPES } from "../../../../shared/presentation/components/bs5/BS5Alert";
-import FirebaseInterface from "../../../../shared/data/FirebaseInterface";
 import { NotificationDto } from "../../../notification/application/dto/NotificationDto";
 import { KanBoard } from "../../domain/KanBoard";
 import { KanBoardDto } from "../dto/KanBoardDto";
 import { KanBoardMapper } from "../mapper/KanBoardMapper";
+import { CollectionManager } from "../../../../firebase_entity_manager/CollectionManager";
+import { db } from "../../../../database/firebaseConfig";
+import FirebaseInterfaceV2 from "../../../../shared/data/FirebaseInterfaceV2";
+import { KanBoardSystem } from "../../domain/KanBoardSystem";
+import { ArchiveKanBoardDto } from "./dto/ArchiveKanBoardDto";
 
 const initialBoardDto = new KanBoardDto(null, null, null, null, null, null, null, null);
+const collectionManager = new CollectionManager("kanboards", db);
 
 export default function KanBoardsService() {
-  const {
-    collectionRef,
-    userUid,
-    query,
-    limit,
-    where,
-    // orderBy,
-    getDocs,
-    currentServerTimestamp,
-    convertQuerySnapShotDocs,
-    addDoc,
-    doc,
-    table,
-    db,
-    deleteDoc,
-    updateDoc,
-    getCountFromServer,
-    getDocument,
-  } = FirebaseInterface({ table: "kanboards" });
+  const { userUid } = FirebaseInterfaceV2();
 
   /**
    *
    * @returns {Promise<{max: boolean, notificationDto: NotificationDto}>}
    */
   async function doesUserHaveMaxKanBoards() {
-    try {
-      const q = query(collectionRef, where("user_uid", "==", userUid));
-      const snapshot = await getCountFromServer(q);
-      const count = snapshot.data().count;
+    const query = collectionManager.whereQuery("user_uid", "==", userUid);
+    const count = await collectionManager.countDocumentsByQuery([query]);
 
-      const maximumReached = count >= MAX_KAN_BOARDS;
-      const message = maximumReached
-        ? `You have reached the maximum number of Kanboards (${MAX_KAN_BOARDS}).`
-        : `You have created ${count} out of ${MAX_KAN_BOARDS} Kanboards.`;
-      return {
-        max: maximumReached,
-        notificationDto: new NotificationDto(message, maximumReached ? ALERT_TYPES.DANGER : ALERT_TYPES.INFO),
-      };
-    } catch (error) {
-      return {
-        max: true,
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
-      };
-    }
+    new KanBoardSystem(null, null, count);
   }
 
   /**
@@ -63,13 +35,7 @@ export default function KanBoardsService() {
   async function createKanBoard(payload) {
     try {
       //check if the max kanboards already created
-      const maxKanBoardsCreated = await doesUserHaveMaxKanBoards();
-      if (maxKanBoardsCreated.max) {
-        return {
-          created: false,
-          notificationDto: maxKanBoardsCreated.notificationDto,
-        };
-      }
+      await doesUserHaveMaxKanBoards();
 
       const kanBoard = new KanBoard(
         "",
@@ -78,13 +44,13 @@ export default function KanBoardsService() {
         payload.color,
         false,
         false,
-        currentServerTimestamp,
-        currentServerTimestamp,
+        collectionManager.getCurrentServerTimestamp(),
+        collectionManager.getCurrentServerTimestamp(),
       );
+      const created = await collectionManager.createDocument(kanBoard.toJsonWithoutId());
 
-      const created = addDoc(collectionRef, kanBoard.toJsonWithoutId());
       return {
-        created: Boolean(created),
+        created: created,
         notificationDto: new NotificationDto("Your kan board has been created", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
@@ -103,13 +69,16 @@ export default function KanBoardsService() {
   async function updateKanBoard(payload) {
     try {
       const kanBoard = KanBoardMapper.fromDtoToEntity(payload);
-      kanBoard.update({ ...payload.toJson(), updated_at: currentServerTimestamp });
+      kanBoard.update(
+        kanBoard.getName(),
+        kanBoard.getColor(),
+        kanBoard.getIsArchived(),
+        kanBoard.getIsCollaborative(),
+        kanBoard.getCreatedAt(),
+        collectionManager.getCurrentServerTimestamp(),
+      );
+      await collectionManager.updateDocument(kanBoard.getId(), kanBoard.toJsonWithoutId());
 
-      //get document
-      const kanban = doc(db, table, payload.getId());
-
-      //update document
-      await updateDoc(kanban, kanBoard.toJson());
       return {
         updated: true,
         notificationDto: new NotificationDto("Your kanban has been succesfully been updated", ALERT_TYPES.SUCCESS),
@@ -129,22 +98,17 @@ export default function KanBoardsService() {
   async function listKanBoards() {
     try {
       // Construct the query to get all tasks for the current user UID with a
-      const kanBoardsQuery = query(
-        collectionRef,
-        where("user_uid", "==", userUid),
-        // where("archived", "==", tasksArchived),
-        limit(MAX_KAN_BOARDS),
-      );
-
-      // Execute the query to get the tasks.
-      const querySnapshot = await getDocs(kanBoardsQuery);
-
-      const { results, message, type } = convertQuerySnapShotDocs(querySnapshot);
+      const results = await collectionManager.getAllDocumentsByQuery([
+        // @ts-ignore
+        collectionManager.whereQuery("user_uid", "==", userUid),
+        // @ts-ignore
+        collectionManager.limitByQuery(MAX_KAN_BOARDS),
+      ]);
       const kanBoards = KanBoardMapper.arrayToDtoList(results);
 
       return {
         results: kanBoards,
-        notificationDto: new NotificationDto(message, type),
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       return {
@@ -157,18 +121,26 @@ export default function KanBoardsService() {
   /**
    *
    *
-   * @param {{id: string, archived: boolean}} payload -
+   * @param {ArchiveKanBoardDto} payload -
    * @returns {Promise<{ archived: boolean, notificationDto: NotificationDto }>} -
    * */
   async function archiveKanBoard(payload) {
     try {
-      //TODO FIX PAYLOAD
-      const { updated, notificationDto } = await updateKanBoard(payload);
+      const kanBoard = KanBoardMapper.fromDtoToEntity(payload.getKanBoardDto());
+      kanBoard.update(
+        kanBoard.getName(),
+        kanBoard.getColor(),
+        payload.getArchived(),
+        kanBoard.getIsCollaborative(),
+        kanBoard.getCreatedAt(),
+        collectionManager.getCurrentServerTimestamp(),
+      );
 
+      const updated = await collectionManager.updateDocument(kanBoard.getId(), kanBoard.toJsonWithoutId());
       // Return the result of the update operation
       return {
         archived: updated,
-        notificationDto: notificationDto,
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       // Return an error response if the update operation fails
@@ -181,15 +153,15 @@ export default function KanBoardsService() {
 
   /**
    *
-   * @param {string} id
+   * @param {string} kanBoardId
    * @returns {Promise<{board: KanBoardDto, notificationDto: NotificationDto}>}
    */
-  async function readKanBoard(id) {
+  async function readKanBoard(kanBoardId) {
     try {
-      const { document, message, type } = await getDocument(id);
+      const document = await collectionManager.readDocument(kanBoardId);
       return {
         board: KanBoardMapper.toDto(document),
-        notificationDto: new NotificationDto(message, type),
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       return {
@@ -201,14 +173,14 @@ export default function KanBoardsService() {
 
   /**
    *
-   * @param {number} kanBoardId
+   * @param {string} kanBoardId
    */
   async function deleteKanBoard(kanBoardId) {
     try {
-      const kanBoardRef = doc(db, table, kanBoardId);
-      deleteDoc(kanBoardRef);
+      const deleted = await collectionManager.deleteDocument(kanBoardId);
+
       return {
-        deleted: true,
+        deleted: deleted,
         notificationDto: new NotificationDto("Your kanboard has been deleted", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {

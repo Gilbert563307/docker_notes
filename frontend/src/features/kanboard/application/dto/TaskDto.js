@@ -135,7 +135,7 @@ export class TaskDto {
    * @returns {string}
    */
   getUserLocaleCreatedAt() {
-    return this.#created_at.toLocaleString();
+    return this.#created_at.toDate().toLocaleString();
   }
 
   /**
@@ -143,7 +143,7 @@ export class TaskDto {
    * @returns {string}
    */
   getUserLocaleUpdatedAt() {
-    return this.#created_at.toLocaleString();
+    return this.#created_at.toDate().toLocaleString();
   }
 
   toJson() {
