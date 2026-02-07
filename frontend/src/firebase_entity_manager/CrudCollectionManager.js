@@ -36,6 +36,13 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
    * @returns {Promise<Object>}
    */
   async readDocument(documentId) {
+    if(
+      documentId === null ||
+      documentId === undefined ||
+      typeof documentId !== "string"){
+        throw new Error("Document id missing or is of incorrect type. Document type must be of type string"
+        }
+    
     // Get a reference to the document in the database
     const reference = doc(this.#database, this.#collectionName, documentId);
 
