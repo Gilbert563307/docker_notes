@@ -65,6 +65,14 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
    * @returns {Promise<boolean>}
    */
   async updateDocument(documentId, data) {
+    
+    if(
+      documentId === null ||
+      documentId === undefined ||
+      typeof documentId !== "string"){
+        throw new Error("Document id missing or is of incorrect type. Document type must be of type string"
+        }
+    
     // get document
     const document = doc(this.#database, this.#collectionName, documentId);
     await updateDoc(document, data);
@@ -77,6 +85,14 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
    * @returns {Promise<boolean>}
    */
   async deleteDocument(documentId) {
+    
+    if(
+      documentId === null ||
+      documentId === undefined ||
+      typeof documentId !== "string"){
+        throw new Error("Document id missing or is of incorrect type. Document type must be of type string"
+        }
+    
     const documentRef = doc(this.#database, this.#collectionName, documentId);
     await deleteDoc(documentRef);
     return true;
