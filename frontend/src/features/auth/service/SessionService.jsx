@@ -1,28 +1,19 @@
 import React from "react";
-import { ALERT_ACTIONS } from "../../../shared/presentation/components/bs5/BS5Alert";
-import FirebaseInterface from "../../../shared/data/FirebaseInterface";
+import { ALERT_TYPES } from "../../../shared/presentation/components/bs5/BS5Alert";
+import { CollectionManager } from "../../../firebase_entity_manager/CollectionManager";
+import { db } from "../../../database/firebaseConfig";
+import { Session } from "../domain/Session";
+import { NotificationDto } from "../../notification/application/dto/NotificationDto";
 
+const collectionManager = new CollectionManager("sessions", db);
 export default function SessionService() {
-  const {
-    collectionRef,
-    currentServerTimestamp,
-    Timestamp,
-    addDoc,
-    query,
-    where,
-    getDocs,
-  } = FirebaseInterface({
-    table: "sessions",
-  });
-
   /**
-   * 
-   * @param {number} length 
+   *
+   * @param {number} length
    * @returns {string}
    */
   function generateUniqueToken(length = 64) {
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     let token = "";
     for (let i = 0; i < length; i++) {
       const randomIndex = Math.floor(Math.random() * characters.length);
@@ -32,10 +23,10 @@ export default function SessionService() {
   }
 
   /**
-   * 
-   * @param {Date} date 
-   * @param {number} hours 
-   * @returns 
+   *
+   * @param {Date} date
+   * @param {number} hours
+   * @returns
    */
   function addHours(date, hours) {
     const hoursToAdd = hours * 60 * 60 * 1000;
@@ -47,7 +38,7 @@ export default function SessionService() {
    *
    * @returns {Date}
    */
-  function getSessionExpireDate() {
+  function createSessionExpireDate() {
     // Create a Date object for the end of the current day
     const currentDate = new Date();
     const endOfDay = addHours(currentDate, 24);
@@ -57,43 +48,32 @@ export default function SessionService() {
   /**
    *
    * @param {string} hashedUid
-   * @param {import("../../../types/types").User} currentUser
-   * @returns {Promise<{created: Boolean, sessionToken: string, message: string, type: number}>}
+   * @param {Object} currentUser // firebase auth.currentUser object
+   * @returns {Promise<{created: Boolean, sessionToken: string, notificationDto: NotificationDto}>}
    */
   async function createSession(hashedUid, currentUser) {
     if (!hashedUid || !currentUser) {
       return {
         created: false,
         sessionToken: "",
-        message: "Invalid user_uid provided.",
-        type: ALERT_ACTIONS.DANGER,
+        notificationDto: new NotificationDto("Invalid user or user uid provided.", ALERT_TYPES.DANGER),
       };
     }
 
-    const expireDate = getSessionExpireDate();
-    const payload = await createSessionPayload(
-      currentUser,
-      hashedUid,
-      expireDate
-    );
-
     try {
-      const created = await addDoc(collectionRef, payload);
+      const session = await createSessionInstance(currentUser, hashedUid, createSessionExpireDate());
+      collectionManager.createDocument(session.toJson());
 
       return {
-        created: Boolean(created),
-        sessionToken: payload.token,
-        message: "Session created successfully.",
-        type: ALERT_ACTIONS.SUCCESS,
+        created: true,
+        sessionToken: session.getToken(),
+        notificationDto: new NotificationDto("Session created successfully.", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
-      console.error("Error creating session:", error);
-
       return {
         created: false,
         sessionToken: "",
-        message: error.message || "An unknown error occurred.",
-        type: ALERT_ACTIONS.DANGER,
+        notificationDto: new NotificationDto(error.message || "An unknown error occurred.", ALERT_TYPES.DANGER),
       };
     }
   }
@@ -101,7 +81,7 @@ export default function SessionService() {
   /**
    * Generates a unique token that is not already in use for the given user.
    * @param {string} user_uid - The user ID.
-   * @returns {Promise<{token: string, message: string, type: string}>}
+   * @returns {Promise<{token: string, notificationDto: NotificationDto}>}
    */
   async function getAvailableSessionToken(user_uid) {
     try {
@@ -110,27 +90,26 @@ export default function SessionService() {
 
       do {
         token = generateUniqueToken(); // Generate a new token
-        const sessionQuery = query(
-          collectionRef,
-          where("user_uid", "==", user_uid),
-          where("token", "==", token) // Directly check if the token exists
-        );
+        const sessionQuery = [
+          collectionManager.whereQuery("user_uid", "==", user_uid),
+          collectionManager.whereQuery("token", "==", token), // Directly check if the token exists
+        ];
 
-        const documentSnapshots = await getDocs(sessionQuery);
+        const documentSnapshots = await collectionManager.getDocumentSnapShotsByQuery(sessionQuery);
         isUnique = documentSnapshots.empty; // Check if the token is unique
       } while (!isUnique); // Repeat if the token already exists
 
       return {
         token: token,
-        message: "Token generated successfully.",
-        type: ALERT_ACTIONS.SUCCESS,
+        notificationDto: new NotificationDto("Token generated successfully.", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       return {
         token: "",
-        message:
+        notificationDto: new NotificationDto(
           error.message || "An error occurred while generating the token.",
-        type: ALERT_ACTIONS.DANGER,
+          ALERT_TYPES.DANGER,
+        ),
       };
     }
   }
@@ -140,33 +119,23 @@ export default function SessionService() {
    * @param {Object} currentUser
    * @param {string} hashedUid
    * @param {Date} expireDate
-   * @returns  {Promise<import("../../../types/types").Session>}
+   * @returns  {Promise<Session>}
    */
-  async function createSessionPayload(currentUser, hashedUid, expireDate) {
-    try {
-      const { token } = await getAvailableSessionToken(hashedUid);
-      return {
-        user: JSON.stringify(currentUser),
-        token: token,
-        expire_date: Timestamp.fromDate(expireDate),
-        // @ts-ignore
-        created_at: currentServerTimestamp,
-        // @ts-ignore
-        updated_at: currentServerTimestamp,
-      };
-    } catch (error) {
-      return {
-        user_uid: "",
-        token: "",
-        expire_date: "",
-        created_at: "",
-        updated_at: "",
-      };
-    }
+  async function createSessionInstance(currentUser, hashedUid, expireDate) {
+    const currentServerTimestamp = collectionManager.getCurrentServerTimestamp();
+
+    const { token } = await getAvailableSessionToken(hashedUid);
+    return new Session(
+      JSON.stringify(currentUser),
+      token,
+      collectionManager.getTimestampClass().fromDate(expireDate),
+      currentServerTimestamp,
+      currentServerTimestamp,
+    );
   }
 
-  async function checkUserSession() {
-    return false
+  function checkUserSession() {
+    throw new Error("Implement method checkUserSession");
   }
   return { createSession, checkUserSession };
 }

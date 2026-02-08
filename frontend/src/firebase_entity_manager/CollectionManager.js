@@ -13,6 +13,7 @@ import {
   limit,
   QueryFieldFilterConstraint,
   Query,
+  Timestamp,
 } from "firebase/firestore";
 import { CrudCollectionManager } from "./CrudCollectionManager.js";
 import { PageAble } from "./domain/PageAble.js";
@@ -125,13 +126,23 @@ export class CollectionManager extends CrudCollectionManager {
 
   /**
    *
-   * @param {Array<Query<any, any>>} queryItems
+   * @param {Array<any>} queryItems
    * @returns {Promise<Object>}
    */
   async getAllDocumentsByQuery(queryItems) {
     const resultsQuery = query(this.#collectionRef, ...queryItems);
     const querySnapshot = await getDocs(resultsQuery);
     return this.#convertQuerySnapShotDocs(querySnapshot);
+  }
+
+  /**
+   * Returns a documentSnapshots by the given query
+   * @param {Array<any>} queryItems 
+   * @returns 
+   */
+  async getDocumentSnapShotsByQuery(queryItems) {
+    const resultsQuery = query(this.#collectionRef, ...queryItems);
+    return await getDocs(resultsQuery);
   }
 
   /**
@@ -183,6 +194,10 @@ export class CollectionManager extends CrudCollectionManager {
     }
     // Return a query that starts after the last visible document of the previous page
     return query(this.#collectionRef, ...queryItems, startAfter(startFromDocument), limit(itemsPerPage));
+  }
+
+  getTimestampClass() {
+    return Timestamp;
   }
 
   /**

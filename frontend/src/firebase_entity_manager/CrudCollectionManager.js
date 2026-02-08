@@ -7,9 +7,9 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
   #database;
 
   /**
-   * 
-   * @param {Firestore} database 
-   * @param {string} collectionName 
+   *
+   * @param {Firestore} database
+   * @param {string} collectionName
    */
   constructor(database, collectionName) {
     super(database, collectionName);
@@ -31,18 +31,15 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
   }
 
   /**
-   * 
-   * @param {string} documentId 
+   *
+   * @param {string} documentId
    * @returns {Promise<Object>}
    */
   async readDocument(documentId) {
-    if(
-      documentId === null ||
-      documentId === undefined ||
-      typeof documentId !== "string"){
-        throw new Error("Document id missing or is of incorrect type. Document type must be of type string"
-        }
-    
+    if (documentId === null || documentId === undefined || typeof documentId !== "string") {
+      throw new Error("Document id missing or is of incorrect type. Document type must be of type string");
+    }
+
     // Get a reference to the document in the database
     const reference = doc(this.#database, this.#collectionName, documentId);
 
@@ -65,14 +62,10 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
    * @returns {Promise<boolean>}
    */
   async updateDocument(documentId, data) {
-    
-    if(
-      documentId === null ||
-      documentId === undefined ||
-      typeof documentId !== "string"){
-        throw new Error("Document id missing or is of incorrect type. Document type must be of type string"
-        }
-    
+    if (documentId === null || documentId === undefined || typeof documentId !== "string") {
+      throw new Error("Document id missing or is of incorrect type. Document type must be of type string");
+    }
+
     // get document
     const document = doc(this.#database, this.#collectionName, documentId);
     await updateDoc(document, data);
@@ -85,14 +78,10 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
    * @returns {Promise<boolean>}
    */
   async deleteDocument(documentId) {
-    
-    if(
-      documentId === null ||
-      documentId === undefined ||
-      typeof documentId !== "string"){
-        throw new Error("Document id missing or is of incorrect type. Document type must be of type string"
-        }
-    
+    if (documentId === null || documentId === undefined || typeof documentId !== "string") {
+      throw new Error("Document id missing or is of incorrect type. Document type must be of type string");
+    }
+
     const documentRef = doc(this.#database, this.#collectionName, documentId);
     await deleteDoc(documentRef);
     return true;
