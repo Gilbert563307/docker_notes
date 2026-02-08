@@ -45,7 +45,6 @@ export class DriveFileDto {
     return this.#folder_id;
   }
 
-  
   getUserUId() {
     return this.#user_uid;
   }
@@ -63,11 +62,29 @@ export class DriveFileDto {
   }
 
   getCreatedAt() {
-    return this.#created_at.toLocaleString();
+    return this.#created_at;
   }
 
   getUpdatedAt() {
-    return this.#updated_at.toLocaleString();
+    return this.#updated_at;
+  }
+
+  /**
+   *
+   * @returns {string}
+   */
+  getUserLocaleCreatedAt() {
+    if (!this.#created_at) return "";
+    return this.#created_at.toDate().toLocaleString();
+  }
+
+  /**
+   *
+   * @returns {string}
+   */
+  getUserLocaleUpdatedAt() {
+    if (!this.#updated_at) return "";
+    return this.#updated_at.toDate().toLocaleString();
   }
 
   /** Return object representation */

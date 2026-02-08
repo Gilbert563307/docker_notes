@@ -3,7 +3,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import BS5TruncateSpan from "../../../../shared/presentation/components/bs5/BS5TruncateSpan";
 import ArchiveFolderButton from "./ArchiveFolderButton";
-import { FolderDto } from "../../application/dto/FolderDto";
+import { FolderDto } from "../../domain/dto/FolderDto";
 
 /**
  *

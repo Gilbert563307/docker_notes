@@ -1,6 +1,6 @@
 import React from 'react'
 import RepositoryTableRow from './RepositoryTableRow';
-import { DriveFileDto } from '../../application/dto/DriveFileDto';
+import { DriveFileDto } from '../../domain/dto/DriveFileDto';
 
 
 /**

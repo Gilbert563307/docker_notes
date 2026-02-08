@@ -1,5 +1,5 @@
 import { Folder } from "../../domain/Folder";
-import { FolderDto } from "../dto/FolderDto";
+import { FolderDto } from "../../domain/dto/FolderDto";
 
 export class FoldersMapper {
 

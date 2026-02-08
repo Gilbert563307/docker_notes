@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import "../../css/UpdateFolderComponent.css";
 import DeleteFolderButton from "./DeleteFolderButton";
 import { FOLDERS_CONTROLLER_ACTIONS } from "../../presentation/FoldersController";
-import { FolderDto } from "../../application/dto/FolderDto";
+import { FolderDto } from "../../domain/dto/FolderDto";
 import { UpdateFolderDto } from "../../presentation/dto/UpdateFolderDto";
 
 /**

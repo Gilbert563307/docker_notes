@@ -167,9 +167,10 @@ export default function TasksController() {
     // Update state with the created task response
     setNotificationToState(taskCreated.notificationDto);
 
-    //reftech tasks afte creating one
-    //TODO get state and remogve that task with that uuid no need to refesh or make all to api
-    // await refreshTasksList(); //REMOVED BECAUSEWHEN U NAVIGATE TO TASKS THE TASKS IS ALLREADY THERE
+    //refresh tasks after creating one
+    // WHE REFRESH THE TASKS LIST BECAUSE WHEN SAVING TIME STAMP TS IN FIREBASE THAT TAKES UP C CERTAIN TIME
+    // SO OF THE USER IS ON THE /tasks page the date are undefined
+    await refreshTasksList(); 
 
     //navugate to tasks page
     navigate("/tasks");
@@ -323,7 +324,7 @@ export default function TasksController() {
           closeAlert();
           break;
         default:
-          //TODO FIND A LOGGER 
+          //TODO FIND A LOGGER
           console.log(`TasksController: No action type found ${action.type}`);
           break;
       }

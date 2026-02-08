@@ -1,3 +1,3 @@
-import { FolderDto } from "../../application/dto/FolderDto";
+import { FolderDto } from "../../domain/dto/FolderDto";
 
 export class UpdateFolderDto extends FolderDto {}

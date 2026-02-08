@@ -1,4 +1,4 @@
-import { Timestamp } from "firebase/firestore";
+import { FieldValue } from "firebase/firestore";
 import { ALLOWED_UPLOAD_FILE_TYPES } from "../../../config";
 
 export class DriveFile {
@@ -21,8 +21,8 @@ export class DriveFile {
    * @param {number} size
    * @param {string} type
    * @param {boolean} archived
-   * @param {Timestamp} created_at
-   * @param {Timestamp} updated_at
+   * @param {FieldValue} created_at
+   * @param {FieldValue} updated_at
    */
   constructor(id, name, folder_id, user_uid, size, type, archived, created_at, updated_at) {
     this.#validate({

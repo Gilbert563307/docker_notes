@@ -1,12 +1,9 @@
 import React from "react";
 import { ALERT_TYPES } from "../../presentation/components/bs5/BS5Alert";
 import { asBlob } from "html-docx-js-typescript";
-import { Query } from "firebase/firestore";
 import { DEFAULT_FILES_ARCHIVE, FILES_ARCHIVED_SESSION_FILTER, MAX_FOLDERS_TO_FETCH } from "../../../config";
 import useHelpers from "../../helpers/useHelpers";
-import FirebaseInterface from "../../data/FirebaseInterface";
 import { NotificationDto } from "../../../features/notification/application/dto/NotificationDto";
-import FoldersService from "../../../features/drive/application/service/FoldersService";
 import { UploadFilesDto } from "../../../features/drive/presentation/dto/UploadFilesDto";
 import { ListFilesBySearchTermDto } from "../../../features/drive/presentation/dto/ListFilesBySearchTermDto";
 import { DownloadFileDto } from "../../../features/drive/presentation/dto/DownloadFileDto";
@@ -16,137 +13,87 @@ import { DriveFile } from "../../../features/drive/domain/DriveFile";
 import { DriveFilesMapper } from "../../../features/drive/application/mapper/DriveFilesMapper";
 import { ArchiveFileDto } from "../../../features/drive/presentation/dto/ArchiveFileDto";
 import { FoldersMapper } from "../../../features/drive/application/mapper/FoldersMapper";
+import { db } from "../../../database/firebaseConfig";
+import { CollectionManager } from "../../../firebase_entity_manager/CollectionManager";
+import FirebaseInterfaceV2 from "../../data/FirebaseInterfaceV2";
+import { FilesQueries } from "../../../features/drive/domain/FilesQueries";
+import { GetFilesQueryClausesDto } from "../../../features/drive/domain/dto/GetFilesQueryClausesDto";
+import { ListFilesDto } from "../../../features/drive/domain/dto/ListFilesDto";
+
+const collectionManager = new CollectionManager("files", db);
 
 export default function FilesService() {
-  const {
-    getTheCurrentItemsPerPage,
-    userUid,
-    where,
-    orderBy,
-    getSearchQueryByFieldName,
-    query,
-    collectionRef,
-    limit,
-    getDocs,
-    convertQuerySnapShotDocs,
-    getCountFromServer,
-    getTotalPages,
-    writeBatch,
-    db,
-    doc,
-    table,
-    updateDoc,
-    BACKEND_URL,
-    X_TOKEN,
-    deleteDoc,
-    currentServerTimestamp,
-    fetchResultsOnPageOne,
-    fetchPaginatedResults,
-    getTable,
-  } = FirebaseInterface({ table: "files" });
-
-  const { getSessionFilter, getCurrentPageNumber } = useHelpers();
+  const { getSessionFilter, getCurrentPageNumber, getTotalPages, getTheCurrentItemsPerPage } = useHelpers();
+  const { userUid, BACKEND_URL, X_TOKEN } = FirebaseInterfaceV2();
 
   /**
-   * @param {{searchTearm?: string, folderId?: string}} payload
-   * @returns {{queryItems: Array<any> }}
+   * @param {GetFilesQueryClausesDto} payload
+   * @returns {Array<any>}
    */
   function getFilesQueryClauses(payload) {
     const archived = getSessionFilter(FILES_ARCHIVED_SESSION_FILTER) || DEFAULT_FILES_ARCHIVE;
 
-    let queryItems = [
-      where("user_uid", "==", userUid),
-      where("archived", "==", archived),
-      orderBy("created_at", "desc"),
+    const baseQueryItems = [
+      collectionManager.whereQuery("user_uid", "==", userUid),
+      collectionManager.whereQuery("archived", "==", archived),
+      collectionManager.orderByQuery("created_at", "desc"),
     ];
 
-    if (payload && payload.searchTearm && payload.searchTearm != "") {
-      const { searchTearm } = payload;
-      queryItems = [...queryItems, ...getSearchQueryByFieldName("name", searchTearm)];
+    //todo make these if statements domain LOGIC
+    const filesQueries = new FilesQueries(baseQueryItems);
+
+    const searchTearm = payload.getSearchTerm();
+    if (searchTearm && searchTearm != "") {
+      filesQueries.addQueryItem(collectionManager.getSearchQueryBeforeFieldName("name", searchTearm));
+      filesQueries.addQueryItem(collectionManager.getSearchQueryAfterFieldName("name", searchTearm));
     }
 
-    if (payload && payload.folderId && payload.folderId != "") {
-      const { folderId } = payload;
-      queryItems = [...queryItems, where("folder_id", "==", folderId)];
+    const folderId = payload.getFolderId();
+    if (folderId && folderId != "") {
+      filesQueries.addQueryItem(collectionManager.whereQuery("folder_id", "==", folderId));
     }
-
-    return {
-      queryItems: queryItems,
-    };
+    return filesQueries.getQueryItems();
   }
 
   /**
    * Generates a Firestore query to fetch tasks for the current page.
    *
-   *@param {{currentPage: number, itemsPerPage?: number, searchTearm?: string }} payload
-   * @returns {Promise<{resultsQuery: Query | null, notificationDto: NotificationDto}>} The Firestore query to fetch tasks for the specified page.
+   *@param {ListFilesDto} payload
+   * @returns {Promise<Array<Object>>} The Firestore query to fetch tasks for the specified page.
    */
-  async function getFilesTasksQuery(payload) {
-    try {
-      // Destructure the vars
-      const { currentPage } = payload;
+  async function getFilesByQuery(payload) {
+    const queryItems = getFilesQueryClauses(new GetFilesQueryClausesDto(payload.getSearchTerm()));
 
-      // Get the number of items to be displayed per page
-      const itemsPerPage = getTheCurrentItemsPerPage();
-      const { queryItems } = getFilesQueryClauses(payload);
-
-      // If the current page is the first page, create a query limited by the items per page
-      if (currentPage === 1) {
-        const { resultsQuery, message, type } = fetchResultsOnPageOne(queryItems, itemsPerPage);
-        return {
-          resultsQuery: resultsQuery,
-          notificationDto: new NotificationDto(message, type),
-        };
-      }
-      const { resultsQuery, message, type } = await fetchPaginatedResults(
-        currentPage,
-        payload,
-        itemsPerPage,
-        queryItems,
-      );
-      return {
-        resultsQuery: resultsQuery,
-        notificationDto: new NotificationDto(message, type),
-      };
-    } catch (error) {
-      return {
-        resultsQuery: null,
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
-      };
-    }
-  }
-
-  async function getTotalTasksInDatabaseByUserAndFilters() {
-    try {
-      const { queryItems } = getFilesQueryClauses({ searchTearm: "" });
-
-      const totalQuery = query(collectionRef, ...queryItems);
-      const totalRecordsSnapShot = await getCountFromServer(totalQuery);
-      const totalRecords = totalRecordsSnapShot.data().count;
-      return totalRecords;
-    } catch (error) {
-      return 0;
-    }
+    return await collectionManager.getPaginatedDocumentsByQueryItems(
+      queryItems,
+      payload.getCurrentPage(),
+      payload.getItemsPerPage(),
+    );
   }
 
   /**
    *
-   * @param {{ currentPage: number, itemsPerPage?: number, searchTearm?: string, folderId?: string }} payload
+   * @param {ListFilesDto} payload
+   */
+  async function getTotalTasksInDatabaseByUserAndFilters(payload) {
+    const queryItems = getFilesQueryClauses(new GetFilesQueryClausesDto(payload.getSearchTerm()));
+    return await collectionManager.countDocumentsByQuery(queryItems);
+  }
+
+  /**
+   *
+   * @param {ListFilesDto} payload
    * @returns {Promise<{results: import("../../../types/types").FilesResponse,  notificationDto: NotificationDto }>}
    */
   async function _listFiles(payload) {
     try {
       // Construct the query to get all tasks for the current user UID with a
-      const { resultsQuery } = await getFilesTasksQuery(payload);
+      const files = await getFilesByQuery(payload);
 
-      // Execute the query to get the files.
-      const querySnapshot = await getDocs(resultsQuery);
-
-      const { results } = convertQuerySnapShotDocs(querySnapshot);
-      const driveFilesDto = DriveFilesMapper.arrayToDtoList(results);
+      const driveFilesDto = DriveFilesMapper.arrayToDtoList(files);
 
       //get total records for pagination
-      const totalRecords = await getTotalTasksInDatabaseByUserAndFilters();
+      const totalRecords = await getTotalTasksInDatabaseByUserAndFilters(payload);
       //get total pages for pagination
       const totalPages = getTotalPages(totalRecords);
 
@@ -181,7 +128,7 @@ export default function FilesService() {
   }
 
   /**
-   *
+   * TODO ADD T
    * @param {{description: string, filename: string}} payload
    * @returns {Promise<{downloaded: Boolean, notificationDto: NotificationDto}>}
    */
@@ -281,9 +228,8 @@ export default function FilesService() {
    */
   async function updateDocRefIfExists(fileName) {
     try {
-      const checkFileQuery = query(collectionRef, where("name", "==", fileName));
-      const querySnapshot = await getDocs(checkFileQuery);
-      const { results } = convertQuerySnapShotDocs(querySnapshot);
+      const checkFileQueries = [collectionManager.whereQuery("name", "==", fileName)];
+      const results = await collectionManager.getAllDocumentsByQuery(checkFileQueries);
 
       const updates = [];
       let documentUpdated = "";
@@ -300,11 +246,11 @@ export default function FilesService() {
             document.type,
             document.archived,
             document.created_at,
-            currentServerTimestamp,
+            collectionManager.getCurrentServerTimestamp(),
           );
           // Only update if data has changed
-          const docRef = doc(db, table, driveFile.getId());
-          updates.push(updateDoc(docRef, driveFile.toJsonWithoutId()));
+          const update = collectionManager.updateDocument(driveFile.getId(), driveFile.toJsonWithoutId());
+          updates.push(update);
         }
       });
       // Wait for all updates to complete
@@ -330,6 +276,7 @@ export default function FilesService() {
    * @returns {Array<DriveFile>}
    */
   function getDriveFilesToUpload(payload) {
+    const currentServerTimestamp = collectionManager.getCurrentServerTimestamp();
     return payload.getFiles().map((file) => {
       return new DriveFile(
         "",
@@ -360,7 +307,7 @@ export default function FilesService() {
       if (!uploadedToServer.uploaded) return uploadedToServer;
 
       // Create a batch write operation
-      const batch = writeBatch(db);
+      const batch = collectionManager.createBatchOperation();
 
       //check if the file already exits in firebase
       //update the updated_at only do not save the entire file as a newly addec collection in firebase
@@ -375,7 +322,7 @@ export default function FilesService() {
       //loop through data to  get the filename
       payloadToSave.forEach((driveFile) => {
         //create doc ref
-        const docRef = doc(collectionRef);
+        const docRef = collectionManager.createDocumentReference();
         batch.set(docRef, driveFile.toJsonWithoutId());
       });
 
@@ -401,17 +348,13 @@ export default function FilesService() {
    */
   async function archiveFile(payload) {
     try {
+      //TODO REWRITE TO USE DOMAIN BECAUSE CREATING AN OBJECT HERE IS A DIRTY FIX
       //manualy updated the updated_at & archive do not use drive domain here because that is unnecessary for performance
-      const updatedPayload = { id: payload.getId(), archived: true, updated_at: currentServerTimestamp };
+      const updatedPayload = { archived: true, updated_at: collectionManager.getCurrentServerTimestamp() };
 
-      //get document
-      const file = doc(db, table, payload.getId());
-
-      //update document
-      await updateDoc(file, updatedPayload);
-
+      const archived = await collectionManager.updateDocument(payload.getId(), updatedPayload);
       return {
-        archived: true,
+        archived: archived,
         notificationDto: new NotificationDto("Your file has been successfully been archived", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
@@ -484,8 +427,7 @@ export default function FilesService() {
         new DeleteFileFromBackendServerDto(userUid, payload.getFilename()),
       );
       if (!deletedFromServer.deleted) return deletedFromServer;
-      const fileRTef = doc(db, table, payload.getId());
-      await deleteDoc(fileRTef);
+      await collectionManager.deleteDocument(payload.getId());
 
       return {
         deleted: true,
@@ -549,30 +491,41 @@ export default function FilesService() {
     }
   }
 
+  /**
+   *
+   * @param {ListFilesBySearchTermDto} payload
+   * @returns
+   */
   async function listFilesBySearchTerm(payload) {
-    return await _listFiles({ currentPage: getCurrentPageNumber(), searchTearm: payload.getSearchTerm() });
+    return await _listFiles(
+      new ListFilesDto(getCurrentPageNumber(), getTheCurrentItemsPerPage(), payload.getSearchTerm(), null),
+    );
   }
 
+  /**
+   *
+   * @param {string} folderId
+   * @returns
+   */
   async function listFilesByFolderId(folderId) {
-    return await _listFiles({ currentPage: getCurrentPageNumber(), folderId: folderId });
+    return await _listFiles(new ListFilesDto(getCurrentPageNumber(), getTheCurrentItemsPerPage(), "", folderId));
   }
 
   async function getDriveFolders() {
     try {
-      const foldersQuery = query(
-        getTable("folders"),
-        where("user_uid", "==", userUid),
-        orderBy("created_at", "desc"),
-        limit(MAX_FOLDERS_TO_FETCH),
-      );
+      const foldersQueriesItems = [
+        collectionManager.whereQuery("user_uid", "==", userUid),
+        collectionManager.orderByQuery("created_at", "desc"),
+        collectionManager.limitByQuery(MAX_FOLDERS_TO_FETCH),
+      ];
 
-      const querySnapshot = await getDocs(foldersQuery);
+      const query = collectionManager.createQueryByGivenCollectionName("folders", foldersQueriesItems);
+      const results = await collectionManager.getDocumentsByQuery(query);
 
-      const response = convertQuerySnapShotDocs(querySnapshot);
-      const foldersDtos = FoldersMapper.arrayToDtoList(response.results);
+      const foldersDtos = FoldersMapper.arrayToDtoList(results);
       return {
         folders: foldersDtos,
-        notificationDto: new NotificationDto(response.message, ALERT_TYPES.SUCCESS),
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       return {
@@ -583,7 +536,7 @@ export default function FilesService() {
   }
 
   async function listDriveFiles() {
-    return await _listFiles({ currentPage: getCurrentPageNumber() });
+    return await _listFiles(new ListFilesDto(getCurrentPageNumber(), getTheCurrentItemsPerPage(), null, null));
   }
 
   return {

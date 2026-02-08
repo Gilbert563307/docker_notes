@@ -2,10 +2,9 @@ import { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 
 import FoldersService from "../application/service/FoldersService";
-import useHelpers from "../../../shared/helpers/useHelpers";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
-import { FolderDto } from "../application/dto/FolderDto";
-import { DriveFileDto } from "../application/dto/DriveFileDto";
+import { FolderDto } from "../domain/dto/FolderDto";
+import { DriveFileDto } from "../domain/dto/DriveFileDto";
 import { NotificationDto } from "../../notification/application/dto/NotificationDto";
 import { CreateFolderDto } from "./dto/CreateFolderDto";
 import { UpdateFolderDto } from "./dto/UpdateFolderDto";
@@ -97,7 +96,7 @@ export default function FoldersController() {
   /**
    * Reducer function for managing state changes.
    * @param {InitialState} state - Current state.
-   * @param {Object} action - Action object containing type and payload.
+   * @param {{type: string, payload: any}} action - Action object containing type and payload.
    * @returns {Object} - Updated state.
    */
   function reducer(state, action) {

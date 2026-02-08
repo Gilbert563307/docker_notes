@@ -1,4 +1,3 @@
-import React from "react";
 import {
   ALLOWED_ITEMS_PER_PAGE,
   DEFAULT_ITEMS_PER_PAGE,
@@ -280,7 +279,6 @@ export default function useHelpers() {
     const pages = (totalRecords + size - 1) / size;
     return parseInt(pages);
   }
-
 
   return {
     getTotalPages,

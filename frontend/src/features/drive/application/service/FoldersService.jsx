@@ -5,16 +5,16 @@ import useHelpers from "../../../../shared/helpers/useHelpers";
 import { NotificationDto } from "../../../notification/application/dto/NotificationDto";
 import FilesService from "../../../../shared/application/service/FilesService";
 import { FoldersMapper } from "../mapper/FoldersMapper";
-import { FolderDto } from "../dto/FolderDto";
+import { FolderDto } from "../../domain/dto/FolderDto";
 import { CreateFolderDto } from "../../presentation/dto/CreateFolderDto";
 import { Folder } from "../../domain/Folder";
 import { ArchiveFolderDto } from "../../presentation/dto/ArchiveFolderDto";
 import { CollectionManager } from "../../../../firebase_entity_manager/CollectionManager";
 import { db } from "../../../../database/firebaseConfig";
-import { GetFoldersQueryClauses } from "../dto/GetFoldersQueryClausesDto";
+import { GetFoldersQueryClauses } from "../../domain/dto/GetFoldersQueryClausesDto";
 import FirebaseInterfaceV2 from "../../../../shared/data/FirebaseInterfaceV2";
 import { FoldersQueries } from "../../domain/FoldersQueries";
-import { GetFoldersDto } from "../dto/GetFoldersDto";
+import { GetFoldersDto } from "../../domain/dto/GetFoldersDto";
 
 const initialFolderDto = new FolderDto(null, null, null, null, null, null, null);
 

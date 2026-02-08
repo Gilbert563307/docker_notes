@@ -60,6 +60,7 @@ export class FolderDto {
    * @returns {string}
    */
   getUserLocaleCreatedAt() {
+    if (!this.#created_at) return "";
     return this.#created_at.toDate().toLocaleString();
   }
 
@@ -68,7 +69,8 @@ export class FolderDto {
    * @returns {string}
    */
   getUserLocaleUpdatedAt() {
-    return this.#created_at.toDate().toLocaleString();
+    if (!this.#updated_at) return "";
+    return this.#updated_at.toDate().toLocaleString();
   }
 
   /** Return object representation */

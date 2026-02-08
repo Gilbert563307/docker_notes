@@ -1,15 +1,17 @@
-export class ListTasksDto {
+export class ListFilesDto {
   #currentPage;
   #itemsPerPage;
   #searchTerm;
+  #folderId;
 
   /**
    *
    * @param {number} currentPage
    * @param {number} [itemsPerPage]
    * @param {string} [searchTerm]
+   * @param {string} [folderId]
    */
-  constructor(currentPage, itemsPerPage, searchTerm) {
+  constructor(currentPage, itemsPerPage, searchTerm, folderId) {
     //validate
     if (currentPage === null || currentPage === undefined) {
       throw new Error("Current page is missing");
@@ -18,6 +20,7 @@ export class ListTasksDto {
     this.#currentPage = currentPage;
     this.#itemsPerPage = itemsPerPage;
     this.#searchTerm = searchTerm;
+    this.#folderId = folderId;
   }
 
   getCurrentPage() {
@@ -30,5 +33,9 @@ export class ListTasksDto {
 
   getSearchTerm() {
     return this.#searchTerm;
+  }
+
+  getFolderId() {
+    return this.#folderId;
   }
 }

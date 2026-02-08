@@ -1,11 +1,10 @@
 import React, { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import FilesService from "../../../shared/application/service/FilesService";
-import useHelpers from "../../../shared/helpers/useHelpers";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
 import { NotificationDto } from "../../notification/application/dto/NotificationDto";
-import { DriveFileDto } from "../application/dto/DriveFileDto";
-import { FolderDto } from "../application/dto/FolderDto";
+import { DriveFileDto } from "../domain/dto/DriveFileDto";
+import { FolderDto } from "../domain/dto/FolderDto";
 import { UploadFilesDto } from "./dto/UploadFilesDto";
 import { ArchiveFileDto } from "./dto/ArchiveFileDto";
 import { DeleteFileDto } from "./dto/DeleteFileDto";
@@ -20,8 +19,7 @@ import { ALERT_TYPES } from "../../../shared/presentation/components/bs5/BS5Aler
  * @property {Array<FolderDto> } folders
  */
 
-const initialDriveFileDto = new DriveFileDto(null, null, null, null, null, null, null, null);
-const initialFolderDto = new FolderDto(null, null, null, null, null, null, null);
+const initialDriveFileDto = new DriveFileDto(null, null, null, null, null, null, null, null, null);
 
 /**
  * @type {InitialState}
@@ -101,7 +99,7 @@ export default function DriveController() {
   /**
    * Reducer function for managing state changes.
    * @param {InitialState} state - Current state.
-   * @param {Object} action - Action object containing type and payload.
+   * @param {{type: string, payload: any}} action - Action object containing type and payload.
    * @returns {Object} - Updated state.
    */
   function reducer(state, action) {

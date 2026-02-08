@@ -1,9 +1,8 @@
 import React from 'react'
 import { TaskDto } from '../features/kanboard/application/dto/TaskDto';
-import { DriveFileDto } from '../features/drive/application/dto/DriveFileDto';
+import { DriveFileDto } from '../features/drive/domain/dto/DriveFileDto';
 
 //TODO change to reporter_id in FUTURE
-
 
 /**
  * 
@@ -35,7 +34,6 @@ import { DriveFileDto } from '../features/drive/application/dto/DriveFileDto';
  * @typedef {Array<TaskBoardHeader>} TaskBoardHeaders 
  */
 
-
 /**
  * @typedef {Object} Folder
  * @property {string} id
@@ -54,28 +52,11 @@ import { DriveFileDto } from '../features/drive/application/dto/DriveFileDto';
 
 /**
  * 
- * @typedef {Object} Session 
- * @property {string} [id] 
- * @property {string} user_uid 
- * @property {string} token 
- * @property {string | any} expire_date 
- * @property {string} created_at
- * @property {string} updated_at
- */
-
-/**
- * 
- * @typedef {Array<Session>} Sessions
- */
-
-/**
- * 
  * @typedef {Object} FilesResponse
  * @property {Array<DriveFileDto>} files
  * @property {number} total
  * @property {number} pages
  */
-
 
 export default function types() {
     return null;

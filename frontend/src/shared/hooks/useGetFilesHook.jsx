@@ -2,7 +2,7 @@ import React from 'react'
 
 import usePaginationHook from './usePaginationHook';
 import { DRIVE_CONTROLLER_ACTIONS, useDriveControllerContext } from '../../features/drive/presentation/DriveController';
-import { DriveFileDto } from '../../features/drive/application/dto/DriveFileDto';
+import { DriveFileDto } from '../../features/drive/domain/dto/DriveFileDto';
 
 /**
  * 

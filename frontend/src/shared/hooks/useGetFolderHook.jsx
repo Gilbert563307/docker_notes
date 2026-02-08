@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { FOLDERS_CONTROLLER_ACTIONS, useFoldersControllerContext } from "../../features/drive/presentation/FoldersController";
-import { FolderDto } from "../../features/drive/application/dto/FolderDto";
+import { FolderDto } from "../../features/drive/domain/dto/FolderDto";
 
 /**
  *

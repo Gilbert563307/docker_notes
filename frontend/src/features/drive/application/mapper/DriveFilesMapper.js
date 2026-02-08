@@ -1,5 +1,5 @@
 import { DriveFile } from "../../domain/DriveFile";
-import { DriveFileDto } from "../dto/DriveFileDto";
+import { DriveFileDto } from "../../domain/dto/DriveFileDto";
 
 export class DriveFilesMapper {
     /**

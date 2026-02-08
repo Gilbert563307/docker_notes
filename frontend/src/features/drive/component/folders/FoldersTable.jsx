@@ -1,6 +1,6 @@
 import React from "react";
 import FoldersTableRow from "./FoldersTableRow";
-import { FolderDto } from "../../application/dto/FolderDto";
+import { FolderDto } from "../../domain/dto/FolderDto";
 
 /**
  *

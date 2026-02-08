@@ -5,7 +5,7 @@ import BS5TruncateSpan from "../../../../shared/presentation/components/bs5/BS5T
 import DeleteFileButton from "./buttons/DeleteFileButton";
 import { DRIVE_CONTROLLER_ACTIONS, useDriveControllerContext } from "../../presentation/DriveController";
 import { DownloadFileDto } from "../../presentation/dto/DownloadFileDto";
-import { DriveFileDto } from "../../application/dto/DriveFileDto";
+import { DriveFileDto } from "../../domain/dto/DriveFileDto";
 import ArchiveFileButton from "./buttons/ArchiveFileButton";
 
 /**
@@ -34,8 +34,8 @@ export default function RepositoryTableRow({ file }) {
       <td>
         <BS5TruncateSpan content={file.getName()} maxWidthToSet="350px" />
       </td>
-      <td>{file.getCreatedAt()}</td>
-      <td>{file.getUpdatedAt()}</td>
+      <td>{file.getUserLocaleCreatedAt()}</td>
+      <td>{file.getUserLocaleUpdatedAt()}</td>
       <td className="main-table-actions">
         <button>
           <i className="fa-light fa-download" onClick={downloadFile}></i>
