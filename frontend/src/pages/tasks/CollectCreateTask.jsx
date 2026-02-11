@@ -79,7 +79,7 @@ export default function CollectCreateTask() {
         </div>
         {/* end description  */}
 
-        <div className="bottoom-options">
+        <div className="bottom-options">
           <DrodownOptions
             statusDropDownRef={statusDropDownRef}
             priorityDropDownRef={priorityDropDownRef}
