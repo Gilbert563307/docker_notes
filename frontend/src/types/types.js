@@ -34,21 +34,6 @@ import { DriveFileDto } from '../features/drive/domain/dto/DriveFileDto';
  * @typedef {Array<TaskBoardHeader>} TaskBoardHeaders 
  */
 
-/**
- * @typedef {Object} Folder
- * @property {string} id
- * @property {string} user_uid
- * @property {string} name
- * @property {string} color
- * @property {boolean} archived
- * @property {string} created_at
- * @property {string} updated_at
- */
-
-/**
- * 
- * @typedef {Array<Folder>} Folders 
- */
 
 /**
  * 

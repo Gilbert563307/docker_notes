@@ -1,6 +1,6 @@
 import React from "react";
 import { ALERT_TYPES } from "../../../shared/presentation/components/bs5/BS5Alert";
-import { auth, googleProvider, githubProvider } from "../../../database/firebaseConfig";
+import { auth, googleProvider, githubProvider, db } from "../../../database/firebaseConfig";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { SHA256 } from "crypto-js";
 import SessionService from "./SessionService";
@@ -8,8 +8,11 @@ import { NotificationDto } from "../../notification/application/dto/Notification
 import { UserDto } from "../application/dto/UserDto";
 import { User } from "../domain/User";
 import { UserMapper } from "../application/mapper/UserMapper";
+import { CollectionManager } from "../../../firebase_entity_manager/CollectionManager";
+import { AuditDto } from "../../audit/domain/dto/AuditDto";
 
 const initialStateUser = new UserDto(null, null, null, null, null);
+const collectionManager = new CollectionManager("audit", db);
 export default function AuthService() {
   const { createSession } = SessionService();
 
@@ -47,6 +50,15 @@ export default function AuthService() {
         notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
+      //audit the error
+      collectionManager.createDocument(
+        new AuditDto(
+          null,
+          "AuthService",
+          error.message,
+          collectionManager.getCurrentServerTimestamp(),
+          collectionManager.getCurrentServerTimestamp()
+        ).toJsonWithoutId());
       return {
         user: initialStateUser,
         login: false,
