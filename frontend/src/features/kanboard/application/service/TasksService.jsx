@@ -81,6 +81,21 @@ export default function TasksService() {
         currentServerTimestamp,
       );
 
+      //TODO THINK IF WE NEED BUILDER PATTERN IN FUTURE
+      // const task = new Task.Builder()
+      //   .projectId(payload.getProjectId() || DEFAULT_PROJECT_ID.toString())
+      //   .userUid(userUid)
+      //   .title(payload.getTitle())
+      //   .description(payload.getDescription() || "")
+      //   .status(payload.getStatus() || TASKS_STATUS.TODO)
+      //   .priority(payload.getPriority() || TASKS_PRIORITY.LOW)
+      //   .assignee(new Assignee(user.getDisplayName(), user.getUid()))
+      //   .reporter(new Reporter(user.getDisplayName(), user.getUid()))
+      //   .archived(false)
+      //   .createdAt(currentServerTimestamp)
+      //   .updatedAt(currentServerTimestamp)
+      //   .build();
+
       // Attempt to add the document to the collection
       collectionManager.createDocument(task.toJsonWithoutId());
 

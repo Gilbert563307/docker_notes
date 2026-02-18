@@ -77,6 +77,106 @@ export class Task {
     this.#updated_at = updated_at;
   }
 
+  // /**
+  //  *
+  //  * @param {*} builder
+  //  */
+  // Task(builder) {
+  //   this.#id = builder.id;
+  // }
+
+  // static Builder = class {
+  //   #id;
+  //   #project_id;
+  //   #user_uid;
+  //   #title;
+  //   #description = "";
+  //   #status = TASKS_STATUS.TODO;
+  //   #priority = TASKS_PRIORITY.LOW;
+  //   #assignee;
+  //   #reporter;
+  //   #archived = false;
+  //   #created_at;
+  //   #updated_at;
+
+  //   id(value) {
+  //     this.#id = value;
+  //     return this;
+  //   }
+
+  //   projectId(value) {
+  //     this.#project_id = value;
+  //     return this;
+  //   }
+
+  //   userUid(value) {
+  //     this.#user_uid = value;
+  //     return this;
+  //   }
+
+  //   title(value) {
+  //     this.#title = value;
+  //     return this;
+  //   }
+
+  //   description(value) {
+  //     this.#description = value;
+  //     return this;
+  //   }
+
+  //   status(value) {
+  //     this.#status = value;
+  //     return this;
+  //   }
+
+  //   priority(value) {
+  //     this.#priority = value;
+  //     return this;
+  //   }
+
+  //   assignee(value) {
+  //     this.#assignee = value;
+  //     return this;
+  //   }
+
+  //   reporter(value) {
+  //     this.#reporter = value;
+  //     return this;
+  //   }
+
+  //   archived(value) {
+  //     this.#archived = value;
+  //     return this;
+  //   }
+
+  //   createdAt(value) {
+  //     this.#created_at = value;
+  //     return this;
+  //   }
+
+  //   updatedAt(value) {
+  //     this.#updated_at = value;
+  //     return this;
+  //   }
+
+  //   build() {
+  //     return new Task(
+  //       this.#id,
+  //       this.#project_id,
+  //       this.#user_uid,
+  //       this.#title,
+  //       this.#description,
+  //       this.#status,
+  //       this.#priority,
+  //       this.#assignee,
+  //       this.#reporter,
+  //       this.#archived,
+  //       this.#created_at,
+  //       this.#updated_at,
+  //     );
+  //   }
+  // };
+
   // ===== Getters =====
   getId() {
     return this.#id;
