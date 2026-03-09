@@ -36,23 +36,17 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
    * @returns {Promise<Object>}
    */
   async readDocument(documentId) {
-    if (documentId === null || documentId === undefined || typeof documentId !== "string") {
-      throw new Error("Document id missing or is of incorrect type. Document type must be of type string");
-    }
+    return await this.#readDocument(this.#database, this.#collectionName, documentId);
+  }
 
-    // Get a reference to the document in the database
-    const reference = doc(this.#database, this.#collectionName, documentId);
-
-    // Fetch the document snapshot
-    const snapshot = await getDoc(reference);
-
-    // Check if the document exists
-    if (!snapshot.exists()) {
-      throw new Error("An error occurred while fetching the document.");
-    }
-
-    // Get the document data and assign document id to it also
-    return { ...snapshot.data(), id: documentId };
+  /**
+   *
+   * @param {string} collectionName
+   * @param {string} documentId
+   * @returns {Promise<Object>}
+   */
+  async readDocumentFromCollection(collectionName, documentId) {
+    return await this.#readDocument(this.#database, collectionName, documentId);
   }
 
   /**
@@ -85,5 +79,32 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
     const documentRef = doc(this.#database, this.#collectionName, documentId);
     await deleteDoc(documentRef);
     return true;
+  }
+
+  /**
+   *
+   * @param {Firestore} database
+   * @param {string} collectionName
+   * @param {string} documentId
+   * @returns
+   */
+  async #readDocument(database, collectionName, documentId) {
+    if (documentId === null || documentId === undefined || typeof documentId !== "string") {
+      throw new Error("Document id missing or is of incorrect type. Document type must be of type string");
+    }
+
+    // Get a reference to the document in the database
+    const reference = doc(database, collectionName, documentId);
+
+    // Fetch the document snapshot
+    const snapshot = await getDoc(reference);
+
+    // Check if the document exists
+    if (!snapshot.exists()) {
+      throw new Error("An error occurred while fetching the document.");
+    }
+
+    // Get the document data and assign document id to it also
+    return { ...snapshot.data(), id: documentId };
   }
 }

@@ -12,6 +12,7 @@ export class TaskDto {
   #assignee;
   #reporter;
   #archived;
+  #projectName = "";
   #created_at;
   #updated_at;
 
@@ -27,6 +28,7 @@ export class TaskDto {
    * @param {AssigneeDto} assignee - The assignee of the task with name and unique identifier.
    * @param {ReporterDto} reporter - The reporter of the task with name and unique identifier.
    * @param {Boolean} archived - The archived status.
+   * @param {string} projectName - The project name where the task belongs to.
    * @param {Date | string} created_at - The timestamp when the task was created.
    * @param {Date | string} updated_at - The timestamp when the task was last updated.
    */
@@ -41,6 +43,7 @@ export class TaskDto {
     assignee,
     reporter,
     archived,
+    projectName,
     created_at,
     updated_at,
   ) {
@@ -54,6 +57,7 @@ export class TaskDto {
     this.#assignee = assignee;
     this.#reporter = reporter;
     this.#archived = archived;
+    this.#projectName = projectName;
     this.#created_at = created_at;
     this.#updated_at = updated_at;
   }
@@ -146,6 +150,10 @@ export class TaskDto {
   getUserLocaleUpdatedAt() {
     if (!this.#updated_at) return "";
     return this.#updated_at.toDate().toLocaleString();
+  }
+
+  getProjectName(){
+    return this.#projectName;
   }
 
   toJson() {

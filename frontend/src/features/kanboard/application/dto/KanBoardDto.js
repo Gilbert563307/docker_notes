@@ -5,6 +5,7 @@ export class KanBoardDto {
   #color;
   #archived;
   #collaborative;
+  #imageUrl;
   #created_at;
   #updated_at;
 
@@ -27,6 +28,7 @@ export class KanBoardDto {
     color,
     archived,
     collaborative,
+    imageUrl,
     created_at,
     updated_at,
   ) {
@@ -36,6 +38,7 @@ export class KanBoardDto {
     this.#color = color;
     this.#archived = archived;
     this.#collaborative = collaborative;
+    this.#imageUrl = imageUrl;
     this.#created_at = created_at;
     this.#updated_at = updated_at;
   }
@@ -68,6 +71,10 @@ export class KanBoardDto {
   /** @returns {boolean} Collaborative state */
   getIsCollaborative() {
     return this.#collaborative;
+  }
+
+  getImageUrl(){
+    return this.#imageUrl;
   }
 
   /** @returns {string} Formatted creation date */

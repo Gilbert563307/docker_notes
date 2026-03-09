@@ -20,7 +20,7 @@ export class TasksMapper {
    * @param {Object} task
    * @returns {TaskDto}
    */
-  static toDto(task) {
+  static toDto(task,) {
     return new TaskDto(
       task.id,
       task.project_id,
@@ -32,6 +32,7 @@ export class TasksMapper {
       new AssigneeDto(task.assignee.name, task.assignee.assignee_id),
       new ReporterDto(task.reporter.name, task.reporter.assignee_id),
       task.archived,
+      task.projectName ? task.projectName : "",
       task.created_at,
       task.updated_at,
     );

@@ -159,7 +159,8 @@ export default function UpdateTaskComponent({ task, dispatch }) {
 
                 <button
                   type="button"
-                  className="download-task-button task-btn-plain"
+                  // download-task-button task-btn-plain
+                  className="btn btn-light"
                   name="save"
                   onClick={downloadTask}
                 >

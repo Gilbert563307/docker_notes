@@ -10,26 +10,22 @@ import FirebaseInterfaceV2 from "../../../../shared/data/FirebaseInterfaceV2";
 import { KanBoardSystem } from "../../domain/KanBoardSystem";
 import { ArchiveKanBoardDto } from "./dto/ArchiveKanBoardDto";
 
-const initialBoardDto = new KanBoardDto(null, null, null, null, null, null, null, null);
+const initialBoardDto = new KanBoardDto(null, null, null, null, null, null, null, null, null);
 const collectionManager = new CollectionManager("kanboards", db);
 
 export default function KanBoardsService() {
   const { userUid } = FirebaseInterfaceV2();
 
-  /**
-   *
-   * @returns {Promise<{max: boolean, notificationDto: NotificationDto}>}
-   */
+  
   async function doesUserHaveMaxKanBoards() {
     const query = collectionManager.whereQuery("user_uid", "==", userUid);
     const count = await collectionManager.countDocumentsByQuery([query]);
-
-    new KanBoardSystem(null, null, count);
+    new KanBoardSystem.Builder().totalKanBoards(count).build();
   }
 
   /**
    *
-   * @param {{name: string, color: string}} payload
+   * @param {{name: string, color: string, imageUrl: string}} payload
    * @returns {Promise<{ created: boolean, notificationDto: NotificationDto }>}
    */
   async function createKanBoard(payload) {
@@ -44,6 +40,7 @@ export default function KanBoardsService() {
         payload.color,
         false,
         false,
+        payload.imageUrl,
         collectionManager.getCurrentServerTimestamp(),
         collectionManager.getCurrentServerTimestamp(),
       );

@@ -12,6 +12,7 @@ export class KanBoardMapper {
 
   /**
    * Convert a single KanBoard entity to a DTO
+   * @param {Object} board
    * @returns {KanBoardDto}
    */
   static toDto(board) {
@@ -22,6 +23,7 @@ export class KanBoardMapper {
       board.color,
       board.archived,
       board.collaborative,
+      board.imageUrl,
       board.updated_at,
       board.created_at,
     );
@@ -40,6 +42,7 @@ export class KanBoardMapper {
       KanBoardDto.getColor(),
       KanBoardDto.getIsArchived(),
       KanBoardDto.getIsCollaborative(),
+      KanBoardDto.getImageUrl(),
       KanBoardDto.getUpdatedAt(),
       KanBoardDto.getCreatedAt(),
     );

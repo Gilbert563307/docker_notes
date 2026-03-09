@@ -28,6 +28,7 @@ import { ListTasksDto } from "./dto/ListTasksDto";
 import { GetTasksQueryClausesDto } from "./dto/GetTasksQueryClausesDto";
 import { TasksQueries } from "../../domain/TasksQueries";
 import { CollectionManager } from "../../../../firebase_entity_manager/CollectionManager";
+import { KanBoardMapper } from "../mapper/KanBoardMapper";
 
 const initialTaskDto = new TaskDto(
   null,
@@ -398,7 +399,9 @@ export default function TasksService() {
   const readTask = async (taskId) => {
     try {
       const document = await collectionManager.readDocument(taskId);
-      const taskDto = TasksMapper.toDto(document);
+      const kanBaord = await collectionManager.readDocumentFromCollection("kanboards", document?.project_id);
+      const taskDto = TasksMapper.toDto( {...document, projectName: kanBaord?.name});
+
       return {
         task: taskDto,
         notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
@@ -474,6 +477,12 @@ export default function TasksService() {
    * @param {{description: string, filename: string}} payload
    */
   async function downloadTask(payload) {
+    if (payload.description === "") {
+      return {
+        downloaded: false,
+        notificationDto: new NotificationDto("Download failed: The file is empty", ALERT_TYPES.INFO),
+      };
+    }
     return await convertHtmlToDocx(payload);
   }
 
