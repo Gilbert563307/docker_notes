@@ -129,6 +129,7 @@ export default function KanBoardsService() {
         kanBoard.getColor(),
         payload.getArchived(),
         kanBoard.getIsCollaborative(),
+        kanBoard.getImageUrl(),
         kanBoard.getCreatedAt(),
         collectionManager.getCurrentServerTimestamp(),
       );
