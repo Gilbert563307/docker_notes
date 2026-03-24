@@ -21,7 +21,7 @@
   border-radius: 5px;
   /* max-width: 1000px; */
   max-height: 7.6in;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .quil-text-editor .ql-editor {

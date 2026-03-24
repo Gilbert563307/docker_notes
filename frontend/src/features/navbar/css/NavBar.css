@@ -103,7 +103,7 @@ html.dark .sign-out > li > a {
   }
 
   .navbar {
-    overflow: scroll;
+    overflow: auto;
   }
 
   .sign-out {

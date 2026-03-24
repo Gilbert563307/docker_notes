@@ -1,6 +1,6 @@
 .notification {
   position: absolute;
-  overflow-y: scroll;
+  overflow-y: auto;
   top: 0px;
   right: 0;
   margin: 2em;

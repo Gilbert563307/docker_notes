@@ -11,7 +11,7 @@
     background-color: #F1F2F4;
     border-radius: 10px;
     max-height: 800px;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .card-parent-header{
