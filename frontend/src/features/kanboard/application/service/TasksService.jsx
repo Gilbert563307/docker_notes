@@ -472,6 +472,10 @@ export default function TasksService() {
     }
   }
 
+  async function listKanBoardsByUser() {
+    
+  }
+
   /**
    *
    * @param {{description: string, filename: string}} payload
@@ -500,5 +504,6 @@ export default function TasksService() {
     listBoardTasks,
     listTasksBySearchTerm,
     downloadTask,
+    listKanBoardsByUser,
   };
 }

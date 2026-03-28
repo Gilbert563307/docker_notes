@@ -8,10 +8,12 @@ import { ReporterDto } from "../application/dto/RepoterDto";
 import { NotificationDto } from "../../notification/application/dto/NotificationDto";
 import { ArchiveTaskDto } from "./dto/ArchiveTaskDto";
 import { CreateTaskDto } from "./dto/CreateTaskDto";
+import { KanBoardDto } from "../application/dto/KanBoardDto";
 
 /**
  * @typedef {Object} InitialState
  * @property {TaskDto} task - The current task.
+ * @property {Array<KanBoardDto>} kanBoards - 
  * @property {import("../../../types/types").ListTasks} tasks - The list of tasks.
 
  */
@@ -29,6 +31,7 @@ const initialTaskDto = new TaskDto(
   null,
   null,
   null,
+  null,
 );
 
 /**
@@ -37,6 +40,7 @@ const initialTaskDto = new TaskDto(
  */
 const initialState = {
   task: initialTaskDto,
+  kanBoards: [],
   tasks: { tasks: [], total: 0, pages: 0 },
 };
 
@@ -62,6 +66,7 @@ export const TASKS_CONTROLLER_ACTIONS = {
   UPLOAD_TEMP_IMAGE: "UPLOAD_TEMP_IMAGE",
   DOWNLOAD_TASK: "DOWNLOAD_TASK",
   SEARCH_TASKS_BY_SEARCH_TERM: "SEARCH_TASKS_BY_SEARCH_TERM",
+  GET_KAN_BOARDS_BY_CURRENT_USER: "GET_KAN_BOARDS_BY_CURRENT_USER",
   SET_NOTIFICATION: "SET_NOTIFICATION",
 };
 
@@ -97,21 +102,22 @@ export function useTasksControllerContext() {
  * @returns {JSX.Element} The TasksController component.
  */
 export default function TasksController() {
-  const { createTask, getTasks, updateTask, readTask, archiveTask, deleteTask, listTasksBySearchTerm, downloadTask } =
+  const { createTask, getTasks, updateTask, readTask, archiveTask, deleteTask, listTasksBySearchTerm, downloadTask, listKanBoardsByUser } =
     TasksService();
 
   // const { getCurrentPageNumber } = useHelpers();
   const navigate = useNavigate();
 
   const REDUCER_ACTIONS = {
-    SET_TASKS: "SET_TASKS", //Action type for setting multiple task's.
-    SET_TASK: "SET_TASK", //Action type for setting a task.
+    SET_TASKS: "SET_TASKS",
+    SET_TASK: "SET_TASK",
+    SET_KAN_BOARDS: "SET_KAN_BOARDS",
   };
 
   /**
    * Reducer function for managing state changes.
    * @param {InitialState} state - Current state.
-   * @param {Object} action - Action object containing type and payload.
+   * @param {{payload: any, type: string}} action - Action object containing type and payload.
    * @returns {Object} - Updated state.
    */
   function reducer(state, action) {
@@ -125,6 +131,11 @@ export default function TasksController() {
         return {
           ...state,
           task: action.payload,
+        };
+      case REDUCER_ACTIONS.SET_KAN_BOARDS:
+        return {
+          ...state,
+          kanBoards: action.payload,
         };
       default:
         return state;
@@ -170,7 +181,7 @@ export default function TasksController() {
     //refresh tasks after creating one
     // WHE REFRESH THE TASKS LIST BECAUSE WHEN SAVING TIME STAMP TS IN FIREBASE THAT TAKES UP C CERTAIN TIME
     // SO OF THE USER IS ON THE /tasks page the date are undefined
-    await refreshTasksList(); 
+    await refreshTasksList();
 
     //navugate to tasks page
     navigate("/tasks");
@@ -286,6 +297,17 @@ export default function TasksController() {
     });
   }
 
+  async function collectListKanBoardsByUser() {
+    const kanBoards = await listKanBoardsByUser();
+    setNotificationToState(tasks.notificationDto);
+
+    // Update state with the created task response
+    dispatchAction({
+      type: REDUCER_ACTIONS.SET_KAN_BOARDS,
+      payload: kanBoards.results,
+    });
+  }
+
   /**
    * Dispatches actions based on the specified type and payload.
    * @param {{ type: string; payload?: any; }} action - The action object containing type and payload.
@@ -319,6 +341,9 @@ export default function TasksController() {
           break;
         case TASKS_CONTROLLER_ACTIONS.SEARCH_TASKS_BY_SEARCH_TERM:
           await collectListTasksBySearchTerm(action?.payload);
+          break;
+        case TASKS_CONTROLLER_ACTIONS.GET_KAN_BOARDS_BY_CURRENT_USER:
+          await collectListKanBoardsByUser();
           break;
         case "CLOSE_ALERT":
           closeAlert();

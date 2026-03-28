@@ -17,7 +17,7 @@ export default function ProtectedRoute({ children }) {
   const userObject = parseJson(rawUser);
 
   if (userObject === null || Object.keys(userObject).length === 0) {
-    window.location.replace(new URL(import.meta.env.VITE_APP_FRONTEND_URL + "/auth/verify"));
+    window.location.replace(import.meta.env.VITE_APP_FRONTEND_URL + "app/auth/verify");
   }
 
   return <>{children}</>;

@@ -4,6 +4,7 @@ import { TASKS_ARCHIVED_SESSION_FILTER } from '../../../../config';
 import StatusTypeTags from '../StatusTypeTags';
 import PriorityTypeTags from '../PriorityTypeTags';
 import "../../css/TasksFilters.css";
+import ProjectFilters from '../ProjectFilters';
 
 
 export default function TasksFilters() {
@@ -42,6 +43,8 @@ export default function TasksFilters() {
           <PriorityTypeTags />
         </ul>
       </div>
+
+      <ProjectFilters/>
 
     </div>
   )
