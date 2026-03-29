@@ -30,10 +30,7 @@ const FIRST_PAGE = 1;
  * @extends CrudCollectionManager
  */
 export class CollectionManager extends CrudCollectionManager {
-  #collectionName;
-  #collectionRef;
-  #database;
-
+ 
   /**
    * Initializes the collection manager.
    * @param {string} collectionName - Name of the Firestore collection.
@@ -41,14 +38,6 @@ export class CollectionManager extends CrudCollectionManager {
    */
   constructor(collectionName, database) {
     super(database, collectionName);
-    this.#validate(collectionName, database);
-
-    this.#collectionName = collectionName;
-    this.#database = database;
-
-    //init config
-    this.#collectionRef = collection(this.#database, this.#collectionName);
-
   }
 
   /**
@@ -56,7 +45,7 @@ export class CollectionManager extends CrudCollectionManager {
    * @returns {CollectionReference}
    */
   getCollectionReference() {
-    return this.#collectionRef;
+    return this._collectionRef;
   }
 
   /**
@@ -64,7 +53,7 @@ export class CollectionManager extends CrudCollectionManager {
    * @returns {DocumentReference}
    */
   createDocumentReference() {
-    return doc(this.#collectionRef);
+    return doc(this._collectionRef);
   }
 
   /**
@@ -80,7 +69,7 @@ export class CollectionManager extends CrudCollectionManager {
    * @returns {string}
    */
   getCollectionName() {
-    return this.#collectionName;
+    return this._collectionName;
   }
 
   /**
@@ -88,7 +77,7 @@ export class CollectionManager extends CrudCollectionManager {
    * @returns {Firestore}
    */
   getDatabase() {
-    return this.#database;
+    return this._database;
   }
 
   /**
@@ -100,7 +89,7 @@ export class CollectionManager extends CrudCollectionManager {
     if (typeof name !== "string" || !name.trim()) {
       throw new Error("Collection name must be a non-empty string.");
     }
-    return collection(this.#database, name);
+    return collection(this._database, name);
   }
 
   /**
@@ -110,7 +99,7 @@ export class CollectionManager extends CrudCollectionManager {
    */
   createQuery(queryItems) {
     if (!Array.isArray(queryItems)) throw new Error("queryItems must be an array.");
-    return query(this.#collectionRef, ...queryItems);
+    return query(this._collectionRef, ...queryItems);
   }
 
   /**
@@ -127,7 +116,7 @@ export class CollectionManager extends CrudCollectionManager {
     if (!Array.isArray(queryItems)) {
       throw new Error("queryItems must be an array of Firestore constraints.");
     }
-    return query(collection(this.#database, collectionName), ...queryItems);
+    return query(collection(this._database, collectionName), ...queryItems);
   }
 
   /**
@@ -143,7 +132,7 @@ export class CollectionManager extends CrudCollectionManager {
    * @returns {WriteBatch}
    */
   createBatchOperation() {
-    return writeBatch(this.#database);
+    return writeBatch(this._database);
   }
 
   /**
@@ -158,7 +147,7 @@ export class CollectionManager extends CrudCollectionManager {
 
     let resultsQuery;
     if (pageAble.getPage() === FIRST_PAGE) {
-      resultsQuery = query(this.#collectionRef, ...pageAble.getQueryItems(), limit(pageAble.getItemsPerPage()));
+      resultsQuery = query(this._collectionRef, ...pageAble.getQueryItems(), limit(pageAble.getItemsPerPage()));
     } else {
       resultsQuery = await this.#getPaginatedCollectionQuery(
         pageAble.getPage(),
@@ -177,7 +166,7 @@ export class CollectionManager extends CrudCollectionManager {
    * @returns {Promise<Array<Object>>}
    */
   async getAllDocuments() {
-    const querySnapshot = await getDocs(this.#collectionRef);
+    const querySnapshot = await getDocs(this._collectionRef);
     return this.#convertQuerySnapShotDocs(querySnapshot);
   }
 
@@ -189,7 +178,7 @@ export class CollectionManager extends CrudCollectionManager {
   async getAllDocumentsByQuery(queryItems) {
     if (!Array.isArray(queryItems)) throw new Error("queryItems must be an array.");
 
-    const resultsQuery = query(this.#collectionRef, ...queryItems);
+    const resultsQuery = query(this._collectionRef, ...queryItems);
     const querySnapshot = await getDocs(resultsQuery);
     return this.#convertQuerySnapShotDocs(querySnapshot);
   }
@@ -202,7 +191,7 @@ export class CollectionManager extends CrudCollectionManager {
   async getDocumentSnapShotsByQuery(queryItems) {
     if (!Array.isArray(queryItems)) throw new Error("queryItems must be an array.");
 
-    const resultsQuery = query(this.#collectionRef, ...queryItems);
+    const resultsQuery = query(this._collectionRef, ...queryItems);
     return await getDocs(resultsQuery);
   }
 
@@ -214,7 +203,7 @@ export class CollectionManager extends CrudCollectionManager {
   async countDocumentsByQuery(queryItems) {
     if (!Array.isArray(queryItems)) throw new Error("queryItems must be an array.");
 
-    const totalQuery = query(this.#collectionRef, ...queryItems);
+    const totalQuery = query(this._collectionRef, ...queryItems);
     const totalRecordsSnapShot = await getCountFromServer(totalQuery);
     return totalRecordsSnapShot.data().count;
   }
@@ -254,7 +243,7 @@ export class CollectionManager extends CrudCollectionManager {
     // Calculate the limit for fetching documents up to the current page
     const newPageLimit = currentPage * itemsPerPage;
     // Fetch tasks limited by the new page limit
-    const allDocsLimitedByThePageNumber = query(this.#collectionRef, ...queryItems, limit(newPageLimit));
+    const allDocsLimitedByThePageNumber = query(this._collectionRef, ...queryItems, limit(newPageLimit));
     // Get document snapshots for the calculated limit clause
     const documentSnapshots = await getDocs(allDocsLimitedByThePageNumber);
     // Calculate the offset to start from the last doc in the array
@@ -265,10 +254,8 @@ export class CollectionManager extends CrudCollectionManager {
       throw new Error("No document found to start after for the given page.");
     }
     // Return a query that starts after the last visible document of the previous page
-    return query(this.#collectionRef, ...queryItems, startAfter(startFromDocument), limit(itemsPerPage));
+    return query(this._collectionRef, ...queryItems, startAfter(startFromDocument), limit(itemsPerPage));
   }
-
- 
 
 
   /**
@@ -295,25 +282,5 @@ export class CollectionManager extends CrudCollectionManager {
         id: doc.id,
       };
     });
-  }
-
-  /**
-   * Validates the integrity of constructor arguments.
-   * @param {string} collectionName
-   * @param {Firestore} database
-   * @throws {Error} If validation fails.
-   */
-  #validate(collectionName, database) {
-    // Validate collectionName: Must be a string and not just whitespace
-    if (typeof collectionName !== "string" || !collectionName.trim()) {
-      throw new Error("Invalid collectionName: must be a non-empty string.");
-    }
-
-    // Validate database: Check if the 'type' property matches the Firestore definition
-    const validTypes = ["firestore-lite", "firestore"];
-
-    if (!database || !validTypes.includes(database.type)) {
-      throw new Error(`Invalid database: expected firestore or firestore-lite, but got ${database?.type}`);
-    }
   }
 }

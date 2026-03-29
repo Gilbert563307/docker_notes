@@ -2,9 +2,9 @@ import { addDoc, collection, deleteDoc, doc, Firestore, getDoc, updateDoc } from
 import { QueryConstraintCollectionManager } from "./QueryConstraintCollectionManager.js";
 
 export class CrudCollectionManager extends QueryConstraintCollectionManager {
-  #collectionName;
-  #collectionRef;
-  #database;
+  _collectionName;
+  _collectionRef;
+  _database;
 
   /**
    *
@@ -13,11 +13,11 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
    */
   constructor(database, collectionName) {
     super();
-    this.#database = database;
-
-    this.#collectionName = collectionName;
+    this.#validate(collectionName, database);
+    this._database = database;
+    this._collectionName = collectionName;
     //init config
-    this.#collectionRef = collection(this.#database, this.#collectionName);
+    this._collectionRef = collection(this._database, this._collectionName);
   }
 
   /**
@@ -26,7 +26,7 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
    * @returns {Promise<boolean>}
    */
   async createDocument(document) {
-    await addDoc(this.#collectionRef, document);
+    await addDoc(this._collectionRef, document);
     return true;
   }
 
@@ -36,7 +36,7 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
    * @returns {Promise<Object>}
    */
   async readDocument(documentId) {
-    return await this.#readDocument(this.#database, this.#collectionName, documentId);
+    return await this.#readDocument(this._database, this._collectionName, documentId);
   }
 
   /**
@@ -46,7 +46,7 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
    * @returns {Promise<Object>}
    */
   async readDocumentFromCollection(collectionName, documentId) {
-    return await this.#readDocument(this.#database, collectionName, documentId);
+    return await this.#readDocument(this._database, collectionName, documentId);
   }
 
   /**
@@ -61,7 +61,7 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
     }
 
     // get document
-    const document = doc(this.#database, this.#collectionName, documentId);
+    const document = doc(this._database, this._collectionName, documentId);
     await updateDoc(document, data);
     return true;
   }
@@ -76,7 +76,7 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
       throw new Error("Document id missing or is of incorrect type. Document type must be of type string");
     }
 
-    const documentRef = doc(this.#database, this.#collectionName, documentId);
+    const documentRef = doc(this._database, this._collectionName, documentId);
     await deleteDoc(documentRef);
     return true;
   }
@@ -109,8 +109,8 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
   }
 
   /**
-   * 
-   * @param {string} documentId 
+   *
+   * @param {string} documentId
    * @returns {Promise<Object | null>}
    */
   async findOrFail(documentId) {
@@ -119,7 +119,7 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
     }
 
     // Get a reference to the document in the database
-    const reference = doc(this.#database, this.#collectionName, documentId);
+    const reference = doc(this._database, this._collectionName, documentId);
 
     // Fetch the document snapshot
     const snapshot = await getDoc(reference);
@@ -131,5 +131,25 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
 
     // Get the document data and assign document id to it also
     return { ...snapshot.data(), id: documentId };
+  }
+
+  /**
+   * Validates the integrity of constructor arguments.
+   * @param {string} collectionName
+   * @param {Firestore} database
+   * @throws {Error} If validation fails.
+   */
+  #validate(collectionName, database) {
+    // Validate collectionName: Must be a string and not just whitespace
+    if (typeof collectionName !== "string" || !collectionName.trim()) {
+      throw new Error("Invalid collectionName: must be a non-empty string.");
+    }
+
+    // Validate database: Check if the 'type' property matches the Firestore definition
+    const validTypes = ["firestore-lite", "firestore"];
+
+    if (!database || !validTypes.includes(database.type)) {
+      throw new Error(`Invalid database: expected firestore or firestore-lite, but got ${database?.type}`);
+    }
   }
 }
