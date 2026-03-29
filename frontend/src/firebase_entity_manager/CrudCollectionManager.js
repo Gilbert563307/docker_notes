@@ -12,7 +12,7 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
    * @param {string} collectionName
    */
   constructor(database, collectionName) {
-    super(database, collectionName);
+    super();
     this.#database = database;
 
     this.#collectionName = collectionName;

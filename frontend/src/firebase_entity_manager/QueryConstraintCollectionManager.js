@@ -8,18 +8,18 @@ import {
 } from "firebase/firestore";
 
 export class QueryConstraintCollectionManager {
-  #collectionName;
-  #database;
+  // #collectionName;
+  // #database;
 
-  /**
-   *
-   * @param {Firestore} database
-   * @param {string} collectionName
-   */
-  constructor(database, collectionName) {
-    this.#database = database;
-    this.#collectionName = collectionName;
-  }
+  // /**
+  //  *
+  //  * @param {Firestore} database
+  //  * @param {string} collectionName
+  //  */
+  // constructor(database, collectionName) {
+  //   this.#database = database;
+  //   this.#collectionName = collectionName;
+  // }
 
   /**
    * Creates a {@link QueryFieldFilterConstraint} that enforces that documents

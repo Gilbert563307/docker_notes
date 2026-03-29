@@ -1,6 +1,7 @@
 import React from "react";
 import useAuthHelpers from "../../shared/helpers/useAuthHelpers";
 import { AUTH_STORAGE_KEYS } from "../../shared/context/AuthProvider";
+import { Navigate } from "react-router-dom";
 
 /**
  * ProtectedRoute component renders children only if the user is authenticated.
@@ -17,7 +18,7 @@ export default function ProtectedRoute({ children }) {
   const userObject = parseJson(rawUser);
 
   if (userObject === null || Object.keys(userObject).length === 0) {
-    window.location.replace(import.meta.env.VITE_APP_FRONTEND_URL + "app/auth/verify");
+    return <Navigate to="/auth/verify" replace />;
   }
 
   return <>{children}</>;

@@ -1,6 +1,5 @@
 import { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet } from "react-router-dom";
-import TasksService from "../application/service/TasksService";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
 import { NotificationDto } from "../../notification/application/dto/NotificationDto";
 import { TaskDto } from "../application/dto/TaskDto";
@@ -8,6 +7,7 @@ import { AssigneeDto } from "../application/dto/AssigneeDto";
 import { ReporterDto } from "../application/dto/RepoterDto";
 import { UpdateBoardTaskDto } from "./dto/UpdateBoardTaskDto";
 import { CreateTaskDto } from "./dto/CreateTaskDto";
+import { tasksService } from "../application/service/TasksService";
 
 /**
  * @typedef {Object} InitialState
@@ -84,7 +84,7 @@ export function useBoardsControllerContext() {
 }
 
 export default function BoardsController() {
-  const { createTask, listBoardTasks, updateTask } = TasksService();
+ 
 
   const REDUCER_ACTIONS = {
     SET_TASKS: "SET_TASKS", //Action type for setting multiple task's.
@@ -136,7 +136,7 @@ export default function BoardsController() {
    * @param {{boardId: string}} payload
    */
   async function collectListBoardTasks(payload) {
-    const response = await listBoardTasks(payload);
+    const response = await tasksService.listBoardTasks(payload);
     setNotificationToState(response.notificationDto);
 
     // Update state with the created task response
@@ -151,7 +151,7 @@ export default function BoardsController() {
    * @param {UpdateBoardTaskDto} payload
    */
   async function collectUpdateBoardTask(payload) {
-    const tbuTask = await updateTask(payload.getTaskDto());
+    const tbuTask = await  tasksService.updateTask(payload.getTaskDto());
 
     setNotificationToState(tbuTask.notificationDto);
     await collectListBoardTasks({ boardId: payload.getBoardId() });
@@ -163,10 +163,10 @@ export default function BoardsController() {
    */
   async function collectCreateBoardTask(payload) {
 
-    const taskCreated = await createTask(payload);
+    const taskCreated = await  tasksService.createTask(payload);
     setNotificationToState(taskCreated.notificationDto);
 
-    const { tasks } = await listBoardTasks({ boardId: payload.getProjectId() });
+    const { tasks } = await  tasksService.listBoardTasks({ boardId: payload.getProjectId() });
 
     // Update state with the created task response
     dispatchAction({

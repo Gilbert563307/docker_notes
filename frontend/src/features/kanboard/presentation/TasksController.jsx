@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import TasksService from "../application/service/TasksService";
+import { tasksService } from "../application/service/TasksService";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
 import { TaskDto } from "../application/dto/TaskDto";
 import { AssigneeDto } from "../application/dto/AssigneeDto";
@@ -102,8 +102,8 @@ export function useTasksControllerContext() {
  * @returns {JSX.Element} The TasksController component.
  */
 export default function TasksController() {
-  const { createTask, getTasks, updateTask, readTask, archiveTask, deleteTask, listTasksBySearchTerm, downloadTask, listKanBoardsByUser } =
-    TasksService();
+  // const { createTask, getTasks, updateTask, readTask, archiveTask, deleteTask, listTasksBySearchTerm, downloadTask, listKanBoardsByUser } =
+  //   TasksService();
 
   // const { getCurrentPageNumber } = useHelpers();
   const navigate = useNavigate();
@@ -173,7 +173,7 @@ export default function TasksController() {
    * @param {CreateTaskDto} payload
    */
   async function collectCreateTask(payload) {
-    const taskCreated = await createTask(payload);
+    const taskCreated = await tasksService.createTask(payload);
 
     // Update state with the created task response
     setNotificationToState(taskCreated.notificationDto);
@@ -191,7 +191,7 @@ export default function TasksController() {
    *
    */
   async function collectListTasks() {
-    const tasks = await getTasks();
+    const tasks = await tasksService.getTasks();
     setNotificationToState(tasks.notificationDto);
 
     // Update state with the created task response
@@ -211,7 +211,7 @@ export default function TasksController() {
    * @param {TaskDto} payload
    */
   async function collectUpdateTask(payload) {
-    const tbuTask = await updateTask(payload);
+    const tbuTask = await tasksService.updateTask(payload);
 
     // Update state with the created task response
     setNotificationToState(tbuTask.notificationDto);
@@ -232,7 +232,7 @@ export default function TasksController() {
    */
   async function collectReadTask(taskId) {
     // try to find the task in the current state;
-    const results = await readTask(taskId);
+    const results = await tasksService.readTask(taskId);
 
     // Update state with the created task response
     setNotificationToState(results.notificationDto);
@@ -249,7 +249,7 @@ export default function TasksController() {
    * @param {ArchiveTaskDto} payload
    */
   async function collectArchiveTask(payload) {
-    const tbuArchived = await archiveTask(payload);
+    const tbuArchived = await tasksService.archiveTask(payload);
 
     setNotificationToState(tbuArchived.notificationDto);
 
@@ -262,7 +262,7 @@ export default function TasksController() {
    * @param {string} taskId
    */
   async function collectDeleteTask(taskId) {
-    const tbuDeleted = await deleteTask(taskId);
+    const tbuDeleted = await tasksService.deleteTask(taskId);
 
     setNotificationToState(tbuDeleted.notificationDto);
 
@@ -278,7 +278,7 @@ export default function TasksController() {
    * @param {{description: string, filename: string}} payload
    */
   async function collectDownloadTask(payload) {
-    const downloaded = await downloadTask(payload);
+    const downloaded = await tasksService.downloadTask(payload);
     setNotificationToState(downloaded.notificationDto);
   }
 
@@ -287,7 +287,7 @@ export default function TasksController() {
    * @param {string} searchTearm
    */
   async function collectListTasksBySearchTerm(searchTearm) {
-    const tasks = await listTasksBySearchTerm(searchTearm);
+    const tasks = await tasksService.listTasksBySearchTerm(searchTearm);
     setNotificationToState(tasks.notificationDto);
 
     // Update state with the created task response
@@ -298,7 +298,7 @@ export default function TasksController() {
   }
 
   async function collectListKanBoardsByUser() {
-    const kanBoards = await listKanBoardsByUser();
+    const kanBoards = await tasksService.listKanBoardsByUser();
     setNotificationToState(tasks.notificationDto);
 
     // Update state with the created task response
