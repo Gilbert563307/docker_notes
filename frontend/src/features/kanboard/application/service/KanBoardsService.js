@@ -1,25 +1,34 @@
-import { MAX_KAN_BOARDS } from "../../../../config";
-import { ALERT_TYPES } from "../../../../shared/presentation/components/bs5/BS5Alert";
+import { FirebaseUtil } from "../../../../shared/helpers/FirebaseUtil";
+import { KanBoardSystem } from "../../domain/KanBoardSystem";
 import { NotificationDto } from "../../../notification/application/dto/NotificationDto";
 import { KanBoard } from "../../domain/KanBoard";
-import { KanBoardDto } from "../dto/KanBoardDto";
 import { KanBoardMapper } from "../mapper/KanBoardMapper";
-import { CollectionManager } from "../../../../firebase_entity_manager/CollectionManager";
-import { db } from "../../../../database/firebaseConfig";
-import FirebaseInterfaceV2 from "../../../../shared/data/FirebaseInterfaceV2";
-import { KanBoardSystem } from "../../domain/KanBoardSystem";
+import { KanBoardDto } from "../dto/KanBoardDto";
+import { MAX_KAN_BOARDS } from "../../../../config";
+import { ALERT_TYPES } from "../../../../shared/presentation/components/bs5/BS5Alert";
 import { ArchiveKanBoardDto } from "./dto/ArchiveKanBoardDto";
+import kanBoardsRepository from "../../data/KanBoardsRepository";
 
-const initialBoardDto = new KanBoardDto(null, null, null, null, null, null, null, null, null);
-const collectionManager = new CollectionManager("kanboards", db);
+/**
+ * @typedef {import("../../data/KanBoardsRepository").default} KanBoardsRepository
+ */
+class KanBoardsService {
+  #kanBoardsRepository;
+  #firebaseUtil;
 
-export default function KanBoardsService() {
-  const { userUid } = FirebaseInterfaceV2();
+  /**
+   *
+   * @param {KanBoardsRepository} kanBoardsRepository
+   * @param {FirebaseUtil} firebaseUtil
+   */
+  constructor(kanBoardsRepository, firebaseUtil) {
+    this.#kanBoardsRepository = kanBoardsRepository;
+    this.#firebaseUtil = firebaseUtil;
+  }
 
-  
-  async function doesUserHaveMaxKanBoards() {
-    const query = collectionManager.whereQuery("user_uid", "==", userUid);
-    const count = await collectionManager.countDocumentsByQuery([query]);
+  async doesUserHaveMaxKanBoards() {
+    // @ts-ignore
+    const count = await this.#kanBoardsRepository.doesUserHaveMaxKanBoards(this.#firebaseUtil.getUserUid());
     new KanBoardSystem.Builder().totalKanBoards(count).build();
   }
 
@@ -28,23 +37,24 @@ export default function KanBoardsService() {
    * @param {{name: string, color: string, imageUrl: string}} payload
    * @returns {Promise<{ created: boolean, notificationDto: NotificationDto }>}
    */
-  async function createKanBoard(payload) {
+  async createKanBoard(payload) {
     try {
       //check if the max kanboards already created
-      await doesUserHaveMaxKanBoards();
+      await this.doesUserHaveMaxKanBoards();
 
       const kanBoard = new KanBoard(
         "",
-        userUid,
+        // @ts-ignore
+        this.#firebaseUtil.getUserUid(),
         payload.name,
         payload.color,
         false,
         false,
         payload.imageUrl,
-        collectionManager.getCurrentServerTimestamp(),
-        collectionManager.getCurrentServerTimestamp(),
+        this.#kanBoardsRepository.getCurrentServerTimestamp(),
+        this.#kanBoardsRepository.getCurrentServerTimestamp(),
       );
-      const created = await collectionManager.createDocument(kanBoard.toJsonWithoutId());
+      const created = await this.#kanBoardsRepository.createDocument(kanBoard.toJsonWithoutId());
 
       return {
         created: created,
@@ -63,7 +73,7 @@ export default function KanBoardsService() {
    * @param {KanBoardDto} payload
    * @returns {Promise<{ updated: boolean, notificationDto: NotificationDto }>}
    */
-  async function updateKanBoard(payload) {
+  async updateKanBoard(payload) {
     try {
       const kanBoard = KanBoardMapper.fromDtoToEntity(payload);
       kanBoard.update(
@@ -71,14 +81,15 @@ export default function KanBoardsService() {
         kanBoard.getColor(),
         kanBoard.getIsArchived(),
         kanBoard.getIsCollaborative(),
+        kanBoard.getImageUrl(),
         kanBoard.getCreatedAt(),
-        collectionManager.getCurrentServerTimestamp(),
+        this.#kanBoardsRepository.getCurrentServerTimestamp(),
       );
-      await collectionManager.updateDocument(kanBoard.getId(), kanBoard.toJsonWithoutId());
+      await this.#kanBoardsRepository.updateDocument(kanBoard.getId(), kanBoard.toJsonWithoutId());
 
       return {
         updated: true,
-        notificationDto: new NotificationDto("Your kanban has been succesfully been updated", ALERT_TYPES.SUCCESS),
+        notificationDto: new NotificationDto("Your kanban has been successfully been updated", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       return {
@@ -92,15 +103,12 @@ export default function KanBoardsService() {
    *
    * @returns {Promise<{ results: Array<KanBoardDto>, notificationDto: NotificationDto }>}
    */
-  async function listKanBoards() {
+  async listKanBoards() {
     try {
-      // Construct the query to get all tasks for the current user UID with a
-      const results = await collectionManager.getAllDocumentsByQuery([
-        // @ts-ignore
-        collectionManager.whereQuery("user_uid", "==", userUid),
-        // @ts-ignore
-        collectionManager.limitByQuery(MAX_KAN_BOARDS),
-      ]);
+      const results = await this.#kanBoardsRepository.listKanBoardsByUser(
+        this.#firebaseUtil.getUserUid(),
+        MAX_KAN_BOARDS,
+      );
       const kanBoards = KanBoardMapper.arrayToDtoList(results);
 
       return {
@@ -121,7 +129,7 @@ export default function KanBoardsService() {
    * @param {ArchiveKanBoardDto} payload -
    * @returns {Promise<{ archived: boolean, notificationDto: NotificationDto }>} -
    * */
-  async function archiveKanBoard(payload) {
+  async archiveKanBoard(payload) {
     try {
       const kanBoard = KanBoardMapper.fromDtoToEntity(payload.getKanBoardDto());
       kanBoard.update(
@@ -131,10 +139,10 @@ export default function KanBoardsService() {
         kanBoard.getIsCollaborative(),
         kanBoard.getImageUrl(),
         kanBoard.getCreatedAt(),
-        collectionManager.getCurrentServerTimestamp(),
+        this.#kanBoardsRepository.getCurrentServerTimestamp(),
       );
 
-      const updated = await collectionManager.updateDocument(kanBoard.getId(), kanBoard.toJsonWithoutId());
+      const updated = await this.#kanBoardsRepository.updateDocument(kanBoard.getId(), kanBoard.toJsonWithoutId());
       // Return the result of the update operation
       return {
         archived: updated,
@@ -154,16 +162,16 @@ export default function KanBoardsService() {
    * @param {string} kanBoardId
    * @returns {Promise<{board: KanBoardDto, notificationDto: NotificationDto}>}
    */
-  async function readKanBoard(kanBoardId) {
+  async readKanBoard(kanBoardId) {
     try {
-      const document = await collectionManager.readDocument(kanBoardId);
+      const document = await this.#kanBoardsRepository.readDocument(kanBoardId);
       return {
         board: KanBoardMapper.toDto(document),
         notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       return {
-        board: initialBoardDto,
+        board: this.#getInitKanBoardDto(),
         notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
@@ -173,12 +181,12 @@ export default function KanBoardsService() {
    *
    * @param {string} kanBoardId
    */
-  async function deleteKanBoard(kanBoardId) {
+  async deleteKanBoard(kanBoardId) {
     try {
-      const deleted = await collectionManager.deleteDocument(kanBoardId);
+      await this.#kanBoardsRepository.deleteDocument(kanBoardId);
 
       return {
-        deleted: deleted,
+        deleted: true,
         notificationDto: new NotificationDto("Your kanboard has been deleted", ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
@@ -188,5 +196,11 @@ export default function KanBoardsService() {
       };
     }
   }
-  return { listKanBoards, createKanBoard, updateKanBoard, archiveKanBoard, readKanBoard, deleteKanBoard };
+
+  #getInitKanBoardDto() {
+    return new KanBoardDto(null, null, null, null, null, null, null, null, null);
+  }
 }
+
+const kanBoardsService = new KanBoardsService(kanBoardsRepository, new FirebaseUtil());
+export default kanBoardsService;

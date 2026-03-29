@@ -1,66 +1,6 @@
-import {
-  Firestore,
-  limit,
-  orderBy,
-  QueryFieldFilterConstraint,
-  QueryOrderByConstraint,
-  where,
-} from "firebase/firestore";
+import { QueryFieldFilterConstraint, where } from "firebase/firestore";
 
 export class QueryConstraintCollectionManager {
-  // #collectionName;
-  // #database;
-
-  // /**
-  //  *
-  //  * @param {Firestore} database
-  //  * @param {string} collectionName
-  //  */
-  // constructor(database, collectionName) {
-  //   this.#database = database;
-  //   this.#collectionName = collectionName;
-  // }
-
-  /**
-   * Creates a {@link QueryFieldFilterConstraint} that enforces that documents
-   * must contain the specified field and that the value should satisfy the
-   * relation constraint provided.
-   *
-   * @param {string} fieldPath - The path to compare
-   * @param {'<' | '<=' | '==' | '!=' | '>=' | '>' | 'array-contains' | 'in' | 'array-contains-any' | 'not-in'} opStr - The operation string (e.g "&lt;", "&lt;=", "==", "&lt;",
-   *   "&lt;=", "!=").
-   * @param {any} value - The value for comparison
-   * @returns  {QueryFieldFilterConstraint}.
-   */
-  whereQuery(fieldPath, opStr, value) {
-    return where(fieldPath, opStr, value);
-  }
-
-  /**
-   * Creates a {@link QueryOrderByConstraint} that sorts the query result by the
-   * specified field, optionally in descending order instead of ascending.
-   *
-   * Note: Documents that do not contain the specified field will not be present
-   * in the query result.
-   *
-   * @param {string} fieldPath  - The field to sort by.
-   * @param {"asc" | "desc"} directionStr - Optional direction to sort by ('asc' or 'desc'). If
-   * not specified, order will be ascending.
-   * @returns {QueryOrderByConstraint}.
-   */
-  orderByQuery(fieldPath, directionStr) {
-    return orderBy(fieldPath, directionStr);
-  }
-
-  /**
-   *
-   * @param {number} limitNumber
-   * @returns
-   */
-  limitByQuery(limitNumber) {
-    return limit(limitNumber);
-  }
-
   /**
    *
    * @param {string} fieldName

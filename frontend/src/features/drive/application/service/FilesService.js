@@ -1,38 +1,40 @@
-import { CollectionManager } from "../../../firebase_entity_manager/CollectionManager";
-import { FirebaseUtil } from "../../helpers/FirebaseUtil";
-import { HelpersV2 } from "../../helpers/HelpersV2";
+import { CollectionManager } from "../../../../firebase_entity_manager/CollectionManager";
+import { FirebaseUtil } from "../../../../shared/helpers/FirebaseUtil";
+import { HelpersV2 } from "../../../../shared/helpers/HelpersV2";
 
-import { ALERT_TYPES } from "../../presentation/components/bs5/BS5Alert";
+import { ALERT_TYPES } from "../../../../shared/presentation/components/bs5/BS5Alert";
 import { asBlob } from "html-docx-js-typescript";
-import { DEFAULT_FILES_ARCHIVE, FILES_ARCHIVED_SESSION_FILTER, MAX_FOLDERS_TO_FETCH } from "../../../config";
-import { NotificationDto } from "../../../features/notification/application/dto/NotificationDto";
-import { UploadFilesDto } from "../../../features/drive/presentation/dto/UploadFilesDto";
-import { ListFilesBySearchTermDto } from "../../../features/drive/presentation/dto/ListFilesBySearchTermDto";
-import { DownloadFileDto } from "../../../features/drive/presentation/dto/DownloadFileDto";
-import { DeleteFileFromBackendServerDto } from "../../../features/drive/presentation/dto/DeleteFileFromBackendServerDto";
-import { DeleteFileDto } from "../../../features/drive/presentation/dto/DeleteFileDto";
-import { DriveFile } from "../../../features/drive/domain/DriveFile";
-import { DriveFilesMapper } from "../../../features/drive/application/mapper/DriveFilesMapper";
-import { ArchiveFileDto } from "../../../features/drive/presentation/dto/ArchiveFileDto";
-import { FoldersMapper } from "../../../features/drive/application/mapper/FoldersMapper";
-import { db } from "../../../database/firebaseConfig";
-import { FilesQueries } from "../../../features/drive/domain/FilesQueries";
-import { GetFilesQueryClausesDto } from "../../../features/drive/domain/dto/GetFilesQueryClausesDto";
-import { ListFilesDto } from "../../../features/drive/domain/dto/ListFilesDto";
+import { DEFAULT_FILES_ARCHIVE, FILES_ARCHIVED_SESSION_FILTER, MAX_FOLDERS_TO_FETCH } from "../../../../config";
+import { NotificationDto } from "../../../notification/application/dto/NotificationDto";
+import { UploadFilesDto } from "../../presentation/dto/UploadFilesDto";
+import { ListFilesBySearchTermDto } from "../../presentation/dto/ListFilesBySearchTermDto";
+import { DownloadFileDto } from "../../presentation/dto/DownloadFileDto";
+import { DeleteFileFromBackendServerDto } from "../../presentation/dto/DeleteFileFromBackendServerDto";
+import { DeleteFileDto } from "../../presentation/dto/DeleteFileDto";
+import { DriveFile } from "../../domain/DriveFile";
+import { DriveFilesMapper } from "../mapper/DriveFilesMapper";
+import { ArchiveFileDto } from "../../presentation/dto/ArchiveFileDto";
+import { FoldersMapper } from "../mapper/FoldersMapper";
+import { db } from "../../../../database/firebaseConfig";
+import { FilesQueries } from "../../domain/FilesQueries";
+import { GetFilesQueryClausesDto } from "../../domain/dto/GetFilesQueryClausesDto";
+import { ListFilesDto } from "../../domain/dto/ListFilesDto";
+import { limit, orderBy, where } from "firebase/firestore";
+import filesRepository from "../../data/FilesRepository";
 
 class FilesService {
-  #collectionManager;
+  #filesRepository;
   #helpers;
   #firebaseUtil;
 
   /**
    *
-   * @param {CollectionManager} collectionManager
+   * @param {import("../../data/FilesRepository.js").default} filesRepository
    * @param {HelpersV2} helpers
    * @param {FirebaseUtil} firebaseUtil
    */
-  constructor(collectionManager, helpers, firebaseUtil) {
-    this.#collectionManager = collectionManager;
+  constructor(filesRepository, helpers, firebaseUtil) {
+    this.#filesRepository = filesRepository;
     this.#helpers = helpers;
     this.#firebaseUtil = firebaseUtil;
   }
@@ -46,24 +48,21 @@ class FilesService {
     const archived = this.#helpers.getSessionFilter(FILES_ARCHIVED_SESSION_FILTER) || DEFAULT_FILES_ARCHIVE;
 
     const baseQueryItems = [
-      this.#collectionManager.whereQuery("user_uid", "==", userUid),
-      this.#collectionManager.whereQuery("archived", "==", archived),
-      this.#collectionManager.orderByQuery("created_at", "desc"),
+      where("user_uid", "==", userUid),
+      where("archived", "==", archived),
+      orderBy("created_at", "desc"),
     ];
 
     //todo make these if statements domain LOGIC
     const filesQueries = new FilesQueries(baseQueryItems);
 
     const searchTearm = payload.getSearchTerm();
-    if (searchTearm && searchTearm != "") {
-      filesQueries.addQueryItem(this.#collectionManager.getSearchQueryBeforeFieldName("name", searchTearm));
-      filesQueries.addQueryItem(this.#collectionManager.getSearchQueryAfterFieldName("name", searchTearm));
-    }
-
     const folderId = payload.getFolderId();
-    if (folderId && folderId != "") {
-      filesQueries.addQueryItem(this.#collectionManager.whereQuery("folder_id", "==", folderId));
-    }
+
+    filesQueries.addQuery(searchTearm, this.#filesRepository.getSearchQueryBeforeFieldName("name", searchTearm));
+    filesQueries.addQuery(searchTearm, this.#filesRepository.getSearchQueryAfterFieldName("name", searchTearm));
+    filesQueries.addQuery(folderId, where("folder_id", "==", folderId));
+
     return filesQueries.getQueryItems();
   }
 
@@ -74,9 +73,9 @@ class FilesService {
    * @returns {Promise<Array<Object>>} The Firestore query to fetch tasks for the specified page.
    */
   async getFilesByQuery(payload) {
-    const queryItems = this.getFilesQueryClauses(new GetFilesQueryClausesDto(payload.getSearchTerm()));
+    const queryItems = this.getFilesQueryClauses(new GetFilesQueryClausesDto(payload.getSearchTerm(), payload.getFolderId()));
 
-    return await this.#collectionManager.getPaginatedDocumentsByQueryItems(
+    return await this.#filesRepository.getPaginatedDocumentsByQueryItems(
       queryItems,
       payload.getCurrentPage(),
       payload.getItemsPerPage(),
@@ -89,13 +88,13 @@ class FilesService {
    */
   async getTotalTasksInDatabaseByUserAndFilters(payload) {
     const queryItems = this.getFilesQueryClauses(new GetFilesQueryClausesDto(payload.getSearchTerm()));
-    return await this.#collectionManager.countDocumentsByQuery(queryItems);
+    return await this.#filesRepository.countDocumentsByQuery(queryItems);
   }
 
   /**
    *
    * @param {ListFilesDto} payload
-   * @returns {Promise<{results: import("../../../types/types").FilesResponse,  notificationDto: NotificationDto }>}
+   * @returns {Promise<{results: import("../../../../types/types").FilesResponse,  notificationDto: NotificationDto }>}
    */
   async _listFiles(payload) {
     try {
@@ -177,6 +176,7 @@ class FilesService {
       };
     }
   }
+  
   /**
    * Upload files to the backend server
    *
@@ -240,8 +240,8 @@ class FilesService {
    */
   async updateDocRefIfExists(fileName) {
     try {
-      const checkFileQueries = [this.#collectionManager.whereQuery("name", "==", fileName)];
-      const results = await this.#collectionManager.getAllDocumentsByQuery(checkFileQueries);
+      const checkFileQueries = [where("name", "==", fileName)];
+      const results = await this.#filesRepository.getAllDocumentsByQuery(checkFileQueries);
 
       const updates = [];
       let documentUpdated = "";
@@ -258,10 +258,10 @@ class FilesService {
             document.type,
             document.archived,
             document.created_at,
-            this.#collectionManager.getCurrentServerTimestamp(),
+            this.#filesRepository.getCurrentServerTimestamp(),
           );
           // Only update if data has changed
-          const update = this.#collectionManager.updateDocument(driveFile.getId(), driveFile.toJsonWithoutId());
+          const update = this.#filesRepository.updateDocument(driveFile.getId(), driveFile.toJsonWithoutId());
           updates.push(update);
         }
       });
@@ -288,7 +288,7 @@ class FilesService {
    * @returns {Array<DriveFile>}
    */
   getDriveFilesToUpload(payload) {
-    const currentServerTimestamp = this.#collectionManager.getCurrentServerTimestamp();
+    const currentServerTimestamp = this.#filesRepository.getCurrentServerTimestamp();
     return payload.getFiles().map((file) => {
       return new DriveFile(
         "",
@@ -319,7 +319,7 @@ class FilesService {
       if (!uploadedToServer.uploaded) return uploadedToServer;
 
       // Create a batch write operation
-      const batch = this.#collectionManager.createBatchOperation();
+      const batch = this.#filesRepository.createBatchOperation();
 
       //check if the file already exits in firebase
       //update the updated_at only do not save the entire file as a newly addec collection in firebase
@@ -334,7 +334,7 @@ class FilesService {
       //loop through data to  get the filename
       payloadToSave.forEach((driveFile) => {
         //create doc ref
-        const docRef = this.#collectionManager.createDocumentReference();
+        const docRef = this.#filesRepository.createDocumentReference();
         batch.set(docRef, driveFile.toJsonWithoutId());
       });
 
@@ -362,9 +362,9 @@ class FilesService {
     try {
       //TODO REWRITE TO USE DOMAIN BECAUSE CREATING AN OBJECT HERE IS A DIRTY FIX
       //manualy updated the updated_at & archive do not use drive domain here because that is unnecessary for performance
-      const updatedPayload = { archived: true, updated_at: this.#collectionManager.getCurrentServerTimestamp() };
+      const updatedPayload = { archived: true, updated_at: this.#filesRepository.getCurrentServerTimestamp() };
 
-      const archived = await this.#collectionManager.updateDocument(payload.getId(), updatedPayload);
+      const archived = await this.#filesRepository.updateDocument(payload.getId(), updatedPayload);
       return {
         archived: archived,
         notificationDto: new NotificationDto("Your file has been successfully been archived", ALERT_TYPES.SUCCESS),
@@ -440,7 +440,7 @@ class FilesService {
         new DeleteFileFromBackendServerDto(userUid, payload.getFilename()),
       );
       if (!deletedFromServer.deleted) return deletedFromServer;
-      await this.#collectionManager.deleteDocument(payload.getId());
+      await this.#filesRepository.deleteDocument(payload.getId());
 
       return {
         deleted: true,
@@ -536,13 +536,13 @@ class FilesService {
     try {
       const userUid = this.#firebaseUtil.getUserUid();
       const foldersQueriesItems = [
-        this.#collectionManager.whereQuery("user_uid", "==", userUid),
-        this.#collectionManager.orderByQuery("created_at", "desc"),
-        this.#collectionManager.limitByQuery(MAX_FOLDERS_TO_FETCH),
+        where("user_uid", "==", userUid),
+        orderBy("created_at", "desc"),
+        limit(MAX_FOLDERS_TO_FETCH),
       ];
 
-      const query = this.#collectionManager.createQueryByGivenCollectionName("folders", foldersQueriesItems);
-      const results = await this.#collectionManager.getDocumentsByQuery(query);
+      const query = this.#filesRepository.createQueryByGivenCollectionName("folders", foldersQueriesItems);
+      const results = await this.#filesRepository.getDocumentsByQuery(query);
 
       const foldersDtos = FoldersMapper.arrayToDtoList(results);
       return {
@@ -564,6 +564,6 @@ class FilesService {
   }
 }
 
-const filesService = new FilesService(new CollectionManager("files", db), new HelpersV2(), new FirebaseUtil());
+const filesService = new FilesService(filesRepository, new HelpersV2(), new FirebaseUtil());
 
-export { filesService };
+export default filesService;

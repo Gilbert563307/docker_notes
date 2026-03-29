@@ -1,7 +1,5 @@
 import { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-
-import FoldersService from "../application/service/FoldersService";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
 import { FolderDto } from "../domain/dto/FolderDto";
 import { DriveFileDto } from "../domain/dto/DriveFileDto";
@@ -9,8 +7,8 @@ import { NotificationDto } from "../../notification/application/dto/Notification
 import { CreateFolderDto } from "./dto/CreateFolderDto";
 import { UpdateFolderDto } from "./dto/UpdateFolderDto";
 import { ArchiveFolderDto } from "./dto/ArchiveFolderDto";
+import foldersService from "../application/service/FoldersService";
 
-const initialFolderDto = new FolderDto(null, null, null, null, null, null, null);
 
 /**
  * @typedef {Object} InitialState
@@ -23,7 +21,7 @@ const initialFolderDto = new FolderDto(null, null, null, null, null, null, null)
  * @type {InitialState}
  */
 const initialState = {
-  folder: initialFolderDto,
+  folder: new FolderDto(null, null, null, null, null, null, null),
   files: { files: [], total: 0, pages: 0 },
   folders: { folders: [], total: 0, pages: 0 },
 };
@@ -74,17 +72,6 @@ export function useFoldersControllerContext() {
 }
 
 export default function FoldersController() {
-  const {
-    listFolders,
-    listFoldersBySearchTerm,
-    archiveFolder,
-    createFolder,
-    readFolder,
-    updateFolder,
-    deleteFolder,
-    getFilesByFolderId,
-  } = FoldersService();
-
   const navigate = useNavigate();
 
   const REDUCER_ACTIONS = {
@@ -142,7 +129,7 @@ export default function FoldersController() {
    * @param {string} searchTearm
    */
   async function collectListFoldersBySearchTerm(searchTearm) {
-    const folders = await listFoldersBySearchTerm(searchTearm);
+    const folders = await foldersService.listFoldersBySearchTerm(searchTearm);
     setNotificationToState(folders.notificationDto);
 
     // Update state with the created task response
@@ -157,7 +144,7 @@ export default function FoldersController() {
    * @param {CreateFolderDto} payload
    */
   async function collectCreateFolder(payload) {
-    const folderCreated = await createFolder(payload);
+    const folderCreated = await foldersService.createFolder(payload);
 
     // Update state with the created task response
     setNotificationToState(folderCreated.notificationDto);
@@ -175,7 +162,7 @@ export default function FoldersController() {
    * @param {string} folderId
    */
   async function collectReadFolder(folderId) {
-    const results = await readFolder(folderId);
+    const results = await foldersService.readFolder(folderId);
 
     setNotificationToState(results.notificationDto);
 
@@ -191,7 +178,7 @@ export default function FoldersController() {
    * @param {UpdateFolderDto} payload
    */
   async function CollectUpdateFolder(payload) {
-    const tbu = await updateFolder(payload);
+    const tbu = await foldersService.updateFolder(payload);
 
     setNotificationToState(tbu.notificationDto);
 
@@ -213,7 +200,7 @@ export default function FoldersController() {
    * @param {string} folderId
    */
   async function collectDeleteFolder(folderId) {
-    const tbuDeleted = await deleteFolder(folderId);
+    const tbuDeleted = await foldersService.deleteFolder(folderId);
 
     setNotificationToState(tbuDeleted.notificationDto);
 
@@ -229,7 +216,7 @@ export default function FoldersController() {
    * @param {string} folderId
    */
   async function collectListFilesByFolderId(folderId) {
-    const response = await getFilesByFolderId(folderId);
+    const response = await foldersService.getFilesByFolderId(folderId);
 
     setNotificationToState(response.notificationDto);
 
@@ -240,7 +227,7 @@ export default function FoldersController() {
   }
 
   async function collectListFolders() {
-    const folders = await listFolders();
+    const folders = await foldersService.listFolders();
 
     // Update state with the created task response
     dispatchAction({
@@ -254,7 +241,7 @@ export default function FoldersController() {
    * @param {ArchiveFolderDto} payload
    */
   async function collectArchiveFolder(payload) {
-    const tbuArchived = await archiveFolder(payload);
+    const tbuArchived = await foldersService.archiveFolder(payload);
 
     setNotificationToState(tbuArchived.notificationDto);
 
@@ -317,7 +304,6 @@ export default function FoldersController() {
       }
     } catch (error) {
       setNotificationToState(new NotificationDto(error.message, 1));
-      console.error(`FoldersController: error ${error}`);
     }
   }
 

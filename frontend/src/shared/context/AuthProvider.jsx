@@ -1,9 +1,8 @@
 import React, { createContext, useContext, useMemo, useState } from "react";
-import AuthService from "../../features/auth/service/AuthService";
-import useCookieStorageHook from "../hooks/useCookieStorageHook";
 import { UserDto } from "../../features/auth/application/dto/UserDto";
+import authService from "../../features/auth/application/service/AuthService";
+import { UseCookieStorage } from "../helpers/useCookieStorage";
 
-const initialStateUser = new UserDto(null, null, null, null, null);
 
 /**
  * Context for managing user authentication state and actions.
@@ -20,7 +19,7 @@ const initialStateUser = new UserDto(null, null, null, null, null);
  * @returns {React.Context<AuthContextType>} AuthProviderContext - Context provider for authentication.
  */
 const AuthProviderContext = createContext({
-  user: initialStateUser,
+  user: new UserDto(null, null, null, null, null),
   login: () => {},
   logout: () => {},
 });
@@ -51,17 +50,13 @@ export const useAuthProvider = () => {
  */
 // eslint-disable-next-line react/prop-types
 export default function AuthProvider({ children }) {
-  const { SignUserOut } = AuthService();
-
-  const { createCookie, readCookie, deleteCookie } = useCookieStorageHook();
-
   /**
-   * 
+   *
    * @returns {UserDto | null}
    */
   const getUserFromCookie = () => {
     try {
-      const cookieData = readCookie(AUTH_STORAGE_KEYS.USER);
+      const cookieData = UseCookieStorage.readCookie(AUTH_STORAGE_KEYS.USER);
 
       const userDto = cookieData ? JSON.parse(cookieData) : null;
       if (userDto === null) return null;
@@ -81,7 +76,7 @@ export default function AuthProvider({ children }) {
    */
   const login = (userDto) => {
     //save the state token so that we can later check for it;
-    createCookie(AUTH_STORAGE_KEYS.USER, JSON.stringify(userDto.toJson()), 1, "/");
+    UseCookieStorage.createCookie(AUTH_STORAGE_KEYS.USER, JSON.stringify(userDto.toJson()), 1, "/");
     setUser(userDto);
   };
 
@@ -90,9 +85,9 @@ export default function AuthProvider({ children }) {
    * In a real implementation, this function would handle logout logic.
    */
   const logout = () => {
-    deleteCookie(AUTH_STORAGE_KEYS.USER);
+    UseCookieStorage.deleteCookie(AUTH_STORAGE_KEYS.USER);
     setUser(null); // Clear authenticated user
-    SignUserOut(); // Sign user out of firebase
+    authService.signUserOut(); // Sign user out of firebase
     localStorage.clear(); //Clear all localstorage items stored
     sessionStorage.clear(); //Clear all sessionstorage items stored
   };

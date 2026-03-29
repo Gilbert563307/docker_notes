@@ -1,10 +1,10 @@
 import React, { useContext, useMemo, useReducer } from "react";
 import { Outlet } from "react-router-dom";
 import { useAuthProvider } from "../../../shared/context/AuthProvider";
-import AuthService from "../service/AuthService";
 import AuthControllerContext, { initialState } from "../../../shared/context/AuthControllerContext";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
 import { NotificationDto } from "../../notification/application/dto/NotificationDto";
+import authService from "../application/service/AuthService";
 
 /**
  * @typedef {Object} AuthControllerActions
@@ -29,7 +29,7 @@ export function useAuthControllerContext() {
  */
 export default function AuthController() {
   const { login } = useAuthProvider();
-  const { LoginWithGoogle, LoginWithGithub } = AuthService();
+ 
 
   /**
    *
@@ -49,7 +49,7 @@ export default function AuthController() {
    * Handles login with Google authentication.
    */
   async function collectLoginWithGoogle() {
-    const response = await LoginWithGoogle();
+    const response = await authService.loginWithGoogle();
     if (response.login === false) {
       setNotificationToState(response.notificationDto);
       return;
@@ -58,7 +58,7 @@ export default function AuthController() {
   }
 
   async function collectLoginWithGithub() {
-    const response = await LoginWithGithub();
+    const response = await authService.loginWithGithub();
     if (response.login === false) {
       setNotificationToState(response.notificationDto);
       return;
@@ -95,7 +95,6 @@ export default function AuthController() {
         case AUTH_CONTROLLER_ACTIONS.LOGIN_WITH_GITHUB:
           await collectLoginWithGithub();
           return;
-
         case "CLOSE_ALERT":
           closeAlert();
           return;

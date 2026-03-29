@@ -1,67 +1,64 @@
-import React, { useEffect } from 'react';
-import useLocalStorageHook from '../../hooks/useLocalStorageHook';
-import { SESSION_THEME_MODE } from '../../../config';
-import { THEME_MODES } from '../../context/ThemeContext';
+import React, { useEffect } from "react";
+import { SESSION_THEME_MODE } from "../../../config";
+import { THEME_MODES } from "../../context/ThemeContext";
 
 /**
  * Manages theme logic including reading and setting the theme mode.
  * @returns {{darkTheme: Function, lightTheme: Function}} Functions to set the dark and light themes.
  */
 export default function ThemeService() {
-    const { readValue, storeValue } = useLocalStorageHook();
+  // Read the current theme mode from local storage.
+  const themeMode = localStorage.getItem(SESSION_THEME_MODE) ? localStorage.getItem(SESSION_THEME_MODE) : null;
 
-    // Read the current theme mode from local storage.
-    const themeMode = readValue(SESSION_THEME_MODE);
+  /**
+   * Removes existing theme classes ('light', 'dark') from the <html> element.
+   */
+  function removeExistingThemeClasses() {
+    const htmlElement = document.querySelector("html");
+    if (htmlElement === null) return;
+    htmlElement.classList.remove("light", "dark");
+    htmlElement.removeAttribute("data-bs-theme");
+  }
 
-    /**
-     * Removes existing theme classes ('light', 'dark') from the <html> element.
-     */
-    function removeExistingThemeClasses() {
-        const htmlElement = document.querySelector('html');
-        if (htmlElement === null) return;
-        htmlElement.classList.remove('light', 'dark');
-        htmlElement.removeAttribute('data-bs-theme');
+  /**
+   * Sets the theme mode on the <html> element and stores it in local storage.
+   * @param {string} mode - The theme mode to set ('light' or 'dark').
+   */
+  function setTheModeToHtml(mode) {
+    const htmlElement = document.querySelector("html");
+    if (htmlElement === null) return;
+    htmlElement.classList.add(mode);
+    if (mode === THEME_MODES.DARK) {
+      htmlElement.setAttribute("data-bs-theme", "dark");
+    } else {
+      htmlElement.removeAttribute("data-bs-theme");
     }
+    localStorage.setItem(SESSION_THEME_MODE, JSON.stringify(mode));
+  }
 
-    /**
-     * Sets the theme mode on the <html> element and stores it in local storage.
-     * @param {string} mode - The theme mode to set ('light' or 'dark').
-     */
-    function setTheModeToHtml(mode) {
-        const htmlElement = document.querySelector('html');
-        if (htmlElement === null) return;
-        htmlElement.classList.add(mode);
-        if (mode === THEME_MODES.DARK) {
-            htmlElement.setAttribute('data-bs-theme', 'dark');
-        } else {
-            htmlElement.removeAttribute('data-bs-theme');
-        }
-        storeValue(SESSION_THEME_MODE, mode);
-    }
+  /**
+   * Sets the theme to dark mode.
+   */
+  function darkTheme() {
+    const mode = THEME_MODES.DARK;
+    removeExistingThemeClasses();
+    setTheModeToHtml(mode);
+  }
 
-    /**
-     * Sets the theme to dark mode.
-     */
-    function darkTheme() {
-        const mode = THEME_MODES.DARK;
-        removeExistingThemeClasses();
-        setTheModeToHtml(mode);
-    };
+  /**
+   * Sets the theme to light mode.
+   */
+  function lightTheme() {
+    const mode = THEME_MODES.LIGHT;
+    removeExistingThemeClasses();
+    setTheModeToHtml(mode);
+  }
 
-    /**
-     * Sets the theme to light mode.
-     */
-    function lightTheme() {
-        const mode = THEME_MODES.LIGHT;
-        removeExistingThemeClasses();
-        setTheModeToHtml(mode);
-    };
+  useEffect(() => {
+    if (themeMode === null) return;
+    removeExistingThemeClasses();
+    setTheModeToHtml(themeMode);
+  }, [themeMode]);
 
-    useEffect(() => {
-        if (themeMode === null) return;
-        removeExistingThemeClasses();
-        setTheModeToHtml(themeMode);
-    }, [themeMode]);
-
-    return { darkTheme, lightTheme };
+  return { darkTheme, lightTheme };
 }

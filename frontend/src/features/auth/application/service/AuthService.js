@@ -1,49 +1,68 @@
-import React from "react";
-import { ALERT_TYPES } from "../../../shared/presentation/components/bs5/BS5Alert";
-import { auth, googleProvider, githubProvider, db } from "../../../database/firebaseConfig";
+import { NotificationDto } from "../../../notification/application/dto/NotificationDto";
+import { UserDto } from "../dto/UserDto";
+import { auth, googleProvider, githubProvider } from "../../../../database/firebaseConfig";
 import { signInWithPopup, signOut } from "firebase/auth";
-import { SHA256 } from "crypto-js";
-import SessionService from "./SessionService";
-import { NotificationDto } from "../../notification/application/dto/NotificationDto";
-import { UserDto } from "../application/dto/UserDto";
-import { User } from "../domain/User";
-import { UserMapper } from "../application/mapper/UserMapper";
-import { CollectionManager } from "../../../firebase_entity_manager/CollectionManager";
-import { AuditDto } from "../../audit/domain/dto/AuditDto";
+import { User } from "../../domain/User";
+import { UserMapper } from "../mapper/UserMapper";
+import { AuditDto } from "../../../audit/domain/dto/AuditDto";
+import { ALERT_TYPES } from "../../../../shared/presentation/components/bs5/BS5Alert";
+import auditRepository from "../../data/AuditRepository";
+import sessionService from "./SessionService";
 
-const initialStateUser = new UserDto(null, null, null, null, null);
-const collectionManager = new CollectionManager("audit", db);
-export default function AuthService() {
-  const { createSession } = SessionService();
+/**
+ * @typedef {import("../../application/service/SessionService").default} SessionService
+ * @typedef {import("../../data/AuditRepository").default} AuditRepository
+ */
+
+class AuthService {
+  #sessionService;
+  #auditRepository;
+  #initialStateUser = new UserDto(null, null, null, null, null);
+
+  /**
+   *
+   * @param {SessionService} sessionService
+   * @param {AuditRepository} auditRepository
+   */
+  constructor(sessionService, auditRepository) {
+    this.#sessionService = sessionService;
+    this.#auditRepository = auditRepository;
+  }
 
   /**
    *
    * @param {*} response
    * @returns {Promise<{ login: boolean, user: UserDto, notificationDto: NotificationDto }>}
    */
-  async function handleSignInResponse(response) {
-    try {   
+  async #handleSignInResponse(response) {
+    try {
       if (!response && !auth)
         return {
-          user: initialStateUser,
+          user: this.#initialStateUser,
           login: false,
           notificationDto: new NotificationDto("Something went wrong while trying to sign you in", ALERT_TYPES.DANGER),
         };
 
-      const hashedUid = SHA256(auth.currentUser.uid).toString();
-      const sessionResponse = await createSession(hashedUid, auth.currentUser);
+      const hashedUid = auth.currentUser.uid;
+      const sessionResponse = await this.#sessionService.createSession(hashedUid, auth.currentUser);
 
       if (!sessionResponse.created) {
         return {
           ...sessionResponse,
           login: false,
-          user: initialStateUser,
+          user: this.#initialStateUser,
           notificationDto: new NotificationDto("Something went wrong while trying to sign you in", ALERT_TYPES.DANGER),
         };
       }
 
       //if user is logged in create a session token
-      const user = new User(hashedUid, auth.currentUser.displayName || "",  auth.currentUser.email || "", auth.currentUser.photoURL || "", sessionResponse.sessionToken)
+      const user = new User(
+        hashedUid,
+        auth.currentUser.displayName || "",
+        auth.currentUser.email || "",
+        auth.currentUser.photoURL || "",
+        sessionResponse.sessionToken,
+      );
       return {
         login: true,
         user: UserMapper.toDto(user),
@@ -51,16 +70,18 @@ export default function AuthService() {
       };
     } catch (error) {
       //audit the error
-      collectionManager.createDocument(
+      this.#auditRepository.createDocument(
         new AuditDto(
           null,
           "AuthService",
           error.message,
-          collectionManager.getCurrentServerTimestamp(),
-          collectionManager.getCurrentServerTimestamp()
-        ).toJsonWithoutId());
+          this.#auditRepository.getCurrentServerTimestamp(),
+          this.#auditRepository.getCurrentServerTimestamp(),
+        ).toJsonWithoutId(),
+      );
+
       return {
-        user: initialStateUser,
+        user: this.#initialStateUser,
         login: false,
         notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
@@ -76,33 +97,33 @@ export default function AuthService() {
    * - `type`: A string representing the type of alert (SUCCESS for successful login, DANGER for error).
    * - `message`: A message describing the result of the login attempt.
    */
-  async function LoginWithGoogle() {
+  async loginWithGoogle() {
     try {
       const response = await signInWithPopup(auth, googleProvider);
-      return await handleSignInResponse(response);
+      return await this.#handleSignInResponse(response);
     } catch (error) {
       return {
-        user: initialStateUser,
+        user: this.#initialStateUser,
         login: false,
         notificationDto: new NotificationDto(error.message || "Failed to login with Google", ALERT_TYPES.DANGER),
       };
     }
   }
 
-  async function LoginWithGithub() {
+  async loginWithGithub() {
     try {
       const response = await signInWithPopup(auth, githubProvider);
-      return await handleSignInResponse(response);
+      return await this.#handleSignInResponse(response);
     } catch (error) {
       return {
-        user: initialStateUser,
+        user: this.#initialStateUser,
         login: false,
         notificationDto: new NotificationDto(error.message || "Failed to login with Github", ALERT_TYPES.DANGER),
       };
     }
   }
 
-  const SignUserOut = async () => {
+  async signUserOut() {
     try {
       await signOut(auth);
     } catch (error) {
@@ -110,6 +131,8 @@ export default function AuthService() {
         notificationDto: new NotificationDto(error.message || "Failed to sign out ", ALERT_TYPES.DANGER),
       };
     }
-  };
-  return { LoginWithGoogle, SignUserOut, LoginWithGithub };
+  }
 }
+
+const authService = new AuthService(sessionService, auditRepository);
+export default authService;

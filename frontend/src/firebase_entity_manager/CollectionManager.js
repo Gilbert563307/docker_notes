@@ -48,6 +48,7 @@ export class CollectionManager extends CrudCollectionManager {
 
     //init config
     this.#collectionRef = collection(this.#database, this.#collectionName);
+
   }
 
   /**
@@ -250,28 +251,25 @@ export class CollectionManager extends CrudCollectionManager {
           `Ensure page is > 1 and itemsPerPage is > 0.`,
       );
     }
-
     // Calculate the limit for fetching documents up to the current page
     const newPageLimit = currentPage * itemsPerPage;
-
     // Fetch tasks limited by the new page limit
     const allDocsLimitedByThePageNumber = query(this.#collectionRef, ...queryItems, limit(newPageLimit));
-
     // Get document snapshots for the calculated limit clause
     const documentSnapshots = await getDocs(allDocsLimitedByThePageNumber);
-
     // Calculate the offset to start from the last doc in the array
     const offset = (currentPage - 1) * itemsPerPage;
-
     // Get the document to start after, based on the offset
     const startFromDocument = documentSnapshots.docs[offset - 1];
-
     if (!startFromDocument) {
       throw new Error("No document found to start after for the given page.");
     }
     // Return a query that starts after the last visible document of the previous page
     return query(this.#collectionRef, ...queryItems, startAfter(startFromDocument), limit(itemsPerPage));
   }
+
+ 
+
 
   /**
    * Maps a QuerySnapshot into a standard array of objects including document IDs.

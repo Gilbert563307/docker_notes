@@ -101,7 +101,32 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
 
     // Check if the document exists
     if (!snapshot.exists()) {
-      throw new Error("An error occurred while fetching the document.");
+      throw new Error(`Document ${documentId} not found in ${collectionName}`);
+    }
+
+    // Get the document data and assign document id to it also
+    return { ...snapshot.data(), id: documentId };
+  }
+
+  /**
+   * 
+   * @param {string} documentId 
+   * @returns {Promise<Object | null>}
+   */
+  async findOrFail(documentId) {
+    if (documentId === null || documentId === undefined || typeof documentId !== "string") {
+      throw new Error("Document id missing or is of incorrect type. Document type must be of type string");
+    }
+
+    // Get a reference to the document in the database
+    const reference = doc(this.#database, this.#collectionName, documentId);
+
+    // Fetch the document snapshot
+    const snapshot = await getDoc(reference);
+
+    // Check if the document exists
+    if (!snapshot.exists()) {
+      return null;
     }
 
     // Get the document data and assign document id to it also

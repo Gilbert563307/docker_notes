@@ -25,7 +25,11 @@ import { GetTasksQueryClausesDto } from "./dto/GetTasksQueryClausesDto";
 import { TasksQueries } from "../../domain/TasksQueries";
 import { HelpersV2 } from "../../../../shared/helpers/HelpersV2";
 import { FirebaseUtil } from "../../../../shared/helpers/FirebaseUtil";
-import { tasksRepository } from "../../data/TasksRepository";
+
+import { orderBy, where } from "firebase/firestore";
+import tasksRepository from "../../data/TasksRepository";
+import kanBoardsRepository from "../../data/KanBoardsRepository.js";
+import { asBlob } from "html-docx-js-typescript";
 
 /**
  * @typedef {import("../../data/TasksRepository").default} TasksRepository
@@ -33,32 +37,20 @@ import { tasksRepository } from "../../data/TasksRepository";
 
 class TasksService {
   #tasksRepository;
+  #kanBoardsRepository;
   #helpers;
   #firebaseUtil;
-  #initialTaskDto = new TaskDto(
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    new AssigneeDto(null, null),
-    new ReporterDto(null, null),
-    null,
-    null,
-    null,
-    null,
-  );
 
   /**
    *
    * @param {TasksRepository} tasksRepository
+   * @param {import("../../data/KanBoardsRepository.js").default} kanBoardsRepository
    * @param {HelpersV2} helpers
    * @param {FirebaseUtil} firebaseUtil
    */
-  constructor(tasksRepository, helpers, firebaseUtil) {
+  constructor(tasksRepository, kanBoardsRepository, helpers, firebaseUtil) {
     this.#tasksRepository = tasksRepository;
+    this.#kanBoardsRepository = kanBoardsRepository;
     this.#helpers = helpers;
     this.#firebaseUtil = firebaseUtil;
   }
@@ -75,20 +67,20 @@ class TasksService {
       const userDisplayName = this.#firebaseUtil.getDisplayName();
       // Define default values for the task
       const currentServerTimestamp = this.#tasksRepository.getCurrentServerTimestamp();
-      const task = new Task(
-        "",
-        payload.getProjectId() || DEFAULT_PROJECT_ID.toString(),
-        userUid,
-        payload.getTitle(),
-        payload.getDescription() || "",
-        payload.getStatus() || TASKS_STATUS.TODO,
-        payload.getPriority() || TASKS_PRIORITY.LOW,
-        new Assignee(userDisplayName, userUid),
-        new Reporter(userDisplayName, userUid),
-        false,
-        currentServerTimestamp,
-        currentServerTimestamp,
-      );
+
+      const task = new Task.Builder()
+        .id("")
+        .projectId(payload.getProjectId() || DEFAULT_PROJECT_ID.toString())
+        .userUid(userUid)
+        .title(payload.getTitle())
+        .description(payload.getDescription())
+        .status(payload.getStatus())
+        .priority(payload.getPriority())
+        .assignee(new Assignee(userDisplayName, userUid))
+        .reporter(new Reporter(userDisplayName, userUid))
+        .createdAt(currentServerTimestamp)
+        .updatedAt(currentServerTimestamp)
+        .build();
 
       // Attempt to add the document to the collection
       this.#tasksRepository.createDocument(task.toJsonWithoutId());
@@ -220,20 +212,20 @@ class TasksService {
     const priorityFilters = this.getActivePriorityFilters();
 
     const baseQueryItems = [
-      this.#tasksRepository.whereQuery("user_uid", "==", userUid),
-      this.#tasksRepository.whereQuery("archived", "==", tasksArchived),
-      this.#tasksRepository.orderByQuery("created_at", "desc"),
+      where("user_uid", "==", userUid),
+      where("archived", "==", tasksArchived),
+      orderBy("created_at", "desc"),
     ];
 
     // @ts-ignore
     const tasksQuerys = new TasksQueries(baseQueryItems);
 
     if (statusFilters.filters.length > 0) {
-      tasksQuerys.addQueryItem(this.#tasksRepository.whereQuery("status", "in", statusFilters.filters));
+      tasksQuerys.addQueryItem(where("status", "in", statusFilters.filters));
     }
 
     if (priorityFilters.filters.length > 0) {
-      tasksQuerys.addQueryItem(this.#tasksRepository.whereQuery("priority", "in", priorityFilters.filters));
+      tasksQuerys.addQueryItem(where("priority", "in", priorityFilters.filters));
     }
 
     if (payload.getSearchTerm() && payload.getSearchTerm() != "") {
@@ -328,9 +320,7 @@ class TasksService {
       //THIS IS FOR WHE THE MAIN DEV I STILL HAS TASKS ON THE DEFAULT PROJECT ID
       const boardId = payload.boardId === "0" ? 0 : payload.boardId;
 
-      const results = await this.#tasksRepository.findBoardTasks(
-        userUid, boardId, MAX_BOARD_ITEMS
-      );
+      const results = await this.#tasksRepository.findBoardTasks(userUid, boardId, MAX_BOARD_ITEMS);
       const tasksDto = TasksMapper.arrayToDtoList(results);
 
       return {
@@ -390,8 +380,8 @@ class TasksService {
   readTask = async (taskId) => {
     try {
       const document = await this.#tasksRepository.readDocument(taskId);
-      //TODO THINK ABOUT SERVICE USAGE OR REPOSITORY USAGE,
-      const kanBaord = await this.#tasksRepository.readDocumentFromCollection("kanboards", document?.project_id);
+      const kanBaord = await this.#kanBoardsRepository.getKanBoardByProjectId(document?.project_id);
+
       const taskDto = TasksMapper.toDto({ ...document, projectName: kanBaord?.name });
 
       return {
@@ -401,7 +391,7 @@ class TasksService {
     } catch (error) {
       // Return an error response if the fetch operation fails
       return {
-        task: this.#initialTaskDto,
+        task: this.#getEmptyTaskDto(),
         notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }
@@ -429,7 +419,7 @@ class TasksService {
         task.getCreatedAt(),
         task.getUpdatedAt(),
       );
-      const updated = await this.#tasksRepository.updateDocument(task.getId(), TasksMapper.fromEntityToDto(task));
+      const updated = await this.#tasksRepository.updateDocument(task.getId(), task.toJsonWithoutId());
 
       return {
         archived: updated,
@@ -477,7 +467,7 @@ class TasksService {
         notificationDto: new NotificationDto("Download failed: The file is empty", ALERT_TYPES.INFO),
       };
     }
-    return await this.#filesService.convertHtmlToDocx(payload);
+    return await this.#convertHtmlToDocx(payload);
   }
 
   async getTasks() {
@@ -485,13 +475,73 @@ class TasksService {
       new ListTasksDto(this.#helpers.getCurrentPageNumber(), this.#helpers.getTheCurrentItemsPerPage(), undefined),
     );
   }
+
+  /**
+   * @param {string} string
+   * @returns {string}
+   */
+  #convertToValidFilename(string) {
+    return string.replace(/[\/|\\:*?"<>]/g, " ");
+  }
+
+  /**
+   * TODO ADD T
+   * @param {{description: string, filename: string}} payload
+   * @returns {Promise<{downloaded: Boolean, notificationDto: NotificationDto}>}
+   */
+  async #convertHtmlToDocx(payload) {
+    try {
+      const { description, filename } = payload;
+
+      const data = await asBlob(description);
+      const blob = new Blob([data], {
+        type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      });
+      const url = URL.createObjectURL(blob);
+
+      const correct_filename = this.#convertToValidFilename(filename);
+
+      // Create a temporary link to download the DOCX file
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${correct_filename}.docx`;
+      document.body.appendChild(link);
+
+      // Trigger the download and clean up
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      return {
+        downloaded: true,
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
+      };
+    } catch (error) {
+      return {
+        downloaded: false,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+      };
+    }
+  }
+
+  #getEmptyTaskDto() {
+    return new TaskDto(
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      new AssigneeDto(null, null),
+      new ReporterDto(null, null),
+      null,
+      null,
+      null,
+      null,
+    );
+  }
 }
 
-const tasksService = new TasksService(
-  tasksRepository,
-  new HelpersV2(),
-  new FirebaseUtil(),
-  // filesService,
-);
+const tasksService = new TasksService(tasksRepository, kanBoardsRepository, new HelpersV2(), new FirebaseUtil());
 
 export { tasksService };

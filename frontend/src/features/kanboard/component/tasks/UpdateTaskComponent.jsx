@@ -74,6 +74,7 @@ export default function UpdateTaskComponent({ task, dispatch }) {
       task.getAssignee(),
       task.getReporter(),
       task.getIsArchived(),
+      task.getProjectName(),
       task.getCreatedAt(),
       task.getUpdatedAt(),
     );

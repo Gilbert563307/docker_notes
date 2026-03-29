@@ -1,9 +1,9 @@
 import { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import KanBoardsService from "../application/service/KanBoardsService";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
 import { KanBoardDto } from "../application/dto/KanBoardDto";
 import { NotificationDto } from "../../notification/application/dto/NotificationDto";
+import kanBoardsService from "../application/service/KanBoardsService";
 
 /**
  * @typedef {Object} InitialState
@@ -11,7 +11,6 @@ import { NotificationDto } from "../../notification/application/dto/Notification
  * @property {KanBoardDto} board
  */
 
-const initialBoardDto = new KanBoardDto(null, null, null, null, null, null, null, null);
 
 /**
  *
@@ -19,7 +18,7 @@ const initialBoardDto = new KanBoardDto(null, null, null, null, null, null, null
  */
 const initialState = {
   boards: [],
-  board: initialBoardDto,
+  board: new KanBoardDto(null, null, null, null, null, null, null, null, null),
 };
 
 export const KAN_BOARDS_CONTROLLER_ACTIONS = {
@@ -61,7 +60,6 @@ export function useKanBoardsControllerContext() {
 }
 
 export default function KanBoardsController() {
-  const { listKanBoards, createKanBoard, readKanBoard, updateKanBoard, deleteKanBoard } = KanBoardsService();
   const navigate = useNavigate();
 
   /**
@@ -107,7 +105,7 @@ export default function KanBoardsController() {
   }
 
   async function collectListKanBoards() {
-    const kanBoards = await listKanBoards();
+    const kanBoards = await kanBoardsService.listKanBoards();
     setNotificationToState(kanBoards.notificationDto);
 
     // Update state with the   response
@@ -122,7 +120,7 @@ export default function KanBoardsController() {
    * @param {string} kanBoardId
    */
   async function collectReadKanBoard(kanBoardId) {
-    const kanBoard = await readKanBoard(kanBoardId);
+    const kanBoard = await kanBoardsService.readKanBoard(kanBoardId);
     setNotificationToState(kanBoard.notificationDto);
 
     // Update state with the response
@@ -143,7 +141,7 @@ export default function KanBoardsController() {
    * @param {{name: string, color: string }} payload
    */
   async function collectCreateKanBoard(payload) {
-    const kanBoardCreated = await createKanBoard(payload);
+    const kanBoardCreated = await kanBoardsService.createKanBoard(payload);
 
     // Update state with the created  response
     setNotificationToState(kanBoardCreated.notificationDto);
@@ -156,7 +154,7 @@ export default function KanBoardsController() {
    * @param {KanBoardDto} payload
    */
   async function collectUpdateKanBoard(payload) {
-    const kanBoardUpdated = await updateKanBoard(payload);
+    const kanBoardUpdated = await kanBoardsService.updateKanBoard(payload);
 
     // Update state with the created  response
     setNotificationToState(kanBoardUpdated.notificationDto);
@@ -168,7 +166,7 @@ export default function KanBoardsController() {
    * @param {number} payload
    */
   async function collectDeleteKanBoard(payload) {
-    const kanBoarddeleted = await deleteKanBoard(payload);
+    const kanBoarddeleted = await kanBoardsService.deleteKanBoard(payload);
     setNotificationToState(kanBoarddeleted.notificationDto);
 
     if (kanBoarddeleted.deleted) {

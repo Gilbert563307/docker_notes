@@ -20,7 +20,7 @@ export class TasksMapper {
    * @param {Object} task
    * @returns {TaskDto}
    */
-  static toDto(task,) {
+  static toDto(task) {
     return new TaskDto(
       task.id,
       task.project_id,
@@ -43,20 +43,20 @@ export class TasksMapper {
    * @returns {Task}
    */
   static fromDtoToEntity(taskDto) {
-    return new Task(
-      taskDto.getId(),
-      taskDto.getProjectId(),
-      taskDto.getUserUid(),
-      taskDto.getTitle(),
-      taskDto.getDescription(),
-      taskDto.getStatus(),
-      taskDto.getPriority(),
-      new Assignee(taskDto.getAssigneeName(), taskDto.getAssigneeId()),
-      new Reporter(taskDto.getAssigneeName(), taskDto.getAssigneeId()),
-      taskDto.getIsArchived(),
-      taskDto.getCreatedAt(),
-      taskDto.getUpdatedAt(),
-    );
+    return new Task.Builder()
+      .id(taskDto.getId())
+      .projectId(taskDto.getProjectId())
+      .userUid(taskDto.getUserUid())
+      .title(taskDto.getTitle())
+      .description(taskDto.getDescription())
+      .status(taskDto.getStatus())
+      .priority(taskDto.getPriority())
+      .assignee(taskDto.getAssignee())
+      .reporter(taskDto.getReporter())
+      .archived(taskDto.getIsArchived())
+      .createdAt(taskDto.getCreatedAt())
+      .updatedAt(taskDto.getUpdatedAt())
+      .build();
   }
 
   /**
@@ -75,6 +75,7 @@ export class TasksMapper {
       task.getAssignee(),
       task.getReporter(),
       task.getIsArchived(),
+      "",
       task.getCreatedAt(),
       task.getUpdatedAt(),
     );

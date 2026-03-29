@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useMemo, useReducer } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import FilesService from "../../../shared/application/service/FilesService";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
 import { NotificationDto } from "../../notification/application/dto/NotificationDto";
 import { DriveFileDto } from "../domain/dto/DriveFileDto";
@@ -11,6 +10,7 @@ import { DeleteFileDto } from "./dto/DeleteFileDto";
 import { DownloadFileDto } from "./dto/DownloadFileDto";
 import { ListFilesBySearchTermDto } from "./dto/ListFilesBySearchTermDto";
 import { ALERT_TYPES } from "../../../shared/presentation/components/bs5/BS5Alert";
+import filesService from "../application/service/FilesService";
 
 /**
  * @typedef {Object} InitialState
@@ -85,9 +85,6 @@ export function useDriveControllerContext() {
 }
 
 export default function DriveController() {
-  const { listDriveFiles, uploadFiles, archiveFile, deleteFile, downloadFile, listFilesBySearchTerm, getDriveFolders } =
-    FilesService();
-
   const navigate = useNavigate();
 
   const REDUCER_ACTIONS = {
@@ -142,7 +139,7 @@ export default function DriveController() {
   }
 
   async function collectListFiles() {
-    const files = await listDriveFiles();
+    const files = await filesService.listDriveFiles();
 
     // Update state with the created task response
     dispatchAction({
@@ -159,7 +156,7 @@ export default function DriveController() {
   }
 
   async function collectListDriveFolders() {
-    const results = await getDriveFolders();
+    const results = await filesService.getDriveFolders();
 
     dispatchAction({
       type: REDUCER_ACTIONS.SET_FOLDERS,
@@ -174,7 +171,7 @@ export default function DriveController() {
    * @param {UploadFilesDto} payload
    */
   async function collectUploadFiles(payload) {
-    const results = await uploadFiles(payload);
+    const results = await filesService.uploadFiles(payload);
 
     //set message if there is any
     setNotificationToState(results.notificationDto);
@@ -190,7 +187,7 @@ export default function DriveController() {
    * @param {ArchiveFileDto} payload
    */
   async function collectArchiveFile(payload) {
-    const tbuArchived = await archiveFile(payload);
+    const tbuArchived = await filesService.archiveFile(payload);
 
     setNotificationToState(tbuArchived.notificationDto);
 
@@ -203,7 +200,7 @@ export default function DriveController() {
    * @param {DeleteFileDto} payload
    */
   async function collectDeleteFile(payload) {
-    const tbuDeleted = await deleteFile(payload);
+    const tbuDeleted = await filesService.deleteFile(payload);
     setNotificationToState(tbuDeleted.notificationDto);
 
     //reftech files after archive this one
@@ -215,7 +212,7 @@ export default function DriveController() {
    * @param {DownloadFileDto} payload
    */
   async function collectDownloadFile(payload) {
-    const downloaded = await downloadFile(payload);
+    const downloaded = await filesService.downloadFile(payload);
     setNotificationToState(downloaded.notificationDto);
   }
 
@@ -224,7 +221,7 @@ export default function DriveController() {
    * @param {ListFilesBySearchTermDto} payload
    */
   async function collectListFilesBySearchTerm(payload) {
-    const files = await listFilesBySearchTerm(payload);
+    const files = await filesService.listFilesBySearchTerm(payload);
     setNotificationToState(files.notificationDto);
 
     // Update state with the created task response

@@ -162,7 +162,6 @@ export default function BoardsController() {
    * @param {CreateTaskDto} payload
    */
   async function collectCreateBoardTask(payload) {
-
     const taskCreated = await  tasksService.createTask(payload);
     setNotificationToState(taskCreated.notificationDto);
 
