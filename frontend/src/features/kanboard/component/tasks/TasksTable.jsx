@@ -24,13 +24,13 @@ export default function TasksTable({ tasks }) {
      */
     const headers = [
         { name: "#", icon: "", className: "", },
-        { name: "Title", icon: <i className="fa-light fa-subtitles"></i>, className: "", },
-        { name: "Status", icon: <i className="fa-sharp fa-light fa-circle-arrow-right"></i>, className: "", },
-        { name: "Priority", icon: <i className="fa-sharp fa-light fa-list-timeline"></i>, className: "", },
-        { name: "Created", icon: <i className="fa-light fa-calendar-day"></i>, className: "created-at", },
-        { name: "Updated", icon: <i className="fa-light fa-calendar-day"></i>, className: "updated-at", },
-        { name: "Reporter", icon: <i className="fa-light fa-user"></i>, className: "", },
-        { name: "Actions", icon: <i className="fa-light fa-gears"></i>, className: "", },
+        { name: "Title", icon: <i className="fa-solid fa-heading"></i>, className: "", },
+        { name: "Status", icon: <i className="fa-solid fa-bars-progress"></i>, className: "", },
+        { name: "Priority", icon: <i className="fa-solid fa-bars-staggered"></i>, className: "", },
+        { name: "Created", icon: <i className="fa-solid fa-calendar"></i>, className: "created-at", },
+        { name: "Updated", icon: <i className="fa-solid fa-calendar"></i>, className: "updated-at", },
+        { name: "Reporter", icon: <i className="fa-solid fa-user"></i>, className: "", },
+        { name: "Actions", icon: <i className="fa-solid fa-ellipsis"></i>, className: "", },
     ];
 
     return (

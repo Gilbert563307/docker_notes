@@ -3,6 +3,7 @@ import {
   DEFAULT_PROJECT_ID,
   DEFAULT_TASKS_ARCHIVE,
   MAX_BOARD_ITEMS,
+  MAX_KAN_BOARDS,
   PRIORITY_FILTER_TYPE_TAGS,
   STATUS_FILTER_TYPE_TAGS,
   TASKS_ARCHIVED_SESSION_FILTER,
@@ -30,6 +31,7 @@ import { orderBy, where } from "firebase/firestore";
 import tasksRepository from "../../data/TasksRepository";
 import kanBoardsRepository from "../../data/KanBoardsRepository.js";
 import { asBlob } from "html-docx-js-typescript";
+import { KanBoardMapper } from "../mapper/KanBoardMapper.js";
 
 /**
  * @typedef {import("../../data/TasksRepository").default} TasksRepository
@@ -454,7 +456,23 @@ class TasksService {
     }
   }
 
-  async listKanBoardsByUser() {}
+  async listKanBoardsByUser() {
+    try {
+      const results = await this.#kanBoardsRepository.listKanBoardsByUser(
+        this.#firebaseUtil.getUserUid(),
+        MAX_KAN_BOARDS,
+      );
+      return {
+        results: KanBoardMapper.arrayToDtoList(results),
+        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
+      };
+    } catch (error) {
+      return {
+        deleted: false,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+      };
+    }
+  }
 
   /**
    *

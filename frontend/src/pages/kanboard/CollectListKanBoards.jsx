@@ -31,7 +31,7 @@ export default function CollectListKanBoards() {
                 {item.getName()}
                 <Link to={updateBoardsUrl}>
                   <button className="kanboard-options-button">
-                    <i className="fa-sharp fa-light fa-pencil"></i>
+                    <i className="fa-solid fa-pencil"></i>
                   </button>
                 </Link>
               </div>

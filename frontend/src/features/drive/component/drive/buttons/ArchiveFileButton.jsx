@@ -34,7 +34,7 @@ export default function ArchiveFileButton({ fileId, isArchived }) {
   return (
     <React.Fragment>
       <button onClick={showArchiveModal}>
-        <i className="fa-light fa-box-archive"></i>
+        <i className="fa-solid fa-box-archive"></i>
       </button>
       <Show>
         <Show.When isTrue={archiveModal}>

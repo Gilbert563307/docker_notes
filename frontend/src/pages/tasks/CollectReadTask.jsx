@@ -29,7 +29,7 @@ export default function CollectReadTask() {
             <div>{getStatusButton(task.getStatus())}</div>
             <div>
               <Link to={`/tasks/update/${task.getId()}`}>
-                <i className="fa-sharp fa-light fa-pencil"></i> Change
+                <i className="fa-solid fa-pencil"></i> Change
               </Link>
             </div>
           </div>

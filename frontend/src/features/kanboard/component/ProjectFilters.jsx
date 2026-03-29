@@ -2,15 +2,19 @@ import React from "react";
 import useGetProjectsHook from "../../../shared/hooks/useGetProjectsHook";
 
 export default function ProjectFilters() {
-  const { projects } = useGetProjectsHook();
+  const { kanBoards } = useGetProjectsHook();
 
   return (
     <div>
-      <select className="form-select" aria-label="Default select example">
-        <option selected>Filter on project </option>
-        <option value="1">One</option>
-        <option value="2">Two</option>
-        <option value="3">Three</option>
+      <select className="form-select" aria-label="Select your kanboard to filter on">
+        <option defaultValue={""}>Filter on project </option>
+        {kanBoards.map((kanBoard) => {
+          return (
+            <option key={kanBoard.getId()} value={kanBoard.getId()}>
+              {kanBoard.getName()}
+            </option>
+          );
+        })}
       </select>
     </div>
   );

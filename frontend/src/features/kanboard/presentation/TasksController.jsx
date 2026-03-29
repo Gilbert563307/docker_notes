@@ -299,7 +299,7 @@ export default function TasksController() {
 
   async function collectListKanBoardsByUser() {
     const kanBoards = await tasksService.listKanBoardsByUser();
-    setNotificationToState(tasks.notificationDto);
+    setNotificationToState(kanBoards.notificationDto);
 
     // Update state with the created task response
     dispatchAction({

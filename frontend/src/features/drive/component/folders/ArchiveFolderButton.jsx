@@ -65,7 +65,7 @@ export default function ArchiveFolderButton({ folder }) {
   return (
     <React.Fragment>
       <button onClick={showModal}>
-        <i className="fa-light fa-box-archive"></i>
+        <i className="fa-solid fa-box-archive"></i>
       </button>
       <Show>
         <Show.When isTrue={modal}>

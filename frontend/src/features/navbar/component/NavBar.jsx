@@ -25,21 +25,21 @@ export default function NavBar() {
     {
       name: "Kanban",
       url: "kanboards",
-      icon: "fa-duotone fa-solid fa-chart-kanban",
+      icon: "fa-brands fa-trello",
     },
     // {
     //   name: "Board",
     //   url: "/board",
     //   icon: "fa-duotone fa-solid fa-clapperboard",
     // },
-    { name: "Tasks", url: "/tasks", icon: "fa-duotone fa-solid fa-list-check" },
-    { name: "Folders", url: "/folders", icon: "fa-duotone fa-solid fa-folder" },
+    { name: "Tasks", url: "/tasks", icon: "fa-solid fa-list-check" },
+    { name: "Folders", url: "/folders", icon: "fa-solid fa-folder-tree" },
     {
       name: "Drive",
       url: "/drive",
-      icon: "fa-duotone fa-regular fa-hard-drive",
+      icon: "fa-solid fa-hard-drive",
     },
-    { name: "Settings", url: "/settings", icon: "fa-duotone fa-thin fa-gear" },
+    { name: "Settings", url: "/settings", icon: "fa-solid fa-gear" },
   ];
 
   return (

@@ -27,7 +27,7 @@ export default function RepositorySelectedFiles({ uploadedFiles, removeFile }) {
             <div className="uploaded-file-header">
               <div className="uploaded-file-header-options">
                 <div>
-                  <i className="fa-duotone fa-solid fa-file fa-xl"></i>
+                  <i className="fa-solid fa-file fa-xl"></i>
                 </div>
                 <BS5TruncateSpan
                   content={f.name}

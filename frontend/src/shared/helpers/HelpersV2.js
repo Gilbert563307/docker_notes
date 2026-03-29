@@ -102,4 +102,5 @@ export class HelpersV2 {
     //If the matching filter.value is true return true | null  will be turned into false by person who is calling this function is.
     return matchingFilter ? matchingFilter.value : null;
   }
+
 }

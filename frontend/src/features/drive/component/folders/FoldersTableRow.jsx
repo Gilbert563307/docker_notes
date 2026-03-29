@@ -48,12 +48,12 @@ export default function FoldersTableRow({ folder }) {
       <td className="main-table-actions">
         <button>
           <Link to={`/folders/read/${folder.getId()}`} state={{ folder: folder.toJson() }}>
-            <i className="fa-light fa-magnifying-glass"></i>
+            <i className="fa-solid fa-magnifying-glass"></i>
           </Link>
         </button>
         <button>
           <Link to={`/folders/update/${folder.getId()}`}>
-            <i className="fa-sharp fa-light fa-pencil"></i>
+            <i className="fa-solid fa-pencil"></i>
           </Link>
         </button>
         <ArchiveFolderButton

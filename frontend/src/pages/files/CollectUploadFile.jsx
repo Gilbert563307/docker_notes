@@ -99,7 +99,7 @@ export default function CollectUploadFile() {
       <div className="upload-file-container">
         <div className="upload-file-header">
           <div className="upload-file-header-icon">
-            <i className="fa-regular fa-cloud-arrow-up"></i>
+            <i className="fa-solid fa-cloud-arrow-up"></i>
           </div>
           <div className="upload-file-header-info">
             <h3 className="upload-file-title">Upload files</h3>
@@ -107,15 +107,12 @@ export default function CollectUploadFile() {
           </div>
         </div>
         <RepositorySelectFolder handleFolderSelection={handleFolderSelection} />
-        <Show>
-          <Show.When isTrue={uploadedFiles.length > 0}>
-            <div>
-              <a href="#" role="button" onClick={() => setUploadedFiles([])} className="upload-reset-btn">
-                reset
-              </a>
-            </div>
-          </Show.When>
-        </Show>
+
+        <div>
+          <a href="#" role="button" onClick={() => setUploadedFiles([])} className="upload-reset-btn">
+            reset
+          </a>
+        </div>
 
         <div
           className="upload-file-drop-zone"
@@ -126,7 +123,7 @@ export default function CollectUploadFile() {
         >
           <div className="upload-file-drop-zone-1-child">
             <div className="upload-file-drop-zone-1-child-icon-parent">
-              <i className="fa-regular fa-cloud-arrow-up"></i>
+              <i className="fa-solid fa-cloud-arrow-up"></i>
             </div>
             <div className="upload-file-drop-zone-content">
               <p>Choose a file or drag & drop it here</p>

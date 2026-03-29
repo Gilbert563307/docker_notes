@@ -77,12 +77,12 @@ export default function TasksTableRow({ task }) {
       <td className="main-table-actions">
         <button>
           <Link to={readTaskUrl} state={{ task: task }}>
-            <i className="fa-light fa-magnifying-glass"></i>
+            <i className="fa-solid fa-magnifying-glass"></i>
           </Link>
         </button>
         <button>
           <Link to={`/tasks/update/${task.getId()}`}>
-            <i className="fa-sharp fa-light fa-pencil"></i>
+            <i className="fa-solid fa-pencil"></i>
           </Link>
         </button>
         <ArchiveTaskButton task={task} isArchived={task.getIsArchived()} />

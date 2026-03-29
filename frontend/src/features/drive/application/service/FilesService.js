@@ -294,7 +294,7 @@ class FilesService {
         "",
         file.name,
         payload.getFolderId(),
-        userUid,
+        this.#firebaseUtil.getUserUid(),
         file.size,
         file.type || file.name.split(".").pop().toLowerCase(),
         false,

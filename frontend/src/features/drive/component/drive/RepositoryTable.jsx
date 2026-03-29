@@ -17,10 +17,10 @@ export default function RepositoryTable({ files }) {
     */
     const headers = [
         { name: "#", icon: "", className: "", },
-        { name: "Name", icon: <i className="fa-light fa-subtitles"></i>, className: "", },
-        { name: "Created", icon: <i className="fa-light fa-calendar-day"></i>, className: "created-at", },
-        { name: "Updated", icon: <i className="fa-light fa-calendar-day"></i>, className: "updated-at", },
-        { name: "Actions", icon: <i className="fa-light fa-gears"></i>, className: "", },
+        { name: "Name", icon: <i className="fa-solid fa-heading"></i>, className: "", },
+        { name: "Created", icon: <i className="fa-solid fa-calendar"></i>, className: "created-at", },
+        { name: "Updated", icon: <i className="fa-solid fa-calendar"></i>, className: "updated-at", },
+        { name: "Actions", icon: <i className="fa-solid fa-ellipsis"></i>, className: "", },
     ];
 
     return (
