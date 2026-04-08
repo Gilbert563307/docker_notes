@@ -3,7 +3,6 @@ import { UserDto } from "../../features/auth/application/dto/UserDto";
 import authService from "../../features/auth/application/service/AuthService";
 import { UseCookieStorage } from "../helpers/useCookieStorage";
 
-
 /**
  * Context for managing user authentication state and actions.
  * @typedef {Object} AuthContextType
@@ -54,9 +53,9 @@ export default function AuthProvider({ children }) {
    *
    * @returns {UserDto | null}
    */
-  const getUserFromCookie = () => {
-    try {
-      const cookieData = UseCookieStorage.readCookie(AUTH_STORAGE_KEYS.USER);
+  function getUserFromCookie() {
+   try {
+      const cookieData = UseCookieStorage.readCookieByDocument(AUTH_STORAGE_KEYS.USER);
 
       const userDto = cookieData ? JSON.parse(cookieData) : null;
       if (userDto === null) return null;
@@ -65,7 +64,7 @@ export default function AuthProvider({ children }) {
       console.error("Failed to parse user data:", error);
       return null;
     }
-  };
+  }
 
   const [user, setUser] = useState(getUserFromCookie());
 
@@ -74,23 +73,30 @@ export default function AuthProvider({ children }) {
    * In a real implementation, this function would handle authentication logic.
    * @param {UserDto} userDto
    */
-  const login = (userDto) => {
+  async function login(userDto) {
     //save the state token so that we can later check for it;
-    UseCookieStorage.createCookie(AUTH_STORAGE_KEYS.USER, JSON.stringify(userDto.toJson()), 1, "/");
+    const day = 24 * 60 * 60 * 1000;
+    const cookie = new UseCookieStorage.CookieBuilder()
+      .name(AUTH_STORAGE_KEYS.USER)
+      .value(JSON.stringify(userDto.toJson()))
+      .expires(Date.now() + day)
+      .build();
+
+    await UseCookieStorage.createCookie(cookie);
     setUser(userDto);
-  };
+  }
 
   /**
    * Simulates user logout action.
    * In a real implementation, this function would handle logout logic.
    */
-  const logout = () => {
-    UseCookieStorage.deleteCookie(AUTH_STORAGE_KEYS.USER);
+  async function logout() {
+    await UseCookieStorage.deleteCookie(AUTH_STORAGE_KEYS.USER);
     setUser(null); // Clear authenticated user
     authService.signUserOut(); // Sign user out of firebase
     localStorage.clear(); //Clear all localstorage items stored
     sessionStorage.clear(); //Clear all sessionstorage items stored
-  };
+  }
 
   /**
    * Memoized context value to optimize performance.

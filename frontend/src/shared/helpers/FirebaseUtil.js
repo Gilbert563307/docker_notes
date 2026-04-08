@@ -4,7 +4,7 @@ import { UseCookieStorage } from "./useCookieStorage";
 
 export class FirebaseUtil {
   getCurrentUser() {
-    const cookieData = UseCookieStorage.readCookie(AUTH_STORAGE_KEYS.USER);
+    const cookieData = UseCookieStorage.readCookieByDocument(AUTH_STORAGE_KEYS.USER);
     const userDto = cookieData ? JSON.parse(cookieData) : null;
     if (userDto === null) return null;
     return new UserDto(userDto.uid, userDto.displayName, userDto.email, userDto.photoURL, userDto.token);

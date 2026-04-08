@@ -50,20 +50,20 @@ export default function AuthController() {
    */
   async function collectLoginWithGoogle() {
     const response = await authService.loginWithGoogle();
-    if (response.login === false) {
+    if (response.login === false ||  response.user === null) {
       setNotificationToState(response.notificationDto);
       return;
     }
-    login(response.user);
+   await login(response.user);
   }
 
   async function collectLoginWithGithub() {
     const response = await authService.loginWithGithub();
-    if (response.login === false) {
+    if (response.login === false || response.user === null) {
       setNotificationToState(response.notificationDto);
       return;
     }
-    login(response.user);
+   await login(response.user);
   }
 
   /**

@@ -1,5 +1,4 @@
 import { NotificationDto } from "../../../notification/application/dto/NotificationDto";
-import { UserDto } from "../dto/UserDto";
 import { auth, googleProvider, githubProvider } from "../../../../database/firebaseConfig";
 import { signInWithPopup, signOut } from "firebase/auth";
 import { User } from "../../domain/User";
@@ -17,7 +16,7 @@ import sessionService from "./SessionService";
 class AuthService {
   #sessionService;
   #auditRepository;
-  #initialStateUser = new UserDto(null, null, null, null, null);
+
 
   /**
    *
@@ -38,7 +37,7 @@ class AuthService {
     try {
       if (!response && !auth)
         return {
-          user: this.#initialStateUser,
+          user: null,
           login: false,
           notificationDto: new NotificationDto("Something went wrong while trying to sign you in", ALERT_TYPES.DANGER),
         };
@@ -50,7 +49,7 @@ class AuthService {
         return {
           ...sessionResponse,
           login: false,
-          user: this.#initialStateUser,
+          user: null,
           notificationDto: new NotificationDto("Something went wrong while trying to sign you in", ALERT_TYPES.DANGER),
         };
       }
@@ -81,7 +80,7 @@ class AuthService {
       );
 
       return {
-        user: this.#initialStateUser,
+        user: null,
         login: false,
         notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
@@ -103,7 +102,7 @@ class AuthService {
       return await this.#handleSignInResponse(response);
     } catch (error) {
       return {
-        user: this.#initialStateUser,
+        user: null,
         login: false,
         notificationDto: new NotificationDto(error.message || "Failed to login with Google", ALERT_TYPES.DANGER),
       };
@@ -116,7 +115,7 @@ class AuthService {
       return await this.#handleSignInResponse(response);
     } catch (error) {
       return {
-        user: this.#initialStateUser,
+        user: null,
         login: false,
         notificationDto: new NotificationDto(error.message || "Failed to login with Github", ALERT_TYPES.DANGER),
       };
