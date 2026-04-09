@@ -5,6 +5,8 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
   _collectionName;
   _collectionRef;
   _database;
+  #cachedDocuments = new Map();
+  #pageCursors = new Map();
 
   /**
    *
@@ -27,6 +29,7 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
    */
   async createDocument(document) {
     await addDoc(this._collectionRef, document);
+    this.#resetCache();
     return true;
   }
 
@@ -63,6 +66,7 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
     // get document
     const document = doc(this._database, this._collectionName, documentId);
     await updateDoc(document, data);
+    this.#resetCache();
     return true;
   }
 
@@ -78,6 +82,7 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
 
     const documentRef = doc(this._database, this._collectionName, documentId);
     await deleteDoc(documentRef);
+    this.#resetCache();
     return true;
   }
 
@@ -131,6 +136,27 @@ export class CrudCollectionManager extends QueryConstraintCollectionManager {
 
     // Get the document data and assign document id to it also
     return { ...snapshot.data(), id: documentId };
+  }
+
+  getCachedDocuments() {
+    return this.#cachedDocuments;
+  }
+
+  getPageCursors() {
+    return this.#pageCursors;
+  }
+
+  setToCachedDocuments(key, docs) {
+    this.#cachedDocuments.set(key, docs);
+  }
+
+  setToPageCursors(key, doc) {
+    this.#pageCursors.set(key, doc);
+  }
+
+  #resetCache() {
+    this.#cachedDocuments = new Map();
+    this.#pageCursors = new Map();
   }
 
   /**

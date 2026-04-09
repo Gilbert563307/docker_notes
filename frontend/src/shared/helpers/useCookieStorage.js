@@ -65,7 +65,7 @@ export class UseCookieStorage {
 
   /**
    * Uses the old document cookie API
-   * @param {string} cookieName 
+   * @param {string} cookieName
    * @returns {string | null}
    */
   static readCookieByDocument(cookieName) {
@@ -100,7 +100,7 @@ export class UseCookieStorage {
     if (!cookieName) {
       throw Error("Cookie name cannot be empty or null");
     }
-    return await cookieStore.delete(cookieName);
+    return await cookieStore.delete({ name: cookieName, path: "/" });
   }
 
   /**
@@ -116,7 +116,7 @@ export class UseCookieStorage {
     #name;
     #value;
     #expires;
-    #partitioned = true;
+    #partitioned = false;
     #domain = null;
     #path = "/";
     #sameSite = "lax";

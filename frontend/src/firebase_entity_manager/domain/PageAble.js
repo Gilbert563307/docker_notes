@@ -2,21 +2,24 @@ export class PageAble {
   #queryItems;
   #page;
   #itemsPerPage;
+  #skipCache = false;
 
   /**
    * //TODO GET CORRECT DATA TYPE
    * @param {Array<any>} queryItems
    * @param {number} page
    * @param {number} itemsPerPage
+   * @param {boolean} skipCache
    */
-  constructor(queryItems, page, itemsPerPage) {
+  constructor(queryItems, page, itemsPerPage, skipCache) {
     this.#validate({ queryItems, page, itemsPerPage });
 
     this.#queryItems = queryItems;
     this.#page = page;
     this.#itemsPerPage = itemsPerPage;
+    this.#skipCache = skipCache;
   }
-  
+
   #validate(data) {
     const { queryItems, page, itemsPerPage } = data;
     if (queryItems === null || queryItems === undefined) {
@@ -44,8 +47,12 @@ export class PageAble {
     return this.#itemsPerPage;
   }
 
-  isFirstPage(){
+  isFirstPage() {
     const FIRST_PAGE = 1;
     return this.#page === FIRST_PAGE;
+  }
+
+  skipCache() {
+   return this.#skipCache;
   }
 }

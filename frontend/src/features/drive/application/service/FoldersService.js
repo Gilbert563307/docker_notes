@@ -69,8 +69,9 @@ class FoldersService {
    */
   async getFoldersByQuery(payload) {
     const queryItems = this.getFoldersQueryClauses(new GetFoldersQueryClauses(payload.getSearchTerm()));
+    console.log(queryItems, payload); //TODO only skip cache if the  search term is not present
     return await this.#foldersRepository.getPaginatedDocumentsByQueryItems(
-      new PageAble(queryItems, payload.getCurrentPage(), payload.getItemsPerPage()),
+      new PageAble(queryItems, payload.getCurrentPage(), payload.getItemsPerPage(), true),
     );
   }
 

@@ -58,12 +58,15 @@ class FilesService {
     const filesQueries = new FilesQueries(baseQueryItems);
 
     const searchTearm = payload.getSearchTerm();
+    if (searchTearm && searchTearm != "") {
+      filesQueries.addQueryItem(this.#filesRepository.getSearchQueryBeforeFieldName("name", searchTearm));
+      filesQueries.addQueryItem(this.#filesRepository.getSearchQueryAfterFieldName("name", searchTearm));
+    }
+
     const folderId = payload.getFolderId();
-
-    filesQueries.addQuery(searchTearm, this.#filesRepository.getSearchQueryBeforeFieldName("name", searchTearm));
-    filesQueries.addQuery(searchTearm, this.#filesRepository.getSearchQueryAfterFieldName("name", searchTearm));
-    filesQueries.addQuery(folderId, where("folder_id", "==", folderId));
-
+    if (folderId && folderId != "") {
+      filesQueries.addQueryItem(where("folder_id", "==", folderId));
+    }
     return filesQueries.getQueryItems();
   }
 
@@ -79,7 +82,7 @@ class FilesService {
     );
 
     return await this.#filesRepository.getPaginatedDocumentsByQueryItems(
-      new PageAble(queryItems, payload.getCurrentPage(), payload.getItemsPerPage())
+      new PageAble(queryItems, payload.getCurrentPage(), payload.getItemsPerPage(), true),
     );
   }
 
@@ -101,6 +104,7 @@ class FilesService {
     try {
       // Construct the query to get all tasks for the current user UID with a
       const files = await this.getFilesByQuery(payload);
+      console.log(files);
 
       const driveFilesDto = DriveFilesMapper.arrayToDtoList(files);
 

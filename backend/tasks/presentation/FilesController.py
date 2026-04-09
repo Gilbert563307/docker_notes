@@ -70,10 +70,10 @@ async def delete_file(request: FileRequest):
         raise HTTPException(status_code=404, detail="File not found or could not be deleted")
 
 
-@files_router.get("{filename}/{user_uid}")
-async def get_file_to_download(filename: str, user_uid: str):
+@files_router.get("/download")
+async def get_file_to_download(request: FileRequest):
     if not user_uid:
         raise HTTPException(status_code=400, detail="The user uid cannot be empty")
-    file_to_download = FilesService.get_download_file(user_uid, filename)
+    file_to_download = FilesService.get_download_file(request.user_uid, request.filename)
     if file_to_download is None:
         raise HTTPException(status_code=404, detail="File not found") 

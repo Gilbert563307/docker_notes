@@ -54,7 +54,7 @@ export default function AuthProvider({ children }) {
    * @returns {UserDto | null}
    */
   function getUserFromCookie() {
-   try {
+    try {
       const cookieData = UseCookieStorage.readCookieByDocument(AUTH_STORAGE_KEYS.USER);
 
       const userDto = cookieData ? JSON.parse(cookieData) : null;
@@ -91,7 +91,7 @@ export default function AuthProvider({ children }) {
    * In a real implementation, this function would handle logout logic.
    */
   async function logout() {
-    await UseCookieStorage.deleteCookie(AUTH_STORAGE_KEYS.USER);
+     await UseCookieStorage.deleteCookie(AUTH_STORAGE_KEYS.USER);
     setUser(null); // Clear authenticated user
     authService.signUserOut(); // Sign user out of firebase
     localStorage.clear(); //Clear all localstorage items stored

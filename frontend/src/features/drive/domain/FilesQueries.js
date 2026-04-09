@@ -18,7 +18,7 @@ export class FilesQueries {
     }
   }
 
-  #addQueryItem(queryItem) {
+  addQueryItem(queryItem) {
     if (queryItem === null || queryItem === undefined) {
       throw new Error("Query item must not be null or undefined");
     }
@@ -26,16 +26,7 @@ export class FilesQueries {
     this.#queryItems.push(queryItem);
   }
 
-  /**
-   *   //todo only works for strings
-   * @param {any} value
-   * @param {*} queryItem
-   */
-  addQuery(value, queryItem) {
-    if (value && value != "") {
-      this.#addQueryItem(queryItem);
-    }
-  }
+ 
 
   getQueryItems() {
     return this.#queryItems;

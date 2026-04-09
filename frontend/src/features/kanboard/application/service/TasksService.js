@@ -255,7 +255,7 @@ class TasksService {
   async getTasksByQuery(payload) {
     const queryItems = this.getTasksQueryClauses(new GetTasksQueryClausesDto(payload.getSearchTerm()));
     return await this.#tasksRepository.getPaginatedDocumentsByQueryItems(
-      new PageAble(queryItems, payload.getCurrentPage(), payload.getItemsPerPage()),
+      new PageAble(queryItems, payload.getCurrentPage(), payload.getItemsPerPage(), false),
     );
   }
 

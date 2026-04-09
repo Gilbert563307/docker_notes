@@ -22,18 +22,12 @@ import {
 import { CrudCollectionManager } from "./CrudCollectionManager.js";
 import { PageAble } from "./domain/PageAble.js";
 
-
-
 /**
  * Manages Firestore collection operations, providing utilities for
  * querying, pagination, and batching.
  * @extends CrudCollectionManager
  */
 export class CollectionManager extends CrudCollectionManager {
-  #cachedDocuments = new Map();
-  // Add a private map for cursors (the actual snapshots)
-  #pageCursors = new Map();
-
   /**
    * Initializes the collection manager.
    * @param {string} collectionName - Name of the Firestore collection.
@@ -158,8 +152,10 @@ export class CollectionManager extends CrudCollectionManager {
     const pageNum = pageAble.getPage();
 
     // 1. Return from data cache if we have it
-    if (this.#cachedDocuments.has(pageNum)) {
-      return this.#cachedDocuments.get(pageNum);
+    if (pageAble.skipCache() === false) {
+      if (this.getCachedDocuments().has(pageNum)) {
+        return this.getCachedDocuments().get(pageNum);
+      }
     }
 
     let resultsQuery;
@@ -167,7 +163,7 @@ export class CollectionManager extends CrudCollectionManager {
       resultsQuery = query(this._collectionRef, ...pageAble.getQueryItems(), limit(pageAble.getItemsPerPage()));
     } else {
       // 2. Get the anchor from the PREVIOUS page
-      const prevPageAnchor = this.#pageCursors.get(pageNum - 1);
+      const prevPageAnchor = this.getPageCursors().get(pageNum - 1);
 
       if (!prevPageAnchor) {
         // If the user tries to jump to Page 5 but hasn't loaded Page 4,
@@ -186,14 +182,13 @@ export class CollectionManager extends CrudCollectionManager {
 
     // 3. Store the last doc as the anchor for the NEXT page
     const lastDoc = snapshot.docs[snapshot.docs.length - 1];
-    this.#pageCursors.set(pageNum, lastDoc);
+    this.setToPageCursors(pageNum, lastDoc);
 
     const docs = this.#convertQuerySnapShotDocs(snapshot);
-    this.#cachedDocuments.set(pageNum, docs);
+    this.setToCachedDocuments(pageNum, docs);
 
     return docs;
   }
-  
 
   /**
    * Retrieves all documents within the collection.

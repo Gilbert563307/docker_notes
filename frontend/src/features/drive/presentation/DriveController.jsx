@@ -176,9 +176,11 @@ export default function DriveController() {
     //set message if there is any
     setNotificationToState(results.notificationDto);
 
+    await collectListFiles();
+
     if (results.uploaded === true) {
       //navigate to files page
-      navigate("/drive");
+      // navigate("/drive");
     }
   }
 
@@ -222,6 +224,7 @@ export default function DriveController() {
    */
   async function collectListFilesBySearchTerm(payload) {
     const files = await filesService.listFilesBySearchTerm(payload);
+    console.log(files)
     setNotificationToState(files.notificationDto);
 
     // Update state with the created task response
@@ -272,7 +275,9 @@ export default function DriveController() {
           setNotificationToState(new NotificationDto("You must select at least 1 file.", ALERT_TYPES.INFO));
           break;
         case DRIVE_CONTROLLER_ACTIONS.FOLDER_NOT_SELECTED_TO_UPLOAD:
-          setNotificationToState(new NotificationDto("You must select at least 1 folder to upload the file(s) into.", ALERT_TYPES.INFO));
+          setNotificationToState(
+            new NotificationDto("You must select at least 1 folder to upload the file(s) into.", ALERT_TYPES.INFO),
+          );
           break;
 
         default:
