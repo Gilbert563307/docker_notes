@@ -25,6 +25,10 @@ export class GetFoldersDto {
     return this.#currentPage;
   }
 
+  /**
+   * 
+   * @returns {number}
+   */
   getItemsPerPage() {
     return this.#itemsPerPage;
   }

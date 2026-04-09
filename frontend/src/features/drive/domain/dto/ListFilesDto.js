@@ -27,6 +27,10 @@ export class ListFilesDto {
     return this.#currentPage;
   }
 
+  /**
+   * 
+   * @returns {number}
+   */
   getItemsPerPage() {
     return this.#itemsPerPage;
   }

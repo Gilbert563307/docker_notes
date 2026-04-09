@@ -14,6 +14,7 @@ import { ALERT_TYPES } from "../../../../shared/presentation/components/bs5/BS5A
 import { ArchiveFolderDto } from "../../presentation/dto/ArchiveFolderDto.js";
 import { CreateFolderDto } from "../../presentation/dto/CreateFolderDto.js";
 import { Folder } from "../../domain/Folder.js";
+import { PageAble } from "../../../../firebase_entity_manager/domain/PageAble.js";
 
 class FoldersService {
   #foldersRepository;
@@ -69,9 +70,7 @@ class FoldersService {
   async getFoldersByQuery(payload) {
     const queryItems = this.getFoldersQueryClauses(new GetFoldersQueryClauses(payload.getSearchTerm()));
     return await this.#foldersRepository.getPaginatedDocumentsByQueryItems(
-      queryItems,
-      payload.getCurrentPage(),
-      payload.getItemsPerPage(),
+      new PageAble(queryItems, payload.getCurrentPage(), payload.getItemsPerPage()),
     );
   }
 

@@ -24,6 +24,10 @@ export class ListTasksDto {
     return this.#currentPage;
   }
 
+  /**
+   * 
+   * @returns {number}
+   */
   getItemsPerPage() {
     return this.#itemsPerPage;
   }

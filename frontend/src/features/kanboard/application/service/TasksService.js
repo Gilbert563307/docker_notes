@@ -32,6 +32,8 @@ import tasksRepository from "../../data/TasksRepository";
 import kanBoardsRepository from "../../data/KanBoardsRepository.js";
 import { asBlob } from "html-docx-js-typescript";
 import { KanBoardMapper } from "../mapper/KanBoardMapper.js";
+import { Page } from "../../../../firebase_entity_manager/domain/Page.js";
+import { PageAble } from "../../../../firebase_entity_manager/domain/PageAble.js";
 
 /**
  * @typedef {import("../../data/TasksRepository").default} TasksRepository
@@ -42,6 +44,8 @@ class TasksService {
   #kanBoardsRepository;
   #helpers;
   #firebaseUtil;
+  #cacheLastDocumentSnapShot = null;
+  #cacheFirstDocumentSnapShot = null;
 
   /**
    *
@@ -243,28 +247,14 @@ class TasksService {
    * Generates a Firestore query to fetch tasks for the current page.
    *
    * @param {ListTasksDto} payload - The current page number for pagination.
-   * @returns {Promise<{documents: Array<any>, notificationDto: NotificationDto}>} The Firestore query to fetch tasks for the specified page.
+   * @returns {Promise<Array<any>>} 
    */
-  getTasksByQuery = async (payload) => {
-    try {
-      const queryItems = this.getTasksQueryClauses(new GetTasksQueryClausesDto(payload.getSearchTerm()));
-      const documents = await this.#tasksRepository.getPaginatedDocumentsByQueryItems(
-        queryItems,
-        payload.getCurrentPage(),
-        payload.getItemsPerPage(),
-      );
-
-      return {
-        documents: documents,
-        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
-      };
-    } catch (error) {
-      return {
-        documents: [],
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
-      };
-    }
-  };
+  async getTasksByQuery(payload) {
+    const queryItems = this.getTasksQueryClauses(new GetTasksQueryClausesDto(payload.getSearchTerm()));
+    return await this.#tasksRepository.getPaginatedDocumentsByQueryItems(
+      new PageAble(queryItems, payload.getCurrentPage(), payload.getItemsPerPage()),
+    );
+  }
 
   /**
    *
@@ -287,9 +277,10 @@ class TasksService {
    * @returns {Promise<{results: import("../../../../types/types").ListTasks,  notificationDto: NotificationDto }>} A promise that resolves to an object containing the fetched tasks, a message, and an alert type.
    */
   listTasks = async (payload) => {
+    let cachedResults; 
     try {
       const results = await this.getTasksByQuery(payload);
-      const tasksDto = TasksMapper.arrayToDtoList(results.documents);
+      const tasksDto = TasksMapper.arrayToDtoList(results);
 
       //get total records for pagination
       const totalRecords = await this.getTotalTasksInDatabaseByUserAndFilters(payload);
@@ -303,7 +294,7 @@ class TasksService {
       };
     } catch (error) {
       return {
-        results: { tasks: [], total: 0, pages: 0 },
+        results: { tasks: [], total: 15, pages: 2 },
         notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
       };
     }

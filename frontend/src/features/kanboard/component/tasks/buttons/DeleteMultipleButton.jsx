@@ -3,15 +3,15 @@ import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from "../../../pr
 import { Show } from "../../../../../shared/presentation/components/custom/Show";
 import BS5Modal, { MODAL_SIZES } from "../../../../../shared/presentation/components/bs5/BS5Modal";
 
-
 /**
  * Component representing a table of tasks.
- * 
+ *
  * @param {Object} props - The properties object.
- * @param {Map<string, boolean>} props.mapIdsToDelete - The array of tasks to display.
- * @returns {JSX.Element} 
+ * @param {Map<string, boolean>} props.mapIdsToDelete -
+ * @param {Function} props.resetSelectedTasks -
+ * @returns {JSX.Element}
  */
-export default function DeleteMultipleButton({ mapIdsToDelete }) {
+export default function DeleteMultipleButton({ mapIdsToDelete, resetSelectedTasks }) {
   const { dispatch } = useTasksControllerContext();
   const modalId = useId();
   const [deleteModal, setDeleteModal] = useState(false);
@@ -27,6 +27,7 @@ export default function DeleteMultipleButton({ mapIdsToDelete }) {
   const deleteAll = () => {
     if (mapIdsToDelete.size === 0) return;
     dispatch({ type: TASKS_CONTROLLER_ACTIONS.DELETE_MULTIPLE, payload: mapIdsToDelete });
+    resetSelectedTasks();
     hideModal();
   };
 

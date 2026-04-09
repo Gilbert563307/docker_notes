@@ -21,6 +21,7 @@ import { GetFilesQueryClausesDto } from "../../domain/dto/GetFilesQueryClausesDt
 import { ListFilesDto } from "../../domain/dto/ListFilesDto";
 import { limit, orderBy, where } from "firebase/firestore";
 import filesRepository from "../../data/FilesRepository";
+import { PageAble } from "../../../../firebase_entity_manager/domain/PageAble.js";
 
 class FilesService {
   #filesRepository;
@@ -73,12 +74,12 @@ class FilesService {
    * @returns {Promise<Array<Object>>} The Firestore query to fetch tasks for the specified page.
    */
   async getFilesByQuery(payload) {
-    const queryItems = this.getFilesQueryClauses(new GetFilesQueryClausesDto(payload.getSearchTerm(), payload.getFolderId()));
+    const queryItems = this.getFilesQueryClauses(
+      new GetFilesQueryClausesDto(payload.getSearchTerm(), payload.getFolderId()),
+    );
 
     return await this.#filesRepository.getPaginatedDocumentsByQueryItems(
-      queryItems,
-      payload.getCurrentPage(),
-      payload.getItemsPerPage(),
+      new PageAble(queryItems, payload.getCurrentPage(), payload.getItemsPerPage())
     );
   }
 
@@ -176,7 +177,7 @@ class FilesService {
       };
     }
   }
-  
+
   /**
    * Upload files to the backend server
    *

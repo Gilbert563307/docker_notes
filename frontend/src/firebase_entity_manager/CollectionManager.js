@@ -22,7 +22,7 @@ import {
 import { CrudCollectionManager } from "./CrudCollectionManager.js";
 import { PageAble } from "./domain/PageAble.js";
 
-const FIRST_PAGE = 1;
+
 
 /**
  * Manages Firestore collection operations, providing utilities for
@@ -30,6 +30,10 @@ const FIRST_PAGE = 1;
  * @extends CrudCollectionManager
  */
 export class CollectionManager extends CrudCollectionManager {
+  #cachedDocuments = new Map();
+  // Add a private map for cursors (the actual snapshots)
+  #pageCursors = new Map();
+
   /**
    * Initializes the collection manager.
    * @param {string} collectionName - Name of the Firestore collection.
@@ -148,29 +152,48 @@ export class CollectionManager extends CrudCollectionManager {
 
   /**
    * Fetches a specific page of documents based on query constraints.
-   * @param {Array<QueryConstraint>} queryItems - Constraints for the query.
-   * @param {number} page - The page number to retrieve.
-   * @param {number} itemsPerPage - Number of documents per page.
-   * @returns {Promise<Array<Object>>} Resolved array of document data with IDs.
+   * @param {PageAble} pageAble
    */
-  async getPaginatedDocumentsByQueryItems(queryItems, page, itemsPerPage) {
-    const pageAble = new PageAble(queryItems, page, itemsPerPage);
+  async getPaginatedDocumentsByQueryItems(pageAble) {
+    const pageNum = pageAble.getPage();
+
+    // 1. Return from data cache if we have it
+    if (this.#cachedDocuments.has(pageNum)) {
+      return this.#cachedDocuments.get(pageNum);
+    }
 
     let resultsQuery;
-    if (pageAble.getPage() === FIRST_PAGE) {
+    if (pageAble.isFirstPage()) {
       resultsQuery = query(this._collectionRef, ...pageAble.getQueryItems(), limit(pageAble.getItemsPerPage()));
     } else {
-      resultsQuery = await this.#getPaginatedCollectionQuery(
-        pageAble.getPage(),
-        pageAble.getItemsPerPage(),
-        pageAble.getQueryItems(),
+      // 2. Get the anchor from the PREVIOUS page
+      const prevPageAnchor = this.#pageCursors.get(pageNum - 1);
+
+      if (!prevPageAnchor) {
+        // If the user tries to jump to Page 5 but hasn't loaded Page 4,
+        throw new Error("Sequential pagination required");
+      }
+
+      resultsQuery = query(
+        this._collectionRef,
+        ...pageAble.getQueryItems(),
+        startAfter(prevPageAnchor),
+        limit(pageAble.getItemsPerPage()),
       );
     }
 
-    // Execute the query to get the tasks.
-    const querySnapshot = await getDocs(resultsQuery);
-    return this.#convertQuerySnapShotDocs(querySnapshot);
+    const snapshot = await getDocs(resultsQuery);
+
+    // 3. Store the last doc as the anchor for the NEXT page
+    const lastDoc = snapshot.docs[snapshot.docs.length - 1];
+    this.#pageCursors.set(pageNum, lastDoc);
+
+    const docs = this.#convertQuerySnapShotDocs(snapshot);
+    this.#cachedDocuments.set(pageNum, docs);
+
+    return docs;
   }
+  
 
   /**
    * Retrieves all documents within the collection.
@@ -231,6 +254,35 @@ export class CollectionManager extends CrudCollectionManager {
   }
 
   /**
+   * Delete multiple documents by provided document id's
+   * @param {Array<string>} documentIds
+   */
+  async deleteMultipleDocuments(documentIds) {
+    if (!documentIds) {
+      throw new Error("Document ids must not be null");
+    }
+    if (!Array.isArray(documentIds)) {
+      throw new Error("Document ids must be of type array");
+    }
+    if (documentIds.length === 0) return false;
+
+    const batch = this.createBatchOperation();
+
+    documentIds.forEach((id) => {
+      const docRef = this.getDocumentReferenceById(id);
+      batch.delete(docRef);
+    });
+
+    //Added a try carch so if one fails then they all fail
+    try {
+      await batch.commit();
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  /**
    * Internal helper to calculate pagination using cursor-based logic.
    * @param {number} currentPage
    * @param {number} itemsPerPage
@@ -266,35 +318,6 @@ export class CollectionManager extends CrudCollectionManager {
     }
     // Return a query that starts after the last visible document of the previous page
     return query(this._collectionRef, ...queryItems, startAfter(startFromDocument), limit(itemsPerPage));
-  }
-
-  /**
-   * Delete multiple documents by provided document id's
-   * @param {Array<string>} documentIds
-   */
-  async deleteMultipleDocuments(documentIds) {
-    if (!documentIds) {
-      throw new Error("Document ids must not be null");
-    }
-    if (!Array.isArray(documentIds)) {
-      throw new Error("Document ids must be of type array");
-    }
-    if (documentIds.length === 0) return false;
-
-    const batch = this.createBatchOperation();
-
-    documentIds.forEach((id) => {
-      const docRef = this.getDocumentReferenceById(id);
-      batch.delete(docRef);
-    });
-
-    //Added a try carch so if one fails then they all fail
-    try {
-      await batch.commit();
-      return true;
-    } catch (err) {
-      return false;
-    }
   }
 
   /**

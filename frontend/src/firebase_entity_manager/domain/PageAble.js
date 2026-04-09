@@ -16,7 +16,7 @@ export class PageAble {
     this.#page = page;
     this.#itemsPerPage = itemsPerPage;
   }
-
+  
   #validate(data) {
     const { queryItems, page, itemsPerPage } = data;
     if (queryItems === null || queryItems === undefined) {
@@ -42,5 +42,10 @@ export class PageAble {
 
   getItemsPerPage() {
     return this.#itemsPerPage;
+  }
+
+  isFirstPage(){
+    const FIRST_PAGE = 1;
+    return this.#page === FIRST_PAGE;
   }
 }

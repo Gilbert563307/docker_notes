@@ -40,6 +40,10 @@ export default function CollectListTasks() {
     setSelectedTaskIds(clonedMap);
   }
 
+  function resetSelectedTasks() {
+    setSelectedTaskIds(new Map());
+  }
+
   return (
     <article className="tasks-article d-flex flex-column gap-1">
       <div className="tasks-header d-flex justify-content-between">
@@ -55,7 +59,7 @@ export default function CollectListTasks() {
               Create
             </Link>
           </div>
-          <div>{selectedTaskIds.size > 0 ? <DeleteMultipleButton mapIdsToDelete={selectedTaskIds} /> : ""}</div>
+          <div>{selectedTaskIds.size > 0 ? <DeleteMultipleButton resetSelectedTasks={resetSelectedTasks} mapIdsToDelete={selectedTaskIds} /> : ""}</div>
         </div>
       </div>
 
