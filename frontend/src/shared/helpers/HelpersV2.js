@@ -103,4 +103,7 @@ export class HelpersV2 {
     return matchingFilter ? matchingFilter.value : null;
   }
 
+  getSessionStorageFilter(name){
+    return sessionStorage.getItem(name);
+  }
 }

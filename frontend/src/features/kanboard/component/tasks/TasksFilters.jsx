@@ -44,7 +44,7 @@ export default function TasksFilters() {
         </ul>
       </div>
 
-      <ProjectFilters/>
+      {/* <ProjectFilters/> */}
 
     </div>
   )

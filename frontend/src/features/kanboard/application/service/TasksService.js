@@ -4,10 +4,12 @@ import {
   DEFAULT_TASKS_ARCHIVE,
   MAX_BOARD_ITEMS,
   MAX_KAN_BOARDS,
+  NONE_PROJECTS,
   PRIORITY_FILTER_TYPE_TAGS,
   STATUS_FILTER_TYPE_TAGS,
   TASKS_ARCHIVED_SESSION_FILTER,
   TASKS_PATH,
+  TASKS_PROJECT_ID_FILTER,
 } from "../../../../config";
 import { Task } from "../../domain/Task";
 import { Assignee } from "../../domain/Assignee";
@@ -200,7 +202,7 @@ class TasksService {
   }
 
   /**
-   *
+   * //TODO REWRITE AND ADD TO CUSTOM DOMAIN
    * @param {GetTasksQueryClausesDto} payload
    * @returns {Array<any>}
    */
@@ -233,6 +235,11 @@ class TasksService {
       const searchTerm = payload.getSearchTerm()?.trim();
       tasksQuerys.addQueryItem(this.#tasksRepository.getSearchQueryBeforeFieldName("title", searchTerm));
       tasksQuerys.addQueryItem(this.#tasksRepository.getSearchQueryAfterFieldName("title", searchTerm));
+    }
+
+    const projectIdToFilterOn = this.#helpers.getSessionStorageFilter(TASKS_PROJECT_ID_FILTER);
+    if (projectIdToFilterOn !== NONE_PROJECTS) {
+      tasksQuerys.addQueryItem(where("project_id", "==", projectIdToFilterOn));
     }
 
     return tasksQuerys.getQueryItems();
