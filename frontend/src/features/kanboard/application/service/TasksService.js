@@ -237,10 +237,11 @@ class TasksService {
       tasksQuerys.addQueryItem(this.#tasksRepository.getSearchQueryAfterFieldName("title", searchTerm));
     }
 
-    const projectIdToFilterOn = this.#helpers.getSessionStorageFilter(TASKS_PROJECT_ID_FILTER);
-    if (projectIdToFilterOn !== NONE_PROJECTS) {
-      tasksQuerys.addQueryItem(where("project_id", "==", projectIdToFilterOn));
-    }
+    //TODO NEEDS BETTER IMPLEMENTATION
+    // const projectIdToFilterOn = this.#helpers.getSessionStorageFilter(TASKS_PROJECT_ID_FILTER);
+    // if (projectIdToFilterOn !== NONE_PROJECTS) {
+    //   tasksQuerys.addQueryItem(where("project_id", "==", projectIdToFilterOn));
+    // }
 
     return tasksQuerys.getQueryItems();
   }
