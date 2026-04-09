@@ -41,8 +41,6 @@ class TasksService {
   #kanBoardsRepository;
   #helpers;
   #firebaseUtil;
-  #cacheLastDocumentSnapShot = null;
-  #cacheFirstDocumentSnapShot = null;
 
   /**
    *
@@ -97,7 +95,7 @@ class TasksService {
       // Return error message in case of failure
       return {
         created: false,
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+        notificationDto: new NotificationDto.Builder().danger().message(error.message).build(),
       };
     }
   }
@@ -138,7 +136,7 @@ class TasksService {
       // On error, return a response with error message and danger alert type.
       return {
         filters: [],
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+        notificationDto: new NotificationDto.Builder().danger().message(error.message).build(),
       };
     }
   }
@@ -171,7 +169,7 @@ class TasksService {
       // On error, return a response with error message and danger alert type.
       return {
         names: [],
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+        notificationDto: new NotificationDto.Builder().danger().message(error.message).build(),
       };
     }
   }
@@ -196,7 +194,7 @@ class TasksService {
       // On error, return a response with error message and danger alert type.
       return {
         filters: [],
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+        notificationDto: new NotificationDto.Builder().danger().message(error.message).build(),
       };
     }
   }
@@ -290,8 +288,8 @@ class TasksService {
       };
     } catch (error) {
       return {
-        results: { tasks: [], total: 15, pages: 2 },
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+        results: { tasks: [], total: 0, pages: 0 },
+        notificationDto: new NotificationDto.Builder().danger().message(error.message).build(),
       };
     }
   };
@@ -319,7 +317,7 @@ class TasksService {
     } catch (error) {
       return {
         tasks: [],
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+        notificationDto: new NotificationDto.Builder().danger().message(error.message).build(),
       };
     }
   };
@@ -356,7 +354,7 @@ class TasksService {
     } catch (error) {
       return {
         updated: false,
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+        notificationDto: new NotificationDto.Builder().danger().message(error.message).build(),
       };
     }
   };
@@ -381,7 +379,7 @@ class TasksService {
       // Return an error response if the fetch operation fails
       return {
         task: this.#getEmptyTaskDto(),
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+        notificationDto: new NotificationDto.Builder().danger().message(error.message).build(),
       };
     }
   };
@@ -418,7 +416,7 @@ class TasksService {
       // Return an error response if the update operation fails
       return {
         archived: false,
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+        notificationDto: new NotificationDto.Builder().danger().message(error.message).build(),
       };
     }
   };
@@ -438,7 +436,7 @@ class TasksService {
     } catch (error) {
       return {
         deleted: false,
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+        notificationDto: new NotificationDto.Builder().danger().message(error.message).build(),
       };
     }
   }
@@ -456,7 +454,7 @@ class TasksService {
     } catch (error) {
       return {
         deleted: false,
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+        notificationDto: new NotificationDto.Builder().danger().message(error.message).build(),
       };
     }
   }
@@ -469,7 +467,7 @@ class TasksService {
     if (payload.description === "") {
       return {
         downloaded: false,
-        notificationDto: new NotificationDto("Download failed: The file is empty", ALERT_TYPES.INFO),
+        notificationDto: new NotificationDto.Builder().message("Download failed: The file is empty").build(),
       };
     }
     return await this.#convertHtmlToDocx(payload);
@@ -518,12 +516,12 @@ class TasksService {
       URL.revokeObjectURL(url);
       return {
         downloaded: true,
-        notificationDto: new NotificationDto("", ALERT_TYPES.SUCCESS),
+        notificationDto: new NotificationDto.Builder().build(),
       };
     } catch (error) {
       return {
         downloaded: false,
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+        notificationDto: new NotificationDto.Builder().danger().message(error.message).build(),
       };
     }
   }
@@ -546,6 +544,14 @@ class TasksService {
         }
       });
 
+      if (updatedIdsToDelete.length === 0) {
+        return {
+          tasks: currentState,
+          deleted: false,
+          notificationDto: new NotificationDto.Builder().build(),
+        };
+      }
+
       const deleted = await this.#tasksRepository.deleteMultipleDocuments(updatedIdsToDelete);
 
       // Check if anything was actually deleted to make the message more accurate
@@ -562,13 +568,13 @@ class TasksService {
       return {
         tasks: newSate,
         deleted: deleted,
-        notificationDto: new NotificationDto(message, ALERT_TYPES.SUCCESS),
+        notificationDto: new NotificationDto.Builder().build(),
       };
     } catch (error) {
       return {
         tasks: currentState,
         deleted: false,
-        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+        notificationDto: new NotificationDto.Builder().danger().message(error.message).build(),
       };
     }
   }

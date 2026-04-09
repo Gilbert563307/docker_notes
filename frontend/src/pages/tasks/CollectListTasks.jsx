@@ -60,11 +60,7 @@ export default function CollectListTasks() {
             </Link>
           </div>
           <div>
-            {selectedTaskIds.size > 0 ? (
-              <DeleteMultipleButton resetSelectedTasks={resetSelectedTasks} mapIdsToDelete={selectedTaskIds} />
-            ) : (
-              ""
-            )}
+            <DeleteMultipleButton resetSelectedTasks={resetSelectedTasks} mapIdsToDelete={selectedTaskIds} />
           </div>
         </div>
       </div>
