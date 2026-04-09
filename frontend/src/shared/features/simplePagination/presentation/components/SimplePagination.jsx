@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Show } from "../../../../presentation/components/custom/Show";
 
 export const PAGE_CHANGED_EVENT = "PAGE_CHANGED_EVENT";
+const PAGE = "page";
 
 /**
  * Will only display the page numbers when the total page numbers is greater than 1
@@ -11,6 +12,9 @@ export const PAGE_CHANGED_EVENT = "PAGE_CHANGED_EVENT";
  * @returns
  */
 export default function SimplePagination({ totalItems, totalPages }) {
+  const currentUrl = new URL(window.location.href);
+
+  const [currentPageNumber, setCurrentPageNumber] = useState(currentUrl.searchParams.get(PAGE) || 1);
   /**
    *  @enum { typeof PAGINATION_OPTIONS[keyof typeof PAGINATION_OPTIONS]}
    *
@@ -26,7 +30,7 @@ export default function SimplePagination({ totalItems, totalPages }) {
    */
   function paginate(option) {
     const url = new URL(window.location.href);
-    let currentPageNumber = url.searchParams.get("page");
+    let currentPageNumber = url.searchParams.get(PAGE);
 
     if (currentPageNumber === null) {
       currentPageNumber = "1";
@@ -46,9 +50,10 @@ export default function SimplePagination({ totalItems, totalPages }) {
       }
     }
 
-    url.searchParams.set("page", currentPageNumber);
+    url.searchParams.set(PAGE, currentPageNumber);
     history.replaceState(history.state, "", url.href);
     dispatchCustomEvent(parseInt(currentPageNumber));
+    setCurrentPageNumber(currentPageNumber);
   }
 
   /**
@@ -70,7 +75,10 @@ export default function SimplePagination({ totalItems, totalPages }) {
         <Show.When isTrue={totalPages > 1}>
           <Show>
             <Show.When isTrue={totalItems != null}>
-              <span className="mx-1">Total results: {totalItems}</span>
+              <div>
+                <span className="mx-1">Total results: {totalItems}</span>
+                <span>Page: {currentPageNumber} </span>
+              </div>
             </Show.When>
           </Show>
 
