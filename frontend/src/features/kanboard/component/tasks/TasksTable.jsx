@@ -12,9 +12,11 @@ import { TaskDto } from '../../application/dto/TaskDto';
  * 
  * @param {Object} props - The properties object.
  * @param {Array<TaskDto>} props.tasks - The array of tasks to display.
+ * @param {Map<string, boolean>} props.selectedTaskIds 
+ * @param {Function} props.addTaskId 
  * @returns {JSX.Element} The rendered TasksTable component.
  */
-export default function TasksTable({ tasks }) {
+export default function TasksTable({ tasks, selectedTaskIds, addTaskId }) {
 
     /**
      * Represents the headers for a table.
@@ -32,6 +34,14 @@ export default function TasksTable({ tasks }) {
         { name: "Reporter", icon: <i className="fa-solid fa-user"></i>, className: "", },
         { name: "Actions", icon: <i className="fa-solid fa-ellipsis"></i>, className: "", },
     ];
+
+    /**
+     * 
+     * @param {string} taskId 
+     */
+    function isTaskSelected(taskId){
+        return selectedTaskIds.get(taskId);
+    }
 
     return (
         <div>
@@ -52,7 +62,7 @@ export default function TasksTable({ tasks }) {
                         </thead>
                         <tbody>
                             {tasks && tasks.length > 0 && tasks.map((task, index) => (
-                                <TasksTableRow key={task.getId() || index} task={task} />
+                                <TasksTableRow addTaskId={addTaskId} selected={isTaskSelected(task.getId())}  key={task.getId() || index} task={task} />
                             ))}
                         </tbody>
                     </table>

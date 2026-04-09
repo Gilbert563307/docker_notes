@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import useSetPageTitleHook from "../../shared/hooks/useSetPageTitleHook";
 import "./css/CollectListTasks.css";
 import useGetTasksHook from "../../shared/hooks/useGetTasksHook";
@@ -21,6 +21,24 @@ import DeleteMultipleButton from "../../features/kanboard/component/tasks/button
 export default function CollectListTasks() {
   useSetPageTitleHook({ title: "Tasks " });
   const { tasks, totalTasks, totalPages } = useGetTasksHook();
+  const [selectedTaskIds, setSelectedTaskIds] = useState(new Map());
+
+  /**
+   *
+   * @param {string} taskId
+   * @returns {void}
+   */
+  function addTaskId(taskId) {
+    const clonedMap = new Map(selectedTaskIds);
+    const found = clonedMap.get(taskId);
+    if (!found) {
+      clonedMap.set(taskId, true);
+      setSelectedTaskIds(clonedMap);
+      return;
+    }
+    clonedMap.set(taskId, false);
+    setSelectedTaskIds(clonedMap);
+  }
 
   return (
     <article className="tasks-article d-flex flex-column gap-1">
@@ -37,14 +55,12 @@ export default function CollectListTasks() {
               Create
             </Link>
           </div>
-          <div>
-            <DeleteMultipleButton />
-          </div>
+          <div>{selectedTaskIds.size > 0 ? <DeleteMultipleButton mapIdsToDelete={selectedTaskIds} /> : ""}</div>
         </div>
       </div>
 
       <div className="tasks-content table-responsive">
-        <TasksTable tasks={tasks} />
+        <TasksTable tasks={tasks} selectedTaskIds={selectedTaskIds} addTaskId={addTaskId} />
         <BS5PaginationV2 totalItems={totalTasks} totalPages={totalPages} />
       </div>
     </article>

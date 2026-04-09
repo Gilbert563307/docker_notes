@@ -43,7 +43,6 @@ const initialState = {
   task: initialTaskDto,
   kanBoards: [],
   tasks: { tasks: [], total: 0, pages: 0 },
-  tasksIdsToDelete: [],
 };
 
 /**
@@ -71,7 +70,6 @@ export const TASKS_CONTROLLER_ACTIONS = {
   GET_KAN_BOARDS_BY_CURRENT_USER: "GET_KAN_BOARDS_BY_CURRENT_USER",
   SET_NOTIFICATION: "SET_NOTIFICATION",
   DELETE_MULTIPLE: "DELETE_MULTIPLE",
-  ADD_TASK_ID_TO_DELETE: "ADD_TASK_ID_TO_DELETE",
 };
 
 /**
@@ -116,9 +114,6 @@ export default function TasksController() {
     SET_TASKS: "SET_TASKS",
     SET_TASK: "SET_TASK",
     SET_KAN_BOARDS: "SET_KAN_BOARDS",
-    SET_TASK_ID_TO_DELETE: "SET_TASK_ID_TO_DELETE",
-    RESET_TASK_IDS: "RESET_TASK_IDS",
-    SET_TASKS_AND_FILTER_OUT_REMOVED: "SET_TASKS_AND_FILTER_OUT_REMOVED",
   };
 
   /**
@@ -144,26 +139,6 @@ export default function TasksController() {
           ...state,
           kanBoards: action.payload,
         };
-      case REDUCER_ACTIONS.SET_TASK_ID_TO_DELETE:
-        return {
-          ...state,
-          tasksIdsToDelete: [...state.tasksIdsToDelete, action.payload],
-        };
-      case REDUCER_ACTIONS.RESET_TASK_IDS:
-        return {
-          ...state,
-          tasksIdsToDelete: [],
-        };
-      // case REDUCER_ACTIONS.SET_TASKS_AND_FILTER_OUT_REMOVED:
-      //   return {
-      //     ...state,
-      //     tasks: {
-      //       tasks: state.tasks.filter((taskDto) => !state.tasksIdsToDelete.includes(taskDto.getId())),
-      //       total: state.tasks.total,
-      //       pages: state.tasks.pages,
-      //     },
-      //   };
-
       default:
         return state;
     }
@@ -335,46 +310,20 @@ export default function TasksController() {
     });
   }
 
-  /**
-   *
-   * @param {string} id
-   * @returns
-   */
-  function collectAddTaskIdToDelete(id) {
-    if (!id) return;
-    dispatchAction({
-      type: REDUCER_ACTIONS.SET_TASK_ID_TO_DELETE,
-      payload: id,
-    });
-  }
 
   /**
    *
-   * @param {Array<string>} tasksIdsToDelete
+   * @param {Map<string, boolean>} mapIdsToDelete
    */
-  async function collectDeleteMultiple(tasksIdsToDelete) {
-    const results = await tasksService.deleteMultipleTasks(tasksIdsToDelete, state.tasks);
-
+  async function collectDeleteMultiple(mapIdsToDelete) {
+    const results = await tasksService.deleteMultipleTasks(mapIdsToDelete, state.tasks);
     setNotificationToState(results.notificationDto);
-
-    // dispatchAction({
-    //   type: REDUCER_ACTIONS.SET_TASKS_AND_FILTER_OUT_REMOVED,
-    //   payload: tasksIdsToDelete,
-    // });
-
-    // @ts-ignore
-    dispatchAction({
-      type: REDUCER_ACTIONS.RESET_TASK_IDS,
-      payload: "",
-    });
 
     // @ts-ignore
     dispatchAction({
       type: REDUCER_ACTIONS.SET_TASKS,
       payload: results.tasks,
     });
-    console.log(results.navigateToUrl)
-    navigate(results.navigateToUrl)
   }
 
   /**
@@ -414,13 +363,9 @@ export default function TasksController() {
         case TASKS_CONTROLLER_ACTIONS.GET_KAN_BOARDS_BY_CURRENT_USER:
           await collectListKanBoardsByUser();
           break;
-        case TASKS_CONTROLLER_ACTIONS.ADD_TASK_ID_TO_DELETE:
-          collectAddTaskIdToDelete(action.payload);
-          break;
         case TASKS_CONTROLLER_ACTIONS.DELETE_MULTIPLE:
           await collectDeleteMultiple(action.payload);
           break;
-
         case "CLOSE_ALERT":
           closeAlert();
           break;

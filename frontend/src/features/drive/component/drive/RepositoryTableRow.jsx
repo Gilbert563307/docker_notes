@@ -6,7 +6,7 @@ import DeleteFileButton from "./buttons/DeleteFileButton";
 import { DRIVE_CONTROLLER_ACTIONS, useDriveControllerContext } from "../../presentation/DriveController";
 import { DownloadFileDto } from "../../presentation/dto/DownloadFileDto";
 import { DriveFileDto } from "../../domain/dto/DriveFileDto";
-import ArchiveFileButton from "./buttons/ArchiveFileButton";
+// import ArchiveFileButton from "./buttons/ArchiveFileButton";
 
 /**
  *
@@ -38,7 +38,7 @@ export default function RepositoryTableRow({ file }) {
       <td>{file.getUserLocaleUpdatedAt()}</td>
       <td className="main-table-actions">
         <button>
-          <i className="fa-light fa-download" onClick={downloadFile}></i>
+          <i className="fa-solid fa-download" onClick={downloadFile}></i>
         </button>
         <DeleteFileButton fileId={file.getId()} filename={file.getName()}></DeleteFileButton>
         {/* <ArchiveFileButton

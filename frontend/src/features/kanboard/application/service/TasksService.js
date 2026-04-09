@@ -543,19 +543,29 @@ class TasksService {
 
   /**
    *
-   * @param {Array<string>} idsToDelete
+   * @param {Map<string, boolean>} mapIdsToDelete
    * @param {{page: number, tasks: Array<TaskDto>, total: number }} currentState
-   * @returns {Promise<{tasks:{page: number, tasks: Array<TaskDto>, total: number }, deleted: boolean, notificationDto: NotificationDto, navigateToUrl: string }>}
+   * @returns {Promise<{tasks:{page: number, tasks: Array<TaskDto>, total: number }, deleted: boolean, notificationDto: NotificationDto }>}
    */
-  async deleteMultipleTasks(idsToDelete, currentState) {
+  async deleteMultipleTasks(mapIdsToDelete, currentState) {
     try {
-      const deleted = await this.#tasksRepository.deleteMultipleDocuments(idsToDelete);
+      /**
+       * @type {Array<string>}
+       */
+      const updatedIdsToDelete = [];
+      mapIdsToDelete.forEach((value, taskId) => {
+        if (value === true) {
+          updatedIdsToDelete.push(taskId);
+        }
+      });
+
+      const deleted = await this.#tasksRepository.deleteMultipleDocuments(updatedIdsToDelete);
 
       // Check if anything was actually deleted to make the message more accurate
-      const count = idsToDelete.length;
+      const count = updatedIdsToDelete.length;
       const message = `${count} task${count !== 1 ? "s" : ""} deleted successfully.`;
 
-      const tasks = currentState.tasks.filter((task) => !idsToDelete.includes(task.getId()));
+      const tasks = currentState.tasks.filter((task) => !updatedIdsToDelete.includes(task.getId()));
       const newSate = {
         tasks: tasks,
         page: currentState.page,
@@ -563,14 +573,12 @@ class TasksService {
       };
 
       return {
-        navigateToUrl: `/tasks?page=${this.#helpers.getCurrentPageNumber()}`,
         tasks: newSate,
         deleted: deleted,
         notificationDto: new NotificationDto(message, ALERT_TYPES.SUCCESS),
       };
     } catch (error) {
       return {
-        navigateToUrl: "/tasks",
         tasks: currentState,
         deleted: false,
         notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
