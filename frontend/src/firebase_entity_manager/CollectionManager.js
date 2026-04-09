@@ -153,8 +153,8 @@ export class CollectionManager extends CrudCollectionManager {
 
     // 1. Return from data cache if we have it
     if (pageAble.skipCache() === false) {
-      if (this.getCachedDocuments().has(pageNum)) {
-        return this.getCachedDocuments().get(pageNum);
+      if (super.getCachedDocuments().has(pageNum)) {
+        return super.getCachedDocuments().get(pageNum);
       }
     }
 
@@ -163,7 +163,7 @@ export class CollectionManager extends CrudCollectionManager {
       resultsQuery = query(this._collectionRef, ...pageAble.getQueryItems(), limit(pageAble.getItemsPerPage()));
     } else {
       // 2. Get the anchor from the PREVIOUS page
-      const prevPageAnchor = this.getPageCursors().get(pageNum - 1);
+      const prevPageAnchor = super.getPageCursors().get(pageNum - 1);
 
       if (!prevPageAnchor) {
         // If the user tries to jump to Page 5 but hasn't loaded Page 4,
@@ -182,10 +182,10 @@ export class CollectionManager extends CrudCollectionManager {
 
     // 3. Store the last doc as the anchor for the NEXT page
     const lastDoc = snapshot.docs[snapshot.docs.length - 1];
-    this.setToPageCursors(pageNum, lastDoc);
+    super.setToPageCursors(pageNum, lastDoc);
 
     const docs = this.#convertQuerySnapShotDocs(snapshot);
-    this.setToCachedDocuments(pageNum, docs);
+    super.setToCachedDocuments(pageNum, docs);
 
     return docs;
   }
