@@ -2,14 +2,16 @@ export class ListTasksDto {
   #currentPage;
   #itemsPerPage;
   #searchTerm;
+  #byPassCache = false;
 
   /**
    *
    * @param {number} currentPage
    * @param {number} [itemsPerPage]
    * @param {string} [searchTerm]
+   * @param {boolean} byPassCache
    */
-  constructor(currentPage, itemsPerPage, searchTerm) {
+  constructor(currentPage, itemsPerPage, searchTerm, byPassCache) {
     //validate
     if (currentPage === null || currentPage === undefined) {
       throw new Error("Current page is missing");
@@ -18,6 +20,7 @@ export class ListTasksDto {
     this.#currentPage = currentPage;
     this.#itemsPerPage = itemsPerPage;
     this.#searchTerm = searchTerm;
+    this.#byPassCache = byPassCache;
   }
 
   getCurrentPage() {
@@ -34,5 +37,9 @@ export class ListTasksDto {
 
   getSearchTerm() {
     return this.#searchTerm;
+  }
+
+  getByPassCache() {
+    return this.#byPassCache;
   }
 }

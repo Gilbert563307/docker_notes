@@ -3,6 +3,7 @@ export class ListFilesDto {
   #itemsPerPage;
   #searchTerm;
   #folderId;
+  #byPassCache = false;
 
   /**
    *
@@ -10,8 +11,9 @@ export class ListFilesDto {
    * @param {number} [itemsPerPage]
    * @param {string} [searchTerm]
    * @param {string} [folderId]
+   * @param {boolean} byPassCache
    */
-  constructor(currentPage, itemsPerPage, searchTerm, folderId) {
+  constructor(currentPage, itemsPerPage, searchTerm, folderId ,byPassCache) {
     //validate
     if (currentPage === null || currentPage === undefined) {
       throw new Error("Current page is missing");
@@ -21,6 +23,7 @@ export class ListFilesDto {
     this.#itemsPerPage = itemsPerPage;
     this.#searchTerm = searchTerm;
     this.#folderId = folderId;
+    this.#byPassCache = byPassCache;
   }
 
   getCurrentPage() {
@@ -41,5 +44,9 @@ export class ListFilesDto {
 
   getFolderId() {
     return this.#folderId;
+  }
+
+  getByPassCache(){
+    return this.#byPassCache;
   }
 }

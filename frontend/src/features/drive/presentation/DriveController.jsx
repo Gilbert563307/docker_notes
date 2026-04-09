@@ -180,7 +180,7 @@ export default function DriveController() {
 
     if (results.uploaded === true) {
       //navigate to files page
-      // navigate("/drive");
+      navigate("/drive");
     }
   }
 

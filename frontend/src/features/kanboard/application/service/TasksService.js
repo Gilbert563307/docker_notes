@@ -255,7 +255,7 @@ class TasksService {
   async getTasksByQuery(payload) {
     const queryItems = this.getTasksQueryClauses(new GetTasksQueryClausesDto(payload.getSearchTerm()));
     return await this.#tasksRepository.getPaginatedDocumentsByQueryItems(
-      new PageAble(queryItems, payload.getCurrentPage(), payload.getItemsPerPage(), false),
+      new PageAble(queryItems, payload.getCurrentPage(), payload.getItemsPerPage(), payload.getByPassCache()),
     );
   }
 
@@ -265,8 +265,9 @@ class TasksService {
    * @returns {Promise<{results: import("../../../../types/types").ListTasks,  notificationDto: NotificationDto }>}
    */
   listTasksBySearchTerm = async (searchTearm) => {
+    const byPassCache = true;
     return await this.#listTasks(
-      new ListTasksDto(this.#helpers.getCurrentPageNumber(), this.#helpers.getTheCurrentItemsPerPage(), searchTearm),
+      new ListTasksDto(this.#helpers.getCurrentPageNumber(), this.#helpers.getTheCurrentItemsPerPage(), searchTearm, byPassCache),
     );
   };
 
@@ -483,7 +484,7 @@ class TasksService {
 
   async getTasks() {
     return await this.#listTasks(
-      new ListTasksDto(this.#helpers.getCurrentPageNumber(), this.#helpers.getTheCurrentItemsPerPage(), undefined),
+      new ListTasksDto(this.#helpers.getCurrentPageNumber(), this.#helpers.getTheCurrentItemsPerPage(), undefined, false),
     );
   }
 

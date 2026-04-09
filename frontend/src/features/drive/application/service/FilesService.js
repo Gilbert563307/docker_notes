@@ -82,7 +82,7 @@ class FilesService {
     );
 
     return await this.#filesRepository.getPaginatedDocumentsByQueryItems(
-      new PageAble(queryItems, payload.getCurrentPage(), payload.getItemsPerPage(), true),
+      new PageAble(queryItems, payload.getCurrentPage(), payload.getItemsPerPage(), payload.getByPassCache()),
     );
   }
 
@@ -104,7 +104,6 @@ class FilesService {
     try {
       // Construct the query to get all tasks for the current user UID with a
       const files = await this.getFilesByQuery(payload);
-      console.log(files);
 
       const driveFilesDto = DriveFilesMapper.arrayToDtoList(files);
 
@@ -467,12 +466,18 @@ class FilesService {
   async downloadFile(payload) {
     try {
       const userUid = this.#firebaseUtil.getUserUid();
-      const response = await fetch(`${this.#firebaseUtil.getBackendUrl()}files/${payload.getFilename()}/${userUid}`, {
-        method: "GET",
+      const formData = new FormData();
+
+      formData.append("filename", payload.getFilename());
+      formData.append("user_uid", userUid);
+
+      const response = await fetch(`${this.#firebaseUtil.getBackendUrl()}files/download`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           "x-token": this.#firebaseUtil.getXToken(),
         },
+        body: formData,
       });
 
       if (response.status === 404) {
@@ -522,6 +527,7 @@ class FilesService {
         this.#helpers.getTheCurrentItemsPerPage(),
         payload.getSearchTerm(),
         null,
+        true,
       ),
     );
   }
@@ -533,7 +539,13 @@ class FilesService {
    */
   async listFilesByFolderId(folderId) {
     return await this._listFiles(
-      new ListFilesDto(this.#helpers.getCurrentPageNumber(), this.#helpers.getTheCurrentItemsPerPage(), "", folderId),
+      new ListFilesDto(
+        this.#helpers.getCurrentPageNumber(),
+        this.#helpers.getTheCurrentItemsPerPage(),
+        "",
+        folderId,
+        true,
+      ),
     );
   }
 
@@ -564,7 +576,13 @@ class FilesService {
 
   async listDriveFiles() {
     return await this._listFiles(
-      new ListFilesDto(this.#helpers.getCurrentPageNumber(), this.#helpers.getTheCurrentItemsPerPage(), null, null),
+      new ListFilesDto(
+        this.#helpers.getCurrentPageNumber(),
+        this.#helpers.getTheCurrentItemsPerPage(),
+        null,
+        null,
+        true,
+      ),
     );
   }
 }
