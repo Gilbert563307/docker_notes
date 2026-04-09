@@ -262,7 +262,7 @@ class TasksService {
    * @returns {Promise<{results: import("../../../../types/types").ListTasks,  notificationDto: NotificationDto }>}
    */
   listTasksBySearchTerm = async (searchTearm) => {
-    return await this.listTasks(
+    return await this.#listTasks(
       new ListTasksDto(this.#helpers.getCurrentPageNumber(), this.#helpers.getTheCurrentItemsPerPage(), searchTearm),
     );
   };
@@ -276,8 +276,7 @@ class TasksService {
    * @param {ListTasksDto} payload
    * @returns {Promise<{results: import("../../../../types/types").ListTasks,  notificationDto: NotificationDto }>} A promise that resolves to an object containing the fetched tasks, a message, and an alert type.
    */
-  listTasks = async (payload) => {
-    let cachedResults; 
+  #listTasks = async (payload) => {
     try {
       const results = await this.getTasksByQuery(payload);
       const tasksDto = TasksMapper.arrayToDtoList(results);
@@ -480,7 +479,7 @@ class TasksService {
   }
 
   async getTasks() {
-    return await this.listTasks(
+    return await this.#listTasks(
       new ListTasksDto(this.#helpers.getCurrentPageNumber(), this.#helpers.getTheCurrentItemsPerPage(), undefined),
     );
   }
