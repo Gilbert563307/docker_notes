@@ -7,6 +7,7 @@ from config.constants import (
 from tasks.application.service.FilesService import FilesService
 from pydantic import BaseModel
 
+
 # Define the request body model
 class FileRequest(BaseModel):
     user_uid: str
@@ -19,6 +20,7 @@ files_router = APIRouter(
     dependencies=[Depends(get_token_header)],
     responses={404: {"description": "Not found"}},
 )
+
 
 @files_router.post("/upload")
 async def create_upload_files(
@@ -67,13 +69,21 @@ async def delete_file(request: FileRequest):
     if file_deleted:
         return {"message": "File deleted successfully", "deleted": True}
     else:
-        raise HTTPException(status_code=404, detail="File not found or could not be deleted")
+        raise HTTPException(
+            status_code=404, detail="File not found or could not be deleted"
+        )
 
 
 @files_router.post("/download")
 async def get_file_to_download(request: FileRequest):
-    if not user_uid:
+    if not request.user_uid:
         raise HTTPException(status_code=400, detail="The user uid cannot be empty")
-    file_to_download = FilesService.get_download_file(request.user_uid, request.filename)
+    
+    file_to_download = FilesService.get_download_file(
+        request.user_uid, request.filename
+    )
+
     if file_to_download is None:
-        raise HTTPException(status_code=404, detail="File not found") 
+        raise HTTPException(status_code=404, detail="File not found")
+
+    return file_to_download

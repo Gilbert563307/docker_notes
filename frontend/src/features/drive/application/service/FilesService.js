@@ -466,10 +466,6 @@ class FilesService {
   async downloadFile(payload) {
     try {
       const userUid = this.#firebaseUtil.getUserUid();
-      const formData = new FormData();
-
-      formData.append("filename", payload.getFilename());
-      formData.append("user_uid", userUid);
 
       const response = await fetch(`${this.#firebaseUtil.getBackendUrl()}files/download`, {
         method: "POST",
@@ -477,7 +473,7 @@ class FilesService {
           "Content-Type": "application/json",
           "x-token": this.#firebaseUtil.getXToken(),
         },
-        body: formData,
+        body: JSON.stringify({ filename: payload.getFilename(), user_uid: userUid }),
       });
 
       if (response.status === 404) {
