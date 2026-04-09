@@ -3,8 +3,8 @@ import useSetPageTitleHook from "../../shared/hooks/useSetPageTitleHook";
 import { Link } from "react-router-dom";
 import useGetFilesHook from "../../shared/hooks/useGetFilesHook";
 import RepositoryTable from "../../features/drive/component/drive/RepositoryTable";
-import BS5PaginationV2 from "../../shared/presentation/components/bs5/BS5PaginationV2";
 import DriveSearchBar from "../../features/drive/component/drive/DriveSearchBar";
+import SimplePagination from "../../shared/features/simplePagination/presentation/components/SimplePagination";
 
 export default function CollectListDriveFiles() {
   useSetPageTitleHook({ title: "Drive " });
@@ -33,7 +33,7 @@ export default function CollectListDriveFiles() {
           </div>
           <div className="tasks-content table-responsive">
             <RepositoryTable files={files} />
-            <BS5PaginationV2 totalItems={total} totalPages={pages} />
+            <SimplePagination totalItems={total} totalPages={pages} />
           </div>
         </div>
       </div>

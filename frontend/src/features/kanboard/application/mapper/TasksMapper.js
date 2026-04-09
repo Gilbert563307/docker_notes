@@ -2,7 +2,7 @@ import { Assignee } from "../../domain/Assignee.js";
 import { Reporter } from "../../domain/Reporter.js";
 import { Task } from "../../domain/Task.js";
 import { AssigneeDto } from "../dto/AssigneeDto.js";
-import { ReporterDto } from "../dto/RepoterDto.js";
+import { ReporterDto } from "../dto/ReporterDto.js";
 import { TaskDto } from "../dto/TaskDto.js";
 
 export class TasksMapper {

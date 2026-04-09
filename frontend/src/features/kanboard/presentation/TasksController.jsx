@@ -4,7 +4,7 @@ import { tasksService } from "../application/service/TasksService";
 import { notificationObserver } from "../../notification/observer/NotificationObserver";
 import { TaskDto } from "../application/dto/TaskDto";
 import { AssigneeDto } from "../application/dto/AssigneeDto";
-import { ReporterDto } from "../application/dto/RepoterDto";
+import { ReporterDto } from "../application/dto/ReporterDto";
 import { NotificationDto } from "../../notification/application/dto/NotificationDto";
 import { ArchiveTaskDto } from "./dto/ArchiveTaskDto";
 import { CreateTaskDto } from "./dto/CreateTaskDto";

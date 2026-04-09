@@ -3,11 +3,11 @@ import useSetPageTitleHook from "../../shared/hooks/useSetPageTitleHook";
 import "./css/CollectListTasks.css";
 import useGetTasksHook from "../../shared/hooks/useGetTasksHook";
 import { Link } from "react-router-dom";
-import BS5PaginationV2 from "../../shared/presentation/components/bs5/BS5PaginationV2";
 import TasksTable from "../../features/kanboard/component/tasks/TasksTable";
 import TasksSearchBar from "../../features/kanboard/component/tasks/TasksSearchBar";
 import FilterTasksButton from "../../features/kanboard/component/tasks/buttons/FilterTasksButton";
 import DeleteMultipleButton from "../../features/kanboard/component/tasks/buttons/DeleteMultipleButton";
+import SimplePagination from "../../shared/features/simplePagination/presentation/components/SimplePagination";
 
 /**
  * CollectListTasks component
@@ -59,13 +59,19 @@ export default function CollectListTasks() {
               Create
             </Link>
           </div>
-          <div>{selectedTaskIds.size > 0 ? <DeleteMultipleButton resetSelectedTasks={resetSelectedTasks} mapIdsToDelete={selectedTaskIds} /> : ""}</div>
+          <div>
+            {selectedTaskIds.size > 0 ? (
+              <DeleteMultipleButton resetSelectedTasks={resetSelectedTasks} mapIdsToDelete={selectedTaskIds} />
+            ) : (
+              ""
+            )}
+          </div>
         </div>
       </div>
 
       <div className="tasks-content table-responsive">
         <TasksTable tasks={tasks} selectedTaskIds={selectedTaskIds} addTaskId={addTaskId} />
-        <BS5PaginationV2 totalItems={totalTasks} totalPages={totalPages} />
+        <SimplePagination totalItems={totalTasks} totalPages={totalPages} />
       </div>
     </article>
   );

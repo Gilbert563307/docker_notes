@@ -1,5 +1,5 @@
 import { AssigneeDto } from "./AssigneeDto";
-import { ReporterDto } from "./RepoterDto";
+import { ReporterDto } from "./ReporterDto";
 
 export class TaskDto {
   #id;

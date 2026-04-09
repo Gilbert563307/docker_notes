@@ -6,7 +6,8 @@ import useGetFoldersHook from "../../shared/hooks/useGetFoldersHook";
 import FoldersSearchBar from "../../features/drive/component/folders/FoldersSearchBar";
 import FilterFoldersButton from "../../features/drive/component/folders/FilterFoldersButton";
 import FoldersTable from "../../features/drive/component/folders/FoldersTable";
-import BS5PaginationV2 from "../../shared/presentation/components/bs5/BS5PaginationV2";
+import SimplePagination from "../../shared/features/simplePagination/presentation/components/SimplePagination";
+
 
 export default function CollectListFolders() {
   useSetPageTitleHook({ title: "Folders " });
@@ -35,7 +36,7 @@ export default function CollectListFolders() {
           </div>
           <div className="tasks-content table-responsive">
             <FoldersTable folders={folders}></FoldersTable>
-            <BS5PaginationV2 totalItems={total} totalPages={pages} />
+             <SimplePagination totalItems={total} totalPages={pages} />
           </div>
         </div>
       </div>

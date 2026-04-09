@@ -4,7 +4,7 @@ import { notificationObserver } from "../../notification/observer/NotificationOb
 import { NotificationDto } from "../../notification/application/dto/NotificationDto";
 import { TaskDto } from "../application/dto/TaskDto";
 import { AssigneeDto } from "../application/dto/AssigneeDto";
-import { ReporterDto } from "../application/dto/RepoterDto";
+import { ReporterDto } from "../application/dto/ReporterDto";
 import { UpdateBoardTaskDto } from "./dto/UpdateBoardTaskDto";
 import { CreateTaskDto } from "./dto/CreateTaskDto";
 import { tasksService } from "../application/service/TasksService";

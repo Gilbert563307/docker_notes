@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { PAGE_CHANGED_EVENT } from "../features/simplePagination/presentation/components/SimplePagination";
 
 /**
  * #How to use this hook.
@@ -14,33 +15,17 @@ import { useSearchParams } from "react-router-dom";
  * @returns {void}
  */
 export default function usePaginationHook({ methodToCall }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-
   /**
-   *  Called the method to call when using this hook
+   *
+   * @param {CustomEvent} event
    */
-  const getPaginatedItems = () => {
+  function handleEvent(event) {
+    const pageNumber = event.detail?.page;
+    if (!pageNumber) return;
     methodToCall();
-  };
-
-  /**
-   * If the url has any of the search params return a boolean
-   * @returns {boolean}
-   */
-  const areThereSearchParams = () => {
-    return searchParams.size > 0;
-  };
+  }
 
   // Listen for when the searchParams change.
-  useEffect(() => {
-    const searchParamSet = areThereSearchParams();
-    if (searchParamSet) {
-      getPaginatedItems();
-    }
-  }, [searchParams]);
-
+  document.addEventListener(PAGE_CHANGED_EVENT, handleEvent);
   return;
 }
-
-
-

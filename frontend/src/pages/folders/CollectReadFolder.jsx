@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import "./css/CollectReadFolder.css";
 import { Show } from "../../shared/presentation/components/custom/Show";
 import RepositoryTable from "../../features/drive/component/drive/RepositoryTable";
-import BS5PaginationV2 from "../../shared/presentation/components/bs5/BS5PaginationV2";
+import SimplePagination from "../../shared/features/simplePagination/presentation/components/SimplePagination";
 
 export default function CollectReadFolder() {
   let { state } = useLocation();
@@ -30,7 +30,7 @@ export default function CollectReadFolder() {
         <Show>
           <Show.When isTrue={files.length > 0}>
             <RepositoryTable files={files} />
-            <BS5PaginationV2 totalItems={total} totalPages={pages} />
+             <SimplePagination totalItems={total} totalPages={pages} />
           </Show.When>
           <Show.Else>
             <p>No files found</p>

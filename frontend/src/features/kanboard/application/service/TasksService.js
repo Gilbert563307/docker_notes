@@ -8,8 +8,6 @@ import {
   STATUS_FILTER_TYPE_TAGS,
   TASKS_ARCHIVED_SESSION_FILTER,
   TASKS_PATH,
-  TASKS_PRIORITY,
-  TASKS_STATUS,
 } from "../../../../config";
 import { Task } from "../../domain/Task";
 import { Assignee } from "../../domain/Assignee";
@@ -18,7 +16,7 @@ import { TasksMapper } from "../mapper/TasksMapper";
 import { TaskDto } from "../dto/TaskDto";
 import { NotificationDto } from "../../../notification/application/dto/NotificationDto";
 import { AssigneeDto } from "../dto/AssigneeDto";
-import { ReporterDto } from "../dto/RepoterDto";
+import { ReporterDto } from "../dto/ReporterDto.js";
 import { ArchiveTaskDto } from "../../presentation/dto/ArchiveTaskDto";
 import { CreateTaskDto } from "../../presentation/dto/CreateTaskDto";
 import { ListTasksDto } from "./dto/ListTasksDto";
@@ -32,7 +30,6 @@ import tasksRepository from "../../data/TasksRepository";
 import kanBoardsRepository from "../../data/KanBoardsRepository.js";
 import { asBlob } from "html-docx-js-typescript";
 import { KanBoardMapper } from "../mapper/KanBoardMapper.js";
-import { Page } from "../../../../firebase_entity_manager/domain/Page.js";
 import { PageAble } from "../../../../firebase_entity_manager/domain/PageAble.js";
 
 /**
@@ -247,7 +244,7 @@ class TasksService {
    * Generates a Firestore query to fetch tasks for the current page.
    *
    * @param {ListTasksDto} payload - The current page number for pagination.
-   * @returns {Promise<Array<any>>} 
+   * @returns {Promise<Array<any>>}
    */
   async getTasksByQuery(payload) {
     const queryItems = this.getTasksQueryClauses(new GetTasksQueryClausesDto(payload.getSearchTerm()));
