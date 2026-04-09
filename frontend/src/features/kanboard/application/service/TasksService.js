@@ -541,6 +541,43 @@ class TasksService {
     }
   }
 
+  /**
+   *
+   * @param {Array<string>} idsToDelete
+   * @param {{page: number, tasks: Array<TaskDto>, total: number }} currentState
+   * @returns {Promise<{tasks:{page: number, tasks: Array<TaskDto>, total: number }, deleted: boolean, notificationDto: NotificationDto, navigateToUrl: string }>}
+   */
+  async deleteMultipleTasks(idsToDelete, currentState) {
+    try {
+      const deleted = await this.#tasksRepository.deleteMultipleDocuments(idsToDelete);
+
+      // Check if anything was actually deleted to make the message more accurate
+      const count = idsToDelete.length;
+      const message = `${count} task${count !== 1 ? "s" : ""} deleted successfully.`;
+
+      const tasks = currentState.tasks.filter((task) => !idsToDelete.includes(task.getId()));
+      const newSate = {
+        tasks: tasks,
+        page: currentState.page,
+        total: currentState.total - tasks.length,
+      };
+
+      return {
+        navigateToUrl: `/tasks?page=${this.#helpers.getCurrentPageNumber()}`,
+        tasks: newSate,
+        deleted: deleted,
+        notificationDto: new NotificationDto(message, ALERT_TYPES.SUCCESS),
+      };
+    } catch (error) {
+      return {
+        navigateToUrl: "/tasks",
+        tasks: currentState,
+        deleted: false,
+        notificationDto: new NotificationDto(error.message, ALERT_TYPES.DANGER),
+      };
+    }
+  }
+
   #getEmptyTaskDto() {
     return new TaskDto(
       null,

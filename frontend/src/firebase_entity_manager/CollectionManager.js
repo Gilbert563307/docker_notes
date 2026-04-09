@@ -30,7 +30,6 @@ const FIRST_PAGE = 1;
  * @extends CrudCollectionManager
  */
 export class CollectionManager extends CrudCollectionManager {
- 
   /**
    * Initializes the collection manager.
    * @param {string} collectionName - Name of the Firestore collection.
@@ -54,6 +53,18 @@ export class CollectionManager extends CrudCollectionManager {
    */
   createDocumentReference() {
     return doc(this._collectionRef);
+  }
+
+  /**
+   *
+   * @param {string} documentId
+   * @returns
+   */
+  getDocumentReferenceById(documentId) {
+    if (!documentId) {
+      throw new Error("Document id must not be null");
+    }
+    return doc(this._database, this._collectionName, documentId);
   }
 
   /**
@@ -257,6 +268,34 @@ export class CollectionManager extends CrudCollectionManager {
     return query(this._collectionRef, ...queryItems, startAfter(startFromDocument), limit(itemsPerPage));
   }
 
+  /**
+   * Delete multiple documents by provided document id's
+   * @param {Array<string>} documentIds
+   */
+  async deleteMultipleDocuments(documentIds) {
+    if (!documentIds) {
+      throw new Error("Document ids must not be null");
+    }
+    if (!Array.isArray(documentIds)) {
+      throw new Error("Document ids must be of type array");
+    }
+    if (documentIds.length === 0) return false;
+
+    const batch = this.createBatchOperation();
+
+    documentIds.forEach((id) => {
+      const docRef = this.getDocumentReferenceById(id);
+      batch.delete(docRef);
+    });
+
+    //Added a try carch so if one fails then they all fail
+    try {
+      await batch.commit();
+      return true;
+    } catch (err) {
+      return false;
+    }
+  }
 
   /**
    * Maps a QuerySnapshot into a standard array of objects including document IDs.

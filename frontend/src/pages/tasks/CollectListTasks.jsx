@@ -7,7 +7,7 @@ import BS5PaginationV2 from "../../shared/presentation/components/bs5/BS5Paginat
 import TasksTable from "../../features/kanboard/component/tasks/TasksTable";
 import TasksSearchBar from "../../features/kanboard/component/tasks/TasksSearchBar";
 import FilterTasksButton from "../../features/kanboard/component/tasks/buttons/FilterTasksButton";
-
+import DeleteMultipleButton from "../../features/kanboard/component/tasks/buttons/DeleteMultipleButton";
 
 /**
  * CollectListTasks component
@@ -26,20 +26,19 @@ export default function CollectListTasks() {
     <article className="tasks-article d-flex flex-column gap-1">
       <div className="tasks-header d-flex justify-content-between">
         <div className="">
-         <TasksSearchBar></TasksSearchBar>
+          <TasksSearchBar></TasksSearchBar>
         </div>
         <div className="tasks-article-buttons">
           <div>
             <FilterTasksButton />
           </div>
           <div>
-            <Link
-              aria-describedby="create task button"
-              className="add-task-button task-btn-plain "
-              to="/tasks/create"
-            >
+            <Link aria-describedby="create task button" className="add-task-button task-btn-plain " to="/tasks/create">
               Create
             </Link>
+          </div>
+          <div>
+            <DeleteMultipleButton />
           </div>
         </div>
       </div>

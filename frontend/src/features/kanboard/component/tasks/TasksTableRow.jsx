@@ -6,6 +6,7 @@ import { useAuthProvider } from "../../../../shared/context/AuthProvider";
 import BS5TruncateSpan from "../../../../shared/presentation/components/bs5/BS5TruncateSpan";
 import ArchiveTaskButton from "./buttons/ArchiveTaskButton";
 import { TaskDto } from "../../application/dto/TaskDto";
+import { TASKS_CONTROLLER_ACTIONS, useTasksControllerContext } from "../../presentation/TasksController";
 
 /**
  * Renders a single row in the tasks table.
@@ -15,6 +16,7 @@ import { TaskDto } from "../../application/dto/TaskDto";
  * @returns {JSX.Element} A JSX element representing a single row in the tasks table.
  */
 export default function TasksTableRow({ task }) {
+  const { dispatch } = useTasksControllerContext();
 
   /**
    * @type {import("../../../../shared/context/AuthProvider").AuthContextType}
@@ -43,23 +45,28 @@ export default function TasksTableRow({ task }) {
   const Priority = getPriorityBadge(task.getPriority());
 
   const readTaskUrl = `/tasks/read/${task.getId()}`;
+
+  /**
+   * 
+   * @param {string} id 
+   * @returns {void}
+   */
+  function setTaskIdToMemory(id) {
+    if(!id) return;
+    dispatch({ type: TASKS_CONTROLLER_ACTIONS.ADD_TASK_ID_TO_DELETE, payload: id });
+  }
   return (
     <tr className="tasks-table-row">
       <th scope="row">
         <div className="form-check">
-          <input className="form-check-input" type="checkbox" disabled={true} />
+          <input className="form-check-input" type="checkbox" onClick={() => setTaskIdToMemory(task.getId())} />
         </div>
       </th>
       <td>
         <BS5TruncateSpan
           title={task.getTitle()}
           content={
-            <Link
-              to={readTaskUrl}
-              state={{ task: task }}
-              title={task.getTitle()}
-              className="read-link"
-            >
+            <Link to={readTaskUrl} state={{ task: task }} title={task.getTitle()} className="read-link">
               {task.getTitle()}
             </Link>
           }
