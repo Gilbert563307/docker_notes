@@ -33,7 +33,7 @@ export default function ThemeService() {
     } else {
       htmlElement.removeAttribute("data-bs-theme");
     }
-    localStorage.setItem(SESSION_THEME_MODE, JSON.stringify(mode));
+    localStorage.setItem(SESSION_THEME_MODE, mode);
   }
 
   /**
