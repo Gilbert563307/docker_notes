@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { SESSION_THEME_MODE } from "../../../config";
 import { THEME_MODES } from "../../context/ThemeContext";
 
@@ -7,8 +7,6 @@ import { THEME_MODES } from "../../context/ThemeContext";
  * @returns {{darkTheme: Function, lightTheme: Function}} Functions to set the dark and light themes.
  */
 export default function ThemeService() {
-  // Read the current theme mode from local storage.
-  const themeMode = localStorage.getItem(SESSION_THEME_MODE) ? localStorage.getItem(SESSION_THEME_MODE) : null;
 
   /**
    * Removes existing theme classes ('light', 'dark') from the <html> element.
@@ -33,7 +31,7 @@ export default function ThemeService() {
     } else {
       htmlElement.removeAttribute("data-bs-theme");
     }
-    localStorage.setItem(SESSION_THEME_MODE, JSON.stringify(mode));
+    localStorage.setItem(SESSION_THEME_MODE, mode);
   }
 
   /**
@@ -53,12 +51,5 @@ export default function ThemeService() {
     removeExistingThemeClasses();
     setTheModeToHtml(mode);
   }
-
-  useEffect(() => {
-    if (themeMode === null) return;
-    removeExistingThemeClasses();
-    setTheModeToHtml(themeMode);
-  }, [themeMode]);
-
   return { darkTheme, lightTheme };
 }
