@@ -32,7 +32,7 @@ export default function DeleteMultipleButton({ mapIdsToDelete, resetSelectedTask
   };
 
   const modalTitle = "Are you sure you want to delete all of these tasks?";
-  const modalContent = "After deleting this tasks they cannot be restored";
+  const modalContent = "After deleting these tasks they cannot be restored";
 
   return (
     <>
