@@ -1,4 +1,4 @@
-import { Timestamp } from "firebase/firestore";
+import { FieldValue, Timestamp } from "firebase/firestore";
 import { DEFAULT_PROJECT_ID, TASKS_PRIORITY, TASKS_STATUS } from "../../../config";
 import { Assignee } from "./Assignee";
 import { Reporter } from "./Reporter";
@@ -264,8 +264,8 @@ export class Task {
    * @param {Assignee} assignee
    * @param {Reporter} reporter
    * @param {boolean} archived
-   * @param {Timestamp} created_at
-   * @param {Timestamp} updated_at
+   * @param {FieldValue} created_at
+   * @param {FieldValue} updated_at
    */
   update(
     project_id,

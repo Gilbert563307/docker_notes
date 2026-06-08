@@ -352,7 +352,7 @@ class TasksService {
         task.getReporter(),
         task.getIsArchived(),
         task.getCreatedAt(),
-        this.#tasksRepository.getCurrentServerTimestamp(),
+        this.#tasksRepository.getCurrentServerTimestamp()
       );
 
       const updated = await this.#tasksRepository.updateDocument(task.getId(), task.toJsonWithoutId());

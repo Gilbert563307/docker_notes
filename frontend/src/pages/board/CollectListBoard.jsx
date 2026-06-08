@@ -24,7 +24,7 @@ export default function CollectListBoard() {
   /**
    * Updates a task in the board state.
    *
-   * @param {} payload - The task object to update.
+   * @param {TaskDto} payload - The task object to update.
    */
   const updateTask = useCallback(
     (payload) => {
@@ -70,20 +70,21 @@ export default function CollectListBoard() {
           // // Check if the current item is the one being dragged
           if (item.getId() === draggingId) {
             // Return the updated item with new status
-            const taskDto = new TaskDto(
-              item.getId(),
-              item.getProjectId(),
-              item.getUserUid(),
-              item.getTitle(),
-              item.getDescription(),
-              newStatus,
-              item.getPriority(),
-              item.getAssignee(),
-              item.getReporter(),
-              item.getIsArchived(),
-              item.getCreatedAt(),
-              item.getUpdatedAt(),
-            );
+            const taskDto = new TaskDto.Builder()
+              .id(item.getId())
+              .projectId(item.getProjectId())
+              .userUid(item.getUserUid())
+              .title(item.getTitle())
+              .description(item.getDescription())
+              .status(newStatus)
+              .setPriority(item.getPriority())
+              .assignee(item.getAssignee())
+              .reporter(item.getReporter())
+              .archived(item.getIsArchived())
+              .projectName(item.getProjectName())
+              .createdAt(item.getCreatedAt())
+              .updatedAt(item.getUpdatedAt())
+              .build();
             tbuTask = taskDto;
             return taskDto;
           }

@@ -50,7 +50,7 @@ class KanBoardsService {
         payload.color,
         false,
         false,
-        payload.imageUrl,
+        payload.imageUrl || "",
         this.#kanBoardsRepository.getCurrentServerTimestamp(),
         this.#kanBoardsRepository.getCurrentServerTimestamp(),
       );

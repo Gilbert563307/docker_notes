@@ -152,9 +152,108 @@ export class TaskDto {
     return this.#updated_at.toDate().toLocaleString();
   }
 
-  getProjectName(){
+  getProjectName() {
     return this.#projectName;
   }
+
+  static Builder = class {
+    #id = "";
+    #project_id = "";
+    #user_uid = "";
+    #title = "";
+    #description = "";
+    #status = 0;
+    #priority = 0;
+    #assignee = null;
+    #reporter = null;
+    #archived = false;
+    #projectName = "";
+    #created_at = null;
+    #updated_at = null;
+
+    id(id) {
+      this.#id = id;
+      return this;
+    }
+
+    projectId(project_id) {
+      this.#project_id = project_id;
+      return this;
+    }
+
+    userUid(user_uid) {
+      this.#user_uid = user_uid;
+      return this;
+    }
+
+    title(title) {
+      this.#title = title;
+      return this;
+    }
+
+    description(description) {
+      this.#description = description;
+      return this;
+    }
+
+    status(status) {
+      this.#status = status;
+      return this;
+    }
+
+    setPriority(priority) {
+      this.#priority = priority;
+      return this;
+    }
+
+    assignee(assignee) {
+      this.#assignee = assignee;
+      return this;
+    }
+
+    reporter(reporter) {
+      this.#reporter = reporter;
+      return this;
+    }
+
+    archived(archived) {
+      this.#archived = archived;
+      return this;
+    }
+
+    projectName(projectName) {
+      this.#projectName = projectName;
+      return this;
+    }
+
+    createdAt(created_at) {
+      this.#created_at = created_at;
+      return this;
+    }
+
+    updatedAt(updated_at) {
+      this.#updated_at = updated_at;
+      return this;
+    }
+
+    build() {
+      return new TaskDto(
+        this.#id,
+        this.#project_id,
+        this.#user_uid,
+        this.#title,
+        this.#description,
+        this.#status,
+        this.#priority,
+        this.#assignee,
+        this.#reporter,
+        this.#archived,
+        this.#projectName,
+        this.#created_at,
+        this.#updated_at,
+      );
+    }
+  };
 
   toJson() {
     return {
