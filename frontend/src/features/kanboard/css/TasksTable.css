@@ -1,0 +1,108 @@
+.tasks-table-tr-headers>th {
+    font-weight: 400;
+}
+
+.tasks-table {
+    color: #626F86 !important;
+    margin-bottom: 0.5em;
+}
+
+.badge-own {
+    font-weight: 600 !important;
+}
+
+.badge-todo {
+    background-color: #E4E6EA !important;
+    color: #44546F !important;
+}
+
+.badge-backlog {
+    background-color: #343a40 !important;
+    color: #fff !important;
+}
+
+.badge-inprogress {
+    background-color: #E9F2FF !important;
+    color: #0055CC !important;
+}
+
+.badge-completed {
+    background-color: #DCFFF1 !important;
+    color: #216E4E !important;
+}
+
+.badge-low {
+    background-color: #9ec5fe !important;
+    color: black !important;
+}
+
+.badge-medium {
+    background-color: #ffc720 !important;
+    color: black !important;
+}
+
+.badge-high {
+    background-color: #df4958 !important;
+    color: #ffff !important;
+}
+
+.table-add-task-div {
+    padding: 0.5em 0em 0em 0em;
+}
+
+.table-add-task-btn {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: start;
+    color: black;
+    text-decoration: none;
+}
+
+.table-add-task-div:hover {
+    margin-top: 0;
+    background-color: #ECECEC;
+}
+
+.read-link {
+    text-decoration: none !important;
+    color: black;
+}
+
+.th-filter-buttons {
+    color: #000; 
+    text-decoration: none;
+}
+
+html.dark .read-link {
+    color: #B6C2CF;
+}
+
+html.dark .table-add-task-div>a,
+.table-add-task-btn>i {
+    color: #B6C2C4 !important;
+}
+
+html.dark .table-add-task-div:hover {
+    background-color: rgb(33, 39, 44);
+}
+
+html.dark .tasks-table-tr-headers>th,
+html.dark .tasks-table-row>td {
+    color: #B6C2CF !important;
+}
+
+html.dark .badge-completed {
+    background-color: #1C3329 !important;
+    color: #72CCA7 !important;
+}
+
+html.dark .badge-inprogress {
+    background-color: #1C2B41 !important;
+    color: #81B3F8 !important;
+}
+
+html.dark .badge-todo {
+    background-color: #282D33 !important;
+    color: #9FADBC !important;
+}

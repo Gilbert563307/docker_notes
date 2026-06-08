@@ -1,0 +1,17 @@
+{
+    //https://stackoverflow.com/questions/66341079/unable-to-login-to-web-app-when-using-vscode-chrome-debugger
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}",
+            "port": 9876
+        }
+    ]
+}

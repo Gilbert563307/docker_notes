@@ -1,0 +1,50 @@
+.conatiner .ql-container.ql-snow {
+  border: none;
+}
+
+.conatiner .ql-toolbar.ql-snow {
+  background-color: #f0f0f3;
+  border-radius: 5px;
+  border-color: transparent;
+  position: sticky;
+  z-index: 1;
+  background-color: #f3f3f3;
+}
+
+.conatiner .ql-editor {
+  /* width: 8.5in; */
+  min-height: 4.5in;
+  padding: 1.5rem;
+  margin-top: 1rem;
+  box-shadow: 0 0 5px 0 rgb(0, 0, 0, .5);
+  background-color: #fff;
+  border-radius: 5px;
+  /* max-width: 1000px; */
+  max-height: 7.6in;
+  overflow-y: auto;
+}
+
+.quil-text-editor .ql-editor {
+  font-family: 'Poppins', sans-serif;
+}
+
+.ql-font-sans-serif {
+  font-family: 'Sans Serif', sans-serif;
+}
+
+.ql-font-serif {
+  font-family: 'Serif', serif;
+}
+
+.ql-font-monospace {
+  font-family: 'Monospace', monospace;
+}
+
+.ql-font-Poppins {
+  font-family: 'Poppins', sans-serif;
+}
+
+
+html.dark .quil-text-editor .ql-editor{
+  color: #000000;
+}

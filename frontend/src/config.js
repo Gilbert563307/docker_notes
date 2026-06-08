@@ -1,0 +1,117 @@
+export const DEFAULT_ITEMS_PER_PAGE = 15;
+export const DEFAULT_READ_PROJECT_ITEMS_PER_PAGE = 15;
+export const DEFAULT_PAGE_NUMBER = 1;
+export const AVAILABLE_ITEMS_PER_PAGE = [15, 25, 50];
+export const ITEMS_PER_PAGE = "items_per_page";
+export const PAGE_NUMBER = "page";
+
+// Configuration name for sessions filters array
+export const SESSION_FILTERS_ARRAY_CONFIG_NAME = "FILTERS";
+export const FILTERS_SET = "filters_set";
+
+export const MAX_PAGE_NUMBERS_TO_SHOW = 6;
+
+export const LAST_VISITED_PAGE_NUMBER_KEY = "LAST_VISITED";
+export const ALLOWED_ITEMS_PER_PAGE = [15, 25, 50];
+
+
+//TASKS
+export const SELECTED_TASK = "SELECTED_TASK";
+export const LAST_TASK_OBJECT = "LAST_TASK_OBJECT";
+export const TASKS_PATH = "tasks";
+export const TASKS_PRIORITY = {
+    LOW: 0,
+    MEDIUM: 1,
+    HIGH: 2,
+}
+
+export const TASKS_STATUS = {
+    BACKLOG: -1,
+    TODO: 0,
+    IN_PROGRESS: 1,
+    COMPLETED: 2,
+}
+
+/**
+ * @type {import("./types/types").TaskBoardHeaders}
+ */
+export const TASKS_BOARD_HEADERS = [
+    { id: -1, name: "Backlog", status: TASKS_STATUS.BACKLOG, },
+    { id: 1, name: "Todo", status: TASKS_STATUS.TODO, },
+    { id: 2, name: "Doing", status: TASKS_STATUS.IN_PROGRESS },
+    { id: 3, name: "Done", status: TASKS_STATUS.COMPLETED }
+]
+//filters session
+export const SESSION_THEME_MODE = "SESSION_THEME_MODE";
+export const TASKS_ARCHIVED_SESSION_FILTER = "TASKS_ARCHIVED_SESSION_FILTER";
+
+//files session
+export const FILES_ARCHIVED_SESSION_FILTER = "FILES_ARCHIVED_SESSION_FILTER";
+export const DEFAULT_FILES_ARCHIVE = false;
+
+
+//tasks status
+export const TODO_STATUS_TASKS_SESSION_FILTER = "TODO_STATUS_TASKS_SESSION_FILTER";
+export const IN_STATUS_PROGRESS_TASKS_SESSION_FILTER = "IN_STATUS_PROGRESS_TASKS_SESSION_FILTER";
+export const COMPLETED_STATUS_TASKS_SESSION_FILTER = "COMPLETED_STATUS_TASKS_SESSION_FILTER";
+export const TASKS_PROJECT_ID_FILTER = "TASKS_PROJECT_ID_FILTER";
+export const NONE_PROJECTS = "NONE_PROJECTS";
+
+//tasks priority
+export const LOW_PRIORITY_TASKS_SESSION_FILTER = "LOW_PRIORITY_TASKS_SESSION_FILTER";
+export const MEDIUM_PRIORITY_TASKS_SESSION_FILTER = "MEDIUM_PRIORITY_TASKS_SESSION_FILTER";
+export const HIGH_PRIORITY_TASKS_SESSION_FILTER = "HIGH_PRIORITY_TASKS_SESSION_FILTER";
+
+//DEFAULTS
+export const DEFAULT_PROJECT_ID = 0;
+export const MAX_BOARD_ITEMS = 250;
+export const DEFAULT_TASKS_ARCHIVE = false;
+
+//FOLDERS
+export const MAX_FOLDERS_TO_FETCH = 50;
+export const FOLDERS_ARCHIVED_SESSION_FILTER = "FOLDERS_ARCHIVED_SESSION_FILTER";
+export const DEFAULT_FOLDERS_ARCHIVE = false;
+
+//status filters 
+const TASKS_STATUS_TYPES_BACKLOG = "TASKS_STATUS_TYPES_BACKLOG";
+const TASKS_STATUS_TYPES_TODO = "TASKS_STATUS_TYPES_TODO";
+const TASKS_STATUS_IN_PROGRESS = "TASKS_STATUS_IN_PROGRESS";
+const TASKS_STATUS_TYPES_COMPLETED = "TASKS_STATUS_TYPES_COMPLETED";
+
+export const STATUS_FILTER_TYPE_TAGS = [
+    { id: TASKS_STATUS.BACKLOG, name: "Backlog", config: TASKS_STATUS_TYPES_BACKLOG, value: TASKS_STATUS.BACKLOG },
+    { id: TASKS_STATUS.TODO, name: "Todo", config: TASKS_STATUS_TYPES_TODO, value: TASKS_STATUS.TODO },
+    { id: TASKS_STATUS.IN_PROGRESS, name: "In progress", config: TASKS_STATUS_IN_PROGRESS, value: TASKS_STATUS.IN_PROGRESS },
+    { id: TASKS_STATUS.COMPLETED, name: "Completed", config: TASKS_STATUS_TYPES_COMPLETED, value: TASKS_STATUS.COMPLETED },
+];
+
+//prio filters
+const TASKS_PRIORITY_TYPES_LOW = "TASKS_PRIORITY_TYPES_LOW";
+const TASKS_PRIORITY_TYPES_MEDIUM = "TASKS_PRIORITY_TYPES_MEDIUM";
+const TASKS_PRIORITY_TYPES_HIGH = "TASKS_PRIORITY_TYPES_HIGH";
+
+export const PRIORITY_FILTER_TYPE_TAGS = [
+    { id: TASKS_PRIORITY.LOW, name: "Low", config: TASKS_PRIORITY_TYPES_LOW, value: TASKS_PRIORITY.LOW },
+    { id: TASKS_PRIORITY.MEDIUM, name: "Medium", config: TASKS_PRIORITY_TYPES_MEDIUM, value: TASKS_PRIORITY.MEDIUM },
+    { id: TASKS_PRIORITY.HIGH, name: "High", config: TASKS_PRIORITY_TYPES_HIGH, value: TASKS_PRIORITY.HIGH },
+];
+
+
+//LANDING PAGE router
+export const LANDING_PAGE_ROUTE = "/kanboards";
+
+export const ALLOWED_UPLOAD_FILE_TYPES = [
+  "application/pdf",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "text/plain",
+  "text/markdown",
+  "md",
+];
+
+export const DEFAULT_SELECT_FOLDER_MESSAGE = "Select the folder to upload files to";
+
+//debouce
+export const DEBOUNCE_SECONDS = 1000;
+
+export const MAX_KAN_BOARDS = 10;

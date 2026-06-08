@@ -1,0 +1,388 @@
+import { FieldValue, Timestamp } from "firebase/firestore";
+import { DEFAULT_PROJECT_ID, TASKS_PRIORITY, TASKS_STATUS } from "../../../config";
+import { Assignee } from "./Assignee";
+import { Reporter } from "./Reporter";
+
+const FOUR_CHARACTERS = 4;
+
+export class Task {
+  // ===== Private fields =====
+  #id;
+  #project_id;
+  #user_uid;
+  #title;
+  #description;
+  #status;
+  #priority;
+  #assignee;
+  #reporter;
+  #archived;
+  #created_at;
+  #updated_at;
+
+  /** //TODO fix created_at updated_at dates
+   *
+   * @param {string} id
+   * @param {string} project_id
+   * @param {string} user_uid
+   * @param {string} title
+   * @param {string} description
+   * @param {number} status
+   * @param {number} priority
+   * @param {Assignee} assignee
+   * @param {Reporter} reporter
+   * @param {boolean} archived
+   * @param {Timestamp} created_at
+   * @param {Timestamp} updated_at
+   */
+  constructor(
+    id,
+    project_id,
+    user_uid,
+    title,
+    description,
+    status,
+    priority,
+    assignee,
+    reporter,
+    archived,
+    created_at,
+    updated_at,
+  ) {
+    this.#validate({
+      id,
+      project_id,
+      user_uid,
+      title,
+      status,
+      priority,
+      assignee,
+      reporter,
+      archived,
+      created_at,
+      updated_at,
+    });
+
+    this.#id = id;
+    this.#project_id = project_id;
+    this.#user_uid = user_uid;
+    this.#title = title;
+    this.#description = description;
+    this.#status = status;
+    this.#priority = priority;
+    this.#assignee = assignee;
+    this.#reporter = reporter;
+    this.#archived = archived;
+    this.#created_at = created_at;
+    this.#updated_at = updated_at;
+  }
+
+  static Builder = class {
+    #id;
+    #project_id;
+    #user_uid;
+    #title;
+    #description = "";
+    #status = TASKS_STATUS.TODO;
+    #priority = TASKS_PRIORITY.LOW;
+    #assignee;
+    #reporter;
+    #archived = false;
+    #created_at;
+    #updated_at;
+
+    id(value) {
+      this.#id = value;
+      return this;
+    }
+
+    projectId(value) {
+      this.#project_id = value;
+      return this;
+    }
+
+    userUid(value) {
+      this.#user_uid = value;
+      return this;
+    }
+
+    title(value) {
+      this.#title = value;
+      return this;
+    }
+
+    description(value) {
+      if (!value) return this;
+      this.#description = value;
+      return this;
+    }
+
+    status(value) {
+      if (!value) return this;
+      this.#status = value;
+      return this;
+    }
+
+    priority(value) {
+      if (!value) return this;
+      this.#priority = value;
+      return this;
+    }
+
+    assignee(value) {
+      this.#assignee = value;
+      return this;
+    }
+
+    reporter(value) {
+      this.#reporter = value;
+      return this;
+    }
+
+    archived(value) {
+      if (!value) return this;
+      this.#archived = value;
+      return this;
+    }
+
+    createdAt(value) {
+      this.#created_at = value;
+      return this;
+    }
+
+    updatedAt(value) {
+      this.#updated_at = value;
+      return this;
+    }
+
+    build() {
+      return new Task(
+        this.#id,
+        this.#project_id,
+        this.#user_uid,
+        this.#title,
+        this.#description,
+        this.#status,
+        this.#priority,
+        this.#assignee,
+        this.#reporter,
+        this.#archived,
+        this.#created_at,
+        this.#updated_at,
+      );
+    }
+  };
+
+  // ===== Getters =====
+  getId() {
+    return this.#id;
+  }
+  getProjectId() {
+    return this.#project_id;
+  }
+  getUserUid() {
+    return this.#user_uid;
+  }
+  getTitle() {
+    return this.#title;
+  }
+  getDescription() {
+    return this.#description;
+  }
+  getStatus() {
+    return this.#status;
+  }
+  getPriority() {
+    return this.#priority;
+  }
+  getAssignee() {
+    return this.#assignee;
+  }
+  getReporter() {
+    return this.#reporter;
+  }
+  getIsArchived() {
+    return this.#archived;
+  }
+  getCreatedAt() {
+    return this.#created_at;
+  }
+  getUpdatedAt() {
+    return this.#updated_at;
+  }
+
+  //TODO implement if needed
+  getReadAbleCreatedAt() {
+    return this.#created_at.toDate().toLocaleDateString();
+  }
+
+  getReadAbleUpdatedAt() {
+    return this.#created_at.toDate().toLocaleDateString();
+  }
+
+  toJson() {
+    return {
+      id: this.#id,
+      project_id: this.#project_id,
+      user_uid: this.#user_uid,
+      title: this.#title,
+      description: this.#description,
+      status: this.#status,
+      priority: this.#priority,
+      assignee: this.#assignee.toJson(),
+      reporter: this.#reporter.toJson(),
+      archived: this.#archived,
+      created_at: this.#created_at,
+      updated_at: this.#updated_at,
+    };
+  }
+
+  toJsonWithoutId() {
+    return {
+      project_id: this.#project_id,
+      user_uid: this.#user_uid,
+      title: this.#title,
+      description: this.#description,
+      status: this.#status,
+      priority: this.#priority,
+      assignee: this.#assignee.toJson(),
+      reporter: this.#reporter.toJson(),
+      archived: this.#archived,
+      created_at: this.#created_at,
+      updated_at: this.#updated_at,
+    };
+  }
+
+  /** //TODO fix created_at updated_at dates
+   *
+   * @param {string} project_id
+   * @param {string} user_uid
+   * @param {string} title
+   * @param {string} description
+   * @param {number} status
+   * @param {number} priority
+   * @param {Assignee} assignee
+   * @param {Reporter} reporter
+   * @param {boolean} archived
+   * @param {FieldValue} created_at
+   * @param {FieldValue} updated_at
+   */
+  update(
+    project_id,
+    user_uid,
+    title,
+    description,
+    status,
+    priority,
+    assignee,
+    reporter,
+    archived,
+    created_at,
+    updated_at,
+  ) {
+    const id = this.#id;
+    const data = {
+      id,
+      project_id,
+      user_uid,
+      title,
+      description,
+      status,
+      priority,
+      assignee,
+      reporter,
+      archived,
+      created_at,
+      updated_at,
+    };
+    this.#validate(data);
+    this.#project_id = project_id;
+    this.#user_uid = user_uid;
+    this.#title = title;
+    this.#description = description;
+    this.#status = status;
+    this.#priority = priority;
+    this.#assignee = assignee;
+    this.#reporter = reporter;
+    this.#archived = archived;
+    this.#created_at = created_at;
+    this.#updated_at = updated_at;
+  }
+
+  #validate(data) {
+    const { id, project_id, user_uid, title, status, priority, assignee, reporter, archived, created_at, updated_at } =
+      data;
+
+    if (id == null || typeof id !== "string") {
+      throw new Error("Something went wrong while identifying this task. Please try again.");
+    }
+
+    //added because before the migration there are alot of tasks who have the default project id
+    if (this.#isUserOnLocalHost()) {
+      if (project_id === undefined || (project_id !== DEFAULT_PROJECT_ID && typeof project_id !== "string")) {
+        throw new Error(
+          "The project information is missing or invalid. Please select a valid project. If you are on localhost, contact the developer",
+        );
+      }
+    } else {
+      if (project_id === undefined || typeof project_id !== "string") {
+        throw new Error("The project information is missing or invalid. Please select a valid project.");
+      }
+    }
+
+    if (!user_uid || typeof user_uid !== "string") {
+      throw new Error("We couldn’t identify the user. Please sign in again and try.");
+    }
+
+    if (!title || typeof title !== "string") {
+      throw new Error("Please enter a title for the task.");
+    }
+
+    if (title.length < FOUR_CHARACTERS) {
+      throw new Error(`The task title must be at least ${FOUR_CHARACTERS} characters long.`);
+    }
+
+    if (status == null || typeof status !== "number") {
+      throw new Error("Please select a valid task status.");
+    }
+
+    if (!Object.values(TASKS_STATUS).includes(status)) {
+      throw new Error("The selected task status is not supported.");
+    }
+
+    if (priority == null || typeof priority !== "number") {
+      throw new Error("Please select a priority for the task.");
+    }
+
+    if (!Object.values(TASKS_PRIORITY).includes(priority)) {
+      throw new Error("The selected priority is not supported.");
+    }
+
+    if (!assignee || typeof assignee !== "object") {
+      throw new Error("Please assign this task to a user.");
+    }
+
+    if (!reporter || typeof reporter !== "object") {
+      throw new Error("The reporter information is missing. Please try again.");
+    }
+
+    if (archived === null || archived === undefined || typeof archived !== "boolean") {
+      throw new Error("The archive information is missing. Please try again.");
+    }
+
+    if (!created_at || !updated_at) {
+      throw new Error("We couldn’t determine when this task was created or updated. Please try again.");
+    }
+  }
+
+  #isUserOnLocalHost() {
+    if (typeof location === "undefined") {
+      return false; // Node / tests
+    }
+
+    if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+      return true;
+    }
+    return false;
+  }
+}

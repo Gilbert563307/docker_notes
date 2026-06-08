@@ -1,0 +1,148 @@
+.upload-file-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  padding: 1em;
+  background-color: #fff;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  margin-top: 2em;
+  border-radius: 20px;
+}
+
+.upload-file-header {
+  margin-top: 1em;
+  display: flex;
+  gap: 1em;
+}
+
+.upload-file-header-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #cbd0dc;
+  border-radius: 50%;
+  height: 50px;
+  width: 50px;
+}
+
+.upload-file-info-text {
+  color: #a9acb4;
+}
+
+.upload-file-title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.upload-file-drop-zone {
+  border: 2px dashed #cbd0dc;
+  border-radius: 20px;
+}
+
+.upload-drag-over {
+  border: 2px dashed #007bff;
+}
+
+#file-uploader-btn {
+  /* hide the no file chosen text */
+  color: rgba(0, 0, 0, 0);
+}
+
+.upload-file-drop-zone-1-child {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5em;
+}
+
+.upload-file-browse-btn-container {
+  display: inline-flex;
+}
+
+.upload-file-browse-btn {
+  /* margin: auto auto 1.2em auto */
+  margin: 1em;
+}
+
+.upload-file-article {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1em;
+}
+
+.upload-file-header-info > p,
+.upload-file-header-info > h3 {
+  padding: 0;
+  margin: 0;
+}
+
+.upload-file-drop-zone-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.upload-file-drop-zone-content > p {
+  margin: 0;
+  padding: 0;
+}
+
+.upload-supported-file-types {
+  padding-top: 0.5em !important;
+  max-width: 240px;
+  text-align: center;
+}
+
+.upload-file-drop-zone-1-child-icon-parent {
+  margin-top: 0.5em;
+}
+
+.uploaded-files-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  max-height: 450px;
+  overflow-y: auto;
+}
+
+.uploaded-file {
+  background-color: #eef1f7;
+  border-radius: 15px;
+}
+
+.uploaded-file-header {
+  display: flex;
+}
+
+.uploaded-file-header > div {
+  margin-left: 1em;
+  margin-top: 1em;
+}
+
+.uploaded-file-size {
+  margin-left: 1em;
+}
+
+.uploaded-file-header{
+    display: flex;
+    justify-content: space-between;
+}
+
+.uploaded-file-header-options{
+    display: flex;
+    gap: 0.3em;
+}
+.remove-upload-button{
+    border: none;
+    margin-right: 1em;
+    margin-top: 0.2em;
+}
+
+.upload-reset-btn{
+  padding: 0 !important;
+  margin: 0 !important;
+  float: right;
+}
+

@@ -1,0 +1,266 @@
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+.poppins-thin {
+  font-family: "Poppins", sans-serif;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.poppins-extralight {
+  font-family: "Poppins", sans-serif;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.poppins-light {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.poppins-regular {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.poppins-medium {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.poppins-semibold {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.poppins-bold {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.poppins-extrabold {
+  font-family: "Poppins", sans-serif;
+  font-weight: 800;
+  font-style: normal;
+}
+
+.poppins-black {
+  font-family: "Poppins", sans-serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+.poppins-thin-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 100;
+  font-style: italic;
+}
+
+.poppins-extralight-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 200;
+  font-style: italic;
+}
+
+.poppins-light-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.poppins-regular-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.poppins-medium-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.poppins-semibold-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.poppins-bold-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.poppins-extrabold-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 800;
+  font-style: italic;
+}
+
+.poppins-black-italic {
+  font-family: "Poppins", sans-serif;
+  font-weight: 900;
+  font-style: italic;
+}
+
+.linked-user-logo {
+  height: 24px;
+  width: 24px;
+}
+
+body {
+  /* height: 100dvh; */
+  /* width: 100%; */
+  background-color: #f9f9f9;
+}
+
+html.dark body {
+  background-color: #1d2125;
+}
+
+.dialogic-pagination {
+  height: auto !important;
+}
+
+.q-a-pre-tag {
+  white-space: pre-wrap;
+  font-family: Poppins, sans-serif;
+}
+
+.filter-div {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+.dialogic-filters-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.dialogic-domain-filter-btn {
+  background-color: #f2f2f2;
+  color: #212529;
+  border: none;
+  font-weight: 400;
+}
+
+.dialogic-domain-dropdown > li a {
+  padding-left: 0;
+}
+
+.dialogic-domain-dropdown > li {
+  border-left: 2px solid #388bff;
+  margin-bottom: 0.4em;
+  background-color: #f1f2f4;
+}
+
+.dialogic-domain-dropdown > li > a:hover {
+  background-color: none;
+}
+
+.dialogic-domain-tag-li {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  gap: 0.5em;
+  align-items: center;
+}
+
+.dialogic-domain-tag-li > .form-check {
+  padding: 0 !important;
+  margin-left: 0.5em;
+}
+
+.dialogic-domain-tag-li > .form-check > input {
+  cursor: pointer !important;
+}
+
+.dialogic-domain-tag-li > .form-check > .form-check-input {
+  margin-left: 0 !important;
+}
+
+.dialogic-domain-tag-button {
+  pointer-events: none;
+}
+
+.main-table-actions > button > a {
+  color: #0143a3;
+}
+
+.main-table-actions > button {
+  border: none;
+  background: none;
+  color: #0143a3;
+}
+
+.dialogic-filter {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  min-width: 115px;
+  min-height: 32px;
+  border-radius: 4px;
+  background-color: #e9f2ff;
+
+}
+
+.dialogic-filter:hover {
+  background-color: #F1F2F4;
+}
+
+.filter-icons {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+.dialogic-filter>p {
+  margin-bottom: 0;
+}
+
+html.dark .dialogic-filter{
+  background-color: #1C49F9;
+}
+
+
+.total-active-filters {
+  background-color: #0C66E4;
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  font-size: smaller;
+}
+
+.dialogic-filter-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.2em;
+}
+
+.dialogic-filter-info>p {
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+@media only screen and (max-width: 768px) {
+  .own-truncate-span {
+    max-width: 100px !important;
+  }
+}

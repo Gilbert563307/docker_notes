@@ -1,0 +1,86 @@
+.tasks-header,
+.tasks-content {
+    margin: 1em;
+}
+
+.task-btn-plain {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5em;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: ease-in 500ms;
+}
+
+.delete-btn-plain{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5em;
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: ease-in 500ms;
+}
+
+.options-buttons{
+    display: flex;
+}
+
+.add-task-button {
+    background-color: #0C66E4;
+    color: white;
+}
+
+
+.download-task-button{
+    background-color: #198754;
+}
+
+.add-task-button>i {
+    color: white;
+}
+
+.add-task-button:hover {
+    opacity: 0.8;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.tasks-article-buttons {
+    display: flex;
+    gap: 1em;
+    align-items: center;
+}
+
+.btn-filter {
+    background-color: #F1F2F4;
+    color: #42526E !important;
+    /* font-weight: 500; */
+}
+
+.btn-filter:hover {
+    background-color: #DCDFE4;
+}
+
+html.dark .btn-filter{
+    background-color: #333C43;
+    color: #B6C2CF !important;
+}
+
+html.dark .add-task-button {
+    background-color: #579DFF;
+    color: #1D2164;
+}

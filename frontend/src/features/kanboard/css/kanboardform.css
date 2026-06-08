@@ -1,0 +1,8 @@
+.create-kanban-article{
+    margin: 1em;
+}
+
+.kanboard-float-end{
+    display: flex;
+    justify-content: flex-end;
+}

@@ -1,0 +1,112 @@
+.navbar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1em;
+  margin-top: 1em;
+}
+
+.navbar,
+.sign-out {
+  list-style-type: none;
+}
+
+.active-url {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #e9efff;
+  width: 179px;
+  height: 45px;
+  border-radius: 10px;
+  animation: fadeInAnimation ease 500ms;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+}
+
+.navbar > li > a {
+  font-size: 16px;
+  text-decoration: none;
+  font-weight: bolder;
+}
+
+.active-url > a {
+  color: #1b59f9 !important;
+}
+
+.navbar > li > a {
+  color: #4d4d4d;
+}
+
+.sign-out {
+  position: fixed;
+  bottom: 0;
+}
+
+.sign-out > li > a {
+  color: #4d4d4d;
+  text-decoration: none;
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.nav-item-group {
+  display: flex;
+  gap: 1em;
+  min-width: 100px;
+}
+
+/* darkmode css */
+
+html.dark .active-url {
+  background-color: #1c2b41;
+}
+
+html.dark .active-url > a {
+  color: #2b7eff;
+}
+
+html.dark .navbar > li > a {
+  color: #9fadbc;
+}
+
+html.dark .nav-item-group > div:first-of-type > i {
+  color: #9fadbc !important;
+}
+
+html.dark .active-url > a > div > div:first-of-type > i {
+  color: #2b7eff !important;
+}
+
+html.dark .sign-out > li > a {
+  color: #9fadbc;
+}
+
+@keyframes fadeInAnimation {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .main-navigation {
+    flex-direction: row;
+    height: 100px;
+  }
+
+  .navbar {
+    overflow: auto;
+  }
+
+  .sign-out {
+    display: none;
+  }
+}

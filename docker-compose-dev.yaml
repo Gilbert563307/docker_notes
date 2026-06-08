@@ -1,0 +1,29 @@
+version: "3"
+
+services:
+  react-vite-app:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend/src:/app/src
+    ports:
+      - "5173:5173"
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+
+  python-flask-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend:/code/app
+      - uploads-data:/code/app/uploads  # Mount the uploads folder to a named volume
+    ports:
+      - 8000:8000
+    restart: on-failure
+
+volumes:
+  #This is a named volume. Named volumes are managed by Docker and store data outside the lifecycle of containers. 
+  #They are persistent even if you rebuild or restart the container.
+  uploads-data:  # Define the named volume

@@ -1,0 +1,87 @@
+.main-columns{
+    margin: 1em; 
+    display: grid;
+    grid-template-columns: 284px 284px 284px 284px;
+    gap:  1em;
+}
+
+.card-own{
+    display: flex;
+    flex-direction: column;
+    background-color: #F1F2F4;
+    border-radius: 10px;
+    max-height: 800px;
+    overflow-y: auto;
+}
+
+.card-parent-header{
+    font-weight: 410;
+    margin: 1em 1em 0em 1em;
+}
+
+
+.board-card-item{
+    list-style-type: none;
+    background-color: #fff;
+    padding: 0.4em
+}
+
+.board-tasks{
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    margin: 1em;
+}
+
+.add-card-btn{
+    border: none;
+    text-align: left;
+    margin: 0em 1em 0.5em 1em;
+    padding: 4px 0px 4px 0px
+}
+
+.card-parent-header{
+    color: #172B4D;
+}
+
+.main-board{
+    display: flex;
+    background-image: url("../../../assets/images/land_scape.png");
+    min-height: 60dvh;
+}
+
+/* add border so that the items do not bounce when hover */
+/* https://stackoverflow.com/questions/67873631/how-to-stop-the-elements-from-growing-when-hovering-over-an-element */
+.board-card-item{
+    border: 2px solid transparent;
+}
+
+.board-card-item:hover{
+    border: 2px solid #007BFF;
+    padding: none
+}
+
+.button-card-content{
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 0.4em;
+}
+
+.button-card-content > i {
+    margin-left: 0.2em;
+}
+
+.add-card-btn:hover{
+    background-color: #D0D4DB;
+}
+
+html.dark .board-card-title {
+    color:  black !important;
+}
+
+@media only screen and (max-width: 768px) {
+    .main-board{
+        overflow: scroll;
+    }
+}

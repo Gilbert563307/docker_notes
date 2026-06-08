@@ -1,0 +1,16 @@
+.settings-options > .setting-option{
+    margin: 1em;
+}
+
+.log-out-settings{
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.notification, .card{
+    margin: 1em;
+}
+
+.bug-card{
+    min-width: 35%;
+}

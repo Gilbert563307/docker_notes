@@ -1,0 +1,42 @@
+{
+  "name": "docker_todos",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview",
+    "test": "mocha --require @babel/register"
+  },
+  "dependencies": {
+    "crypto-js": "^4.2.0",
+    "firebase": "^10.11.1",
+    "localforage": "^1.10.0",
+    "match-sorter": "^6.3.4",
+    "quill": "^2.0.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.51.4",
+    "react-paginate": "^8.2.0",
+    "react-router-dom": "^6.23.1",
+    "sort-by": "^0.0.2",
+    "use-debounce": "^10.0.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.28.6",
+    "@babel/core": "^7.28.6",
+    "@babel/preset-env": "^7.28.6",
+    "@babel/register": "^7.28.6",
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "html-docx-js-typescript": "^0.1.5",
+    "vite": "^7.3.1"
+  }
+}

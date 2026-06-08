@@ -1,0 +1,59 @@
+.list-tasks {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 300px);
+    grid-gap: 10px;
+}
+
+.task-card {
+    width: 18rem;
+}
+
+.task-card>.card-body {
+    padding-left: 0.2em !important;
+    padding-top: 0.6em;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+}
+
+.task-card-text{
+    padding-bottom: 0;
+}
+
+.task-card,
+.task-card-text {
+    transition: ease-in;
+}
+
+.task-card-text>i {
+    font-size: small;
+    display: none;
+}
+
+.task-card:hover {
+    filter: brightness(95%);
+}
+
+.task-card-text:hover {
+    text-decoration: underline;
+}
+
+.task-card:hover .task-card-text>i {
+    display: inline-block;
+}
+
+.task-card-content-section {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.selected-card .task-card-text>i {
+    display: inline-block;
+}
+
+.selected-card {
+    background-color: rgb(204, 224, 255, 0.3);
+    border: 2px solid #0D6EFD;
+}

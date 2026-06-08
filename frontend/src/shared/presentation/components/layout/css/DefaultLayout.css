@@ -1,0 +1,121 @@
+.default-layout {
+  display: flex;
+  background-color: #ffff;
+}
+
+.layout-section {
+  width: 100%;
+  background-color: #F9F9F9;
+}
+
+.mx-1 {
+  margin: 1.5rem;
+}
+
+
+.layout-line {
+  background-color: #DEE2E6;
+  width: 100%;
+  margin: 1.5rem 0 0.8rem 0rem;
+  height: 1.5px;
+}
+
+.aside-navigation {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  background-color: #ffff;
+  border-right: 2px solid #dee2e6;
+  width: 290px;
+  min-height: 100dvh;
+}
+
+.aside-navigation>h1 {
+  text-align: center;
+  pointer-events: none;
+}
+
+.aside-navigation>article {
+  margin: 1em;
+}
+
+.stats-tracker-h1 {
+  font-family: "IBM Plex Mono", monospace;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "Nunito Sans", sans-serif;
+  font-family: "Poppins", sans-serif;
+  font-family: "Reenie Beanie", cursive;
+  font-size: 31px;
+}
+
+.content {
+  background-color: #FFFF;
+  margin: 1em;
+  min-height: 50dvh;
+}
+
+.content-vector {
+  background-color: #86BBD8;
+  clip-path: polygon(0% 40%, 8% 16%, 28% 0%, 57% 5%, 71% 11%, 100% 19%, 100% 37%, 94% 61%, 86% 77%, 71% 85%, 49% 83%, 34% 77%, 22% 64%, 13% 53%, 1% 46%);
+
+  min-height: 200px;
+  min-width: 200px;
+  display: flex;
+  justify-content: center;
+
+}
+
+/* dark mode css  */
+
+html.dark .aside-navigation {
+  background-color: #1D2125;
+  border-right: 2px solid #282E34;
+}
+
+html.dark .stats-tracker-h1 {
+  color: #B6C2CF;
+}
+
+html.dark .user-welcome,
+.user-name {
+  color: #B6C2CF !important;
+}
+
+html.dark .layout-section {
+  background-color: #1D2125;
+}
+
+html.dark .layout-title {
+  color: #B6C2CF;
+}
+
+html.dark .content {
+  background-color: #282E33;
+}
+
+.app-version {
+  margin-left: 1em;
+}
+
+@media only screen and (max-width: 768px) {
+  .default-layout {
+    flex-direction: column;
+  }
+
+  .aside-navigation {
+    justify-content: start;
+    width: 100%;
+    height: auto;
+    min-height: auto;
+    border-right: none;
+    border-bottom: 2px solid #dee2e6;
+  }
+
+  .layout-title {
+    margin-left: 1em;
+  }
+
+  .aside-article-header{
+    width: 100%;
+  }
+}

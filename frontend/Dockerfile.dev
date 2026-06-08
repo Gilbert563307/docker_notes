@@ -1,0 +1,20 @@
+# Use the official Node.js 18.18.2 image as a base
+FROM node:25-alpine3.22
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy package.json and package-lock.json (if available) to install dependencies
+COPY package*.json ./
+
+# Install dependencies in development mode
+RUN npm install
+
+# Copy the rest of the application code to the container
+COPY . .
+
+# Expose the port that Vite serves on (default is 5173)
+EXPOSE 5173
+
+# Start the development server
+CMD ["npm", "run", "dev"]
