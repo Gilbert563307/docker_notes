@@ -224,7 +224,6 @@ export default function DriveController() {
    */
   async function collectListFilesBySearchTerm(payload) {
     const files = await filesService.listFilesBySearchTerm(payload);
-    console.log(files)
     setNotificationToState(files.notificationDto);
 
     // Update state with the created task response

@@ -5,10 +5,26 @@ import useGetFilesHook from "../../shared/hooks/useGetFilesHook";
 import RepositoryTable from "../../features/drive/component/drive/RepositoryTable";
 import DriveSearchBar from "../../features/drive/component/drive/DriveSearchBar";
 import SimplePagination from "../../shared/features/simplePagination/presentation/components/SimplePagination";
+import { DRIVE_CONTROLLER_ACTIONS, useDriveControllerContext } from "../../features/drive/presentation/DriveController";
+import { DriveFileDto } from "../../features/drive/domain/dto/DriveFileDto";
+import { DownloadFileDto } from "../../features/drive/presentation/dto/DownloadFileDto";
 
 export default function CollectListDriveFiles() {
   useSetPageTitleHook({ title: "Drive " });
   const { files, total, pages } = useGetFilesHook();
+
+  const { dispatch } = useDriveControllerContext();
+
+  /**
+   * 
+   * @param {DriveFileDto} file 
+   */
+  function downloadFile(file){
+     dispatch({
+      type: DRIVE_CONTROLLER_ACTIONS.DOWNLOAD_FILE,
+      payload: new DownloadFileDto(file.getName()),
+    });
+  }
 
   return (
     <article className="drive-article ">
@@ -32,7 +48,7 @@ export default function CollectListDriveFiles() {
             </div>
           </div>
           <div className="tasks-content table-responsive">
-            <RepositoryTable files={files} />
+            <RepositoryTable files={files} downloadMethod={downloadFile} />
             <SimplePagination totalItems={total} totalPages={pages} />
           </div>
         </div>

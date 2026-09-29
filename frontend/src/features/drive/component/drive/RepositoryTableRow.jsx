@@ -3,24 +3,19 @@ import React from "react";
 import BS5TruncateSpan from "../../../../shared/presentation/components/bs5/BS5TruncateSpan";
 // import ArchiveFileButton from "./buttons/ArchiveFileButton";
 import DeleteFileButton from "./buttons/DeleteFileButton";
-import { DRIVE_CONTROLLER_ACTIONS, useDriveControllerContext } from "../../presentation/DriveController";
 import { DownloadFileDto } from "../../presentation/dto/DownloadFileDto";
 import { DriveFileDto } from "../../domain/dto/DriveFileDto";
-// import ArchiveFileButton from "./buttons/ArchiveFileButton";
 
 /**
  *
  * @param {Object} props - The props object.
  * @param {DriveFileDto} props.file -
+ * @param {(arg: DriveFileDto) => void} props.downloadMethod
  * @returns {JSX.Element} The rendered component.
  */
-export default function RepositoryTableRow({ file }) {
-  const { dispatch } = useDriveControllerContext();
+export default function RepositoryTableRow({ file, downloadMethod }) {
   function downloadFile() {
-    dispatch({
-      type: DRIVE_CONTROLLER_ACTIONS.DOWNLOAD_FILE,
-      payload: new DownloadFileDto(file.getName()),
-    });
+    downloadMethod(file)
   }
 
 

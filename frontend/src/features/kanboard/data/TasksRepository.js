@@ -2,7 +2,7 @@ import { Firestore, limit, orderBy, where } from "firebase/firestore";
 import { db } from "../../../database/firebaseConfig";
 import { CollectionRepository } from "../../../firebase_entity_manager/data/CollectionRepository";
 
-class TasksRepository extends CollectionRepository {
+export class TasksRepository extends CollectionRepository {
   /**
    * @param {Firestore} database - The Firestore database instance.
    */

@@ -82,7 +82,6 @@ class KanBoardsService {
         kanBoard.getIsArchived(),
         kanBoard.getIsCollaborative(),
         kanBoard.getImageUrl(),
-        kanBoard.getCreatedAt(),
         this.#kanBoardsRepository.getCurrentServerTimestamp(),
       );
       await this.#kanBoardsRepository.updateDocument(kanBoard.getId(), kanBoard.toJsonWithoutId());

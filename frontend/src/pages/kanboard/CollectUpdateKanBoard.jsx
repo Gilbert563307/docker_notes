@@ -1,4 +1,3 @@
-import React from "react";
 import KanBoardForm from "../../features/kanboard/component/kanboard/KanBoardForm";
 import { KAN_BOARDS_CONTROLLER_ACTIONS } from "../../features/kanboard/presentation/KanBoardsController";
 import useGetKanBoardByIdHook from "../../shared/hooks/useGetKanBoardByIdHook";
@@ -12,16 +11,16 @@ export default function CollectUpdateKanBoard() {
    * @param {{name: string, color: string}} data
    */
   const onSubmit = (data) => {
-    const kanBoardDto = new KanBoardDto(
-      board.getId(),
-      board.getUserUid(),
-      data.name,
-      data.color,
-      board.getIsArchived(),
-      board.getIsCollaborative(),
-      board.getCreatedAt(),
-      board.getUpdatedAt(),
-    );
+    const kanBoardDto = new KanBoardDto.Builder()
+    .id(board.getId())
+    .userUid(board.getUserUid())
+    .name(data.name)
+    .color(data.color)
+    .archived(board.getIsArchived())
+    .collaborative(board.getIsCollaborative())
+    .createdAt(board.getCreatedAt())
+    .updatedAt(board.getUpdatedAt())
+    .build(); 
     dispatch({ type: KAN_BOARDS_CONTROLLER_ACTIONS.UPDATE, payload: kanBoardDto });
   };
 

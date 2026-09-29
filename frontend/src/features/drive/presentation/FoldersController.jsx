@@ -8,7 +8,8 @@ import { CreateFolderDto } from "./dto/CreateFolderDto";
 import { UpdateFolderDto } from "./dto/UpdateFolderDto";
 import { ArchiveFolderDto } from "./dto/ArchiveFolderDto";
 import foldersService from "../application/service/FoldersService";
-
+import filesService from "../application/service/FilesService";
+import { DownloadFileDto } from "./dto/DownloadFileDto";
 
 /**
  * @typedef {Object} InitialState
@@ -44,7 +45,8 @@ export const FOLDERS_CONTROLLER_ACTIONS = {
   DELETE: "DELETE",
   SEARCH_FOLDERS_BY_SEARCH_TERM: "SEARCH_FOLDERS_BY_SEARCH_TERM",
   LIST_FILES_IN_FOLDER: "LIST_FILES_IN_FOLDER",
-  SET_NOTIFICATION: "SET_NOTIFICATION,",
+  SET_NOTIFICATION: "SET_NOTIFICATION",
+  DOWNLOAD_FILE: "DOWNLOAD_FILE",
 };
 
 /**
@@ -250,6 +252,15 @@ export default function FoldersController() {
   }
 
   /**
+   *
+   * @param {DownloadFileDto} payload
+   */
+  async function collectDownloadFile(payload) {
+    const downloaded = await filesService.downloadFile(payload);
+    setNotificationToState(downloaded.notificationDto);
+  }
+
+  /**
    * Dispatches actions based on the specified type and payload.
    * @param {{ type: string; payload?: any; }} action - The action object containing type and payload.
    * @returns {Promise<void>} - A Promise that resolves when the operation is completed.
@@ -296,6 +307,10 @@ export default function FoldersController() {
           break;
         case FOLDERS_CONTROLLER_ACTIONS.LIST_FILES_IN_FOLDER:
           await collectListFilesByFolderId(action?.payload);
+          break;
+
+        case FOLDERS_CONTROLLER_ACTIONS.DOWNLOAD_FILE:
+          await collectDownloadFile(action?.payload);
           break;
 
         default:

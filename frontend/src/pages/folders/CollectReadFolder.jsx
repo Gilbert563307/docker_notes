@@ -5,13 +5,27 @@ import "./css/CollectReadFolder.css";
 import { Show } from "../../shared/presentation/components/custom/Show";
 import RepositoryTable from "../../features/drive/component/drive/RepositoryTable";
 import SimplePagination from "../../shared/features/simplePagination/presentation/components/SimplePagination";
+import { DriveFileDto } from "../../features/drive/domain/dto/DriveFileDto";
+import { DownloadFileDto } from "../../features/drive/presentation/dto/DownloadFileDto";
+import { FOLDERS_CONTROLLER_ACTIONS } from "../../features/drive/presentation/FoldersController";
 
 export default function CollectReadFolder() {
   let { state } = useLocation();
 
   const folder = state != null ? state.folder : {};
+  const { files, total, pages, dispatch } = useGetDriveFilesByFolderId();
 
-  const { files, total, pages } = useGetDriveFilesByFolderId();
+  
+    /**
+     * 
+     * @param {DriveFileDto} file 
+     */
+    function downloadFile(file){
+       dispatch({
+        type: FOLDERS_CONTROLLER_ACTIONS.DOWNLOAD_FILE,
+        payload: new DownloadFileDto(file.getName()),
+      });
+    }
   
   return (
     <article className="drive-article ">
@@ -29,7 +43,7 @@ export default function CollectReadFolder() {
       <div className="tasks-content table-responsive">
         <Show>
           <Show.When isTrue={files.length > 0}>
-            <RepositoryTable files={files} />
+            <RepositoryTable files={files} downloadMethod={downloadFile} />
              <SimplePagination totalItems={total} totalPages={pages} />
           </Show.When>
           <Show.Else>

@@ -7,9 +7,10 @@ import { DriveFileDto } from '../../domain/dto/DriveFileDto';
  * 
  * @param {Object} props - The properties object.
  * @param {Array<DriveFileDto>} props.files - 
+ * @param {Function} props.downloadMethod
  * @returns {JSX.Element} The rendered  component.
  */
-export default function RepositoryTable({ files }) {
+export default function RepositoryTable({ files, downloadMethod }) {
 
     /**
     * 
@@ -44,7 +45,7 @@ export default function RepositoryTable({ files }) {
           {files &&
             files.length > 0 &&
             files.map((file, index) => (
-              <RepositoryTableRow key={file.getId() || index} file={file} />
+              <RepositoryTableRow key={file.getId() || index} file={file}  downloadMethod={downloadMethod}/>
             ))}
         </tbody>
       </table>

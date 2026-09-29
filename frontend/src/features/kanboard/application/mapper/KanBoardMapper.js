@@ -16,35 +16,35 @@ export class KanBoardMapper {
    * @returns {KanBoardDto}
    */
   static toDto(board) {
-    return new KanBoardDto(
-      board.id,
-      board.user_uid,
-      board.name,
-      board.color,
-      board.archived,
-      board.collaborative,
-      board.imageUrl,
-      board.updated_at,
-      board.created_at,
-    );
+    return new KanBoardDto.Builder()
+      .id(board.id)
+      .userUid(board.user_uid)
+      .name(board.name)
+      .color(board.color)
+      .archived(board.archived)
+      .collaborative(board.collaborative)
+      .imageUrl(board.imageUrl)
+      .createdAt(board.updated_at)
+      .updatedAt(board.updated_at)
+      .build();
   }
 
   /**
-   * 
-   * @param {KanBoardDto} KanBoardDto 
+   *
+   * @param {KanBoardDto} KanBoardDto
    * @returns {KanBoard}
    */
-  static fromDtoToEntity(KanBoardDto){
-    return new KanBoard(
-      KanBoardDto.getId(),
-      KanBoardDto.getUserUid(),
-      KanBoardDto.getName(),
-      KanBoardDto.getColor(),
-      KanBoardDto.getIsArchived(),
-      KanBoardDto.getIsCollaborative(),
-      KanBoardDto.getImageUrl(),
-      KanBoardDto.getUpdatedAt(),
-      KanBoardDto.getCreatedAt(),
-    );
+  static fromDtoToEntity(KanBoardDto) {
+    return new KanBoard.Builder()
+      .id(KanBoardDto.getId())
+      .userUid(KanBoardDto.getUserUid())
+      .name(KanBoardDto.getName())
+      .color(KanBoardDto.getColor())
+      .archived(KanBoardDto.getIsArchived())
+      .collaborative(KanBoardDto.getIsCollaborative())
+      .imageUrl(KanBoardDto.getImageUrl())
+      .createdAt(KanBoardDto.getCreatedAt())
+      .updatedAt(KanBoardDto.getUpdatedAt)
+      .build();
   }
 }

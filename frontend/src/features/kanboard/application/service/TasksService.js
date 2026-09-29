@@ -28,15 +28,14 @@ import { HelpersV2 } from "../../../../shared/helpers/HelpersV2";
 import { FirebaseUtil } from "../../../../shared/helpers/FirebaseUtil";
 
 import { orderBy, where } from "firebase/firestore";
-import tasksRepository from "../../data/TasksRepository";
+import tasksRepository, { TasksRepository } from "../../data/TasksRepository";
 import kanBoardsRepository from "../../data/KanBoardsRepository.js";
 import { asBlob } from "html-docx-js-typescript";
 import { KanBoardMapper } from "../mapper/KanBoardMapper.js";
 import { PageAble } from "../../../../firebase_entity_manager/domain/PageAble.js";
 
 /**
- * @typedef {import("../../data/TasksRepository").default} TasksRepository
- */
+
 
 class TasksService {
   #tasksRepository;
@@ -84,7 +83,6 @@ class TasksService {
         .createdAt(currentServerTimestamp)
         .updatedAt(currentServerTimestamp)
         .build();
-
       // Attempt to add the document to the collection
       this.#tasksRepository.createDocument(task.toJsonWithoutId());
 
@@ -366,7 +364,7 @@ class TasksService {
         notificationDto: new NotificationDto.Builder().danger().message(error.message).build(),
       };
     }
-  };
+}
 
   /**
    * Fetches a task from the database by its ID.
@@ -376,9 +374,8 @@ class TasksService {
   readTask = async (taskId) => {
     try {
       const document = await this.#tasksRepository.readDocument(taskId);
-      const kanBaord = await this.#kanBoardsRepository.getKanBoardByProjectId(document?.project_id);
-
-      const taskDto = TasksMapper.toDto({ ...document, projectName: kanBaord?.name });
+      // const kanBaord = await this.#kanBoardsRepository.findOrFail(document?.project_id); Does not work with permissions
+      const taskDto = TasksMapper.toDto(document);
 
       return {
         task: taskDto,

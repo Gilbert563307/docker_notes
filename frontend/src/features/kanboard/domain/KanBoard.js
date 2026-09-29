@@ -20,7 +20,17 @@ export class KanBoard {
    * @param {string} created_at
    * @param {string} updated_at
    */
-  constructor(id, user_uid, name, color, archived, collaborative, imageUrl,  created_at, updated_at) {
+  constructor(
+    id,
+    user_uid,
+    name,
+    color,
+    archived,
+    collaborative,
+    imageUrl,
+    created_at,
+    updated_at,
+  ) {
     this.#validate({
       id,
       user_uid,
@@ -45,6 +55,7 @@ export class KanBoard {
   }
 
   // ===== Getters =====
+
   getId() {
     return this.#id;
   }
@@ -61,7 +72,7 @@ export class KanBoard {
     return this.#color;
   }
 
-  getImageUrl(){
+  getImageUrl() {
     return this.#imageUrl;
   }
 
@@ -81,7 +92,8 @@ export class KanBoard {
     return this.#updated_at;
   }
 
-  /** Return object representation */
+  // ===== Serialization =====
+
   toJson() {
     return {
       id: this.#id,
@@ -109,17 +121,17 @@ export class KanBoard {
     };
   }
 
-  /** Update one or more fields */
+  // ===== Update =====
+
   /**
    * @param {string} name
    * @param {string} color
    * @param {boolean} archived
    * @param {boolean} collaborative
    * @param {string} imageUrl
-   * @param {any} created_at
-   * @param {any} updated_at
+   * @param {string} updated_at
    */
-  update(name, color, archived, collaborative, imageUrl, created_at, updated_at) {
+  update(name, color, archived, collaborative, imageUrl, updated_at) {
     const data = {
       id: this.#id,
       user_uid: this.#user_uid,
@@ -128,25 +140,37 @@ export class KanBoard {
       archived,
       collaborative,
       imageUrl,
-      created_at,
+      created_at: this.#created_at,
       updated_at,
     };
+
     this.#validate(data);
 
     if (name !== undefined) this.#name = name;
     if (color !== undefined) this.#color = color;
     if (archived !== undefined) this.#archived = archived;
     if (collaborative !== undefined) this.#collaborative = collaborative;
-    if (collaborative !== undefined) this.#imageUrl = imageUrl;
+    if (imageUrl !== undefined) this.#imageUrl = imageUrl;
     if (updated_at !== undefined) this.#updated_at = updated_at;
   }
 
+  // ===== Validation =====
+
   /**
-   *
    * @param {Object} data
    */
   #validate(data) {
-    const { id, user_uid, name, color, archived, collaborative, imageUrl, created_at, updated_at } = data;
+    const {
+      id,
+      user_uid,
+      name,
+      color,
+      archived,
+      collaborative,
+      imageUrl,
+      created_at,
+      updated_at,
+    } = data;
 
     if (id === undefined || id === null || typeof id !== "string") {
       throw new Error("Board id is required and must be a string.");
@@ -157,23 +181,35 @@ export class KanBoard {
     }
 
     if (!name || typeof name !== "string") {
-      throw new Error("Board name is required and must be a non-empty string.");
+      throw new Error(
+        "Board name is required and must be a non-empty string.",
+      );
     }
 
-    if (color === undefined || color === null || typeof color !== "string") {
+    if (
+      color === undefined ||
+      color === null ||
+      typeof color !== "string"
+    ) {
       throw new Error("Board color is required and must be a string.");
     }
 
     if (typeof archived !== "boolean") {
-      throw new Error("Archived flag is required and must be a boolean.");
+      throw new Error(
+        "Archived flag is required and must be a boolean.",
+      );
     }
 
     if (typeof collaborative !== "boolean") {
-      throw new Error("Collaborative flag is required and must be a boolean.");
+      throw new Error(
+        "Collaborative flag is required and must be a boolean.",
+      );
     }
 
-    if (imageUrl && typeof imageUrl !== "string") {
-      throw new Error("Board image url is required and must be a non-empty string.");
+    if (imageUrl !== undefined && typeof imageUrl !== "string") {
+      throw new Error(
+        "Board image URL must be a string.",
+      );
     }
 
     if (!created_at) {
@@ -184,4 +220,98 @@ export class KanBoard {
       throw new Error("Update date is required.");
     }
   }
+
+  // ===== Builder =====
+
+  static Builder = class {
+    #id = "";
+    #user_uid = "";
+    #name = "";
+    #color = "#000000";
+    #archived = false;
+    #collaborative = false;
+    #imageUrl = "";
+    #created_at = "";
+    #updated_at = "";
+    #validate = true;
+
+    id(id) {
+      this.#id = id;
+      return this;
+    }
+
+    userUid(user_uid) {
+      this.#user_uid = user_uid;
+      return this;
+    }
+
+    name(name) {
+      this.#name = name;
+      return this;
+    }
+
+    color(color) {
+      this.#color = color;
+      return this;
+    }
+
+    archived(archived) {
+      this.#archived = archived;
+      return this;
+    }
+
+    collaborative(collaborative) {
+      this.#collaborative = collaborative;
+      return this;
+    }
+
+    imageUrl(imageUrl) {
+      if(!imageUrl) return this;
+      this.#imageUrl = imageUrl;
+      return this;
+    }
+
+    createdAt(created_at) {
+      this.#created_at = created_at;
+      return this;
+    }
+
+    updatedAt(updated_at) {
+      this.#updated_at = updated_at;
+      return this;
+    }
+
+    validate(validate) {
+      this.#validate = validate;
+      return this;
+    }
+
+    build() {
+      if (this.#validate) {
+        return new KanBoard(
+          this.#id,
+          this.#user_uid,
+          this.#name,
+          this.#color,
+          this.#archived,
+          this.#collaborative,
+          this.#imageUrl,
+          this.#created_at,
+          this.#updated_at,
+        );
+      }
+
+      return new KanBoard(
+        this.#id,
+        this.#user_uid,
+        this.#name,
+        this.#color,
+        this.#archived,
+        this.#collaborative,
+        this.#imageUrl,
+        this.#created_at,
+        this.#updated_at,
+      );
+    }
+  };
 }

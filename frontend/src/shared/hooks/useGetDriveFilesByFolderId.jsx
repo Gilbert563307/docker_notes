@@ -5,7 +5,7 @@ import { FOLDERS_CONTROLLER_ACTIONS, useFoldersControllerContext } from "../../f
 
 /**
  *
- * @returns {{files: import("../../types/types").DriveFiles, total: number, pages: number}}
+ * @returns {{files: import("../../types/types").DriveFiles, total: number, pages: number, dispatch: Function}}
  */
 export default function useGetDriveFilesByFolderId() {
   const { folderId } = useParams();
@@ -29,6 +29,7 @@ export default function useGetDriveFilesByFolderId() {
   }, [folderId]);
 
   return {
+    dispatch: dispatch,
     files: state?.files.files,
     total: state?.files.total,
     pages: state?.files.pages,

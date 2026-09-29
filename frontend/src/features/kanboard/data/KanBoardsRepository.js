@@ -2,7 +2,7 @@ import { Firestore, limit, where } from "firebase/firestore";
 import { CollectionRepository } from "../../../firebase_entity_manager/data/CollectionRepository";
 import { db } from "../../../database/firebaseConfig";
 
-class KanBoardsRepository extends CollectionRepository {
+export class KanBoardsRepository extends CollectionRepository {
   /**
    * @param {Firestore} database - The Firestore database instance.
    */
@@ -35,6 +35,7 @@ class KanBoardsRepository extends CollectionRepository {
    * @returns {Promise<Object>}
    */
   async getKanBoardByProjectId(projectId) {
+    if(projectId === "0" || projectId === 0) return {name: ""}
     const kanBaord = await this.findOrFail(projectId);
     if (kanBaord === null) return { name: "" };
     return kanBaord;

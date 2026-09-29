@@ -94,3 +94,10 @@ Tests
 2. run : npm run test
 3. docs https://mochajs.org/
 4.
+
+---
+
+## If you are having issues with python
+1. open your requirements.txt and replace all the == with >=
+2. then run the python -m pip install -r requirements.txt --upgrade --note in a venv
+3. your python packages will be updated and most of your issues will be resoveld
