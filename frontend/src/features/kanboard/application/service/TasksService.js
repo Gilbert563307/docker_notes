@@ -34,8 +34,6 @@ import { asBlob } from "html-docx-js-typescript";
 import { KanBoardMapper } from "../mapper/KanBoardMapper.js";
 import { PageAble } from "../../../../firebase_entity_manager/domain/PageAble.js";
 
-/**
-
 
 class TasksService {
   #tasksRepository;
