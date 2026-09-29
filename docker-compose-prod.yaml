@@ -20,8 +20,8 @@ services:
     ports:
       - "5173:5173"
     #expose the port so that the caddy vps (in different gh repo can find it)
-    expose:
-      - 5173
+    # expose:
+    #   - 5173
     restart: unless-stopped
 
   fastapi-backend:
@@ -47,12 +47,11 @@ services:
     ports:
       - "9000:9000"
     #expose the port so that the caddy vps (in different gh repo can find it)
-    expose:
-      - 9000
+    # expose:
+    #   - 9000
     volumes:
       - fastapi_data:/app/data
       - uploads-data:/code/app/uploads
-
 
 volumes:
   fastapi_data:
