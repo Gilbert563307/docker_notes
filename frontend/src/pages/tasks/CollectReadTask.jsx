@@ -31,6 +31,7 @@ export default function CollectReadTask() {
               <Link to={`/tasks/update/${task.getId()}`}>
                 <i className="fa-solid fa-pencil"></i> Change
               </Link>
+              <Link to={`/board/${task.getProjectId()}`} className="back-to-board-button">Back  <i className="fa-solid fa-arrow-left-long"></i></Link>
             </div>
           </div>
 

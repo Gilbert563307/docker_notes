@@ -2,3 +2,7 @@
     display: flex;
     justify-content: space-between;
 }
+
+.back-to-board-button{
+    margin: 0.5em;
+}

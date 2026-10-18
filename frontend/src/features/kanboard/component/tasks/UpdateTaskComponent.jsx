@@ -7,6 +7,7 @@ import "../../css/UpdateTaskComponent.css";
 import { TASKS_CONTROLLER_ACTIONS } from "../../presentation/TasksController";
 import QuilTextEditor from "../../../../shared/presentation/components/texteditor/component/QuilTextEditor";
 import { TaskDto } from "../../application/dto/TaskDto";
+import { Link } from "react-router-dom";
 
 /**
  *
@@ -167,6 +168,9 @@ export default function UpdateTaskComponent({ task, dispatch }) {
                 >
                   <i className="fa-solid fa-download"></i> Download
                 </button>
+                <Link to={`/board/${task.getProjectId()}`} className="back-to-board-button">
+                  Back <i className="fa-solid fa-arrow-left-long"></i>
+                </Link>
               </div>
 
               <DeleteTaskButton taskId={task.getId()} />
