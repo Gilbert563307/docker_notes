@@ -169,7 +169,7 @@ export default function UpdateTaskComponent({ task, dispatch }) {
                   <i className="fa-solid fa-download"></i> Download
                 </button>
                 <Link to={`/board/${task.getProjectId()}`} className="back-to-board-button">
-                  Back <i className="fa-solid fa-arrow-left-long"></i>
+                  Back
                 </Link>
               </div>
 
